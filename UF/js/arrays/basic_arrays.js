@@ -104,6 +104,57 @@ function dimensionality (arg0_input_array, arg1_dimension_array) {
   return return_array;
 }
 
+/**
+ * findClosestPointInDomain() - Finds the closest point in a domain for a given value.
+ * @param {Array<number>} arg0_input_array - The array to search.
+ * @param {number} arg1_value - The value to find the closest point for.
+ *
+ * @returns {number}
+ */
+function findClosestPointInDomain (arg0_input_array, arg1_value) {
+  //Convert from parameters
+  var input_array = getList(arg0_input_array).sort((a, b) => a - b);
+  var value = returnSafeNumber(arg1_value);
+  
+  //Ensure the target is within the domain
+  if (value < input_array[0]) return input_array[0];
+  if (value > input_array[input_array.length - 1]) return input_array[input_array.length - 1];
+  
+  //Return statement
+  return value;
+};
+
+/**
+ * findDomain() - Finds the closest valid domain in an array for a given value.
+ * @param {Array<number>} arg0_input_array - The array to search.
+ * @param {number} arg1_value - The value to find the closest valid domain for.
+ *
+ * @returns {Array<number, number>}
+ */
+function findDomain (arg0_input_array, arg1_value) {
+  //Convert from parameters
+  var input_array = getList(arg0_input_array);
+  var value = returnSafeNumber(arg1_value);
+  
+  //Guard clause if input_array has less than 2 elements
+  if (input_array.length < 2) return;
+  
+  //Declare local instance variables
+  var sorted_array = [...new Set(input_array)].sort((a, b) => a - b);
+  
+  //Return statement
+  //Return cases if value is outside domain
+  if (value <= sorted_array[0])
+    return [sorted_array[0], sorted_array[1]];
+  if (value >= sorted_array[sorted_array.length - 1])
+    return [sorted_array[sorted_array.length - 2], sorted_array[sorted_array.length - 1]];
+  
+  //Iterate over all elements in sorted_array
+  for (var i = 0; i < sorted_array.length - 1; i++)
+    if (value >= sorted_array[i] && value <= sorted_array[i + 1])
+      return [sorted_array[i], sorted_array[i + 1]];
+};
+
 /*
   flattenArray() - Flattens a nested array to be 1-deep.
   arg0_input_array: (Array) - The array to input.

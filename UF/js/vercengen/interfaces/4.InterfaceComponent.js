@@ -13,6 +13,7 @@ if (!global.ve) global.ve = {};
  * <br>
  * - `.element`: {@link HTMLElement}
  * - `.id="generic-component"`: {@link string}
+ * - `.parent`: {@link ve.Interface}
  * - `.type`: <span color = "white">{@link ve.component_dictionary}</span>
  * <br>
  * - `.attributes`: {@link Object}
@@ -26,6 +27,7 @@ if (!global.ve) global.ve = {};
 ve.Component = class {
 	/**
 	 * - `.id`: {@link string}
+	 * - `.parent`: {@link ve.Interface}
 	 * - `.placeholder`: {@link any}
 	 * - `.type`: <span color = "white">{@link ve.component_dictionary}</span>
 	 * <br>
@@ -53,7 +55,6 @@ ve.Component = class {
 		
 		this.attributes = (options.attributes) ? options.attributes : undefined;
 		this.height = returnSafeNumber(options.height, 1);
-		this.parent = parent;
 		this.width = returnSafeNumber(options.width, 1);
 		this.x = returnSafeNumber(options.x);
 		this.y = returnSafeNumber(options.y);
@@ -63,18 +64,24 @@ ve.Component = class {
 			var component_obj = ve.Component.createInput(options);
 			if (!component_obj) console.error(`Invalid component type:`, options.type);
 			
-			this.component = component_obj;
-			
 			//Onload handler
 			if (options.onload) {
-				var return_value = options.onload(this.component.element);
+				var return_value = options.onload(component_obj.element);
 				
-				if (typeof return_value == "object")
-					this.component.element.innerHTML = ve.Component.createInput(
-						dumbMergeObjects(this.element, return_value)
-					);
+				if (typeof return_value == "object") {
+					//console.log(`Return value:`, {...options, ...return_value });
+					//component_obj = ve.Component.createInput(return_value);
+					component_obj = ve.Component.createInput({ ...options, ...return_value });
+					//console.log(component_obj)
+				}
 			}
+			
+			this.component = component_obj; //Set this.component alias for internal referencing; same as this.element
+			this.element = component_obj;
 		}
+		
+		//Set recursive trackers
+		this.parent = parent;
 		
 		//this.component handling for both non-element and element returns
 		var local_td_el = document.createElement("td");
@@ -128,7 +135,14 @@ ve.Component = class {
 		}
 		
 		//Input type handling
-		return (new ve[ve.component_dictionary[options.type]](options));
+		var new_component = new ve[ve.component_dictionary[options.type]](options);
+		if (options.placeholder)
+			if (new_component.setInput)
+				try {
+					new_component.setInput(options.placeholder);
+				} catch (e) { console.error(e); }
+		
+		return new_component;
 	}
 	
 	/**

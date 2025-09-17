@@ -176,7 +176,6 @@ ve.Window = class {
 		
 		//Declare local instance variables
 		options.anchor = this.element.querySelector(`#window-body`);
-		options.can_close = true;
 		
 		try {
 			this.interface = new ve.Interface(options);

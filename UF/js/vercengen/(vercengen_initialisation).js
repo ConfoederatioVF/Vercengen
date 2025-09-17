@@ -99,12 +99,13 @@ global.ve = {
 		var return_obj = {};
 		
 		//Iterate over all_inputs and set values in return_obj by referring to the ID
-		for (var i = 0; i < all_inputs.length; i++) {
+		for (let i = 0; i < all_inputs.length; i++) {
 			var has_output = true;
 			var local_id = all_inputs[i].getAttribute("id");
 			var local_output;
 			
 			//Fetch local_output
+			if (!all_inputs[i].instance.getInput) continue; //Internal guard clause if getInput() is not bound
 			local_output = all_inputs[i].instance.getInput();
 			if (local_output != null && local_output != undefined) has_output = true;
 			

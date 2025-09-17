@@ -6,7 +6,7 @@ if (!global.ve) global.ve = {};
  * Interfaces are a sort of form/UI that stores local states. It can be recursively nested via the use of ComponentInterface as a sub-component, which utilises the same options.
  *
  * ##### DOM:
- * - `,instance`: this:{@link ve.Interface}
+ * - `.instance`: this:{@link ve.Interface}
  *
  * ##### Instance:
  * - `.options`: <span color = "lime">{@link ve.Interface.options}</span>
@@ -75,7 +75,7 @@ ve.Interface = class {
 			if (options.class.includes("unique"))
 				can_close = true;
 		
-		if (!can_close) {
+		if (can_close) {
 			var close_button_el = document.createElement("img");
 			
 			close_button_el.id = "close-button";
@@ -142,8 +142,10 @@ ve.Interface = class {
 				
 				//.id is not settable since it is essentially boilerplate given that .id is contained in the key anyway
 				local_option.id = all_options[i];
+				local_option.parent = this;
 				if (typeof local_option.type != "string") local_option.type = "text";
 				local_option.x = local_x;
+				
 				var local_component = new ve.Component(this, local_option);
 				this.components[(local_option.id) ? local_option.id : all_options[i]] = local_component;
 				
@@ -168,6 +170,7 @@ ve.Interface = class {
 		
 		//Append table to interface
 		this.element.appendChild(table_el);
+		this.element.instance = this;
 		options.parent = this;
 		
 		//Window handler
@@ -191,11 +194,7 @@ ve.Interface = class {
 					query_selector_el.replaceChildren(this.element);
 				}
 			}
-			
-			//Return statement
-			return this.element;
 		} else {
-			//Return statement
 			return this.element.innerHTML;
 		}
 	}
@@ -209,12 +208,45 @@ ve.Interface = class {
 	}
 	
 	/**
-	 * Returns the current PageMenu state according to inputs. State functions return a merged flattened-nested object.
+	 * Returns the {@link ve.Interface} object of a specific interface ID, assuming `.id` is specified.
+	 * @param {string} arg0_interface_id
+	 *
+	 * @returns {ve.Interface}
+	 */
+	static getInterface (arg0_interface_id) {
+		//Convert from parameters
+		var interface_id = arg0_interface_id;
+		
+		//Return statement
+		return ve.interfaces[interface_id];
+	}
+	
+	/**
+	 * Returns the current Interface state according to inputs. State functions return a merged flattened-nested object.
 	 *
 	 * @returns {{"<flattened.key>": *, "<key>": *}}
 	 */
 	getState () {
 		//Return statement
 		return ve.getElementState(this.element);
+	}
+	
+	/**
+	 * Returns the current Interface state of the a specific interface ID; returns an empty object if interface could not be reached.
+	 * @param {string} arg0_interface_id
+	 *
+	 * @returns {{"<flattened.key>": *, "<key>": *}|{}}
+	 */
+	static getState (arg0_interface_id) {
+		//Convert from parameters
+		var interface_id = arg0_interface_id;
+		
+		//Declare local instance variables
+		var interface_obj = ve.Interface.getInterface(interface_id);
+		
+		//Return statement
+		if (interface_obj)
+			return interface_obj.getState();
+		return {};
 	}
 };

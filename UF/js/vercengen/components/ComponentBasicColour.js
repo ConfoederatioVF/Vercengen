@@ -48,6 +48,10 @@ ve.ComponentBasicColour = class {
 	/**
 	 * Extends {@link HTMLElement.prototype.onclick}
 	 * - `.component`: this:{@link ve.ComponentBasicColour}
+	 * - `.element`: {@link HTMLElement}
+	 * - `.interface`: {@link ve.Interface}
+	 * - `.state`: {@link ve.Interface.getState}
+	 * - `.value`: {@link string} - The colour code as a hex value
 	 *
 	 * @typedef ve.ComponentBasicColourOnclickEvent
 	 */
@@ -63,6 +67,11 @@ ve.ComponentBasicColour = class {
 		if (this.options.onclick)
 			colour_input_el.onchange = (e) => {
 				e.component = this;
+				e.element = this.element;
+				e.interface = this.options.parent;
+				e.state = this.options.parent.getState();
+				e.value = e.target.value;
+				
 				this.options.onclick(e);
 			}
 	}

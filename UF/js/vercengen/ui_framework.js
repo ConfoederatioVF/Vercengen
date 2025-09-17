@@ -82,7 +82,10 @@
    * elementDragHandler() - Provides a Window interface without CSS styling for an element. .header refers to the draggable header at the top.
    * @param {HTMLElement} arg0_el
    * @param {Object} [arg1_options]
+   *  @param {boolean} [arg1_options.allow_overflow=false]
+   *  @param {boolean} [arg1_options.draggable=true]
    *  @param {boolean} [arg1_options.is_resizable=false]
+   *  @param {boolean} [arg1_options.unbounded=false]
    *
    * @returns {HTMLElement}
    */
@@ -107,7 +110,8 @@
     //Add resize handle styles
     el.style.position = 'absolute';
     el.style.resize = 'none'; // disable default resize
-    el.style.overflow = 'hidden';
+    if (!options.allow_overflow)
+      el.style.overflow = 'hidden';
     
     //Add resize functionality if enabled
     if (options.is_resizable) {
@@ -197,28 +201,28 @@
           'e': function() {
             let new_width = initial_width + delta_x;
             // Constrain width to not exceed viewport boundary
-            new_width = Math.min(new_width, viewport_width - initial_left);
+            new_width = (options.unbounded) ? new_width : Math.min(new_width, viewport_width - initial_left);
             el.style.width = Math.max(min_width, new_width) + 'px';
           },
           'w': function() {
             let new_width = initial_width - delta_x;
             // Constrain width so the left edge doesn't go past 0
-            new_width = Math.min(new_width, initial_left + initial_width);
-            new_width = Math.max(min_width, new_width);
+            new_width = (options.unbounded) ? new_width : Math.min(new_width, initial_left + initial_width);
+            new_width = (options.unbounded) ? new_width : Math.max(min_width, new_width);
             el.style.width = new_width + 'px';
             el.style.left = (initial_left + initial_width - new_width) + 'px';
           },
           's': function() {
             let new_height = initial_height + delta_y;
             // Constrain height to not exceed viewport boundary
-            new_height = Math.min(new_height, viewport_height - initial_top);
+            new_height = (options.unbounded) ? new_height : Math.min(new_height, viewport_height - initial_top);
             el.style.height = Math.max(min_height, new_height) + 'px';
           },
           'n': function() {
             let new_height = initial_height - delta_y;
             // Constrain height so the top edge doesn't go past 0
-            new_height = Math.min(new_height, initial_top + initial_height);
-            new_height = Math.max(min_height, new_height);
+            new_height = (options.unbounded) ? new_height : Math.min(new_height, initial_top + initial_height);
+            new_height = (options.unbounded) ? new_height : Math.max(min_height, new_height);
             el.style.height = new_height + 'px';
             el.style.top = (initial_top + initial_height - new_height) + 'px';
           },
@@ -245,6 +249,8 @@
           resize_ops[resize_edge]();
         }
       } else {
+        if (options.draggable == false) return;
+        
         position_one = position_three - e.clientX;
         position_two = position_four - e.clientY;
         position_three = e.clientX;
