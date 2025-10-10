@@ -1,83 +1,97 @@
-ve.ComponentBIUF = class {
-	constructor (arg0_options) { //From BrowserUI createInput()
+ve.BIUF = class veBIUF extends ve.Component {
+	static demo_value = `<b>Bold</b> <i>Italic</i>, <u>Underline</u>, and regular text formatting are supported by BIUF fields.`;
+	static demo_options = {
+		onchange: (e) => {
+			console.log(`ve.BIUF:`, e);
+		}
+	};
+	
+	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
-		this.options = (arg0_options) ? arg0_options : {};
-
+		let value = (arg0_value) ? arg0_value : "";
+		let options = (arg1_options) ? arg1_options : {};
+			super(options);
+		
+		//Initialise options
+		options.attributes = (options.attributes) ? options.attributes : {};
+		
 		//Declare local instance variables
-		this.element = document.createElement("span");
-		var html_string = [];
-		var options = this.options;
-
-		if (options.name)
-			html_string.push(`<div class = "header">${options.name}</div>`);
-
-		//Create a contenteditable div with onchange handlers to strip formatting
+		let attributes = {
+			readonly: options.disabled,
+			...options.attributes
+		};
+		this.element = document.createElement("div");
+			this.element.setAttribute("component", "ve-biuf");
+			this.element.instance = this;
+		this.options = options;
+		HTML.applyCSSStyle(this.element, options.style);
+		
+		this.value = value;
+		
+		//Format html_string
+		let html_string = [];
+		
+		html_string.push(`<span id = "name"></span>`);
 		html_string.push(`<div id = "biuf-toolbar" class = "biuf-toolbar">`);
-			html_string.push(`<button id = "bold-button" class = "bold-icon">B</button>`);
-			html_string.push(`<button id = "italic-button" class = "italic-icon">I</button>`);
-			html_string.push(`<button id = "underline-button" class = "underline-icon">U</button>`);
-			html_string.push(`<button id = "clear-button" class = "clear-icon">T</button>`);
+			html_string.push(`<button id = "bold-button" class = "bold-icon"><icon>format_bold</icon></button>`);
+			html_string.push(`<button id = "italic-button" class = "italic-icon"><icon>format_italic</icon></button>`);
+			html_string.push(`<button id = "underline-button" class = "underline-icon"><icon>format_underline</icon></button>`);
+			html_string.push(`<button id = "clear-button" class = "clear-icon"><icon>format_clear</icon></button>`);
 		html_string.push(`</div>`);
-
-		html_string.push(`<div id = "biuf-input" class = "biuf-input" contenteditable = "true" ${objectToAttributes(options.options)}>`);
-			html_string.push((options.placeholder) ? options.placeholder : "Name");
-		html_string.push(`</div>`);
-
+		html_string.push(`<div id = "biuf-input" class = "biuf-input" contenteditable = "true" ${HTML.objectToAttributes(attributes)}></div>`);
+		
 		//Populate element and initialise handlers
 		this.element.innerHTML = html_string.join("");
 		this.element.querySelector(`#biuf-input`).addEventListener("input", (e) => {
+			this.sendOnchangeEvent();
 			this.handleBIUF(e.target);
 		});
 		this.initBIUFToolbar();
+		this.v = this.value;
 	}
-
-	getInput () {
-		//Return statement
-		return this.element.querySelector(`#biuf-input`).innerHTML;
-	}
-
+	
 	//Internal helper functions
 	handleBIUF (arg0_biuf_el) {
 		//Convert from parameters
-		var biuf_el = arg0_biuf_el;
-
+		let biuf_el = arg0_biuf_el;
+		
 		//Declare local instance variables
-		var child = biuf_el.firstChild;
-
+		let child_el = biuf_el.firstChild;
+		
 		//Declare while loop, break when next sibling element can no longer be found.
-		while (child) {
-			var remove_node = null;
-
-			//Check if child is not of <b><i><u> tags.
-			if (child.tagName && (!["b", "i", "u"].includes(child.tagName.toLowerCase())))
-				remove_node = child;
-			child = child.nextSibling;
-
+		while (child_el) {
+			let remove_node = null;
+			
+			//Check if child_el is not of <b><i><u> tags.
+			if (child_el.tagName && (!["b", "i", "u"].includes(child_el.tagName.toLowerCase())))
+				remove_node = child_el;
+			child_el = child_el.nextSibling;
+			
 			//Remove node if flag is true
 			if (remove_node)
 				remove_node.parentNode.removeChild(remove_node);
 		}
 	}
-
+	
 	initBIUFToolbar () {
 		//Declare local instance variables
-		var toolbar_el = this.element.querySelector(`#biuf-toolbar`);
-
+		let toolbar_el = this.element.querySelector(`#biuf-toolbar`);
+		
 		//Declare element references
-		var bold_button = toolbar_el.querySelector("#bold-button");
-		var clear_button = toolbar_el.querySelector("#clear-button");
-		var italic_button = toolbar_el.querySelector("#italic-button");
-		var underline_button = toolbar_el.querySelector("#underline-button");
-
+		let bold_button = toolbar_el.querySelector("#bold-button");
+		let clear_button = toolbar_el.querySelector("#clear-button");
+		let italic_button = toolbar_el.querySelector("#italic-button");
+		let underline_button = toolbar_el.querySelector("#underline-button");
+		
 		//Show toolbar when text is selected
 		toolbar_el.style.display = "none";
 		document.addEventListener("mouseup", (e) => {
-			var selection = window.getSelection();
-
-			if (selection.toString() != "" && this.element.querySelector(`#biuf-input:focus`)) {
+			let selection = window.getSelection();
+			
+			if (selection.toString() !== "" && this.element.querySelector(`#biuf-input:focus`)) {
 				//var range = selection.getRangeAt(0);
-				var rect = this.element.getBoundingClientRect();
-
+				let rect = this.element.getBoundingClientRect();
+				
 				toolbar_el.style.display = "inline";
 				toolbar_el.style.position = "relative";
 				toolbar_el.style.top = "0px";
@@ -86,26 +100,53 @@ ve.ComponentBIUF = class {
 				toolbar_el.style.display = "none";
 			}
 		});
-
+		
 		//Apply formatting when various toolbar buttons are clicked
-		bold_button.addEventListener("click", function () {
+		bold_button.addEventListener("click", () => {
 			document.execCommand("bold");
 		});
-		clear_button.addEventListener("click", function () {
+		clear_button.addEventListener("click", () => {
 			document.execCommand("removeFormat");
 		});
-		italic_button.addEventListener("click", function () {
+		italic_button.addEventListener("click", () => {
 			document.execCommand("italic");
 		});
-		underline_button.addEventListener("click", function () {
+		underline_button.addEventListener("click", () => {
 			document.execCommand("underline");
 		});
 	}
 	
-	setInput (arg0_value) {
+	remove () {
+		this.element.remove();
+	}
+	
+	sendOnchangeEvent () {
+		this.value = this.v;
+		if (this.options.onchange) this.options.onchange(this);
+	}
+	
+	get name () {
+		//Return statement
+		return this.element.querySelector(`#name`).innerHTML;
+	}
+	
+	set name (arg0_value) {
 		//Convert from parameters
-		var value = (arg0_value) ? arg0_value : "";
-		if (value == undefined) return;
+		let value = arg0_value;
+		
+		//Set name
+		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
+	}
+	
+	get v () {
+		//Return statement
+		return this.element.querySelector(`#biuf-input`).innerHTML;
+	}
+	
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = (arg0_value) ? arg0_value : "";
+		if (value === undefined) return; //Internal guard clause if value is undefined
 		
 		//Set #biuf-input value
 		this.element.querySelector(`#biuf-input`).innerHTML = value;

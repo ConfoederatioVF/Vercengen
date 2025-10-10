@@ -1,58 +1,77 @@
-/**
- * <span color = "yellow">{@link Class}</span>: ComponentURL
- *
- * ##### Instance:
- * - `.element`: {@link HTMLElement}
- * - `.options`: {@link Object}
- *   - `.attributes`: {@link Object}
- *   - `.name`: {@link string}
- *   - `.placeholder`: {@link string}
- *
- * ##### Methods:
- * - <span color=00ffff>{@link ve.ComponentURL.getInput|getInput}</span> | {@link string}
- * - <span color=00ffff>{@link ve.ComponentURL.setInput|setInput}</span>(arg0_value: {@link string})
- *
- * @type {ve.ComponentURL}
- */
-ve.ComponentURL = class { //[WIP] - Missing handleEvents()
-	constructor (arg0_options) {
+ve.URL = class veURL extends ve.Component {
+	static demo_value = "https://confoederatio.org";
+	
+	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
-		this.options = (arg0_options) ? arg0_options : {};
+		let value = (arg0_value !== undefined) ? arg0_value : "";
+		let options = (arg1_options) ? arg1_options : {};
+		super(options);
+		
+		//Initialise options
+		options.attributes = (options.attributes) ? options.attributes : {};
 		
 		//Declare local instance variables
-		this.element = document.createElement("span");
-		var html_string = [];
-		var options = this.options;
+		let attributes = {
+			readonly: options.disabled,
+			...options.attributes
+		};
+		this.element = document.createElement("div");
+		this.element.setAttribute("component", "ve-url");
+		this.element.instance = this;
+		HTML.applyCSSStyle(this.element, options.style);
+		
+		this.value = value;
 		
 		//Format html_string
-		if (options.name)
-			html_string.push(options.name);
-		html_string.push(`<input type = "url" id = "url-input" placeholder = "http://example.com" ${objectToAttributes(options.attributes)}>`);
+		let html_string = [];
+		html_string.push(`<span id = "name"></span> `);
+		html_string.push(`<input type = "url"${HTML.objectToAttributes(attributes)}>`);
+		html_string.push(` | <a id = "open-link">Open</a>`)
 		
 		//Populate element and initialise handlers
 		this.element.innerHTML = html_string.join("");
-	}
-	
-	/**
-	 * Returns the URL of the present Component.
-	 *
-	 * @returns {string}
-	 */
-	getInput () {
-		//Return statement
-		return this.element.querySelector(`input[type="url"]`).value;
-	}
-	
-	/**
-	 * Sets the URL value for the present Component as a string.
-	 *
-	 * @param {string} arg0_value
-	 */
-	setInput (arg0_value) {
-		//Convert from parameters
-		var value = arg0_value;
 		
-		//Set value
-		this.element.querySelector(`input[type="url"]`).value = value;
+		let input_el = this.element.querySelector("input");
+		input_el.addEventListener("input", (e) => {
+			this.v = global.String(e.target.value);
+		});
+		this.element.querySelector("#open-link").addEventListener("click", (e) => {
+			if (this.value.isURL())
+				require("electron").shell.openExternal(this.value);
+		});
+		this.v = this.value;
+	}
+	
+	get name () {
+		//Return statement
+		return this.element.querySelector(`#name`).innerHTML;
+	}
+	
+	set name (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
+		
+		//Set name
+		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
+	}
+	
+	get v () {
+		//Return statement
+		return this.value;
+	}
+	
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
+		
+		//Set value and update UI
+		this.value = value;
+		this.element.querySelector("input").value = this.value;
+		this.element.querySelector(`#open-link`).setAttribute("valid-url", value.isURL());
+		if (this.options.onchange) this.options.onchange(this.value);
+	}
+	
+	remove () {
+		this.element.remove();
 	}
 };

@@ -1,84 +1,74 @@
-/**
- * <span color = "yellow">{@link Class}</span>: ComponentText
- *
- * ##### Instance:
- * - `.element`: {@link HTMLElement}
- * - `.options`: {@link Object}
- *   - `.attributes`: {@link Object}
- *   - `.name`: {@link string}
- *   - `.placeholder`: {@link string}
- *
- * - - `.onchange`: function({@link ve.ComponentTextOnclickEvent})
- *   - `.onclick`: function({@link ve.ComponentTextOnclickEvent})
- *
- * ##### Methods:
- * - <span color=00ffff>{@link ve.ComponentText.getInput|getInput}</span> | {@link string}
- * - <span color=00ffff>{@link ve.ComponentText.handleEvents|handleEvents}</span>
- * - <span color=00ffff>{@link ve.ComponentText.setInput|setInput}</span>(arg0_value: {@link string})
- *
- * @type {ve.ComponentText}
- */
-ve.ComponentText = class {
-	constructor (arg0_options) {
+ve.Text = class veText extends ve.Component {
+	static demo_value = "Lorem ipsum dolor text amet";
+	
+	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
-		this.options = (arg0_options) ? arg0_options : {};
+		let value = (arg0_value !== undefined) ? arg0_value : "";
+		let options = (arg1_options) ? arg1_options : {};
+			super(options);
+			
+		//Initialise options
+		options.attributes = (options.attributes) ? options.attributes : {};
 		
 		//Declare local instance variables
-		this.element = document.createElement("span");
-		var html_string = [];
-		var options = this.options;
+		let attributes = {
+			readonly: options.disabled,
+			size: options.length,
+			maxlength: options.max,
+			minlength: options.min,
+			...options.attributes
+		};
+		this.element = document.createElement("div");
+			this.element.setAttribute("component", "ve-text");
+			this.element.instance = this;
+		HTML.applyCSSStyle(this.element, options.style);
+		
+		this.value = value;
 		
 		//Format html_string
-		if (options.name)
-			html_string.push(options.name);
-		html_string.push(`<input type = "text" id = "text-input" ${objectToAttributes(options.attributes)}>`);
+		let html_string = [];
+		html_string.push(`<span id = "name"></span> `);
+		html_string.push(`<input type = "text"${HTML.objectToAttributes(attributes)}>`);
 		
 		//Populate element and initialise handlers
 		this.element.innerHTML = html_string.join("");
-		this.handleEvents();
-	}
-	
-	/**
-	 * Returns the inputted text input from the present Component.
-	 *
-	 * @returns {string}
-	 */
-	getInput () {
-		//Return statement
-		return this.element.querySelector(`input[type="text"]`).value;
-	}
-	
-	/**
-	 * Extends {@link HTMLElement.prototype.onclick}
-	 * - `.component`: this:{@link ve.ComponentText}
-	 *
-	 * @typedef ve.ComponentTextOnclickEvent
-	 */
-	
-	/**
-	 * Initialises event handlers for the present Component.
-	 */
-	handleEvents () {
-		if (this.options.onclick)
-			if (typeof this.options.onclick == "string") {
-				this.element.setAttribute("onchange", this.options.onclick);
-			} else {
-				this.element.onchange = (e) => {
-					e.component = this;
-					this.options.onclick(e);
-				}
-			}
-	}
-	
-	/**
-	 * Sets the inner HTML of the present text Component.
-	 * @param {string} arg0_value
-	 */
-	setInput (arg0_value) {
-		//Convert from parameters
-		var value = arg0_value;
 		
-		//Set value
-		this.element.innerHTML = value;
+		let input_el = this.element.querySelector("input");
+		input_el.addEventListener("input", (e) => {
+			this.v = global.String(e.target.value);
+		});
+		this.v = this.value;
+	}
+	
+	get name () {
+		//Return statement
+		return this.element.querySelector(`#name`).innerHTML;
+	}
+	
+	set name (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
+		
+		//Set name
+		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
+	}
+	
+	get v () {
+		//Return statement
+		return this.value;
+	}
+	
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
+		
+		//Set value and update UI
+		this.value = value;
+		this.element.querySelector("input").value = this.value;
+		if (this.options.onchange) this.options.onchange(this.value);
+	}
+	
+	remove () {
+		this.element.remove();
 	}
 };

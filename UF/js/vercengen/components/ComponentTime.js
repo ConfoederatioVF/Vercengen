@@ -1,77 +1,84 @@
-/**
- * <span color = "yellow">{@link Class}</span>: ComponentTime
- *
- * ##### Instance:
- * - `.element`: {@link HTMLElement}
- * - `.options`: {@link Object}
- *   - `.attributes`: {@link Object}
- *   - `.name`: {@link string}
- *   - `.placeholder`: {hour: {@link number}, minute: {@link number}}
- *
- * ##### Methods:
- * - <span color=00ffff>{@link ve.ComponentTime.getInput|getInput}</span> | {@link string}
- * - <span color=00ffff>{@link ve.ComponentTime.setInput|setInput}</span>(arg0_value: {hour: {@link number}, minute: {@link number}})
- *
- * @type {ve.ComponentTime}
- */
-ve.ComponentTime = class { //[WIP] - Missing handleEvents()
-	constructor (arg0_options) {
+ve.Time = class veTime extends ve.Component {
+	static demo_value = { hour: 10, minute: 10 };
+	
+	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
-		this.options = (arg0_options) ? arg0_options : {};
+		let value = (arg0_value !== undefined) ? arg0_value : {
+			hour: 0,
+			minute: 0
+		};
+		let options = (arg1_options) ? arg1_options : {};
+			super(options);
+			
+		//Initialise options
+		options.attributes = (options.attributes) ? options.attributes : {};
 		
 		//Declare local instance variables
-		this.element = document.createElement("span");
-		var html_string = [];
-		var options = this.options;
+		let attributes = {
+			readonly: options.disabled,
+			max: options.max,
+			min: options.min,
+			...options.attributes
+		};
+		this.element = document.createElement("div");
+			this.element.setAttribute("component", "ve-time");
+			this.element.instance = this;
+		HTML.applyCSSStyle(this.element, options.style);
+		
+		this.value = value;
 		
 		//Format html_string
-		if (options.name)
-			html_string.push(options.name);
-		html_string.push(`<input type = "time" id = "time-input" ${objectToAttributes(options.attributes)}>`);
+		let html_string = [];
+		html_string.push(`<span id = "name"></span> `);
+		html_string.push(`<input type = "time"${HTML.objectToAttributes(attributes)}>`);
 		
 		//Populate element and initialise handlers
 		this.element.innerHTML = html_string.join("");
+		
+		let input_el = this.element.querySelector("input");
+		input_el.addEventListener("input", (e) => {
+			let split_value = e.target.value.split(":");
+			
+			this.v = { hour: parseInt(split_value[0]), minute: parseInt(split_value[1]) };
+		});
+		this.v = this.value;
 	}
 	
-	/**
-	 * Returns the input date as a {@link ve.Time} object from the present Component.
-	 *
-	 * @returns {{hour: number, minute: number}}
-	 */
-	getInput () {
-		//Declare local instance variables
-		var output = this.element.querySelector(`input[type="time"]`).value;
+	get name () {
+		//Return statement
+		return this.element.querySelector(`#name`).innerHTML;
+	}
+	
+	set name (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
 		
-		//Parse time
-		if (output && output != "n/a") {
-			output = output.split(":");
-			output = {
-				hour: parseInt(output[0]),
-				minute: parseInt(output[1])
-			};
-		}
+		//Set name
+		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
+	}
+	
+	get v () {
+		//Declare local instance variables
+		let split_value = this.element.querySelector("input").value.split(":");
 		
 		//Return statement
-		return output;
+		return {
+			hour: parseInt(split_value[0]),
+			minute: parseInt(split_value[1])
+		};
 	}
 	
-	/**
-	 * Sets the time value for the present Component as a {@link ve.Time} object.
-	 * @param arg0_value
-	 */
-	setInput (arg0_value) {
+	set v (arg0_value) {
 		//Convert from parameters
-		var value = arg0_value;
+		let value = arg0_value;
 		
-		//Declare local instance variables
-		var time_el = this.element.querySelector(`input[type="time"]`);
-		
-		if (!Array.isArray(value) && typeof value == "object") {
-			time_el.value = `${(value.hour < 10) ? `0` : ""}${value.hour}:${(value.minute < 10) ? `0` : ""}${value.minute}`;
-		} else if (Array.isArray(value)) {
-			time_el.value = `${(value[0] < 10) ? `0` : ""}${value[0]}:${(value[1] < 10) ? `0` : ""}${value[1]}`;
-		} else {
-			time_el.value = value;
-		}
+		//Set value and update UI
+		this.value = value;
+		this.element.querySelector("input").value = `${value.hour.toString().padStart(2, "0")}:${value.minute.toString().padStart(2, "0")}`;
+		if (this.options.onchange) this.options.onchange(this.value);
+	}
+	
+	remove () {
+		this.element.remove();
 	}
 };

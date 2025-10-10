@@ -1,102 +1,193 @@
 /**
- * <span color = "yellow">{@link Class}</span>: ComponentCheckbox
- *
+ * <span color = "yellow">{@link ve.Component}</span>:ve.Checkbox
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link Object}
+ *   - `<checkbox_key>`: {@link boolean}
+ *   - `<category_key>`: {@link Object}
+ *     - `.name`: {@link string}
+ *     - `<checkbox_key>`: {@link boolean}
+ * - `arg1_options`: {@link Object}
+ *   - `.attributes`: {@link Object}
+ *     - `<attribute_key>`: {@link string}
+ *   - `.name`: {@link string}
+ *   - `.onchange`: {@link function}(this:{@link ve.Checkbox})
+ *   - `.style`: {@link Object}
+ *     - `<style_key>`: {@link string}
+ * 
+ * ##### DOM:
+ * - `.instance`: this:{@link ve.Checkbox}
+ * 
  * ##### Instance:
  * - `.element`: {@link HTMLElement}
- * - `.options`: {@link Object}
- *   - `.attributes`: {@link Object}
- *   - `.placeholder`: {@link Array}<{@link string}>|{@link string} - A list of checked `.id` options.
- *
- * - - `.options`: {@link Object} - An `.id` to human-readable name map for all suboptions in the checkbox list component.
- *
+ * - `.name`: {@link string}
+ * - `.v`: {@link Object}
+ *   - `<checkbox_key>`: {@link boolean}
+ *   - `<category_key>`: {@link Object}
+ *     - `.name`: {@link string}
+ *     - `<checkbox_key>`: {@link boolean}
+ *     
  * ##### Methods:
- * - <span color=00ffff>{@link ve.ComponentCheckbox.getInput|getInput}</span> | {@link Object}<{@link boolean}>
- * - <span color=00ffff>{@link ve.ComponentCheckbox.setInput|setInput}</span>(arg0_value: {@link string})
- *
- * @type {ve.ComponentCheckbox}
+ * - static:<span color=00ffff>{@link ve.Button.generateHTMLRecursively|generateHTMLRecursively}</span>(arg0_value: {@link Object})
+ * - <span color=00ffff>{@link ve.Button.remove|remove}</span>()
+ * 
+ * @type {ve.veCheckbox}
  */
-ve.ComponentCheckbox = class { //[WIP] - Missing handleEvents()
-	constructor (arg0_options) {
+ve.Checkbox = class veCheckbox extends ve.Component {
+	static demo_value = {
+		checkbox_one: true,
+		checkbox_two: false,
+		checkbox_three: false,
+		checkbox_four: {
+			name: "Nested Checkboxes:",
+			checkbox_five: true,
+			checkbox_six: false
+		}
+	};
+	
+	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
-		this.options = (arg0_options) ? arg0_options : {};
+		let value = arg0_value;
+		let options = (arg1_options) ? arg1_options : {};
+			super(options);
+			
+		//Initialise options
+		options.attributes = (options.attributes) ? options.attributes : {};
 		
 		//Declare local instance variables
-		this.element = document.createElement("span");
-		var html_string = [];
-		var options = this.options;
+		this.element = document.createElement("div");
+			this.element.setAttribute("component", "ve-checkbox");
+			this.element.instance = this;
+		HTML.applyCSSStyle(this.element, options.style);
 		
-		//Initialise options
-		if (!options.placeholder) options.placeholder = options.default;
-		var placeholder_list = getList(options.placeholder);
-		
-		//Delete VALUE; temporary fix
-		delete options.options.VALUE;
+		this.value = value;
 		
 		//Format html_string
-		if (options.name)
-			html_string.push(`<span>${options.name}</span><br>`);
-		if (!options.options) {
-			if (options.icon)
-				html_string.push(`<img src = "${options.icon}">`);
-			html_string.push(`<input type = "checkbox" ${objectToAttributes(options.attributes)}>`);
+		let html_string = [];
+		html_string.push(`<div id = "name"></div>`);
+		html_string.push(`<ul>`);
+		if (typeof this.value === "object") {
+			html_string.push(...ve.Checkbox.generateHTMLRecursively(this.value));
 		} else {
-			//Iterate over all options.options
-			var all_suboptions = Object.keys(options.options);
-			
-			for (var i = 0; i < all_suboptions.length; i++) {
-				var local_option = options.options[all_suboptions[i]];
-				
-				//Append checkbox
-				var checked_string = "";
-				if (placeholder_list.includes(all_suboptions[i]))
-					checked_string = " checked";
-				html_string.push(`<input id = "${all_suboptions[i]}" type = "checkbox" ${objectToAttributes(options.attributes)}${checked_string}>`);
-				html_string.push(`<label for = "${all_suboptions[i]}">${local_option}</label><br>`);
-			}
+			html_string.push(...ve.Checkbox.generateHTMLRecursively({ value: this.value }));
 		}
+		html_string.push(`</ul>`);
 		
 		//Populate element and initialise handlers
 		this.element.innerHTML = html_string.join("");
+		
+		let all_checkbox_els = this.element.querySelectorAll("input");
+		all_checkbox_els.forEach((el) => el.addEventListener("change", (e) => {
+			this.value = this.v;
+		}));
+		
+		this.name = options.name;
+		this.v = this.value;
 	}
 	
 	/**
-	 * Returns a boolean Object map of the present Component's state.
-	 *
-	 * @returns {{"'checkbox_id'": boolean}}
+	 * Generates HTML recursively for a nested checkbox element.
+	 * 
+	 * @param {{"checkbox_key": boolean|{"name": string, "checkbox_key": boolean|Object|string}|string}} arg0_value
+	 * @returns {string[]}
 	 */
-	getInput () {
-		//Declare local instance variables
-		var all_checkboxes = this.element.querySelectorAll(`[type="checkbox"]`);
-		var output = {};
+	static generateHTMLRecursively (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
 		
-		//Iterate over all_checkboxes
-		for (var i = 0; i < all_checkboxes.length; i++)
-			output[all_checkboxes[i].id] = (all_checkboxes[i].checked);
+		//Declare local instance variables
+		let html_string = [];
+		
+		//Iterate over all keys in value
+		Object.iterate(value, (local_key, local_value) => {
+			if (typeof local_value === "boolean") {
+				html_string.push(`<li><input id = "${local_key}" type = "checkbox"${(local_value) ? " checked" : ""}>${(local_key) ? `<label for = "${local_key}">${local_key}</label>` : ""}</li>`);
+			} else if (typeof local_value === "object") {
+				html_string.push(`<ul id = "${local_key}">`);
+					html_string.push(...ve.Checkbox.generateHTMLRecursively(local_value));
+				html_string.push(`</ul>`);
+			} else if (typeof local_value === "string") {
+				html_string.push(`<li><b>${local_value}</b></li>`);
+			}
+		});
 		
 		//Return statement
-		return output;
+		return html_string;
+	}
+	
+	get name () {
+		//Return statement
+		return this.element.querySelector(`#name`).innerHTML;
+	}
+	
+	set name (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
+		
+		//Set name
+		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
+	}
+	
+	get v () {
+		//Declare local instance variables
+		let traverse = (ul_el) => {
+			let local_obj = {};
+			
+			[...ul_el.children].forEach((li_el) => {
+				if (li_el.tagName === "LI") {
+					let input_el = li_el.querySelector(`input[type="checkbox"]`);
+					if (input_el) local_obj[input_el.id] = input_el.checked;
+				} else if (li_el.tagName === "UL") {
+					local_obj[li_el.id] = traverse(li_el);
+				}
+			});
+			
+			//Return statement
+			return local_obj;
+		}
+		
+		//Return statement
+		let root_el = this.element.querySelector("ul");
+		return traverse(root_el);
+	}
+	
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
+		
+		//Parse value
+		if (typeof value === "boolean") {
+			//Set singular checkbox value
+			this.value = value;
+			this.element.querySelector(`input[type="checkbox"]`).checked = value;
+		} else {
+			let traverse = (ul_el, values) => {
+				[...ul_el.children].forEach((li_el) => {
+					if (li_el.tagName === "LI") {
+						let input_el = li_el.querySelector(`input[type="checkbox"]`);
+						if (input_el && input_el.id in values)
+							input_el.checked = (!!values[input_el.id]);
+					} else if (li_el.tagName === "UL") {
+						if (li_el.id && typeof values[li_el.id] === "object")
+							traverse(li_el, values[li_el.id]);
+					}
+				})
+			};
+			
+			let root_ul = this.element.querySelector("ul");
+			traverse(root_ul, value);
+			this.value = value;
+		}
+		
+		if (this.options.onchange) this.options.onchange(this);
 	}
 	
 	/**
-	 * Sets the value for the present Component as a boolean Object map.
+	 * Removes the component/element from the DOM.
 	 *
-	 * @param {{"'checkbox_id'": boolean}} arg0_value
+	 * @typedef ve.Checkbox.remove
 	 */
-	setInput (arg0_value) {
-		//Convert from parameters
-		var value = arg0_value;
-			if (value == undefined) return;
-		
-		//Declare local instance variables
-		var all_checkbox_els = this.element.querySelectorAll(`[type="checkbox"]`);
-		
-		//Iterate over all_checkbox_els
-		for (let i = 0; i < all_checkbox_els.length; i++) try {
-			if (value[all_checkbox_els[i].id]) {
-				all_checkbox_els[i].checked = value[all_checkbox_els[i].id];
-			} else {
-				all_checkbox_els[i].checked = true;
-			}
-		} catch {}
+	remove () {
+		this.element.remove();
 	}
 };

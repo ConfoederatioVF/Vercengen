@@ -1,65 +1,89 @@
-/**
- * <span color = "yellow">{@link Class}</span>: ComponentHTML
- *
- * ##### Instance:
- * - `.element`: {@link HTMLElement}
- * - `.options`: {@link Object}
- *   - `.name`: {@link string}
- *   - `.innerHTML`: {@link string}
- *
- * - - `.special_function`: function({@link ve.ComponentHTML.getInput})
- *
- * ##### Methods:
- * - <span color=00ffff>{@link ve.ComponentHTML.getInput|getInput}</span>
- * - <span color=00ffff>{@link ve.ComponentHTML.setInput|setInput}</span>(arg0_value: {@link HTMLElement}|{@link string})
- *
- * {@type ve.ComponentHTML}
- */
-ve.ComponentHTML = class { //[WIP] - Finish Class and refactoring; missing handleEvents()
-	constructor (arg0_options) {
+ve.HTML = class veHTML extends ve.Component {
+	static demo_value = (e) => `<b>Test HTML.</b> This is mock text. <kbd>Date:</kbd>${new Date()}`;
+	
+	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
-		this.options = (arg0_options) ? arg0_options : {};
+		let value = arg0_value;
+		let options = (arg1_options) ? arg1_options : {};
+			super(options);
+			
+		//Initialise options
+		options.attributes = (options.attributes) ? options.attributes : {};
 		
 		//Declare local instance variables
-		this.element = document.createElement("span");
-		var html_string = [];
-		var options = this.options;
+		this.element = document.createElement("div");
+			this.element.setAttribute("component", "ve-html");
+			this.element.instance = this;
+		HTML.applyCSSStyle(this.element, options.style);
+		this.options = options;
+		this.value = value;
 		
-		//Format html_string
-		if (options.name)
-			html_string.push(`<div class = "header">${options.name}</div>`);
-		if (options.innerHTML)
-			html_string.push(options.innerHTML);
-		
-		//Populate element and initialise handlers
-		this.element.innerHTML = html_string.join("");
+		//Set .v
+		this.v = this.value;
 	}
 	
-	/**
-	 * Returns the present Component's value based upon `this.options.special_function`.
-	 *
-	 * @returns {*}
-	 */
-	getInput () {
+	get name () {
+		//Declare local instance variables
+		let name_el = this.element.querySelector(`#name`);
+		
 		//Return statement
-		if (this.options.special_function)
-			return this.options.special_function(this.element);
+		if (name_el)
+			return this.element.querySelector(`#name`).innerHTML;
 	}
 	
-	/**
-	 * Sets the innerHTML of the present Component. Additionally accepts an HTMLElement value.
-	 *
-	 * @param {HTMLElement|string} arg0_value
-	 */
-	setInput (arg0_value) {
+	set name (arg0_value) {
 		//Convert from parameters
-		var value = arg0_value;
+		let value = arg0_value;
 		
-		//Set element fill
-		if (typeof value == "object") {
-			this.element = value;
-		} else if (typeof value == "string") {
-			this.element.innerHTML = value;
+		//Declare local instance variables
+		let name_el = this.element.querySelector(`#name`);
+		
+		//Set name
+		if (name_el)
+			this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
+	}
+	
+	get v () {
+		//Return statement
+		return this.element;
+	}
+	
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
+		
+		//Set value and update UI
+		this.value = value;
+		if (typeof this.value === "function") {
+			if (this.draw_loop) {
+				clearInterval(this.draw_loop);
+				delete this.draw_loop;
+			}
+			this.draw_function = this.value;
+			
+			if (this.options.do_not_refresh !== true) {
+				this.draw_loop = setInterval(() => {
+					this.v = this.draw_function(this);
+				}, 100);
+			} else {
+				this.v = this.draw_function(this);
+			}
+		} else if (typeof this.value === "object") {
+			this.element.innerHTML = "";
+			this.element.appendChild(this.value);
+		} else {
+			this.element.innerHTML = this.value;
 		}
+		if (this.options.onchange) this.options.onchange(this.element);
+		this.value = this.element;
+	}
+	
+	remove () {
+		this.element.remove();
+	}
+	
+	//Class methods
+	toString () {
+		return String(this.element.innerHTML);
 	}
 };

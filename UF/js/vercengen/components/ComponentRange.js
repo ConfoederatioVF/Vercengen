@@ -1,89 +1,86 @@
-/**
- * <span color = "yellow">{@link Class}</span>: ComponentRange
- *
- * ##### Instance:
- * - `.element`: {@link HTMLElement}
- * - `.options`: {@link Object}
- *   - `.attributes`: {@link Object}
- *   - `.placeholder`: {@link number} - The number to filter through `this.options.value.value_equation`. A 1:1 ratio by default.
- * - - `.value`: {@link Object}
- *     - `.attributes`: {@link Object}
- *       - `.max=100`: {@link number}
- *       - `.min=0`: {@link number}
- *     - `.value_equation`: {@link string} - A string representing the actual value equation, where `VALUE` represents the given value.
- *
- * - - `.onclick`: function({@link ve.ComponentRangeOnclickEvent})
- *
- * ##### Methods:
- * - <span color=00ffff>{@link ve.ComponentRange.getInput|getInput}</span> | {@link number}
- * - <span color=00ffff>{@link ve.ComponentRange.handleEvents|handleEvents}</span>
- * - <span color=00ffff>{@link ve.ComponentRange.setInput|setInput}</span>(arg0_value: {@link number})
- *
- * @type {ve.ComponentRange}
- */
-ve.ComponentRange = class { //[WIP] - Finish Class and refactoring
-	constructor (arg0_options) {
+ve.ComponentRange = class veRange extends ve.Component {
+	static demo_value = 0.50;
+	
+	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
-		this.options = (arg0_options) ? arg0_options : {};
+		let value = Math.returnSafeNumber(arg0_value);
+		let options = (arg1_options) ? arg1_options : {};
+			super(options);
+			
+		//Initialise options
+		options.atributes = (options.attributes) ? options.attributes : {};
 		
 		//Declare local instance variables
-		this.element = document.createElement("span");
-		var html_string = [];
-		var options = this.options;
+		let attributes = {
+			readonly: options.disabled,
+			max: (options.max !== undefined) ? options.max : 1,
+			min: (options.min !== undefined) ? options.min : 0,
+			step: (options.step !== undefined) ? options.step : 0.01,
+			...options.attributes
+		};
+		this.element = document.createElement("div");
+			this.element.setAttribute("component", "ve-range");
+			this.element.instance = this;
+		HTML.applyCSSStyle(this.element, options.style);
 		
-		//Format html_string
-		var name_string = (options.name) ? `${options.name} ` : "";
+		this.value = value;
 		
-		html_string.push(`${name_string}<input type = "range" id = "range-input"${objectToAttributes(options.attributes)} value = "${returnSafeNumber(options.placeholder)}">`);
+		//Format HTML string
+		let html_string = [];
+		html_string.push(`<span id = "name"></span>`);
+		html_string.push(`<input type = "range"${HTML.objectToAttributes(attributes)}>`);
+		html_string.push(`<span id = "value-label"></span>`);
 		
 		//Populate element and initialise handlers
 		this.element.innerHTML = html_string.join("");
-		this.handleEvents();
+		
+		let input_el = this.element.querySelector("input");
+		input_el.addEventListener("input", (e) => {
+			this.v = global.Number(e.target.value);
+		});
+		this.name = options.name;
+		this.v = this.value;
 	}
 	
-	/**
-	 * Returns the processed value of the present Component.
-	 *
-	 * @returns {number}
-	 */
-	getInput () {
+	get name () {
 		//Return statement
-		return this.element.querySelector(`input[type="range"]`).value;
+		return this.element.querySelector(`#name`).innerHTML;
 	}
 	
-	/**
-	 * Extends {@link HTMLElement.prototype.onchange}
-	 *
-	 * @typedef ve.ComponentRangeOnclickEvent
-	 */
-	
-	/**
-	 * Initialises event handlers for the present Component.
-	 */
-	handleEvents () {
-		if (this.options.onclick)
-			this.element.onchange = this.options.onclick;
-	}
-	
-	/**
-	 * Sets the value for the present Component as a number, processed via this.options.value.value_equation.
-	 *
-	 * @param {number} arg0_value
-	 */
-	setInput (arg0_value) {
+	set name (arg0_value) {
 		//Convert from parameters
-		var value = arg0_value;
+		let value = arg0_value;
 		
-		//Declare local instance variables
-		var actual_number_in_range = calculateNumberInRange(
-			[
-				returnSafeNumber(this.options.value.attributes.min, 0),
-				returnSafeNumber(this.options.value.attributes.max, 100)
-			], value, this.options.value.value_equation
-		);
-		var range_el = this.element.querySelector(`input[type="range"]`);
+		//Set name
+		this.element.querySelector(`#name`).innerHTML = (value) ? `${value} ` : "";
+	}
+	
+	get v () {
+		//Return statement
+		return this.value;
+	}
+	
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
 		
-		//Set value
-		range_el.value = actual_number_in_range;
+		//Set value and update UI
+		this.value = value;
+		this.element.querySelector("input").value = this.value;
+		this.element.querySelector("#value-label").innerHTML = `${this.value}`;
+		if (this.options.onchange) this.options.onchange(this.value);
+	}
+	
+	remove () {
+		this.element.remove();
+	}
+	
+	//Class methods
+	toString () {
+		return String(this.value);
+	}
+	
+	valueOf () {
+		return this.value;
 	}
 };

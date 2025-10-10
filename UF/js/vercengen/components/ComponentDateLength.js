@@ -1,99 +1,86 @@
-/**
- * <span color = "yellow">{@link Class}</span>: ComponentDateLength
- *
- * ##### Instance:
- * - `.element`: {@link HTMLElement}
- * - `.options`: {@link Object}
- *   - `.name`: {@link string}
- *   - `.placeholder`: {@link ve.Date}
- *
- * ##### Methods:
- * - <span color=00ffff>{@link ve.ComponentDateLength.getInput|getInput}</span>
- * - <span color=00ffff>{@link ve.ComponentDateLength.setInput|setInput}</span>(arg0_value: {@link ve.Date})
- *
- * @type {ve.ComponentDateLength}
- */
-ve.ComponentDateLength = class { //[WIP] - Finish Class and refactoring
-	constructor (arg0_options) {
+ve.DateLength = class veDateLength extends ve.Component {
+	static demo_value = { year: 1000, month: 12, day: 31 };
+	
+	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
-		this.options = (arg0_options) ? arg0_options : {};
+		let value = (arg0_value) ? arg0_value : {};
+		let options = (arg1_options) ? arg1_options : {};
+			super(options);
+			
+		//Initialise options
+		options.attributes = (options.attributes) ? options.attributes : {};
 		
 		//Declare local instance variables
-		this.element = document.createElement("span");
-		var html_string = [];
-		var options = this.options;
+		let attributes = {
+			readonly: options.disabled,
+			...options.attributes
+		};
+		this.element = document.createElement("div");
+			this.element.setAttribute("component", "ve-datelength");
+			this.element.instance = this;
+		HTML.applyCSSStyle(this.element, options.style);
 		
-		//Format html_string
-		if (options.name)
-			html_string.push(options.name);
+		this.value = value;
 		
-		//Place date_length containers on separate lines for better readability
+		//Format HTML string
+		let attributes_string = HTML.objectToAttributes(attributes);
+		let html_string = [];
+		html_string.push(`<span id = "name"></span> `);
 		html_string.push(`
-			<div id = "date-container">
-				<input id = "years-input" size = "6" placeholder = "2000" value = "2000"></input>
-				<input id = "months-input" size = "6" placeholder = "January" value = "January"></input>
-				<input id = "days-input" size = "5" placeholder = "1st" value = "1st" size = "4"></input>
+			<div class = "date-container">
+				<input id = "years" size = "6" type = "number" placeholder = "Years"${attributes_string}>
+				<input id = "months" size = "6" type = "number" min = "1" max = "12" placeholder = "Months"${attributes_string}>
+				<input id = "days" size = "5" type = "number" placeholder = "Days"${attributes_string}>
 			</div>
-			<div id = "clock-container">
-				<input id = "hours-input" placeholder = "00" value = "00" size = "2"></input> :
-				<input id = "minutes-input" placeholder = "00" value = "00" size = "2"></input>
+			<div class = "clock-container">
+				<input id = "hours" size = "2" min = "0" max = "23" type = "number" placeholder = "HH"${attributes_string}> :
+				<input id = "minutes" size = "2" min = "0" max = "23" type = "number" placeholder = "MM"${attributes_string}>
 			</div>
 		`);
 		
 		//Populate element and initialise handlers
 		this.element.innerHTML = html_string.join("");
+		this.v = value;
 	}
 	
-	/**
-	 * Returns a `ve.Date` Object from the present Component.
-	 *
-	 * @returns {ve.Date}
-	 */
-	getInput () {
-		//Declare local instance variables
-		var day_el = this.element.querySelector(`#days-input`);
-		var hour_el = this.element.querySelector(`#hours-input`);
-		var minute_el = this.element.querySelector(`#minutes-input`);
-		var month_el = this.element.querySelector(`#months-input`);
-		var year_el = this.element.querySelector(`#years-input`);
-		
-		var local_date = {
-			year: parseInt(year_el.value),
-			month: parseInt(month_el.value),
-			day: parseInt(month_el.value),
-			
-			hour: parseInt(month_el.value),
-			minute: parseInt(month_el.value)
-		};
-		
+	get name () {
 		//Return statement
-		return convertTimestampToDate(getTimestamp(local_date)); //Flatten date
+		return this.element.querySelector(`#name`).innerHTML;
 	}
 	
-	/**
-	 * Sets the date value for the present Component.
-	 *
-	 * @param {ve.Date} arg0_value
-	 */
-	setInput (arg0_value) {
+	set name (arg0_value) {
 		//Convert from parameters
-		var value = arg0_value;
-			if (value == undefined) return;
+		let value = arg0_value;
+		
+		//Set name
+		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
+	}
+	
+	get v () {
+		//Return statement
+		return Date.convertTimestampToDate(Date.getTimestamp({
+			year: parseInt(this.element.querySelector(`#years`).value),
+			month: parseInt(this.element.querySelector(`#months`).value),
+			day: parseInt(this.element.querySelector(`#days`).value),
+			hour: parseInt(this.element.querySelector(`#hours`).value),
+			minute: parseInt(this.element.querySelector(`#minutes`).value)
+		}));
+	}
+	
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
 		
 		//Declare local instance variables
-		var days_el = this.element.querySelector(`#days-input`);
-		var hours_el = this.element.querySelector(`#hours-input`);
-		var minutes_el = this.element.querySelector(`#minutes-input`);
-		var months_el = this.element.querySelector(`#months-input`);
-		var years_el = this.element.querySelector(`#years-input`);
-		
-		//Set local values from value
-		value = convertTimestampToDate(value);
-		
-		years_el.value = value.year;
-		months_el.value = value.month;
-		days_el.value = value.day;
-		hours_el.value = value.hour;
-		minutes_el.value = value.minute;
+		this.element.querySelector(`#years`).value = Math.returnSafeNumber(value.year);
+		this.element.querySelector(`#months`).value = Math.returnSafeNumber(value.month)
+		this.element.querySelector(`#days`).value = Math.returnSafeNumber(value.day);
+		this.element.querySelector(`#hours`).value = Math.returnSafeNumber(value.hour);
+		this.element.querySelector(`#minutes`).value = Math.returnSafeNumber(value.minute);
+		if (this.options.onchange) this.options.onchange(this.value);
 	}
-};
+	
+	remove () {
+		this.element.remove();
+	}
+}

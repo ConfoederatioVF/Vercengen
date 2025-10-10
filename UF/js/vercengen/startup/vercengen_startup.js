@@ -1,10 +1,11 @@
 //Import Node.js libraries
-var fs = require("fs");
-var path = require("path");
+global.fs = require("fs");
+global.path = require("path");
 
 //Initialise functions
 {
 	if (!global.ve) global.ve = {};
+	ve.debug_mode = true;
 	
 	/**
 	 * Returns all non-evaluated files in a folder, so long as an evaluated set is provided.
@@ -43,67 +44,66 @@ var path = require("path");
 	};
 	
 	/**
-	 * Returns an Array<String> from a list of patterns, including exclusionary patterns (!), wildcards (*), and folders/file paths, both absolute and relative.
+	 * Returns an Array<String> from a list of patterns. The last pattern
+	 * to match a file determines its final position in the load order. This
+	 * function iterates patterns in reverse to ensure that more specific
+	 * patterns listed later correctly claim files from broader patterns
+	 * listed earlier.
 	 *
-	 * @param {Array<string>} arg0_patterns
-	 *
-	 * @returns {Array<string>}
+	 * @param {Array<string>} patterns The list of patterns to resolve.
+	 * @returns {Array<string>} The final, ordered list of file paths.
 	 */
-	ve.getImportFiles = function (arg0_patterns) {
-		//Convert from parameters
-		var patterns = arg0_patterns;
+	ve.getImportFiles = function (patterns) { //[WIP] - Refactor from AI
+		const base = process.cwd();
+		const finalFiles = [];
+		const handledPaths = new Set(); // Tracks files that have already been placed.
+		const excludedPaths = new Set(); // Tracks files explicitly excluded by `!`.
 		
-		//Declare local instance variables
-		var base_directory = process.cwd();
-		var excluded = new Set();
-		var evaluated = new Set();
-		var included = [];
-		
-		//Iterate over all patterns
-		for (let local_pattern of patterns) {
-			var files = [];
-			var is_exclusion = false;
-			
-			//1. Exclusion handling
-			if (local_pattern.startsWith("!")) {
-				is_exclusion = true;
-				local_pattern = local_pattern.slice(1);
+		// Process patterns in reverse order (from last to first).
+		// This is the key to ensuring the "last match wins" rule.
+		for (let i = patterns.length - 1; i >= 0; i--) {
+			let pattern = patterns[i];
+			const isExclusion = pattern.startsWith("!");
+			if (isExclusion) {
+				pattern = pattern.slice(1);
 			}
 			
-			//2. Wildcard handling
-			if (local_pattern.includes("*")) {
-				files = ve.getWildcardsInFolder(base_directory, local_pattern);
+			let files = [];
+			if (pattern.includes("*")) {
+				files = ve.getWildcardsInFolder(base, pattern);
 			} else {
-				//3. Non-wildcard handling
-				var absolute_path = path.resolve(base_directory, local_pattern);
-				
-				if (fs.existsSync(absolute_path)) {
-					if (fs.statSync(absolute_path).isDirectory()) {
-						files = ve.getFilesInFolder(absolute_path, evaluated);
+				const absolutePath = path.resolve(base, pattern);
+				if (fs.existsSync(absolutePath)) {
+					// Use your original, RECURSIVE function for directories.
+					if (fs.statSync(absolutePath).isDirectory()) {
+						files = ve.getFilesInFolder(absolutePath, new Set());
 					} else {
-						if (!evaluated.has(absolute_path)) {
-							files = [absolute_path];
-							evaluated.add(absolute_path);
-						}
+						files = [absolutePath]; // It's a single file.
 					}
-				} else {
-					console.error(`File does not exist: ${absolute_path}`);
 				}
+				// Silently ignore patterns that don't exist.
 			}
 			
-			//4. Pattern processing
-			if (is_exclusion) {
-				files.forEach((f) => excluded.add(f));
-			} else {
-				files.forEach((f) => {
-					if (!excluded.has(f) && !included.includes(f))
-						included.push(f);
-				});
+			// Since we're iterating backwards, we prepend files to maintain order.
+			// We also process the files found by a pattern in reverse to counteract
+			// the unshift, keeping the original readdir order.
+			for (let j = files.length - 1; j >= 0; j--) {
+				const file = files[j];
+				if (isExclusion) {
+					excludedPaths.add(file);
+				} else {
+					// A file is only added if it hasn't been claimed by a later,
+					// higher-priority pattern already.
+					if (!handledPaths.has(file)) {
+						finalFiles.unshift(file);
+						handledPaths.add(file);
+					}
+				}
 			}
 		}
 		
-		//Return statement
-		return included;
+		// Final pass: filter out any files that were explicitly excluded.
+		return finalFiles.filter(file => !excludedPaths.has(file));
 	};
 	
 	/**
@@ -156,6 +156,23 @@ var path = require("path");
 	};
 	
 	/**
+	 * Initialises Vercengen and associated UF files.
+	 */
+	ve.initialise = function () {
+		//Initialise UF handlers
+		new DALS.Timeline(); //Initialise starting timeline
+		HTML.initialise();
+		
+		ve.window_overlay_el = document.createElement("div");
+		ve.window_overlay_el.id = "ve-overlay";
+		ve.window_overlay_el.setAttribute("class", "ve overlay");
+		document.body.appendChild(ve.window_overlay_el);
+		setTimeout(() => {
+			ve.Component.linter(); //Lint ve.Component library
+		}, 100);
+	};
+	
+	/**
 	 * Initialises a Vercengen app, alongside necessary UF imports.
 	 *
 	 * arg0_options: {@link Object}
@@ -169,58 +186,64 @@ var path = require("path");
 	 */
 	ve.start = function (arg0_options) { //[WIP] - Move Browser/Node/Eval selection to `.mode` optioning.
 		//Convert from parameters
-		var options = (arg0_options) ? arg0_options : {};
+		let options = (arg0_options) ? arg0_options : {};
 		
 		//Initialise options
-		if (options.is_browser == undefined) options.is_browser = true;
-		if (options.load_files == undefined) options.load_files = [];
+		if (options.is_browser === undefined) options.is_browser = true;
+		if (options.load_files === undefined) options.load_files = [];
 		
 		//Declare local instance variables
-		var load_patterns = (!options.do_not_import_UF) ? [
-			"UF/js/vercengen/(vercengen_initialisation).js",
-			"UF"
+		let load_patterns = (!options.do_not_import_UF) ? [
+			"!UF/archives",
+			//"UF/js/vercengen/(vercengen_initialisation).js",
+			"UF",
+			"UF/js/vercengen/classes",
+			"UF/js/vercengen/classes/Demo.js",
+			"UF/js/vercengen/components",
 		] : [];
 			load_patterns = load_patterns.concat(options.load_files);
 		
-		var load_files = ve.getImportFiles(load_patterns);
+		let load_files = ve.getImportFiles(load_patterns);
 		
 		console.log(`[VERCENGEN] Importing ${load_files.length} files.`);
 		
 		//1. Handle browser <link>/<script> tags
 		if (options.is_browser) {
-			for (var i = 0; i < load_files.length; i++) {
-				var local_file_extension = path.extname(load_files[i]);
-				var local_file_path = load_files[i];
-				
-				if (local_file_extension == ".css") {
-					var link_el = document.createElement("link");
+			for (let i = 0; i < load_files.length; i++) {
+				setTimeout(() => {
+					let local_file_extension = path.extname(load_files[i]);
+					let local_file_path = load_files[i];
+					
+					if (local_file_extension === ".css") {
+						let link_el = document.createElement("link");
 						link_el.setAttribute("rel", "stylesheet");
 						link_el.setAttribute("type", "text/css");
 						
 						link_el.setAttribute("href", local_file_path);
-					document.head.appendChild(link_el);
-				}
-				if (local_file_extension == ".js") {
-					var script_el = document.createElement("script");
+						document.head.appendChild(link_el);
+					}
+					if (local_file_extension === ".js") {
+						let script_el = document.createElement("script");
 						script_el.setAttribute("type", "text/javascript");
 						script_el.setAttribute("src", local_file_path);
-					document.body.appendChild(script_el);
-				}
+						document.body.appendChild(script_el);
+					}
+				}, i);
 			}
 		}
 		
 		//2. Handle eval/Node.js require tags
 		if (!options.is_browser) {
-			for (var i = 0; i < load_files.length; i++) {
-				var local_file_extension = path.extname(load_files[i]);
-				var local_file_path = load_files[i];
+			for (let i = 0; i < load_files.length; i++) {
+				let local_file_extension = path.extname(load_files[i]);
+				let local_file_path = load_files[i];
 				
-				if (local_file_extension == ".js")
+				if (local_file_extension === ".js")
 					if (options.is_node) {
 						const local_library = require(local_file_path);
 						
 						//Destructure Node.js objects into global
-						for (var [key, value] of Object.entries(local_library)) {
+						for (let [key, value] of Object.entries(local_library)) {
 							if (global[key]) {
 								console.error(`${key} is already a defined function namespace; ${local_file_path} is attempting an override. The present function is as follows:`, global[key]);
 								continue;

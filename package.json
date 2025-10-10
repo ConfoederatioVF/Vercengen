@@ -1,7 +1,7 @@
 {
-  "name": "uf-browser",
+  "name": "vercengen",
   "version": "1.0.0",
-  "description": "Universal Framework variant for Browser/Electron versions.",
+  "description": "Universal Framework/Vercengen variant for Browser/Electron versions.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -17,11 +17,15 @@
     "Framework",
     "Browser",
     "Electron",
+    "Vercengen",
     "Hanseceltica"
   ],
   "author": "Vis/Australis",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^29.0.1"
+    "electron": "^38.1.2"
+  },
+  "dependencies": {
+    "shell": "^0.12.0"
   }
 }
