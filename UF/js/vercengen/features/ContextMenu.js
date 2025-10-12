@@ -18,13 +18,13 @@
  *   - `.y=HTML.mouse_y`: {@link number}
  *   
  * ##### Methods:
- * - <span color=00ffff>{@link ve.ContextMenu.addContextMenu|addContextMenu}</span>(arg0_components_obj: {@link Object}<{@link ve.Component}>, arg1_options: {@link ve.Window|ve.Window.options}) | this:{@link ve.ContextMenu}
+ * - <span color=00ffff>{@link ve.ContextMenu.addContextMenu|addContextMenu}</span>(arg0_components_obj: {@link Object}<{@link ve.Component}>, arg1_options: {@link ve.Window|ve.Window.options}) | {@link ve.ContextMenu}
  *   - `arg1_options`: {@link ve.Window|ve.Window.options}
  *     - `.id`: {@link string} - The ID to prevent duplicate context menus from being opened.
  * - <span color=00ffff>{@link ve.ContextMenu.close|close}</span>() | this:{@link ve.ContextMenu}
  * - <span color=00ffff>{@link ve.ContextMenu.getCurrentOffset|getCurrentOffset}</span>() | {@link number}
  * - <span color=00ffff>{@link ve.ContextMenu.open|open}</span>() | this:{@link ve.ContextMenu}
- * - <span color=00ffff>{@link ve.ContextMenu.removeContextMenu|removeContextMenu}</span>(arg0_index: {@link number}) | this:{@link ve.ContextMenu}
+ * - <span color=00ffff>{@link ve.ContextMenu.removeContextMenu|removeContextMenu}</span>(arg0_index: this:{@link number}) | {@link ve.ContextMenu}
  */
 ve.ContextMenu = class { //[WIP] - Finish class body
 	constructor (arg0_components_obj, arg1_options) {
@@ -139,7 +139,7 @@ ve.ContextMenu = class { //[WIP] - Finish class body
 		}
 		
 		//Return statement
-		return this;
+		return window_obj;
 	}
 	
 	close () {

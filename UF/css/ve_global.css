@@ -18,6 +18,12 @@ html, head, body {
         pointer-events: auto;
     }
 }
+.ve.scene {
+    position: fixed;
+
+    height: 100dvh;
+    width: 100dvw;
+}
 
 /* -- Vercengen themes -- */
 :root {

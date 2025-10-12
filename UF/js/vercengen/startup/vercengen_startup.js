@@ -5,7 +5,7 @@ global.path = require("path");
 //Initialise functions
 {
 	if (!global.ve) global.ve = {};
-	ve.debug_mode = true;
+	ve.debug_mode = false;
 	
 	/**
 	 * Returns all non-evaluated files in a folder, so long as an evaluated set is provided.
@@ -163,6 +163,11 @@ global.path = require("path");
 		new DALS.Timeline(); //Initialise starting timeline
 		HTML.initialise();
 		
+		ve.scene_el = document.createElement("div");
+		ve.scene_el.id = "ve-scene";
+		ve.scene_el.setAttribute("class", "ve scene");
+		document.body.appendChild(ve.scene_el);
+		
 		ve.window_overlay_el = document.createElement("div");
 		ve.window_overlay_el.id = "ve-overlay";
 		ve.window_overlay_el.setAttribute("class", "ve overlay");
@@ -208,28 +213,31 @@ global.path = require("path");
 		console.log(`[VERCENGEN] Importing ${load_files.length} files.`);
 		
 		//1. Handle browser <link>/<script> tags
-		if (options.is_browser) {
+		if (options.is_browser) { //[WIP] - Refactor at a later date
+			// Build up the full HTML snippet for all files in order
+			let html_concat = "";
+			
 			for (let i = 0; i < load_files.length; i++) {
-				setTimeout(() => {
-					let local_file_extension = path.extname(load_files[i]);
-					let local_file_path = load_files[i];
-					
-					if (local_file_extension === ".css") {
-						let link_el = document.createElement("link");
-						link_el.setAttribute("rel", "stylesheet");
-						link_el.setAttribute("type", "text/css");
-						
-						link_el.setAttribute("href", local_file_path);
-						document.head.appendChild(link_el);
-					}
-					if (local_file_extension === ".js") {
-						let script_el = document.createElement("script");
-						script_el.setAttribute("type", "text/javascript");
-						script_el.setAttribute("src", local_file_path);
-						document.body.appendChild(script_el);
-					}
-				}, i);
+				const local_file_path = load_files[i];
+				const local_file_extension = path.extname(local_file_path).toLowerCase();
+				
+				// Each file becomes HTML markup in correct order
+				if (local_file_extension === ".css") {
+					html_concat += `<link rel="stylesheet" type="text/css" href="${local_file_path}">`;
+				} else if (local_file_extension === ".js") {
+					// close the script tag safely
+					html_concat += `<script type="text/javascript" src="${local_file_path}"></` + `script>`;
+				}
 			}
+			
+			// Inject all tags via HTML concatenation
+			//
+			// document.write() integrates the tags into the parsing process.
+			// This ensures that <script> blocks execute *in exact given order*,
+			// per HTML parser rules.
+			//
+			// This must run during document loading (not after DOM is complete).
+			document.write(html_concat);
 		}
 		
 		//2. Handle eval/Node.js require tags

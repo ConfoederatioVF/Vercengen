@@ -73,4 +73,13 @@
 		//Return statement
 		return (!isNaN(number)) ? number : default_value;
 	};
+	
+	Math.roundNumber = function (arg0_number, arg1_places) {
+		//Convert from parameters
+		let number = parseFloat(arg0_number);
+		let places = Math.returnSafeNumber(arg1_places, 1);
+		
+		//Declare local instance variables
+		return number.toFixed(places);
+	};
 }

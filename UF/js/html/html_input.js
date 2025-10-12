@@ -23,6 +23,20 @@
 	};
 	
 	HTML.initialise = function () {
+		document.addEventListener("keydown", (e) => {
+			if (e.keyCode === 17) { //Ctrl
+				if (is_naissance)
+					try { map.scrollWheelZoom.disable(); } catch (e) {} //Disable map zoom upon Ctrl down
+				HTML.ctrl_pressed = true;
+			}
+		});
+		document.addEventListener("keyup", (e) => {
+			if (e.keyCode === 17) { //Ctrl
+				if (is_naissance)
+					try { map.scrollWheelZoom.enable(); } catch (e) {} //Re-enable map zoom upon Ctrl up
+				delete HTML.ctrl_pressed;
+			}
+		});
 		document.addEventListener("mousemove", (e) => {
 			HTML.mouse_x = e.clientX;
 			HTML.mouse_y = e.clientY;

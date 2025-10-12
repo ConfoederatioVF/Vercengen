@@ -33,7 +33,7 @@ ve.Component = class {
 		let container_el = arg0_container_el;
 		
 		//Set variable_key, append to container_el
-		container_el.appendChild(this.element);
+		container_el.append(this.element);
 	}
 	
 	//Runs over all ve classes that extend ve.Component and lint them

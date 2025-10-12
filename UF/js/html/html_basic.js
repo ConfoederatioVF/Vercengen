@@ -74,8 +74,8 @@
 		
 		//Return statement
 		return {
-			height: (typeof this.height === "string") ? this.height : `${this.height}px`,
-			width: (typeof this.width === "string") ? this.width : `${this.width}px`
+			height: (typeof height === "string") ? height : `${height}px`,
+			width: (typeof width === "string") ? width : `${width}px`
 		};
 	};
 	

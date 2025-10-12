@@ -37,6 +37,7 @@ ve.Text = class veText extends ve.Component {
 		input_el.addEventListener("input", (e) => {
 			this.v = global.String(e.target.value);
 		});
+		if (options.name) this.name = options.name;
 		this.v = this.value;
 	}
 	

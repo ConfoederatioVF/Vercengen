@@ -32,7 +32,8 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
+    width: 100dvw;
+    z-index: 1;
     
     ul {
         list-style: none;
@@ -153,6 +154,20 @@
     }
 }
 
+/* -- ve.Scene -- */
+.ve.scene {
+    z-index: 0;
+    
+    .ve-feature-scene {
+        > [component] {
+            height: 100%;
+            width: 100%;
+
+            padding: 0;
+        }
+    }
+}
+
 /* -- ve.Toast -- */
 @keyframes toast-fade-up {
     0% {
@@ -189,6 +204,9 @@
 }
 
 /* -- ve.Window -- */
+.ve.overlay {
+    z-index: 2;
+}
 .ve.window {
     background-color: var(--bg-primary-colour);
     color: var(--header-colour);

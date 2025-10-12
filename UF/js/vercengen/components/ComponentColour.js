@@ -78,12 +78,12 @@ ve.Colour = class veColour extends ve.Component {
 	
 	get v () {
 		//Return statement
-		return Colour.convertHexToRGBA(this.value);
+		return Colour.convertHexToRGB(this.value);
 	}
 	
 	set v (arg0_value) {
 		//Convert from parameters
-		let value = Colour.convertRGBAToHex(arg0_value);
+		let value = Colour.convertRGBToHex(arg0_value);
 		
 		//Set value and update UI
 		this.value = value;

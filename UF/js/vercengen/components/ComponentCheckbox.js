@@ -2,7 +2,7 @@
  * <span color = "yellow">{@link ve.Component}</span>:ve.Checkbox
  * 
  * ##### Constructor:
- * - `arg0_value`: {@link Object}
+ * - `arg0_value`: {@link boolean|Object}
  *   - `<checkbox_key>`: {@link boolean}
  *   - `<category_key>`: {@link Object}
  *     - `.name`: {@link string}
@@ -59,27 +59,39 @@ ve.Checkbox = class veCheckbox extends ve.Component {
 			this.element.setAttribute("component", "ve-checkbox");
 			this.element.instance = this;
 		HTML.applyCSSStyle(this.element, options.style);
-		
+		this.options = options;
 		this.value = value;
 		
 		//Format html_string
 		let html_string = [];
 		html_string.push(`<div id = "name"></div>`);
-		html_string.push(`<ul>`);
-		if (typeof this.value === "object") {
-			html_string.push(...ve.Checkbox.generateHTMLRecursively(this.value));
-		} else {
-			html_string.push(...ve.Checkbox.generateHTMLRecursively({ value: this.value }));
+		
+		if (typeof value === "boolean") {
+			html_string.push(`<input type = "checkbox">`);
+			this.element.innerHTML = html_string.join("");
+			
+			this.element.querySelector(`input[type="checkbox"]`).addEventListener("change", (e) => {
+				this.value = this.v;
+				this.v = this.value; //Needs to run setter
+			});
+		} else if (typeof value === "object") {
+			html_string.push(`<ul>`);
+			if (typeof this.value === "object") {
+				html_string.push(...ve.Checkbox.generateHTMLRecursively(this.value));
+			} else {
+				html_string.push(...ve.Checkbox.generateHTMLRecursively({ value: this.value }));
+			}
+			html_string.push(`</ul>`);
+			
+			//Populate element and initialise handlers
+			this.element.innerHTML = html_string.join("");
+			
+			let all_checkbox_els = this.element.querySelectorAll("input");
+			all_checkbox_els.forEach((el) => el.addEventListener("change", (e) => {
+				this.value = this.v;
+				this.v = this.value; //Needs to run setter
+			}));
 		}
-		html_string.push(`</ul>`);
-		
-		//Populate element and initialise handlers
-		this.element.innerHTML = html_string.join("");
-		
-		let all_checkbox_els = this.element.querySelectorAll("input");
-		all_checkbox_els.forEach((el) => el.addEventListener("change", (e) => {
-			this.value = this.v;
-		}));
 		
 		this.name = options.name;
 		this.v = this.value;
@@ -130,6 +142,11 @@ ve.Checkbox = class veCheckbox extends ve.Component {
 	
 	get v () {
 		//Declare local instance variables
+		let root_el = this.element.querySelector("ul");
+		
+		if (!root_el) return this.element.querySelector(`input[type="checkbox"]`).checked; //Internal guard clause for booleans
+		
+		//Traversal function (recursive) if typeof ve.Checkbox is object
 		let traverse = (ul_el) => {
 			let local_obj = {};
 			
@@ -147,7 +164,6 @@ ve.Checkbox = class veCheckbox extends ve.Component {
 		}
 		
 		//Return statement
-		let root_el = this.element.querySelector("ul");
 		return traverse(root_el);
 	}
 	
