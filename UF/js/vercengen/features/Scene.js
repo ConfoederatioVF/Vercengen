@@ -10,7 +10,7 @@ ve.Scene = class {
 			this.element.setAttribute("class", "ve-feature-scene");
 			this.element.instance = this;
 			HTML.setAttributesObject(this.element, options.attributes);
-			HTML.applyCSSStyle(this.element, {
+			HTML.applyTelestyle(this.element, {
 				height: "100%",
 				width: "100%",
 				...options.style

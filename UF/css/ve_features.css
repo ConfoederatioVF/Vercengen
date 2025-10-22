@@ -33,7 +33,7 @@
     top: 0;
     left: 0;
     width: 100dvw;
-    z-index: 1;
+    z-index: 99;
     
     ul {
         list-style: none;
@@ -91,10 +91,10 @@
         }
     }
     > ul {
-        display: flex;
-        height: var(--navbar-height);
         align-items: center;
         background-color: var(--bg-secondary-colour);
+        display: flex;
+        height: var(--navbar-height);
         padding-inline-start: calc(var(--padding)*2);
         
         > div {
@@ -145,6 +145,7 @@
             }
             &:hover {
                 > ul {
+                    border: 1px solid var(--hover-colour);
                     opacity: 1;
                     visibility: visible;
                     transition-delay: 0ms;

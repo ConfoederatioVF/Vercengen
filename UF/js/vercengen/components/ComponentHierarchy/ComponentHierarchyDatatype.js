@@ -66,7 +66,7 @@ ve.HierarchyDatatype = class veHierarchyDatatype extends ve.Component {
 		this.is_vercengen_hierarchy_datatype = true;
 		this.options = options;
 		this.type = options.type;
-		HTML.applyCSSStyle(this.element, options.style);
+		HTML.applyTelestyle(this.element, options.style);
 		
 		//Append components_obj elements to this.element
 		this.components_obj = components_obj;
@@ -88,7 +88,7 @@ ve.HierarchyDatatype = class veHierarchyDatatype extends ve.Component {
 		if (this.components_obj.name) {
 			this.components_obj.name.v = value;
 		} else {
-			this.components_obj.name = new ve.Text(value);
+			this.components_obj.name = new ve.Text(value, { disabled: this.options.disabled });
 			this.v = this.components_obj;
 		}
 	}

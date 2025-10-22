@@ -5,7 +5,7 @@ global.path = require("path");
 //Initialise functions
 {
 	if (!global.ve) global.ve = {};
-	ve.debug_mode = false;
+	ve.debug_mode = true;
 	
 	/**
 	 * Returns all non-evaluated files in a folder, so long as an evaluated set is provided.
@@ -17,17 +17,18 @@ global.path = require("path");
 	 */
 	ve.getFilesInFolder = function (arg0_folder_path, arg1_evaluated_set) {
 		//Convert from parameters
-		var folder_path = arg0_folder_path;
-		var evaluated_set = arg1_evaluated_set;
+		let folder_path = arg0_folder_path;
+		let evaluated_set = arg1_evaluated_set;
 		
 		//Declare local instance variables
-		var file_list = fs.readdirSync(folder_path, { withFileTypes: true });
-		var return_files = [];
+		let file_list = fs.readdirSync(folder_path, { withFileTypes: true });
+		let return_files = [];
 		
 		//Iterate over all entries in file_list
-		for (var local_file_entry of file_list) {
-			var full_path = path.join(folder_path, local_file_entry.name);
+		for (let local_file_entry of file_list) {
+			let full_path = path.join(folder_path, local_file_entry.name);
 			
+			//Skip any full_path in the evaluated_set
 			if (evaluated_set.has(full_path)) continue;
 				evaluated_set.add(full_path);
 				
@@ -110,23 +111,23 @@ global.path = require("path");
 	 * Returns the absolute file paths of all wildcards within a given folder.
 	 *
 	 * @param {string} arg0_folder_path
-	 * @param {Array<string>} arg1_wildcard_pattern
+	 * @param {string} arg1_wildcard_pattern
 	 *
 	 * @returns {Array<string>}
 	 */
 	ve.getWildcardsInFolder = function (arg0_folder_path, arg1_wildcard_pattern) {
 		//Convert from parameters
-		var folder_path = arg0_folder_path;
-		var wildcard_pattern = arg1_wildcard_pattern;
+		let folder_path = arg0_folder_path;
+		let wildcard_pattern = arg1_wildcard_pattern;
 		
 		//Declare local instance variables
-		var base = path.basename(wildcard_pattern);
-		var directory = path.dirname(wildcard_pattern);
+		let base = path.basename(wildcard_pattern);
+		let directory = path.dirname(wildcard_pattern);
 		
 		//Non-wildcard resolution
 		if (!base.includes("*")) {
 			//No wildcard, simply return if the file exists
-			var absolute_path = path.resolve(folder_path, wildcard_pattern);
+			let absolute_path = path.resolve(folder_path, wildcard_pattern);
 			
 			//Return statement
 			if (fs.existsSync(absolute_path) && fs.statSync(absolute_path).isFile())
@@ -137,18 +138,19 @@ global.path = require("path");
 		}
 		
 		//Wildcard: match files in the directory
-		var absolute_dir = path.resolve(folder_path, directory);
+		let absolute_dir = path.resolve(folder_path, directory);
 		
 		//Return statement
 		if (!fs.existsSync(absolute_dir) || !fs.statSync(absolute_dir).isDirectory())
 			return [];
 		
 		//Return regex wildcard; return statement
-		var regex = new RegExp("^" +
+		let regex = new RegExp("^" +
 			base.replace(/\./g, "\\.")
 				.replace(/\*/g, ".*") + "$"
 		);
 		
+		//Return statement
 		return fs.readdirSync(absolute_dir)
 			.filter((f) => regex.test(f))
 			.map((f) => path.join(absolute_dir, f))
@@ -202,8 +204,8 @@ global.path = require("path");
 			"!UF/archives",
 			//"UF/js/vercengen/(vercengen_initialisation).js",
 			"UF",
-			"UF/js/vercengen/classes",
-			"UF/js/vercengen/classes/Demo.js",
+			"UF/js/vercengen/engine",
+			"UF/js/vercengen/engine/Demo.js",
 			"UF/js/vercengen/components",
 		] : [];
 			load_patterns = load_patterns.concat(options.load_files);
@@ -237,7 +239,7 @@ global.path = require("path");
 			// per HTML parser rules.
 			//
 			// This must run during document loading (not after DOM is complete).
-			document.write(html_concat);
+			injectConcatenatedHTML(html_concat);
 		}
 		
 		//2. Handle eval/Node.js require tags
@@ -278,4 +280,29 @@ global.path = require("path");
 		//Return statement
 		return load_files;
 	};
+}
+
+//[WIP] - Refactor later
+function injectConcatenatedHTML(htmlMarkup) {
+	const tempContainer = document.createElement("div");
+	tempContainer.innerHTML = htmlMarkup;
+	
+	const head = document.head || document.getElementsByTagName("head")[0];
+	const body = document.body || document.getElementsByTagName("body")[0];
+	
+	const fragment = document.createDocumentFragment();
+	
+	[...tempContainer.children].forEach((el) => {
+		if (el.tagName === "SCRIPT") {
+			const script = document.createElement("script");
+			script.src = el.getAttribute("src");
+			script.type = el.type || "text/javascript";
+			script.async = false; // preserves order!
+			fragment.appendChild(script);
+		} else if (el.tagName === "LINK") {
+			fragment.appendChild(el);
+		}
+	});
+	
+	body.appendChild(fragment);
 }

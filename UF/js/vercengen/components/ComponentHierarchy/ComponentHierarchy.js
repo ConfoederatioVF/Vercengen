@@ -46,7 +46,7 @@ ve.Hierarchy = class veHierarchy extends ve.Component {
 			this.element.setAttribute(local_key, local_value.toString());
 		});
 		this.options = options;
-		HTML.applyCSSStyle(this.element, options.style);
+		HTML.applyTelestyle(this.element, options.style);
 		
 		//Append components_obj to this.element
 		this.v = components_obj;

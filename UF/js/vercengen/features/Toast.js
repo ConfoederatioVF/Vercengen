@@ -12,7 +12,7 @@ ve.Toast = class {
 		this.element = document.createElement("div");
 			this.element.classList.add("ve", "toast");
 			this.element.instance = this;
-		HTML.applyCSSStyle(this.element, options.style);
+		HTML.applyTelestyle(this.element, options.style);
 		
 		if (typeof components_obj === "string") {
 			this.element.innerHTML = components_obj;

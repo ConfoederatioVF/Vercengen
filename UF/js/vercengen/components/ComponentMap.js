@@ -1,4 +1,4 @@
-ve.Map = class veMap extends ve.Component {
+ve.Map = class veMap extends ve.Component { //[WIP] - Add options for manipulating projection/base layer
 	static instances = [];
 	
 	constructor (arg0_value, arg1_options) {
@@ -14,7 +14,7 @@ ve.Map = class veMap extends ve.Component {
 				spatialReference: {
 					projection:'EPSG:3857'
 				},
-				urlTemplate: /*"https://tile.tracestrack.com/en/{z}/{x}/{y}.webp?key=28ea24747e9fda45b57a2b0b9338f488", */"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+				urlTemplate: /*"https://api.maptiler.com/maps/dataviz/?key=xWbyIIrJg1lF1fmQFByp*/"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
 				subdomains: ["a", "b", "c"],
 				repeatWorld: false
 			}),
@@ -30,7 +30,8 @@ ve.Map = class veMap extends ve.Component {
 			this.element.id = this.id;
 			this.element.instance = this;
 			HTML.setAttributesObject(this.element, options.attributes);
-			HTML.applyCSSStyle(this.element, options.style);
+			HTML.applyTelestyle(this.element, options.style);
+		this.options = options;
 		this.map = undefined;
 		
 		//Set this.v

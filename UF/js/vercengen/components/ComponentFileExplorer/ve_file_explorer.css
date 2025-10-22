@@ -29,4 +29,14 @@
             }
         }
     }
+    [component="ve-hierarchy-datatype"][data-ve-is-information="true"] {
+        .nst-content:hover {
+            cursor: default;
+        }
+    }
+    [component="ve-hierarchy-datatype"].selected {
+        .nst-content {
+            background-color: var(--accent-primary-colour);
+        }
+    }
 }

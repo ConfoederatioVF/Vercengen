@@ -13,30 +13,6 @@
 		});
 	};
 	
-	HTML.applyCSSStyle = function (arg0_el, arg1_style) {
-		//Convert from parameters
-		let el = (typeof arg0_el === "object") ? arg0_el : document.querySelector(arg0_el);
-		let style = arg1_style;
-		
-		//Apply CSS style to el
-		if (typeof style === "object") {
-			HTML.applyCSSStyleObject(el, style);
-		} else if (typeof style === "string") {
-			el.setAttribute("style", style);
-		}
-	};
-	
-	HTML.applyCSSStyleObject = function (arg0_el, arg1_style_obj) {
-		//Convert from parameters
-		let el = (typeof arg0_el === "object") ? arg0_el : document.querySelector(arg0_el);
-		let style_obj = (arg1_style_obj) ? arg1_style_obj : {};
-		
-		//Iterate over style_obj and apply it to el.style
-		Object.iterate(style_obj, (local_key, local_value) => {
-			el.style[local_key] = local_value.toString();
-		});
-	};
-	
 	HTML.getCSSPosition = function (arg0_anchor, arg1_x, arg2_y) {
 		//Convert from parameters
 		let anchor = (arg0_anchor) ? arg0_anchor : "top_left";

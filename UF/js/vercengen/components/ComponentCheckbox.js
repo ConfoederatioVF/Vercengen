@@ -2,7 +2,7 @@
  * <span color = "yellow">{@link ve.Component}</span>:ve.Checkbox
  * 
  * ##### Constructor:
- * - `arg0_value`: {@link boolean|Object}
+ * - `arg0_value=false`: {@link boolean|Object}
  *   - `<checkbox_key>`: {@link boolean}
  *   - `<category_key>`: {@link Object}
  *     - `.name`: {@link string}
@@ -47,7 +47,7 @@ ve.Checkbox = class veCheckbox extends ve.Component {
 	
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
-		let value = arg0_value;
+		let value = (arg0_value !== undefined) ? arg0_value : false;
 		let options = (arg1_options) ? arg1_options : {};
 			super(options);
 			
@@ -58,7 +58,7 @@ ve.Checkbox = class veCheckbox extends ve.Component {
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-checkbox");
 			this.element.instance = this;
-		HTML.applyCSSStyle(this.element, options.style);
+		HTML.applyTelestyle(this.element, options.style);
 		this.options = options;
 		this.value = value;
 		
@@ -71,6 +71,7 @@ ve.Checkbox = class veCheckbox extends ve.Component {
 			this.element.innerHTML = html_string.join("");
 			
 			this.element.querySelector(`input[type="checkbox"]`).addEventListener("change", (e) => {
+				this.fireToBinding();
 				this.value = this.v;
 				this.v = this.value; //Needs to run setter
 			});
@@ -90,6 +91,7 @@ ve.Checkbox = class veCheckbox extends ve.Component {
 			all_checkbox_els.forEach((el) => el.addEventListener("change", (e) => {
 				this.value = this.v;
 				this.v = this.value; //Needs to run setter
+				this.fireToBinding();
 			}));
 		}
 		
@@ -169,7 +171,7 @@ ve.Checkbox = class veCheckbox extends ve.Component {
 	
 	set v (arg0_value) {
 		//Convert from parameters
-		let value = arg0_value;
+		let value = (typeof arg0_value !== "undefined") ? arg0_value : false;
 		
 		//Parse value
 		if (typeof value === "boolean") {
@@ -194,8 +196,7 @@ ve.Checkbox = class veCheckbox extends ve.Component {
 			traverse(root_ul, value);
 			this.value = value;
 		}
-		
-		if (this.options.onchange) this.options.onchange(this);
+		this.fireFromBinding();
 	}
 	
 	/**

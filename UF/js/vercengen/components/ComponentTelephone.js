@@ -19,8 +19,8 @@ ve.Telephone = class veTelephone extends ve.Component {
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-telephone");
 			this.element.instance = this;
-		HTML.applyCSSStyle(this.element, options.style);
-		
+		HTML.applyTelestyle(this.element, options.style);
+		this.options = options;
 		this.value = value;
 		
 		//Format HTML string
@@ -37,6 +37,7 @@ ve.Telephone = class veTelephone extends ve.Component {
 			
 			if (e.target.value !== filtered) e.target.value = filtered;
 			this.v = global.String(e.target.value);
+			this.fireToBinding();
 		});
 		this.v = this.value;
 	}
@@ -66,7 +67,7 @@ ve.Telephone = class veTelephone extends ve.Component {
 		//Set value and update UI
 		this.value = value;
 		this.element.querySelector("input").value = this.value;
-		if (this.options.onchange) this.options.onchange(this.value);
+		this.fireFromBinding();
 	}
 	
 	remove () {

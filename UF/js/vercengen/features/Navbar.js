@@ -39,7 +39,7 @@ ve.Navbar = class {
 			this.element.setAttribute("class", "ve navbar");
 			this.element.instance = this;
 			HTML.setAttributesObject(this.element, options.attributes);
-			HTML.applyCSSStyle(this.element, options.style);
+			HTML.applyTelestyle(this.element, options.style);
 		
 		//Format this.element
 		this.element.appendChild(this.generateHTMLRecursively(navbar_obj));

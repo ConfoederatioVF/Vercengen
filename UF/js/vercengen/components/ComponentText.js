@@ -12,7 +12,7 @@ ve.Text = class veText extends ve.Component {
 		
 		//Declare local instance variables
 		let attributes = {
-			readonly: options.disabled,
+			disabled: options.disabled,
 			size: options.length,
 			maxlength: options.max,
 			minlength: options.min,
@@ -21,8 +21,8 @@ ve.Text = class veText extends ve.Component {
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-text");
 			this.element.instance = this;
-		HTML.applyCSSStyle(this.element, options.style);
-		
+		HTML.applyTelestyle(this.element, options.style);
+		this.options = options;
 		this.value = value;
 		
 		//Format html_string
@@ -34,8 +34,10 @@ ve.Text = class veText extends ve.Component {
 		this.element.innerHTML = html_string.join("");
 		
 		let input_el = this.element.querySelector("input");
-		input_el.addEventListener("input", (e) => {
+		input_el.addEventListener("change", (e) => {
+			console.log(e);
 			this.v = global.String(e.target.value);
+			this.fireToBinding();
 		});
 		if (options.name) this.name = options.name;
 		this.v = this.value;
@@ -66,7 +68,7 @@ ve.Text = class veText extends ve.Component {
 		//Set value and update UI
 		this.value = value;
 		this.element.querySelector("input").value = this.value;
-		if (this.options.onchange) this.options.onchange(this.value);
+		this.fireFromBinding();
 	}
 	
 	remove () {

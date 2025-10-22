@@ -43,8 +43,8 @@ ve.Select = class veSelect extends ve.Component {
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-select");
 			this.element.instance = this;
-		HTML.applyCSSStyle(this.element, options.style);
-		
+		HTML.applyTelestyle(this.element, options.style);
+		this.options = options;
 		this.value = value;
 		
 		//Format HTML string
@@ -61,6 +61,7 @@ ve.Select = class veSelect extends ve.Component {
 		input_el.addEventListener("change", (e) => {
 			let selected_id = this.element.querySelectorAll("option")[e.target.selectedIndex].id;
 			this.v = global.String(selected_id);
+			this.fireToBinding();
 		});
 		this.v = this.value;
 	}
@@ -100,8 +101,7 @@ ve.Select = class veSelect extends ve.Component {
 		} else if (typeof value === "string") {
 			this.element.querySelector(`option[id="${value}"]`).selected = true;
 		}
-		
-		if (this.options.onchange) this.options.onchange(this.v);
+		this.fireFromBinding();
 	}
 	
 	generateHTML () {

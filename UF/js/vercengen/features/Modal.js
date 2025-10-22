@@ -2,6 +2,8 @@
  * Represents a Modal Feature that contains a set of components which are wrapped inside a ve.Modal.
  * @type {ve.Modal}
  * 
+ * - Inherited by: {@link ve.Confirm}
+ * 
  * ##### DOM:
  * - `.instance`: this:{@link ve.Modal}
  * 
@@ -19,7 +21,8 @@ ve.Modal = class {
 		let options = (arg1_options) ? arg1_options : {};
 		
 		//Declare local instance variables; this.window
-		this.window = new ve.Window(components_obj, {
+		this.components_obj = components_obj;
+		this.window = new ve.Window(this.components_obj, {
 			can_close: true,
 			mode: "static_window",
 			...options

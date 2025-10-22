@@ -16,10 +16,10 @@ ve.URL = class veURL extends ve.Component {
 			...options.attributes
 		};
 		this.element = document.createElement("div");
-		this.element.setAttribute("component", "ve-url");
-		this.element.instance = this;
-		HTML.applyCSSStyle(this.element, options.style);
-		
+			this.element.setAttribute("component", "ve-url");
+			this.element.instance = this;
+			HTML.applyTelestyle(this.element, options.style);
+		this.options = options;
 		this.value = value;
 		
 		//Format html_string
@@ -34,6 +34,7 @@ ve.URL = class veURL extends ve.Component {
 		let input_el = this.element.querySelector("input");
 		input_el.addEventListener("input", (e) => {
 			this.v = global.String(e.target.value);
+			this.fireToBinding();
 		});
 		this.element.querySelector("#open-link").addEventListener("click", (e) => {
 			if (this.value.isURL())
@@ -68,7 +69,7 @@ ve.URL = class veURL extends ve.Component {
 		this.value = value;
 		this.element.querySelector("input").value = this.value;
 		this.element.querySelector(`#open-link`).setAttribute("valid-url", value.isURL());
-		if (this.options.onchange) this.options.onchange(this.value);
+		this.fireFromBinding();
 	}
 	
 	remove () {

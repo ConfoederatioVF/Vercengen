@@ -28,7 +28,7 @@ ve.Tooltip = class {
 		this.element = document.createElement("div");
 			this.element.instance = this;
 		HTML.setAttributesObject(this.element, (options.attributes) ? options.attributes : {});
-		HTML.applyCSSStyle(this.element, options.value);
+		HTML.applyTelestyle(this.element, options.value);
 		this.v = components_obj;
 		
 		//Set tippy tooltip based on element

@@ -21,8 +21,8 @@ ve.Number = class veNumber extends ve.Component {
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-number");
 			this.element.instance = this;
-		HTML.applyCSSStyle(this.element, options.style);
-		
+		HTML.applyTelestyle(this.element, options.style);
+		this.options = options;
 		this.value = value;
 		
 		//Format html_string
@@ -36,6 +36,7 @@ ve.Number = class veNumber extends ve.Component {
 		let input_el = this.element.querySelector("input");
 		input_el.addEventListener("input", (e) => {
 			this.v = global.Number(e.target.value);
+			this.fireToBinding();
 		});
 		this.name = options.name;
 		this.v = this.value;
@@ -66,7 +67,7 @@ ve.Number = class veNumber extends ve.Component {
 		//Set value and update UI
 		this.value = value;
 		this.element.querySelector("input").value = this.value;
-		if (this.options.onchange) this.options.onchange(this.value);
+		this.fireFromBinding();
 	}
 	
 	remove () {

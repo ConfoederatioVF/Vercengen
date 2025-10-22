@@ -22,14 +22,16 @@ ve.Interface = class veInterface extends ve.Component {
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-interface");
 			this.element.instance = this;
-			HTML.applyCSSStyle(this.element, options.style);
-		
+			HTML.applyTelestyle(this.element, options.style);
+		this.options = options;
+			
 		let html_string = [];
 		if (options.is_folder) {
 			html_string.push(`<details class = "ve interface-folder"${HTML.objectToAttributes(attributes)}>`);
-				html_string.push(`<summary id = "name"></summary>`);
 		}
+				html_string.push(`<summary id = "name"></summary>`);
 				html_string.push(`<table></table>`);
+		if (options.is_folder)
 			html_string.push(`</details>`);
 		
 		this.element.innerHTML = html_string.join("");
@@ -167,10 +169,20 @@ ve.Interface = class veInterface extends ve.Component {
 	}
 	
 	refresh () {
+		//Iterate over all extant this.components_obj and remove all their elements
+		Object.iterate(this.components_obj, (local_key, local_value) => {
+			try {
+				if (local_value.element.parentElement)
+					local_value.element.parentElement.removeChild(local_value.element);
+			} catch (e) { console.error(e); }
+		});
+		
+		//Iterate over all this.components_obj and re-append them. This way components can share same coordinates
 		Object.iterate(this.components_obj, (local_key, local_value) => {
 			try {
 				if (local_value.is_vercengen_component) {
-					let target_cell_el = this.element.querySelector(`table td[id="${local_value.x}-${local_value.y}"]`);
+					let all_candidate_cell_els = this.element.querySelectorAll(`table td[id="${local_value.x}-${local_value.y}"]`);
+					let target_cell_el = all_candidate_cell_els[all_candidate_cell_els.length - 1];
 					
 					//Parse height, width
 					if (local_value.height !== undefined) {
@@ -185,7 +197,6 @@ ve.Interface = class veInterface extends ve.Component {
 					}
 					
 					//Set inner cell contents
-					target_cell_el.innerHTML = "";
 					target_cell_el.appendChild(local_value.element);
 				}
 			} catch (e) { console.error(e); }
@@ -201,8 +212,9 @@ ve.Interface = class veInterface extends ve.Component {
 		let component_obj = arg0_component_obj;
 		
 		//Remove component_obj, refresh this ve.Interface
-		component_obj.remove();
-		this.refresh();
+		if (component_obj.element)
+			if (component_obj.element.parentElement)
+				component_obj.element.parentElement.removeChild(component_obj.element);
 	}
 	
 	resize (arg0_width, arg1_height) {

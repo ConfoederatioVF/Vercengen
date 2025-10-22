@@ -23,9 +23,9 @@ ve.Radio = class veRadio extends ve.Component {
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-radio");
 			this.element.instance = this;
-		HTML.applyCSSStyle(this.element, options.style);
-		
+		HTML.applyTelestyle(this.element, options.style);
 		this.id = Class.generateRandomID(ve.Radio);
+		this.options = options;
 		this.value = value;
 		
 		//Format html_string
@@ -45,6 +45,7 @@ ve.Radio = class veRadio extends ve.Component {
 		let all_radio_els = this.element.querySelectorAll("input");
 		all_radio_els.forEach((el) => el.addEventListener("change", (e) => {
 			this.value = this.v;
+			this.fireToBinding();
 		}));
 		ve.Radio.instances.push(this);
 		
@@ -120,8 +121,7 @@ ve.Radio = class veRadio extends ve.Component {
 			traverse(root_ul, value);
 			this.value = value;
 		}
-		
-		if (this.options.onchange) this.options.onchange(this.value);
+		this.fireFromBinding();
 	}
 	
 	remove () {

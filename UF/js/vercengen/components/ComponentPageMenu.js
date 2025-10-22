@@ -59,7 +59,7 @@ ve.PageMenu = class vePageMenu extends ve.Component { //[WIP] - This should be u
 				this.element.setAttribute(local_key, local_value.toString());
 			});
 			this.element.instance = this;
-			HTML.applyCSSStyle(this.element, options.style);
+			HTML.applyTelestyle(this.element, options.style);
 		this.interfaces_obj = {};
 		this.options = options;
 		this.navbar_el = document.createElement("nav");
@@ -100,6 +100,7 @@ ve.PageMenu = class vePageMenu extends ve.Component { //[WIP] - This should be u
 					all_tabs.forEach((local_tab) => local_tab.classList.remove("active"));
 					local_tab.classList.add("active");
 					this.updateUnderline();
+					this.fireToBinding();
 				});
 			});
 		}
@@ -148,10 +149,10 @@ ve.PageMenu = class vePageMenu extends ve.Component { //[WIP] - This should be u
 		//Switch interface to selected page
 		this.interface_el.innerHTML = "";
 		this.interface_el.appendChild(this.interfaces_obj[page_key].element);
-		if (this.options.onchange) this.options.onchange(this);
 		setTimeout(() => {
 			this.updateUnderline();
 		}, 100);
+		this.fireFromBinding();
 	}
 	
 	/**

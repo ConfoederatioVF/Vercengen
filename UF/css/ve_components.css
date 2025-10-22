@@ -2,6 +2,19 @@
 [component] {
     padding: var(--cell-padding);
     
+    button {
+        background-color: var(--bg-secondary-colour);
+        border: 1px solid var(--bg-primary-colour);
+        border-radius: calc(var(--padding)*0.5);
+        color: var(--body-colour);
+        font-family: var(--body-font-family);
+        padding: calc(var(--padding)*0.5) calc(var(--padding)*1.5);
+        transition: all 0.5s ease;
+    }
+    button:hover {
+        background-color: var(--accent-primary-colour);
+        cursor: pointer;
+    }
     input {
         background: transparent;
         border: none;
@@ -16,6 +29,16 @@
     input[type="number"] {
         min-width: calc(var(--default-width)/4);
     }
+    select {
+        background-color: var(--bg-secondary-colour);
+        border: 1px solid var(--bg-primary-colour);
+        color: var(--body-colour);
+        font-family: var(--body-font-family);
+        margin-left: var(--padding);
+        margin-right: var(--padding);
+        padding: calc(var(--padding)*0.25) calc(var(--padding)*0.5);
+        transition: all 0.5s ease;
+    }
     > ul {
         padding-inline-start: 0;
     }
@@ -26,15 +49,36 @@
 
 /* -- ve.BIUF -- */
 [component="ve-biuf"] {
+    position: relative;
+    
+    #biuf-toolbar {
+        display: table;
+        left: 50%;
+        margin: auto;
+        position: absolute;
+        transform: translateX(-50%);
+    }
     button {
         padding: 0;
     }
 }
 
+/* -- ve.Button -- */
+[component="ve-button"] {
+    display: inline;
+}
+
 /* -- ve.Checkbox -- */
 [component="ve-checkbox"] {
+    > #name {
+        padding: calc(var(--padding)*0.75) 0;
+    }
+    
     input {
         min-width: auto;
+    }
+    li:has(b) {
+        padding: calc(var(--padding)*0.75) 0;
     }
     ul {
         list-style: none;
@@ -79,13 +123,19 @@
 }
 
 /* -- ve.Interface -- */
-td:has([component="ve-interface"]) {
-    padding-inline-start: 0.5rem;
-}
 [component="ve-interface"] {
     summary:hover {
         cursor: pointer;
     }
+    tr td {
+        vertical-align: top;
+    }
+}
+td:has([component="ve-interface"]) {
+    padding-inline-start: 0.5rem;
+}
+.ve-disable-nesting > table > tbody > tr > td {
+    padding: 0;
 }
 
 /* -- ve.PageMenu -- */
@@ -148,6 +198,20 @@ td:has([component="ve-interface"]) {
 /* -- ve.Time -- */
 [component="ve-time"] input::-webkit-calendar-picker-indicator {
     color-scheme: dark;
+}
+
+/* -- ve.Toggle -- */
+[component="ve-toggle"] {
+    .toggle-icon {
+        cursor: pointer;
+        font-size: calc(var(--body-font-size)*2);
+    }
+    .toggle-icon.off {
+        color: rgb(240, 60, 60);
+    }
+    .toggle-icon.on {
+        color: rgb(0, 204, 106);
+    }
 }
 
 /* -- ve.URL -- */

@@ -33,7 +33,7 @@ ve.WYSIWYG = class extends ve.Component {
 					//First box: Bold, Italic, Underline, Strikethrough
 					html_string.push(`<div class = "box">`);
 						//Bold
-						html_string.push(`<icon class = "editor-button icon small" data-action = "bold" data-tag-name = "b" title = "Bold"><icon>format_bold</icon></span>`);
+						html_string.push(`<span class = "editor-button icon small" data-action = "bold" data-tag-name = "b" title = "Bold"><icon>format_bold</icon></span>`);
 						//Italic
 						html_string.push(`<span class = "editor-button icon small" data-action = "italic" data-tag-name = "i" title = "Italic"><icon>format_italic</icon></span>`);
 						//Underline
@@ -46,7 +46,7 @@ ve.WYSIWYG = class extends ve.Component {
 					html_string.push(`<div class = "box">`);
 						html_string.push(`<span class = "editor-button icon has-submenu">`);
 							//Menu icon
-							html_string.push(`<icon>format_align_left</icon>`);
+							html_string.push(`<icon class = "has-submenu-icon">format_align_left</icon><icon class = "has-submenu-chevron">keyboard_arrow_down</icon>`);
 
 							//1. Submenu
 							html_string.push(`<div class = "submenu">`);
@@ -128,6 +128,8 @@ ve.WYSIWYG = class extends ve.Component {
 
 		//Set .innerHTML; this.v
 		this.element.innerHTML = html_string.join("");
+		this.options = options;
+		
 		this.handleEvents();
 		this.initWYSIWYG();
 		this.v = value;
@@ -138,19 +140,16 @@ ve.WYSIWYG = class extends ve.Component {
 	 */
 	handleEvents () {
 		//Declare local instance variables
-		if (this.options.onchange) {
-			let editor_el = this.element.querySelector(`.wysiwyg-editor`);
-			let html_view_el = this.element.querySelector(`.html-view`);
-			let visual_view_el = this.element.querySelector(`.visual-view`);
-			
-			//Add change handlers
-			html_view_el.addEventListener("input", (e) => {
-				this.options.onchange(this);
-			});
-			visual_view_el.addEventListener("input", (e) => {
-				this.options.onchange(this);
-			});
-		}
+		let html_view_el = this.element.querySelector(`.html-view`);
+		let visual_view_el = this.element.querySelector(`.visual-view`);
+		
+		//Add change handlers
+		html_view_el.addEventListener("input", (e) => {
+			this.fireToBinding();
+		});
+		visual_view_el.addEventListener("input", (e) => {
+			this.fireToBinding();
+		});
 	}
 	
 	//Internal helper functions
@@ -261,6 +260,7 @@ ve.WYSIWYG = class extends ve.Component {
 		//Set element .html-view, .visual-view content
 		this.element.querySelector(`.html-view`).value = value;
 		this.element.querySelector(`.visual-view`).innerHTML = value;
+		this.fireFromBinding();
 	}
 };
 

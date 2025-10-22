@@ -37,7 +37,7 @@
 			}
 		
 		//Return statement
-		return alphabetised_string;
+		return parseFloat(alphabetised_string);
 	};
 	
 	/**

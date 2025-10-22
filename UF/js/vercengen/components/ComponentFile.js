@@ -14,8 +14,8 @@ ve.File = class veFile extends ve.Component {
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-file");
 			this.element.instance = this;
-		HTML.applyCSSStyle(this.element, options.style);
-		
+		HTML.applyTelestyle(this.element, options.style);
+		this.options = options;
 		this.value = value;
 		
 		//Format HTML string
@@ -32,6 +32,9 @@ ve.File = class veFile extends ve.Component {
 		
 		//Populate element and initialise handlers
 		this.element.innerHTML = html_string.join("");
+		this.element.querySelector(`#confirm-file`).addEventListener("click", (e) => {
+			this.fireToBinding();
+		});
 		this.v = this.value;
 	}
 	
@@ -70,7 +73,7 @@ ve.File = class veFile extends ve.Component {
 		} else if (save_file_el) {
 			save_file_el.setAttribute("value", value);
 		}
-		if (this.options.onchange) this.options.onchange(this.value);
+		this.fireFromBinding();
 	}
 	
 	remove () {

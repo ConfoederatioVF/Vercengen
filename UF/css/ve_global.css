@@ -1,15 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap'); 
 html, head, body {
     height: 100%;
     margin: 0px;
     width: 100%;
 }
+b { font-weight: 700; }
+
 .ve.overlay {
     pointer-events: none;
     position: fixed;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-    top: 0px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
 
     height: 100dvh;
     width: 100dvw;
