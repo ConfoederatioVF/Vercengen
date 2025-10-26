@@ -31,24 +31,14 @@ ve.File = class veFile extends ve.Component {
 		}
 		
 		//Populate element and initialise handlers
+		let confirm_file_el = this.element.querySelector(`#confirm-file`);
 		this.element.innerHTML = html_string.join("");
-		this.element.querySelector(`#confirm-file`).addEventListener("click", (e) => {
-			this.fireToBinding();
-		});
-		this.v = this.value;
-	}
-	
-	get name () {
-		//Return statement
-		return this.element.querySelector(`#name`).innerHTML;
-	}
-	
-	set name (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
 		
-		//Set name
-		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
+		if (confirm_file_el)
+			confirm_file_el.addEventListener("click", (e) => {
+				this.fireToBinding();
+			});
+		this.v = this.value;
 	}
 	
 	get v () {
@@ -74,9 +64,5 @@ ve.File = class veFile extends ve.Component {
 			save_file_el.setAttribute("value", value);
 		}
 		this.fireFromBinding();
-	}
-	
-	remove () {
-		this.element.remove();
 	}
 };

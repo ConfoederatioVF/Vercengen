@@ -54,19 +54,6 @@ ve.Toggle = class veToggle extends ve.Component {
 		this.v = this.value;
 	}
 	
-	get name () {
-		//Return statement
-		return this.element.querySelector(`#name`).innerHTML;
-	}
-	
-	set name (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Set name
-		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
-	}
-	
 	get v () {
 		//Return statement
 		return this.value;
@@ -80,10 +67,6 @@ ve.Toggle = class veToggle extends ve.Component {
 		this.value = value;
 		this.updateName();
 		this.fireFromBinding();
-	}
-	
-	remove () {
-		this.element.remove();
 	}
 	
 	updateName () {

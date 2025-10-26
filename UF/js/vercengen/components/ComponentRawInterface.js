@@ -53,29 +53,6 @@ ve.RawInterface = class veRawInterface extends ve.Component {
 		this.v = components_obj;
 	}
 	
-	get name () {
-		//Return statement
-		return this.element.querySelector(`#name`).innerHTML;
-	}
-	
-	set name (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Set name
-		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
-	}
-	
-	/**
-	 * Removes the component/element from the DOM.
-	 * - Method of: {@link ve.RawInterface}
-	 * 
-	 * @typedef ve.RawInterface.remove
-	 */
-	remove () {
-		this.element.remove();
-	}
-	
 	get v () {
 		//Return statement
 		return this.components_obj;

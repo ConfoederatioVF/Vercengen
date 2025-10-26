@@ -27,7 +27,7 @@
  *   - `headless`: {@link boolean}
  *   - `resizeable`: {@link boolean}
  */
-ve.Window = class {
+ve.Window = class veWindow extends ve.Feature {
 	//Declare local static variables
 	static instances = [];
 	
@@ -35,6 +35,7 @@ ve.Window = class {
 		//Convert from parameters
 		let components_obj = arg0_components_obj;
 		let options = (arg1_options) ? arg1_options : {};
+			super(components_obj, options);
 		
 		//Initialise options
 		let is_coords_well_defined = (typeof options.x === "number" && typeof options.y === "number");
@@ -100,6 +101,17 @@ ve.Window = class {
 			this.components_obj = components_obj;
 		}
 		this.element = document.createElement("div");
+		
+		//Iterate over all .attributes if extant to set them
+		if (typeof options.attributes === "object")
+			Object.iterate(options.attributes, (local_key, local_value) => {
+				if (local_key === "class") {
+					this.element.classList.add(...local_value.toString().split(" "));
+				} else {
+					this.element.setAttribute(local_key, local_value.toString());
+				}
+			});
+		
 		this.id = Class.generateRandomID(ve.Window);
 		this.x = options.x;
 		this.y = options.y;
@@ -114,7 +126,7 @@ ve.Window = class {
 		
 		//Populate Window element
 		this.element.instance = this;
-		this.element.setAttribute("class", `ve window`);
+		this.element.classList.add("class", `ve`, `window`);
 		this.element.id = this.id;
 		this.element.innerHTML = `
 			${(!options.headless) ? `<div id = "feature-header" class = "feature-header">
@@ -190,8 +202,6 @@ ve.Window = class {
 		//Return statement
 		return (!options.return_object) ? highest_z_index[0] : highest_z_index[1];
 	}
-	
-	close () { this.remove(); }
 	
 	/**
 	 * Returns the current z-index of this {@link ve.Window}.
@@ -276,16 +286,5 @@ ve.Window = class {
 					local_value.name = local_key;
 			});
 		}
-	}
-	
-	remove () {
-		//Iterate over all instances in ve.Window.instances
-		for (let i = 0; i < ve.Window.instances.length; i++)
-			if (ve.Window.instances[i].id === this.id) {
-				ve.Window.instances.splice(i, 1);
-				break;
-			}
-		
-		this.element.remove();
 	}
 };

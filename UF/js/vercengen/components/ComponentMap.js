@@ -14,7 +14,7 @@ ve.Map = class veMap extends ve.Component { //[WIP] - Add options for manipulati
 				spatialReference: {
 					projection:'EPSG:3857'
 				},
-				urlTemplate: /*"https://api.maptiler.com/maps/dataviz/?key=xWbyIIrJg1lF1fmQFByp*/"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+				urlTemplate: "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
 				subdomains: ["a", "b", "c"],
 				repeatWorld: false
 			}),
@@ -27,10 +27,10 @@ ve.Map = class veMap extends ve.Component { //[WIP] - Add options for manipulati
 		
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-map");
-			this.element.id = this.id;
-			this.element.instance = this;
-			HTML.setAttributesObject(this.element, options.attributes);
-			HTML.applyTelestyle(this.element, options.style);
+		this.element.id = this.id;
+		this.element.instance = this;
+		HTML.setAttributesObject(this.element, options.attributes);
+		HTML.applyTelestyle(this.element, options.style);
 		this.options = options;
 		this.map = undefined;
 		
@@ -38,7 +38,7 @@ ve.Map = class veMap extends ve.Component { //[WIP] - Add options for manipulati
 		this.v = options;
 	}
 	
-	loadDate () {
+	loadDate() {
 		
 	}
 	

@@ -85,19 +85,6 @@ ve.Date = class veDate extends ve.Component {
 		this.v = this.value;
 	}
 	
-	get name () {
-		//Return statement
-		return this.element.querySelector(`#name`).innerHTML;
-	}
-	
-	set name (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Set name
-		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
-	}
-	
 	get v () {
 		//Determine if #year-type needs a flip for this.value
 		if (this.element.querySelector(`#year-type`).innerHTML === "BC")
@@ -227,14 +214,5 @@ ve.Date = class veDate extends ve.Component {
 			this.value.minute = actual_value;
 			this.fireToBinding();
 		});
-	}
-	
-	/**
-	 * Removes the component/element from the DOM.
-	 *
-	 * @typedef ve.Date.remove
-	 */
-	remove () {
-		this.element.remove();
 	}
 };

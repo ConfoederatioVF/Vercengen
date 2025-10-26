@@ -40,3 +40,8 @@
         }
     }
 }
+
+/* -- ve.FileExplorer Modals -- */
+label[for] {
+    margin-left: var(--padding);
+}

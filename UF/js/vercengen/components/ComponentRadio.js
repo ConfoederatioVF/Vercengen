@@ -76,19 +76,6 @@ ve.Radio = class veRadio extends ve.Component {
 		return html_string;
 	}
 	
-	get name () {
-		//Return statement
-		return this.element.querySelector(`legend#name`).innerHTML;
-	}
-	
-	set name (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Set name
-		this.element.querySelector(`legend#name`).innerHTML = (value) ? value : "";
-	}
-	
 	get v () {
 		//Declare local instance variables
 		return this.element.querySelector(`input[type="radio"]:checked`).value;
@@ -122,11 +109,5 @@ ve.Radio = class veRadio extends ve.Component {
 			this.value = value;
 		}
 		this.fireFromBinding();
-	}
-	
-	remove () {
-		this.element.remove();
-		for (let i = 0; i < ve.Radio.instances.length; i++)
-			ve.Radio.instances.splice(i, 1);
 	}
 };

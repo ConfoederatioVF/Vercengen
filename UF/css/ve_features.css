@@ -1,10 +1,13 @@
 /* -- ve.ContextMenu -- */
 .ve.window {
     .context-menu-close-button {
+        border-radius: 50%;
         position: absolute;
         right: 0;
+        transition: all 0.5s ease;
     }
     .context-menu-close-button:hover {
+        background-color: var(--hover-colour);
         cursor: pointer;
     }
 }

@@ -28,11 +28,12 @@
  * ##### Methods:
  * - <span color=00ffff>{@link ve.Navbar.generateHTMLRecursively|generateHTMLRecursively}</span>(arg0_navbar_obj: {@link Object}) | {@link HTMLUListElement}
  */
-ve.Navbar = class {
+ve.Navbar = class extends ve.Feature {
 	constructor (arg0_navbar_obj, arg1_options) {
 		//Convert from parameters
 		let navbar_obj = (arg0_navbar_obj) ? arg0_navbar_obj : {};
 		let options = (arg1_options) ? arg1_options : {};
+			super(navbar_obj, options);
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");

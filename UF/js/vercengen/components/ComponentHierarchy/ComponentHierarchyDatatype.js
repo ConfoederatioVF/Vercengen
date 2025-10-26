@@ -104,8 +104,8 @@ ve.HierarchyDatatype = class veHierarchyDatatype extends ve.Component {
 		
 		//Reset this.components_obj
 		this.components_obj = components_obj;
-		if (this.options.onchange) this.options.onchange(this);
 		this.refresh();
+		this.fireFromBinding();
 	}
 	
 	/**
@@ -142,22 +142,5 @@ ve.HierarchyDatatype = class veHierarchyDatatype extends ve.Component {
 			});
 			this.element.appendChild(ol_el);
 		}
-	}
-	
-	/**
-	 * Removes the component/element from the DOM.
-	 * - Method of: {@link ve.HierarchyDatatype}
-	 * 
-	 * @typedef ve.HierarchyDatatype.remove
-	 */
-	remove () {
-		//Iterate over all instances in ve.HierarchyDatatype.instances
-		for (let i = 0; i < ve.HierarchyDatatype.instances.length; i++) 
-			if (ve.HierarchyDatatype.instances[i].id === this.id) {
-				ve.HierarchyDatatype.instances.splice(i, 1);
-				break;
-			}
-		
-		this.element.remove();
 	}
 };

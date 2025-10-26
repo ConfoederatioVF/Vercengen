@@ -1,8 +1,9 @@
-ve.Toast = class {
+ve.Toast = class extends ve.Feature {
 	constructor (arg0_components_obj, arg1_options) {
 		//Convert from parameters
 		let components_obj = arg0_components_obj;
 		let options = (arg1_options) ? arg1_options : {};
+			super(components_obj, options);
 		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
@@ -59,10 +60,5 @@ ve.Toast = class {
 			if (local_value.name === undefined || local_value.name === "")
 				local_value.name = local_key;
 		});
-	}
-	
-	remove () {
-		//Remove the present element
-		this.element.remove();
 	}
 }

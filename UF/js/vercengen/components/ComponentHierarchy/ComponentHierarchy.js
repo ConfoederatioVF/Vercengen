@@ -105,28 +105,6 @@ ve.Hierarchy = class veHierarchy extends ve.Component {
 		});
 	}
 	
-	get name () {
-		//Return statement
-		return (this.components_obj.name) ? this.components_obj.name.v : "";
-	}
-	
-	set name (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Set name
-		if (this.components_obj.name) {
-			this.components_obj.name.v = value;
-		} else {
-			this.components_obj.name = new ve.HTML(value);
-			this.v = this.components_obj;
-		}
-	}
-	
-	remove () {
-		this.element.remove();
-	}
-	
 	removeItem (arg0_hierarchy_datatype) {
 		//Convert from parameters
 		let hierarchy_datatype = arg0_hierarchy_datatype;
@@ -165,7 +143,8 @@ ve.Hierarchy = class veHierarchy extends ve.Component {
 		this.element.appendChild(ol_el);
 		this.nestable = new Nestable(ol_el, { items: ".group, .item" });
 			this.nestable.on("stop", () => {
-				if (this.options.onchange) this.options.onchange(this);
+				this.fireToBinding();
 			});
+		this.fireFromBinding();
 	}
 };

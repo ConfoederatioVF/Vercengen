@@ -26,11 +26,12 @@
  * - <span color=00ffff>{@link ve.ContextMenu.open|open}</span>() | this:{@link ve.ContextMenu}
  * - <span color=00ffff>{@link ve.ContextMenu.removeContextMenu|removeContextMenu}</span>(arg0_index: this:{@link number}) | {@link ve.ContextMenu}
  */
-ve.ContextMenu = class { //[WIP] - Finish class body
+ve.ContextMenu = class extends ve.Feature { //[WIP] - Finish class body
 	constructor (arg0_components_obj, arg1_options) {
 		//Convert from parameters
 		let components_obj = arg0_components_obj;
 		let options = (arg1_options) ? arg1_options : {};
+			super(components_obj, options);
 		
 		//Initialise options
 		options.anchor = (options.anchor) ? options.anchor :

@@ -45,19 +45,6 @@ ve.Time = class veTime extends ve.Component {
 		this.v = this.value;
 	}
 	
-	get name () {
-		//Return statement
-		return this.element.querySelector(`#name`).innerHTML;
-	}
-	
-	set name (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Set name
-		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
-	}
-	
 	get v () {
 		//Declare local instance variables
 		let split_value = this.element.querySelector("input").value.split(":");
@@ -77,9 +64,5 @@ ve.Time = class veTime extends ve.Component {
 		this.value = value;
 		this.element.querySelector("input").value = `${value.hour.toString().padStart(2, "0")}:${value.minute.toString().padStart(2, "0")}`;
 		this.fireFromBinding();
-	}
-	
-	remove () {
-		this.element.remove();
 	}
 };

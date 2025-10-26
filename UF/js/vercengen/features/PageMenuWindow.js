@@ -34,11 +34,12 @@
  *     - `.style`: {@link Object}
  *       - `<style_key>`: {@link string}
  */
-ve.PageMenuWindow = class {
+ve.PageMenuWindow = class extends ve.Feature {
 	constructor (arg0_page_obj, arg1_options) {
 		//Convert from parameters
 		let page_obj = arg0_page_obj;
 		let options = (arg1_options) ? arg1_options : {};
+			super(page_obj, options);
 		
 		//Initialise options
 		options.page_menu_options = (options.page_menu_options) ? options.page_menu_options : {};

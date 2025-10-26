@@ -64,19 +64,6 @@ ve.FileExplorer = class extends ve.Component {
 		this.refresh();
 	}
 	
-	get name () {
-		//Return statement
-		this.element.querySelector("#name").innerHTML;
-	}
-	
-	set name (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Set name
-		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
-	}
-	
 	get v () {
 		//Return statement
 		return this.value;
@@ -90,6 +77,7 @@ ve.FileExplorer = class extends ve.Component {
 		this.deselectAll();
 		this.value = value;
 		this.refresh();
+		this.fireFromBinding();
 	}
 	
 	clearClipboard () {
@@ -269,6 +257,7 @@ ve.FileExplorer = class extends ve.Component {
 		let previous_folder_obj = hierarchy_obj[previous_folder_path];
 		previous_folder_obj.element.ondblclick = (e) => {
 			this.v = previous_folder_path;
+			this.fireToBinding();
 		};
 		
 		//Special handling for drive switching
@@ -289,6 +278,7 @@ ve.FileExplorer = class extends ve.Component {
 				});
 				hierarchy_obj[all_drives[i]].element.ondblclick = () => {
 					this.v = all_drives[i];
+					this.fireToBinding();
 				};
 			}
 		}
@@ -343,6 +333,7 @@ ve.FileExplorer = class extends ve.Component {
 					if (e.target.closest(`button, input, .tippy-arrow, .tippy-box, .tippy-content`)) return;
 					
 					this.v = local_full_path;
+					this.fireToBinding();
 				};
 			}
 		}
@@ -400,10 +391,6 @@ ve.FileExplorer = class extends ve.Component {
 		setTimeout(() => {
 			this.hierarchy.setOwner(this.owner, [this.owner]);
 		});
-	}
-	
-	remove () {
-		this.element.remove();
 	}
 	
 	fireSelectToggle (v, e) {

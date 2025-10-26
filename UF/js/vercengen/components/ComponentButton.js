@@ -7,7 +7,9 @@
  *   - `.attributes`: {@link Object}
  *     - `<attribute_key>`: {@link string}
  *   - `.name`: {@link string}
- *   - `.onchange`: {@link function}(this:{@link ve.Button})
+ *   - 
+ *   - `.binding`/`.from_binding`/`.to_binding`: {@link string} - Accepts 'this'/'global'/'window' prefixes.
+ *   - `.onchange`/`.onprogramchange`/`.onuserchange`: {@link function}(v:{@link function}, this:{@link ve.Button})
  *   - `.style`: {@link Object}
  *     - `<style_key>`: {@link string}
  *     
@@ -65,19 +67,6 @@ ve.Button = class veButton extends ve.Component {
 		this.v = this.value;
 	}
 	
-	get name () {
-		//Return statement
-		return this.element.querySelector(`#name`).innerHTML;
-	}
-	
-	set name (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Set name
-		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
-	}
-	
 	get v () {
 		//Return statement
 		return this.value;
@@ -90,15 +79,5 @@ ve.Button = class veButton extends ve.Component {
 		//Set value and update UI
 		this.value = value;
 		this.fireFromBinding();
-	}
-	
-	/**
-	 * Removes the component/element from the DOM.
-	 * - Method of: {@link ve.Button}
-	 * 
-	 * @typedef ve.Button.remove
-	 */
-	remove () {
-		this.element.remove();
 	}
 };

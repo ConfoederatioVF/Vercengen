@@ -64,19 +64,6 @@ ve.Colour = class veColour extends ve.Component {
 		this.v = this.value;
 	}
 	
-	get name () {
-		//Return statement
-		return this.element.querySelector(`#name`).innerHTML;
-	}
-	
-	set name (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Set name
-		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
-	}
-	
 	get v () {
 		//Return statement
 		return Colour.convertHexToRGB(this.value);
@@ -101,15 +88,6 @@ ve.Colour = class veColour extends ve.Component {
 	 */
 	getHex () {
 		return this.value;
-	}
-	
-	/**
-	 * Removes the component/element from the DOM.
-	 *
-	 * @typedef ve.Colour.remove
-	 */
-	remove () {
-		this.element.remove();
 	}
 	
 	/**

@@ -26,7 +26,7 @@ global.stream_promises = require("stream/promises");
 	};
 	
 	//Copy
-	ve.FileExplorer_copy = function (arg0_file_paths, arg1_file_path, arg2_function) { //[WIP] - Does not work for folder paths, parse folder paths first
+	ve.FileExplorer_copy = function (arg0_file_paths, arg1_file_path, arg2_function) {
 		//Convert from parameters
 		let file_paths = arg0_file_paths;
 		let file_path = arg1_file_path;
@@ -52,7 +52,7 @@ global.stream_promises = require("stream/promises");
 					overwrite_all = true;
 				}, { name: "Overwrite All" })
 			}, { name: " ", limit: () => (currently_resolved === false), style: { display: "flex" } })
-		}, { name: `Copying ${String.formatNumber(file_paths.length)} file(s) to ${file_path}` });
+		}, { attributes: { class: "file-explorer-modal" }, name: `Copying ${String.formatNumber(file_paths.length)} file(s) to ${file_path}`, width: "24rem" });
 		let html_el = dialog_window.components_obj.html.element;
 		let overwrite_all = false;
 		let overwrite = false;
@@ -70,45 +70,52 @@ global.stream_promises = require("stream/promises");
 			currently_resolved = false; //Call new check
 			overwrite = false;
 			skip = false;
-			let file_index = file_paths.indexOf(local_file_path);
-			let target_name = path.basename(local_file_path);
-			let target_path =  fs.statSync(file_path).isDirectory() ?
-				path.join(file_path, target_name) : file_path;
 			
-			//Update files-progress based on file_index
-			let files_progress_bar_el = html_el.querySelector(`progress#files-progress`);
-			let files_progress_label_el = html_el.querySelector(`label[for="files-progress"]`);
-			
-			files_progress_bar_el.value = ((file_index + 1) / file_paths.length)*100;
-			files_progress_label_el.innerHTML = `(${String.formatNumber(file_index + 1)} of ${String.formatNumber(file_paths.length)})`;
-			
-			//Polling check to make sure files meet conditions
-			if (fs.existsSync(target_path) && overwrite_all === false) {
-				let resolution_loop = setInterval(async () => {
-					if (currently_resolved) return;
-					
-					//Listen for a resolution as often as possible
-					if (overwrite || overwrite_all) {
-						currently_resolved = true;
-						fs.unlink(target_path, () => {
-							copyFileWithProgress(local_file_path, target_path).then(() => {
-								copyNextFile(file_index + 1);
-							});
-						})
-					} else if (skip) {
-						currently_resolved = true;
+			try {
+				let file_index = file_paths.indexOf(local_file_path);
+				let target_name = path.basename(local_file_path);
+				let target_path =  fs.statSync(file_path).isDirectory() ?
+					path.join(file_path, target_name) : file_path;
+				
+				//Update files-progress based on file_index
+				let files_progress_bar_el = html_el.querySelector(`progress#files-progress`);
+				let files_progress_label_el = html_el.querySelector(`label[for="files-progress"]`);
+				
+				files_progress_bar_el.value = ((file_index + 1) / file_paths.length)*100;
+				files_progress_label_el.innerHTML = `(${String.formatNumber(file_index + 1)} of ${String.formatNumber(file_paths.length)})`;
+				
+				//Polling check to make sure files meet conditions
+				if (fs.existsSync(target_path) && overwrite_all === false) {
+					let resolution_loop = setInterval(async () => {
+						if (currently_resolved) return;
+						
+						//Listen for a resolution as often as possible
+						if (overwrite || overwrite_all) {
+							currently_resolved = true;
+							fs.unlink(target_path, () => {
+								copyFileWithProgress(local_file_path, target_path).then(() => {
+									copyNextFile(file_index + 1);
+								});
+							})
+						} else if (skip) {
+							currently_resolved = true;
+							copyNextFile(file_index + 1);
+						}
+						
+						//KEEP AT BOTTOM! Resolves resolution_loop
+						if (currently_resolved === true)
+							clearInterval(resolution_loop);
+					}, 100);
+				} else {
+					currently_resolved = true;
+					copyFileWithProgress(local_file_path, target_path).then(() => {
 						copyNextFile(file_index + 1);
-					}
-					
-					//KEEP AT BOTTOM! Resolves resolution_loop
-					if (currently_resolved === true)
-						clearInterval(resolution_loop);
-				}, 100);
-			} else {
-				currently_resolved = true;
-				copyFileWithProgress(local_file_path, target_path).then(() => {
-					copyNextFile(file_index + 1);
-				});
+					});
+				}
+			} catch (e) {
+				let local_error_div = document.createElement("div");
+					local_error_div.innerHTML = `<div class = "error">ERROR: ${e}</div>`;
+				dialog_window.html.element.appendChild(local_error_div);
 			}
 			
 			function copyNextFile (arg0_next_index) {
@@ -208,7 +215,7 @@ global.stream_promises = require("stream/promises");
 					].join("<br>")
 				),
 			},
-			{ name: `Deleting ${String.formatNumber(file_paths.length)} file(s)` }
+			{ attributes: { class: "file-explorer-modal" }, name: `Deleting ${String.formatNumber(file_paths.length)} file(s)`, width: "24rem" }
 		);
 		
 		const html_el = dialog_window.components_obj.html.element;
@@ -229,24 +236,30 @@ global.stream_promises = require("stream/promises");
 				return;
 			}
 			
-			const file_index = file_paths.indexOf(local_file_path);
-			
-			// Update overall progress
-			const files_progress_bar_el = html_el.querySelector(`progress#files-progress`);
-			const files_progress_label_el = html_el.querySelector(`label[for="files-progress"]`);
-			files_progress_bar_el.value = ((file_index + 1) / file_paths.length) * 100;
-			files_progress_label_el.innerHTML = `(${String.formatNumber(
-				file_index + 1
-			)} of ${String.formatNumber(file_paths.length)})`;
-			
-			// Delete existing file/folder if present
-			if (fs.existsSync(local_file_path)) {
-				deleteWithProgress(local_file_path).then(() => {
+			try {
+				const file_index = file_paths.indexOf(local_file_path);
+				
+				// Update overall progress
+				const files_progress_bar_el = html_el.querySelector(`progress#files-progress`);
+				const files_progress_label_el = html_el.querySelector(`label[for="files-progress"]`);
+				files_progress_bar_el.value = ((file_index + 1) / file_paths.length) * 100;
+				files_progress_label_el.innerHTML = `(${String.formatNumber(
+					file_index + 1
+				)} of ${String.formatNumber(file_paths.length)})`;
+				
+				// Delete existing file/folder if present
+				if (fs.existsSync(local_file_path)) {
+					deleteWithProgress(local_file_path).then(() => {
+						scheduleNextFile(file_index + 1);
+					});
+				} else {
+					// File doesn't exist, skip to next
 					scheduleNextFile(file_index + 1);
-				});
-			} else {
-				// File doesn't exist, skip to next
-				scheduleNextFile(file_index + 1);
+				}
+			} catch (e) {
+				let local_error_div = document.createElement("div");
+					local_error_div.innerHTML = `<div class = "error">ERROR: ${e}</div>`;
+				dialog_window.html.element.appendChild(local_error_div);
 			}
 			
 			function scheduleNextFile(next_index) {
@@ -341,12 +354,16 @@ global.stream_promises = require("stream/promises");
 			html: new ve.HTML(`Rename file ${base_name} to:`),
 			new_file_name: new ve.Text(base_name, { name: " " }),
 			confirm_button: new ve.Button((e) => {
-				let new_path = path.join(dir_name, local_modal.components_obj.new_file_name.v);
-				fs.rename(file_path, new_path, () => {
-					local_modal.remove();
-					if (callback_function !== undefined)
-						callback_function(local_modal);
-				});
+				try {
+					let new_path = path.join(dir_name, local_modal.components_obj.new_file_name.v);
+					fs.rename(file_path, new_path, () => {
+						local_modal.remove();
+						if (callback_function !== undefined)
+							callback_function(local_modal);
+					});
+				} catch (e) {
+					new ve.Toast(`ERROR: ${base_name} could not be renamed: ${e}`);
+				}
 			})
 		}, { name: "Rename File", width: "24rem" });
 	};

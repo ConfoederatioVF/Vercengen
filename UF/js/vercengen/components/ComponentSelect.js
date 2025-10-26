@@ -66,19 +66,6 @@ ve.Select = class veSelect extends ve.Component {
 		this.v = this.value;
 	}
 	
-	get name () {
-		//Return statement
-		return this.element.querySelector(`#name`).innerHTML;
-	}
-	
-	set name (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Set name
-		this.element.querySelector(`#name`).innerHTML = (value) ? `${value} ` : "";
-	}
-	
 	get v () {
 		//Return statement
 		return this.element.querySelectorAll("option")[
@@ -120,9 +107,5 @@ ve.Select = class veSelect extends ve.Component {
 		
 		//Return statement
 		return html_string;
-	}
-	
-	remove () {
-		this.element.remove();
 	}
 };

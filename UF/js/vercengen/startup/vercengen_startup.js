@@ -204,9 +204,15 @@ global.path = require("path");
 			"!UF/archives",
 			//"UF/js/vercengen/(vercengen_initialisation).js",
 			"UF",
+			"UF/libraries",
+			"UF/libraries/maptalks.min.js",
+			"UF/libraries/mapbox-gl.js",
+			"UF/libraries/mapbox-gl.css",
+			"UF/libraries/maptalks.mapboxgl.min.js",
 			"UF/js/vercengen/engine",
 			"UF/js/vercengen/engine/Demo.js",
 			"UF/js/vercengen/components",
+			"UF/js/vercengen/features"
 		] : [];
 			load_patterns = load_patterns.concat(options.load_files);
 		

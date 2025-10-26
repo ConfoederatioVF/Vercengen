@@ -225,19 +225,6 @@ ve.WYSIWYG = class extends ve.Component {
 		this.element.remove();
 	}
 	
-	get name () {
-		//Return statement
-		return this.element.querySelector(`#name`).innerHTML;
-	}
-	
-	set name (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Set name
-		this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
-	}
-	
 	/**
 	 * Returns the innerHTML of the present Component's input value.
 	 *

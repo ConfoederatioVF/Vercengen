@@ -12,11 +12,12 @@
  *   - `element`: {@link HTMLElement}|{@link string} - The anchor element that ve.Tooltip should be bound to.
  *   - `style`: {@linK Object}<{@link string}>
  */
-ve.Tooltip = class {
+ve.Tooltip = class extends ve.Feature {
 	constructor (arg0_components_obj, arg1_options) {
 		//Convert from parameters
 		let components_obj = arg0_components_obj;
 		let options = (arg1_options) ? arg1_options : {};
+			super(components_obj, options);
 		
 		//Initialise options
 		if (options.element === undefined)

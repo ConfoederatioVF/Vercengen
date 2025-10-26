@@ -1,8 +1,9 @@
-ve.Confirm = class {
+ve.Confirm = class extends ve.Feature {
 	constructor (arg0_components_obj, arg1_options) {
 		//Convert from parameters
 		let components_obj = arg0_components_obj;
 		let options = (arg1_options) ? arg1_options : {};
+			super(components_obj, options);
 		
 		//Declare local instance variables: this.modal
 		this.components_obj = components_obj;

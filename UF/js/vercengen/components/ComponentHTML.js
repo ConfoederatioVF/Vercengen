@@ -22,27 +22,6 @@ ve.HTML = class veHTML extends ve.Component {
 		this.v = this.value;
 	}
 	
-	get name () {
-		//Declare local instance variables
-		let name_el = this.element.querySelector(`#name`);
-		
-		//Return statement
-		if (name_el)
-			return this.element.querySelector(`#name`).innerHTML;
-	}
-	
-	set name (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Declare local instance variables
-		let name_el = this.element.querySelector(`#name`);
-		
-		//Set name
-		if (name_el)
-			this.element.querySelector(`#name`).innerHTML = (value) ? value : "";
-	}
-	
 	get v () {
 		//Return statement
 		return this.element;
@@ -76,10 +55,6 @@ ve.HTML = class veHTML extends ve.Component {
 		}
 		this.value = this.element;
 		this.fireFromBinding();
-	}
-	
-	remove () {
-		this.element.remove();
 	}
 	
 	//Class methods
