@@ -79,6 +79,13 @@
 /* -- Code pages -- */
 pre.prettyprint,
 pre.prettyprinted,
+code {
+    tab-size: 2;
+    -moz-tab-size: 2;
+    white-space: pre; /* keep preformatting */
+}
+pre.prettyprint,
+pre.prettyprinted,
 pre.prettyprinted code,
 pre.prettyprint code {
     white-space: pre-wrap !important; /* Wrap long lines */
@@ -105,8 +112,10 @@ footer {
     left: 0;
     margin-inline: auto;
     max-width: 50dvw;
-    min-width: 20rem;
+    min-width: 30rem;
     overflow-y: auto;
+    padding-bottom: 2rem;
+    padding-top: 2rem;
     position: static;
     right: 0;
 }
@@ -150,6 +159,7 @@ nav {
         margin-top: 2rem;
     }
     h2 {
+        line-height: 3rem;
         margin-bottom: 0.5rem;
         margin-top: 0.5rem;
     }

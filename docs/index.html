@@ -49,9 +49,68 @@
 
 
     <section class="readme">
-        <article><h1>Vercengen</h1>
-UI ⊆ State.<br>
-<small>(UI as a subset of state).</small></article>
+        <article><img src = "../gfx/vercengen_logo.png">
+<span style = "display: flex;">
+    <span>UI ⊆ State.</span>
+    <span style = "margin-left: auto; order: 99; padding: 0;"><small>(<u>UI as a subset of state</u>).</small></span>
+</span>
+<br>
+<h2 id="less-is-more.">Less Is More.</h2>
+<p>Example: Separately updating counters.</p>
+<p>Vercengen (10 lines), Vanilla JS:</p>
+<pre class="prettyprint source lang-js"><code>Counter = class extends ve.Class { constructor () {
+	super();
+	this.count = veNumber(0, { name: &quot;Counter:&quot; });
+	this.dec_btn = veButton(() => this.count.v--, {
+		name: &quot;Decrement&quot; });
+	this.inc_btn = veButton(() => this.count.v++, {
+		name: &quot;Increment&quot; });
+} }; 
+new Counter().open(&quot;instance&quot;, { name: &quot;Counter 1&quot; });
+new Counter().open(&quot;instance&quot;, { name: &quot;Counter 2&quot; });
+</code></pre>
+<p>Vue (18 lines), <a href="https://vuejs.org/guide/essentials/component-basics">adapted source</a>:</p>
+<pre class="prettyprint source lang-js"><code>//./ButtonCounter.vue
+import { ref } from 'vue'
+export default {
+	setup() {
+		const count = ref(0)
+		return { count }
+	},
+	template: `
+    You clicked me {{ count }} times.
+    &lt;button @click=&quot;count--&quot;>Decrement&lt;/button>
+    &lt;button @click=&quot;count++&quot;>Increment&lt;/button>`
+}
+//SFC, separate file
+&lt;script setup>
+import ButtonCounter from './ButtonCounter.vue'
+&lt;/script>
+&lt;template>
+  &lt;ButtonCounter />
+  &lt;ButtonCounter />
+&lt;/template>
+</code></pre>
+<p>React (18 lines), <a href="https://react.dev/learn">source</a>:</p>
+<pre class="prettyprint source lang-jsx"><code>import { useState } from 'react';
+export default function MyApp() {
+	return (
+		&lt;div>
+			&lt;h1>Counters that update separately&lt;/h1>
+			&lt;MyButton />
+			&lt;MyButton />
+		&lt;/div>
+	);
+}
+function MyButton() {
+	const [count, setCount] = useState(0);
+	return (&lt;>
+        &lt;button onClick={() => setCount(count - 1)}>Decrement&lt;/button>
+        &lt;span> {count} &lt;/span>
+        &lt;button onClick={() => setCount(count + 1)}>Increment&lt;/button>
+    &lt;/>);
+}
+</code></pre></article>
     </section>
 
 
