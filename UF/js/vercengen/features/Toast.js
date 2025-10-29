@@ -1,3 +1,20 @@
+/**
+ * Refer to <span color = "yellow">{@link ve.Feature}</span> for methods or fields inherited from the parent, such as automatic destructuring.
+ * 
+ * Creates a toast spawned at the present cursor. For this component, it is recommended to use a string rather than {@link ve.Component} types for the first parameter (`arg0_components_obj`).
+ * - Functional binding: <span color=00ffff>veToast</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_components_obj`: {@link function}|{@link Object}<{@link ve.Component}>|{@link string}|{@link ve.Component}
+ * - `arg1_options`: {@link Object}
+ *   - `.duration=1200`: {@link number} - The duration the toast should last in ms. 1,2 seconds by default.
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.Toast.refresh|refresh}</span>(arg0_components_obj:{@link Object}<{@link ve.Component}>) - Refreshes the Toast display if possible.
+ * 
+ * @augments {@link ve.Feature}
+ * @type {ve.Toast}
+ */
 ve.Toast = class extends ve.Feature {
 	constructor (arg0_components_obj, arg1_options) {
 		//Convert from parameters
@@ -39,6 +56,12 @@ ve.Toast = class extends ve.Feature {
 		});
 	}
 	
+	/**
+	 * Refreshes the toast display with a set of new components.
+	 * - Method of: {@link ve.Toast}
+	 * 
+	 * @param {{"<component_key>": ve.Component}} arg0_components_obj
+	 */
 	refresh (arg0_components_obj) {
 		//Convert from parameters
 		this.components_obj = arg0_components_obj;
@@ -62,3 +85,13 @@ ve.Toast = class extends ve.Feature {
 		});
 	}
 }
+
+//Functional binding
+
+/**
+ * @returns {ve.Toast}
+ */
+veToast = function () {
+	//Return statement
+	return new ve.Toast(...arguments);
+};

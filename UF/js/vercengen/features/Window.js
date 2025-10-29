@@ -1,13 +1,10 @@
 /**
- * Represents a Window Feature that contains a set of components which are wrapped inside an Interface.
- * @type {ve.Window}
+ * Refer to <span color = "yellow">{@link ve.Feature}</span> for methods or fields inherited from the parent, such as automatic destructuring.
  * 
+ * Represents a Window Feature that contains a set of components which are wrapped inside an Interface.
  * - Inherited by: {@link ve.ContextMenu}, {@link ve.Modal}, {@link ve.PageMenuWindow}
  *
- * ##### DOM:
- * - `.instance`: this:{@link ve.Window}
- *
- * ##### Options:
+ * ##### Constructor:
  * - `arg0_components_obj`: {@link Object}<{@link ve.Component}>
  * - `arg1_options`: {@link Object}
  *   - `anchor="top_left"` - Either 'bottom_left'/'bottom_right'/'top_left'/'top_right'.
@@ -26,8 +23,27 @@
  *   - `draggable`: {@link boolean}
  *   - `headless`: {@link boolean}
  *   - `resizeable`: {@link boolean}
+ *   
+ * ##### Instance:
+ * - `.v`: {@link Object}<{@link ve.Component}>
+ *
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.Window.getZIndex|getZIndex}</span>() | {@link number}
+ * - <span color=00ffff>{@link ve.Window.select|select}</span>()
+ * - <span color=00ffff>{@link ve.Window.setCoords|setCoords}</span>(arg0_x:{@link number}, arg1_y:{@link number})
+ * - <span color=00ffff>{@link ve.Window.setSize|setSize}</span>(arg0_width:{@link number}|{@link string}, arg1_height:{@link number}|{@link string})
+ * - <span color=00ffff>{@link ve.Window.refresh|refresh}</span>(arg0_components_obj:{@link Object}<{@link ve.Component}>)
+ * 
+ * ##### Static Fields:
+ * - `.instances`: {@link Array}<{@link ve.Window}>
+ * 
+ * ##### Static Methods:
+ * - <span color=00ffff>{@link ve.Window.getHighestZIndex}</span>(arg0_options:{ return_object=false: {@link boolean} }) | {@link number}|{@link ve.Window}
+ *   
+ * @augments {@link ve.Feature}
+ * @type {ve.Window}
  */
-ve.Window = class veWindow extends ve.Feature {
+ve.Window = class extends ve.Feature {
 	//Declare local static variables
 	static instances = [];
 	
@@ -164,11 +180,23 @@ ve.Window = class veWindow extends ve.Feature {
 		ve.Window.instances.push(this);
 	}
 	
+	/**
+	 * Returns the components currently visible in the Window.
+	 * - Accessor of: {@link ve.Window}
+	 * 
+	 * @returns {{"<component_key>": ve.Component}}
+	 */
 	get v () {
 		//Return statement
 		return this.components_obj;
 	}
 	
+	/**
+	 * Sets the components visible in the current window.
+	 * - Accessor of: {@link ve.Window}
+	 * 
+	 * @param {{"<component_key>": ve.Component}} arg0_components_obj
+	 */
 	set v (arg0_components_obj) {
 		//Convert from parameters
 		let components_obj = arg0_components_obj;
@@ -178,33 +206,8 @@ ve.Window = class veWindow extends ve.Feature {
 	}
 	
 	/**
-	 * Returns the highest z-index over the set of all Windows in {@link ve.Window.instances}.
-	 * @param {Object} [arg0_options]
-	 *  @param {boolean} [arg0_options.return_object=false] - Whether to return a ve.Window instance.
-	 *
-	 * @returns {number|ve.Window}
-	 */
-	static getHighestZIndex (arg0_options) {
-		//Convert from parameters
-		let options= (arg0_options) ? arg0_options : {};
-		
-		//Declare local instance variables
-		let highest_z_index = [-Infinity, undefined];
-		
-		//Iterate over all ve.Window.instances
-		for (let i = 0; i < ve.Window.instances.length; i++) {
-			let local_instance = ve.Window.instances[i];
-			
-			if (local_instance.getZIndex() > highest_z_index[0])
-				highest_z_index = [local_instance.getZIndex(), local_instance];
-		}
-		
-		//Return statement
-		return (!options.return_object) ? highest_z_index[0] : highest_z_index[1];
-	}
-	
-	/**
 	 * Returns the current z-index of this {@link ve.Window}.
+	 * - Method of: {@link ve.Window}
 	 *
 	 * @returns {number}
 	 */
@@ -214,44 +217,11 @@ ve.Window = class veWindow extends ve.Feature {
 	}
 	
 	/**
-	 * Selects the current {@link ve.Window} instance, raising its z-index above all other Windows.
+	 * Refreshes the components display for the current Window.
+	 * - Method of: {@link ve.Window}
+	 * 
+	 * @param {{"<component_key>": ve.Component}} arg0_components_obj
 	 */
-	select () {
-		//Declare local instance variables
-		let current_highest_z_index = ve.Window.getHighestZIndex() + 1;
-		
-		//Swap z-indices
-		this.element.style.zIndex = current_highest_z_index.toString();
-		ve.Window.normaliseZIndexes();
-	}
-	
-	setCoords (arg0_x, arg1_y) {
-		//Convert from parameters
-		let x = parseInt(arg0_x);
-		let y = parseInt(arg1_y);
-		
-		//Set element X, Y position
-		this.element.style.position = "absolute";
-		this.element.style.bottom = "";
-		this.element.style.left = "";
-		this.element.style.right = "";
-		this.element.style.top = "";
-		HTML.applyTelestyle(this.element, {
-			...HTML.getCSSPosition(this.options.anchor, x, y)
-		});
-	}
-	
-	setSize (arg0_width, arg1_height) {
-		//Convert from parameters
-		let width = arg0_width;
-		let height = arg1_height;
-		
-		//Apply style
-		HTML.applyTelestyle(this.element, {
-			...HTML.getCSSSize(width, height)
-		});
-	}
-	
 	refresh (arg0_components_obj) { //[WIP] - Finish ve.Interface wrapping
 		//Convert from parameters
 		this.components_obj = arg0_components_obj;
@@ -287,4 +257,96 @@ ve.Window = class veWindow extends ve.Feature {
 			});
 		}
 	}
+	
+	/**
+	 * Selects the current {@link ve.Window} instance, raising its z-index above all other Windows.
+	 * - Method of: {@link ve.Window}
+	 */
+	select () {
+		//Declare local instance variables
+		let current_highest_z_index = ve.Window.getHighestZIndex() + 1;
+		
+		//Swap z-indices
+		this.element.style.zIndex = current_highest_z_index.toString();
+		ve.Window.normaliseZIndexes();
+	}
+	
+	/**
+	 * Sets the present coords of the window to a given X, Y coordinate relative to the present anchor.
+	 * - Method of: {@link ve.Window}
+	 * 
+	 * @param {number} arg0_x
+	 * @param {number} arg1_y
+	 */
+	setCoords (arg0_x, arg1_y) {
+		//Convert from parameters
+		let x = parseInt(arg0_x);
+		let y = parseInt(arg1_y);
+		
+		//Set element X, Y position
+		this.element.style.position = "absolute";
+		this.element.style.bottom = "";
+		this.element.style.left = "";
+		this.element.style.right = "";
+		this.element.style.top = "";
+		HTML.applyTelestyle(this.element, {
+			...HTML.getCSSPosition(this.options.anchor, x, y)
+		});
+	}
+	
+	/**
+	 * Sets the given size of the current window using either numbers or CSS calculated strings in Telestyle. Any functions must return either a number/string.
+	 * - Method of: {@link ve.Window}
+	 * 
+	 * @param {function|number|string} arg0_width
+	 * @param {function|number|string} arg1_height
+	 */
+	setSize (arg0_width, arg1_height) {
+		//Convert from parameters
+		let width = arg0_width;
+		let height = arg1_height;
+		
+		//Apply style
+		HTML.applyTelestyle(this.element, {
+			...HTML.getCSSSize(width, height)
+		});
+	}
+	
+	/**
+	 * Returns the highest z-index over the set of all Windows in {@link ve.Window.instances}.
+	 * - Static method of: {@link ve.Window}
+	 * 
+	 * @param {Object} [arg0_options]
+	 *  @param {boolean} [arg0_options.return_object=false] - Whether to return a ve.Window instance.
+	 *
+	 * @returns {number|ve.Window}
+	 */
+	static getHighestZIndex (arg0_options) {
+		//Convert from parameters
+		let options= (arg0_options) ? arg0_options : {};
+		
+		//Declare local instance variables
+		let highest_z_index = [-Infinity, undefined];
+		
+		//Iterate over all ve.Window.instances
+		for (let i = 0; i < ve.Window.instances.length; i++) {
+			let local_instance = ve.Window.instances[i];
+			
+			if (local_instance.getZIndex() > highest_z_index[0])
+				highest_z_index = [local_instance.getZIndex(), local_instance];
+		}
+		
+		//Return statement
+		return (!options.return_object) ? highest_z_index[0] : highest_z_index[1];
+	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Window}
+ */
+veWindow = function () {
+	//Return statement
+	return new ve.Window(...arguments);
 };

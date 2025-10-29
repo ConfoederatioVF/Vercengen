@@ -1,18 +1,20 @@
 /**
+ * Refer to <span color = "yellow">{@link ve.Feature}</span> for methods or fields inherited from the parent, such as automatic destructuring.
+ * 
  * Represents a Modal Feature that contains a set of components which are wrapped inside a ve.Modal.
- * @type {ve.Modal}
- * 
+ * - Functional binding: <span color=00ffff>veModal</span>().
  * - Inherited by: {@link ve.Confirm}
+ * - Inherits Feature: {@link ve.Window}
  * 
- * ##### DOM:
- * - `.instance`: this:{@link ve.Modal}
- * 
- * ##### Options:
- * - `arg0_components_obj`: {@link Object}<{@link ve.Component}>
- * - `arg1_options`: {@link ve.Window|ve.Window.options}
+ * ##### Constructor:
+ * - `arg0_components_obj`: {@link function}|{@link Object}<{@link ve.Component}>|{@link string}|{@link ve.Component}
+ * - `arg1_options`: {@link Object} - Set of `.options` for {@link ve.Window}
  * 
  * ##### Methods:
  * - <span color=00ffff>{@link ve.Modal.close|close}</span>()
+ * 
+ * @augments {@link ve.Feature}
+ * @type {ve.Modal}
  */
 ve.Modal = class extends ve.Feature {
 	constructor (arg0_components_obj, arg1_options) {
@@ -67,4 +69,14 @@ ve.Modal = class extends ve.Feature {
 		//Remove this.window after .modal-disabled is finished
 		this.window.remove();
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Modal}
+ */
+veModal = function () {
+	//Return statement
+	return new ve.Modal(...arguments);
 };

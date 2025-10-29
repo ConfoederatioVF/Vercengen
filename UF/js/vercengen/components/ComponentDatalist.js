@@ -1,30 +1,21 @@
 /**
- * <span color = "yellow">{@link ve.Datalist}</san>:ve.Datalist
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Datalist component, typically a text component with autocomplete suggestions. May sometimes also be used as a primitive for search select.
+ * - Functional binding: <span color=00ffff>veDatalist</span>().
  * 
  * ##### Constructor:
- * - `arg0_value`: {@link Object}
+ * - `arg0_value`: {@link Object}<{@link string}> - Read-only names are values, internal IDs are keys.
  * - `arg1_options`: {@link Object}
- *   - `.attributes`: {@link Object}
- *     - `<attribute_key>`: {@link string}
- *   - `.name`: {@link string}
- *   - `.onchange`: {@link function}(this:{@link ve.Datalist})
- *   - `.style`: {@link Object}
- *     - `<style_key>`: {@link string}
- * 
- * ##### DOM:
- * - `.instance`: this:{@link ve.Datalist}
+ *   - `.disabled=false`: {@link boolean}
  * 
  * ##### Instance:
- * - `.element`: {@link HTMLElement}
- * - `.name`: {@link string}
- * - `.v`: {@link string}
+ * - `.v`: {@link string} - The current ID selected by the datalist. If no valid ID is found, the raw `.value` of the datalist element is returned.
  * 
- * ##### Methods:
- * - <span color=00ffff>{@link ve.Button.remove|remove}</span>()
- * 
+ * @augments {@link ve.Component}
  * @type {ve.Datalist}
  */
-ve.Datalist = class veDatalist extends ve.Component {
+ve.Datalist = class extends ve.Component {
 	static demo_value = {
 		"polygon": "Polygon",
 		"line": "Line",
@@ -77,6 +68,12 @@ ve.Datalist = class veDatalist extends ve.Component {
 		this.v = this.value;
 	}
 	
+	/**
+	 * Returns the key/ID of the present datalist.
+	 * - Accessor of: {@link ve.Datalist}
+	 * 
+	 * @returns {string}
+	 */
 	get v () {
 		//Declare local instance variables
 		let local_value = this.element.querySelector(`input[list="datalist"]`).value;
@@ -87,6 +84,12 @@ ve.Datalist = class veDatalist extends ve.Component {
 		return (local_option) ? local_option.innerHTML : local_value;
 	}
 	
+	/**
+	 * Sets the key/ID for the present datalist.
+	 * - Accessor of: {@link ve.Datalist}
+	 * 
+	 * @param {string} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -111,4 +114,14 @@ ve.Datalist = class veDatalist extends ve.Component {
 		this.value = value;
 		this.fireFromBinding();
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Datalist}
+ */
+veDatalist = function () {
+	//Return statement
+	return new ve.Datalist(...arguments);
 };

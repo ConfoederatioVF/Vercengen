@@ -1,4 +1,21 @@
-ve.Telephone = class veTelephone extends ve.Component {
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Handles telephone inputs with a basic text field with forced constraints.
+ * - Functional binding: <span color=00ffff>veTelephone</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link string} - The current telephone number stored by the component.
+ * - `arg1_options`: {@link Object}
+ *   - `.disabled=false`: {@link boolean}
+ *   - `.placeholder="+(XX)-000-000-0000"`: {@link string}
+ * 
+ * ##### Instance:
+ * - `.v`: {@link string}
+ * 
+ * @type {ve.Telephone}
+ */
+ve.Telephone = class extends ve.Component {
 	static demo_value = "+1-800-800-8000";
 	
 	constructor (arg0_value, arg1_options) {
@@ -42,11 +59,23 @@ ve.Telephone = class veTelephone extends ve.Component {
 		this.v = this.value;
 	}
 	
+	/**
+	 * Returns the present telephone number.
+	 * - Accessor of: {@link ve.Telephone}
+	 * 
+	 * @returns {string}
+	 */
 	get v () {
 		//Return statement
 		return this.value;
 	}
 	
+	/**
+	 * Sets a new telephone number for the given component.
+	 * - Accessor of: {@link ve.Telephone}
+	 * 
+	 * @param arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -56,4 +85,14 @@ ve.Telephone = class veTelephone extends ve.Component {
 		this.element.querySelector("input").value = this.value;
 		this.fireFromBinding();
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Telephone}
+ */
+veTelephone = function () {
+	//Return statement
+	return new ve.Telephone(...arguments);
 };

@@ -1,4 +1,21 @@
-ve.Password = class vePassword extends ve.Component {
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Password input for the end user.
+ * - Functional binding: <span color=00ffff>vePassword</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link string} - The password placeholder for the given input.
+ * - `arg1_options`: {@link Object}
+ *   - `.disabled=false`: {@link boolean}
+ * 
+ * ##### Instance:
+ * - `.v`: {@link string}
+ * 
+ * @augments {@link ve.Component}
+ * @type {ve.Password}
+ */
+ve.Password = class extends ve.Component {
 	static demo_value = "password";
 	
 	constructor (arg0_value, arg1_options) {
@@ -38,11 +55,23 @@ ve.Password = class vePassword extends ve.Component {
 		this.v = this.value;
 	}
 	
+	/**
+	 * Returns the current password.
+	 * - Accessor of: {@link ve.Password}
+	 * 
+	 * @returns {string}
+	 */
 	get v () {
 		//Return statement
 		return this.value;
 	}
 	
+	/**
+	 * Sets the new password for the present component.
+	 * - Accessor of: {@link ve.Password}
+	 * 
+	 * @param {string} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -52,4 +81,10 @@ ve.Password = class vePassword extends ve.Component {
 		this.element.querySelector("input").value = this.value;
 		this.fireFromBinding();
 	}
+};
+
+//Functional binding
+vePassword = function () {
+	//Return statement
+	return new ve.Password(...arguments);
 };

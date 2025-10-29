@@ -1,11 +1,10 @@
 /**
+ * Refer to <span color = "yellow">{@link ve.Feature}</span> for methods or fields inherited from the parent, such as automatic destructuring. 
+ * 
  * Represents a Navbar Feature, ideally at the global level (unless it is specifically bound to an element in .options).
- * @type {ve.Navbar}
+ * - Functional binding: <span color=00ffff>veNavbar</span>().
  * 
- * ##### DOM:
- * - `.instance`: this:{@link ve.Window}
- * 
- * ##### Options:
+ * ##### Constructor:
  * - `arg0_navbar_obj`: {@link Object}
  *   - `<tab_key>`: {@link Object}
  *     - `name`: {@link string}
@@ -27,6 +26,9 @@
  *     
  * ##### Methods:
  * - <span color=00ffff>{@link ve.Navbar.generateHTMLRecursively|generateHTMLRecursively}</span>(arg0_navbar_obj: {@link Object}) | {@link HTMLUListElement}
+ * 
+ * @augments {@link ve.Feature}
+ * @type {ve.Navbar}
  */
 ve.Navbar = class extends ve.Feature {
 	constructor (arg0_navbar_obj, arg1_options) {
@@ -135,4 +137,14 @@ ve.Navbar = class extends ve.Feature {
 		
 		return ul_el;
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Navbar}
+ */
+veNavbar = function () {
+	//Return statement
+	return new ve.Navbar(...arguments);
 };

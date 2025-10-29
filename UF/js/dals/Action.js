@@ -17,6 +17,8 @@ DALS.Action = class {
 		
 		//Declare local instance variables
 		this.id = Class.generateRandomID(DALS.Action);
+		this.options = options;
+		this.name = (this.options.name) ? this.options.name : "New Action";
 		this.redo_function = redo_function;
 		this.timeline = undefined; //Populated upon .addAction()
 		

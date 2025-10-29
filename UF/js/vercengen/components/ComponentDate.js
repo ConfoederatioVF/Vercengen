@@ -1,41 +1,24 @@
 /**
- * <span color = "yellow">{@link ve.Date}</span>:ve.Date
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Date component used for selecting historical dates over the long run. The value stored is an object with the structure { year: {@link number}, month: {@link number}, day: {@link number}, hour: {@link number}, minute: {@link number} }, with negative years representing BC. This data structure is otherwise known as a {@link UF.Date}.
+ * - Functional binding: <span color=00ffff>veDate</span>().
  * 
  * ##### Constructor:
- * - `arg0_value`: {@link Object}
- *   - `.year`: {@link number}
- *   - `.month`: {@link number}
- *   - `.day`: {@link number}
- *   - `.hour`: {@link number}
- *   - `.minute`: {@link number}
+ * - `arg0_value`: {@link UF.Date}
  * - `arg1_options`: {@link Object}
- *   - `.attributes`: {@link Object}
- *     - `<attribute_key>`: {@link string}
- *   - `.name`: {@link string}
- *   - `.onchange`: {@link function}(this:{@link ve.Date})
- *   - `.style`: {@link Object}
- *     - `<style_key>`: {@link string}
- * 
- * ##### DOM:
- * - `.instance`: this:{@link ve.Date}
+ *   - `.disabled=false`: {@link boolean}
  * 
  * ##### Instance:
- * - `.element`: {@link HTMLElement}
- * - `.name`: {@link string}
- * - `.v`: {@link Object}
- *   - `.year`: {@link number}
- *   - `.month`: {@link number}
- *   - `.day`: {@link number}
- *   - `.hour`: {@link number}
- *   - `.minute`: {@link number}
+ * - `.v`: {@link UF.Date}
  * 
  * ##### Methods:
- * - <span color=00ffff>{@link ve.Date.handleEvents|handleEvents}</span>()
- * - <span color=00ffff>{@link ve.Date.remove|remove}</span>()
+ * - <span color=00ffff>{@link ve.Date.handleEvents|handleEvents}</span>() - Used internally to handle events for all date inputs.
  * 
+ * @augments {@link ve.Component}
  * @type {ve.Date}
  */
-ve.Date = class veDate extends ve.Component {
+ve.Date = class extends ve.Component {
 	static demo_value = Date.getCurrentDate();
 	
 	constructor (arg0_value, arg1_options) {
@@ -85,6 +68,12 @@ ve.Date = class veDate extends ve.Component {
 		this.v = this.value;
 	}
 	
+	/**
+	 * Returns the date contained in the present component.
+	 * - Accessor of: {@link ve.Date}
+	 * 
+	 * @returns {{year: number, month: number, day: number, hour: number, minute: number}}
+	 */
 	get v () {
 		//Determine if #year-type needs a flip for this.value
 		if (this.element.querySelector(`#year-type`).innerHTML === "BC")
@@ -94,6 +83,12 @@ ve.Date = class veDate extends ve.Component {
 		return Date.convertTimestampToDate(this.value);
 	}
 	
+	/**
+	 * Sets the date contained in the present component.
+	 * - Accessor of: {@link ve.Date}
+	 * 
+	 * @param {{year: number, month: number, day: number, hour: number, minute: number}} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = (arg0_value) ? Date.convertTimestampToDate(arg0_value) : Date.getCurrentDate();
@@ -124,8 +119,7 @@ ve.Date = class veDate extends ve.Component {
 	
 	/**
 	 * Handles input events for {@link ve.Date}. Local helper function, since inputs need to be constrained to valid dates to remain fluid.
-	 * 
-	 * @typedef ve.Date.handleEvents
+	 * - Method of: {@link ve.Date}
 	 */
 	handleEvents () {
 		this.element.querySelector(`#year`).addEventListener("change", (e) => {
@@ -215,4 +209,14 @@ ve.Date = class veDate extends ve.Component {
 			this.fireToBinding();
 		});
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Date}
+ */
+veDate = function () {
+	//Return statement
+	return new ve.Date(...arguments);
 };

@@ -1,4 +1,28 @@
-ve.Range = class veRange extends ve.Component {
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Creates a range selector, typically between 0-1 with a 0,01 step. These may be customised in set options.
+ * - Functional binding: <span color=00ffff>veRange</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link number}
+ * - `arg1_options`: {@link Object}
+ *   - `.disabled=false`: {@link boolean}
+ *   - `.max=1`: {@link number}
+ *   - `.min=0`: {@link number}
+ *   - `.step=0.01`: {@link number}
+ * 
+ * ##### Instance:
+ * - `.v`: {@link number} 
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.Range.toString|toString}</span>() | {@link string}
+ * - <span color=00ffff>{@link ve.Range.valueOf|valueOf}</span>() | {@link number}
+ * 
+ * @augments {@link ve.Component}
+ * @type {ve.Range}
+ */
+ve.Range = class extends ve.Component {
 	static demo_value = 0.50;
 	
 	constructor (arg0_value, arg1_options) {
@@ -43,11 +67,23 @@ ve.Range = class veRange extends ve.Component {
 		this.v = this.value;
 	}
 	
+	/**
+	 * Returns the number currently selected by the {@link ve.Range}.
+	 * - Accessor of: {@link ve.Range}
+	 * 
+	 * @returns {number}
+	 */
 	get v () {
 		//Return statement
 		return this.value;
 	}
 	
+	/**
+	 * Sets the number currently selected by {@link ve.Range}
+	 * - Accessor of: {@link ve.Range}
+	 * 
+	 * @param {number} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -60,11 +96,36 @@ ve.Range = class veRange extends ve.Component {
 	}
 	
 	//Class methods
+	
+	/**
+	 * Converts the present value to a string and returns it.
+	 * - Method of: {@link ve.Range}
+	 * 
+	 * @returns {string}
+	 */
 	toString () {
+		//Return statement
 		return String(this.value);
 	}
 	
+	/**
+	 * Returns the number stored by the present string.
+	 * - Method of: {@link ve.Range}
+	 * 
+	 * @returns {number}
+	 */
 	valueOf () {
+		//Return statement
 		return this.value;
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Range}
+ */
+veRange = function () {
+	//Return statement
+	return new ve.Range(...arguments);
 };

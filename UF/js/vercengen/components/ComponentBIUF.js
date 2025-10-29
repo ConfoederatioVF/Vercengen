@@ -1,8 +1,32 @@
-ve.BIUF = class veBIUF extends ve.Component {
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Single-line rich text editor with bold, italic, underline, and clear text formatting options. 
+ * 
+ * Stands for Bold, Italic, Underline, Formatting.
+ * - Functional binding: <span color=00ffff>veBIUF</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link string} - The HTML content to initialise the component with.
+ * - `arg1_options`: {@link Object}
+ *   - `.disabled=false`: {@link boolean} - Controls the .readonly attribute.
+ * 
+ * ##### Instance:
+ * - `.v`: {@link string} - Returns an HTML string.
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.BIUF.handleBIUF|handleBIUF}</span>(arg0_biuf_el:{@link HTMLElement})
+ * - <span color=00ffff>{@link ve.BIUF.initBIUFToolbar|initBIUFToolbar}</span>()
+ * - <span color=00ffff>{@link ve.BIUF.sendOnchangeEvent|sendOnchangeEvent}</span>()
+ * 
+ * @augments {@link ve.Component}
+ * @type {ve.ComponentBIUF}
+ */
+ve.ComponentBIUF = class extends ve.Component {
 	static demo_value = `<b>Bold</b> <i>Italic</i>, <u>Underline</u>, and regular text formatting are supported by BIUF fields.`;
 	static demo_options = {
 		onchange: (e) => {
-			console.log(`ve.BIUF:`, e);
+			console.log(`ve.ComponentBIUF:`, e);
 		}
 	};
 	
@@ -51,11 +75,23 @@ ve.BIUF = class veBIUF extends ve.Component {
 		this.v = this.value;
 	}
 	
+	/**
+	 * Returns the current HTML content in the present Component.
+	 * - Accessor of {@link ve.ComponentBIUF}
+	 * 
+	 * @returns {string}
+	 */
 	get v () {
 		//Return statement
 		return this.element.querySelector(`#biuf-input`).innerHTML;
 	}
 	
+	/**
+	 * Sets the HTML content value for {@link ve.ComponentBIUF}
+	 * - Accessor of {@link ve.ComponentBIUF}
+	 * 
+	 * @param {string} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : "";
@@ -66,6 +102,13 @@ ve.BIUF = class veBIUF extends ve.Component {
 	}
 	
 	//Internal helper functions
+	
+	/**
+	 * Initialises all event handlers for BIUF buttons and keybinds.
+	 * - Method of: {@link ve.ComponentBIUF}
+	 * 
+	 * @param {HTMLElement} arg0_biuf_el - The mounted BIUF element.
+	 */
 	handleBIUF (arg0_biuf_el) {
 		//Convert from parameters
 		let biuf_el = arg0_biuf_el;
@@ -88,6 +131,10 @@ ve.BIUF = class veBIUF extends ve.Component {
 		}
 	}
 	
+	/**
+	 * Initialises the present BIUF toolbar.
+	 * - Method of: {@link ve.ComponentBIUF}
+	 */
 	initBIUFToolbar () {
 		//Declare local instance variables
 		let toolbar_el = this.element.querySelector(`#biuf-toolbar`);
@@ -129,8 +176,22 @@ ve.BIUF = class veBIUF extends ve.Component {
 		});
 	}
 	
+	/**
+	 * Fires an onuserchange event whilst synchronising the present value.
+	 * - Method of: {@link ve.ComponentBIUF}
+	 */
 	sendOnchangeEvent () {
 		this.value = this.v;
 		this.fireToBinding();
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.ComponentBIUF}
+ */
+veBIUF = function () {
+	//Return statement
+	return new ve.ComponentBIUF(...arguments);
 };

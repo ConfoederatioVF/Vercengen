@@ -1,4 +1,21 @@
-ve.URL = class veURL extends ve.Component {
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Used to insert a link/URL, typically with an associated WYSIWYG hyperlink for the user to preview.
+ * - Functional binding: <span color=00ffff>veURL</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link string}
+ * - `arg1_options`: {@link Object}
+ *   - `.disabled=false`: {@link boolean}
+ *   
+ * ##### Instance:
+ * - `.v`: {@link string}
+ * 
+ * @augments {@link ve.Component}
+ * @type {ve.URL}
+ */
+ve.URL = class extends ve.Component {
 	static demo_value = "https://confoederatio.org";
 	
 	constructor (arg0_value, arg1_options) {
@@ -43,11 +60,23 @@ ve.URL = class veURL extends ve.Component {
 		this.v = this.value;
 	}
 	
+	/**
+	 * Returns the present URL.
+	 * - Accessor of: {@link ve.URL}
+	 * 
+	 * @returns {string}
+	 */
 	get v () {
 		//Return statement
 		return this.value;
 	}
 	
+	/**
+	 * Sets the URL of the present component.
+	 * - Accessor of: {@link ve.URL} 
+	 * 
+	 * @param {string} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -58,4 +87,14 @@ ve.URL = class veURL extends ve.Component {
 		this.element.querySelector(`#open-link`).setAttribute("valid-url", value.isURL());
 		this.fireFromBinding();
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.URL}
+ */
+veURL = function () {
+	//Return statement
+	return new ve.URL(...arguments);
 };

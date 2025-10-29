@@ -1,36 +1,31 @@
 /**
- * <span color = "yellow">{@link ve.Component}</span>:ve.PageMenu
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Multipage menu with a relative topbar for the user to switch between tabs. Contains an interface otherwise.
+ * - Functional binding: <span color=00ffff>vePageMenu</span>().
  * 
  * ##### Constructor:
  * - `arg0_page_obj`: {@link Object}
  *   - `<page_key>`: {@link Object}
- *     - `.name`: {@link string} - '<page_key>' by default.
- *     - `.components_obj:` {@link Object}<{@link ve.Component}>
- *     - `.options`: {@link Object} - Options for the {@link ve.Interface} .components_obj will be wrapped inside.
+ *     - `.name`: {@link string}
+ *     - `.components_obj`: {@link Object}<{@link ve.Component}>
  * - `arg1_options`: {@link Object}
- *   - `.attributes`: {@link Object}
- *     - `<attribute_key>`: {@link string}
- *   - `.name`: {@link string} - Refers to the name of the current page.
- *   - `.onchange`: {@link function}(this:{@link ve.PageMenu})
- *   - `.style`: {@link Object}
- *     - `<style_key>`: {@link string}
- *     
- * ##### DOM:
- * - `.instance`: this:{@link ve.PageMenu}
+ *   - `.starting_page=Object.keys(page_obj)[0]`
  * 
  * ##### Instance:
- * - `.element`: {@link HTMLElement}
- * - `.name`: {@link string}
- * - `.v`: {@link string} - Refers to the current page the {@link ve.PageMenu} should be set to.
+ * - `.interface_el`: {@link HTMLElement}
+ * - `.interfaces_obj`: {@link Object}<{@link ve.Interface}> - Contains all interfaces in all pages.
+ * - `.navbar_el`: {@link HTMLElement}
+ * - `.underline_el`: {@link HTMLElement}
+ * - `.v`: {@link string} - The current `<page_key>` selected by the ve.PageMenu.
  * 
  * ##### Methods:
- * - <span color=00ffff>{@link ve.PageMenu.remove|remove}</span>()
- * - <span color=00ffff>{@link ve.PageMenu.updateUnderline|updateUnderline}</span>() - Updates the underline to the correct active tab. Might also need to be called during resize events.
+ * - <span color=00ffff>{@link ve.PageMenu.updateUnderline|updateUnderline}</span>()
  * 
- * @function vePageMenu
+ * @augments {@link ve.Component}
  * @type {ve.PageMenu}
  */
-ve.PageMenu = class vePageMenu extends ve.Component { //[WIP] - This should be updated later to allow arg0_page_obj to take in Array<components_obj> instead, which would create a conventional paginated menu instead of a tabbed one.
+ve.PageMenu = class extends ve.Component { //[WIP] - This should be updated later to allow arg0_page_obj to take in Array<components_obj> instead, which would create a conventional paginated menu instead of a tabbed one.
 	static demo_value = {
 		page_one: {
 			name: "Home",
@@ -112,11 +107,23 @@ ve.PageMenu = class vePageMenu extends ve.Component { //[WIP] - This should be u
 		}
 	}
 	
+	/**
+	 * Returns the current page visible in the component.
+	 * - Accessor of: {@link ve.Interface}
+	 * 
+	 * @returns {string}
+	 */
 	get v () {
 		//Return statement
 		return this.navbar_el.querySelector(`.tab.active`).id;
 	}
 	
+	/**
+	 * Sets the new page visible by the component.
+	 * - Accessor of: {@link ve.Interface}
+	 * 
+	 * @param {string} arg0_page_key
+	 */
 	set v (arg0_page_key) {
 		//Convert from parameters
 		let page_key = arg0_page_key;
@@ -145,8 +152,6 @@ ve.PageMenu = class vePageMenu extends ve.Component { //[WIP] - This should be u
 	/**
 	 * Updates the underline underneath the active tab and animates it.
 	 * - Method of: {@link ve.PageMenu}
-	 * 
-	 * @typedef ve.PageMenu.updateUnderline
 	 */
 	updateUnderline () {
 		//Declare local instance variables
@@ -168,4 +173,14 @@ ve.PageMenu = class vePageMenu extends ve.Component { //[WIP] - This should be u
 			this.underline_el.style.width = `${tab_width}px`;
 		});
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.PageMenu}
+ */
+vePageMenu = function () {
+	//Return statement
+	return new ve.PageMenu(...arguments);
 };

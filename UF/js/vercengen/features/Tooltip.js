@@ -1,16 +1,22 @@
 /**
- * Represents a Tooltip Feature that contains a set of components which are wrapped inside an Interface.
- * @type {ve.Tooltip}
+ * Refer to <span color = "yellow">{@link ve.Feature}</span> for methods or fields inherited from the parent, such as automatic destructuring.
  * 
- * ##### DOM:
- * - `.instance`: this:{@link ve.Tooltip}
+ * Represents a Tooltip Feature that contains a set of components which are wrapped inside an Interface. This uses a {@link tippy} element.
+ * - Functional binding: <span color=00ffff>veTooltip</span>().
  * 
- * ##### Options:
+ * ##### Constructor:
  * - `arg0_components_obj`: {@link function}|{@link Object}<{@link ve.Component}>|{@link string}
  * - `arg1_options`: {@link Object}
  *   - `attributes`: {@link Object}<{@link string}>
  *   - `element`: {@link HTMLElement}|{@link string} - The anchor element that ve.Tooltip should be bound to.
  *   - `style`: {@linK Object}<{@link string}>
+ *     
+ * ##### Instance:
+ * - `.anchor_element`: {@link HTMLElement}
+ * - `.v`: {@link HTMLElement}
+ *     
+ * @augments {@link ve.Feature}
+ * @type {ve.Tooltip}
  */
 ve.Tooltip = class extends ve.Feature {
 	constructor (arg0_components_obj, arg1_options) {
@@ -60,4 +66,14 @@ ve.Tooltip = class extends ve.Feature {
 			this.element.innerHTML = components_obj;
 		}
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Tooltip}
+ */
+veTooltip = function () {
+	//Return statement
+	return new ve.Tooltip(...arguments);
 };

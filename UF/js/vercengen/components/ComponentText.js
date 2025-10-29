@@ -1,4 +1,23 @@
-ve.Text = class veText extends ve.Component {
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Generic single-line text input without rich text formatting options.
+ * - Functional binding: <span color=00ffff>veText</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link string}
+ * - `arg1_options`: {@link Object}
+ *   - `.disabled=false`: {@link boolean}
+ *   - `.length`: {@link number}
+ *   - `.max`: {@link number}
+ *   - `.min`: {@link number}
+ * 
+ * ##### Instance:
+ * - `.v`: {@link string}
+ * 
+ * @type {ve.Text}
+ */
+ve.Text = class extends ve.Component {
 	static demo_value = "Lorem ipsum dolor text amet";
 	
 	constructor (arg0_value, arg1_options) {
@@ -43,11 +62,23 @@ ve.Text = class veText extends ve.Component {
 		this.v = this.value;
 	}
 	
+	/**
+	 * Returns the current text value.
+	 * - Accessor of: {@link ve.Text}
+	 * 
+	 * @returns {string}
+	 */
 	get v () {
 		//Return statement
 		return this.value;
 	}
 	
+	/**
+	 * Sets the current text value for the component.
+	 * - Accessor of: {@link ve.Text}
+	 * 
+	 * @param {string} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -57,4 +88,14 @@ ve.Text = class veText extends ve.Component {
 		this.element.querySelector("input").value = this.value;
 		this.fireFromBinding();
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Text}
+ */
+veText = function () {
+	//Return statement
+	return new ve.Text(...arguments);
 };

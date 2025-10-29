@@ -1,4 +1,37 @@
-ve.Interface = class veInterface extends ve.Component {
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Interface used for encapsulating other {@link ve.Component}s in a grid-like formatting pattern. Recursive.
+ * - Functional binding: <span color=00ffff>veInterface</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_components_obj`: {@link Object}<{@link ve.Component}>
+ * - `arg1_options`: {@link Object}
+ *   - `.is_folder=false`: {@link boolean}
+ *   - `.open=false`: {@link boolean}
+ * 
+ * ##### Instance:
+ * - `<component_key>`: {@link ve.Component} - Automatic destructuring for component_key.
+ * - `.components_obj`: {@link Object}<{@link ve.Component}> - Internal private field for `.v`.
+ * - `.dimensions=[0,0]`: {@link Array}<{@link number}, {@link number}>
+ *   `.reserved_keys`: {@link Array}<{@link string}> - Controls what keys are reserved and cannot be destructured.
+ * - `.v`: {@link Object}<{@link ve.Component}>
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.Interface.addComponent|addComponent}</span>(arg0_component_key:{@link string}, arg1_component_obj:{@link ve.Component})
+ * - <span color=00ffff>{@link ve.Interface.redraw|redraw}</span>() - Recalculates coordinates before calling {@link ve.Interface.refresh|this.refresh}().
+ * - <span color=00ffff>{@link ve.Interface.refresh|refresh}</span>() - Redraws the present interface without recalculating coordinates.
+ * - <span color=00ffff>{@link ve.Interface.removeComponent|removeComponent}</span>(arg0_component_obj:{@link ve.Component})
+ * - <span color=00ffff>{@link ve.Interface.resize|resize}</span>(arg0_width:{@link number}, arg1_height:{@link number})
+ * 
+ * ##### Static Methods:
+ * - <span color=00ffff>{@link ve.Interface.assignComponentCoordinates|assignComponentCoordinates}</span>(arg0_components_obj:{@link Object}<{@link ve.Component}>)
+ * - <span color=00ffff>{@link ve.Interface.getDefinedComponentDimensions|getDefinedComponentDimensions}</span>(arg0_components_obj:{@link Object}<{@link ve.Component}>)
+ * 
+ * @augments {@link ve.Component}
+ * @type {ve.Interface}
+ */
+ve.Interface = class extends ve.Component {
 	static demo_value = {
 		submenu_html: new ve.HTML("This is hidden HTML.")
 	};
@@ -17,6 +50,7 @@ ve.Interface = class veInterface extends ve.Component {
 			open: options.open,
 			...options.attributes
 		};
+		
 		this.components_obj = components_obj;
 		this.dimensions = [0, 0]; //Populate this.dimensions to [width, height];
 		this.element = document.createElement("div");
@@ -42,11 +76,23 @@ ve.Interface = class veInterface extends ve.Component {
 		this.v = components_obj;
 	}
 	
+	/**
+	 * Returns the  `this.components_obj` variable of the present Component.
+	 * - Accessor of: {@link ve.Interface}
+	 * 
+	 * @returns {{"<component_key>": ve.Component}}
+	 */
 	get v () {
 		//Return statement
 		return this.components_obj;
 	}
 	
+	/**
+	 * Sets a new `this.components_obj` variable for the present Component and redraws the interface.
+	 * - Accessor of: {@link ve.Interface}
+	 * 
+	 * @param {{"<component_key>": ve.Component}} arg0_components_obj
+	 */
 	set v (arg0_components_obj) { //[WIP] - Work on destructuring bindings
 		//Convert from parameters
 		let components_obj = arg0_components_obj;
@@ -72,79 +118,25 @@ ve.Interface = class veInterface extends ve.Component {
 	}
 	
 	/**
-	 * Iterates over all components and assigns their coordinates.
-	 * @param {Object} arg0_components_obj
+	 * Adds a new component and destructures it to the present component before redrawing the ve.Interface.
+	 * - Method of: {@link ve.Interface}
+	 * 
+	 * @param {string} arg0_component_key
+	 * @param {ve.Component} arg1_component_obj
 	 */
-	static assignComponentCoordinates (arg0_components_obj) {
+	addComponent (arg0_component_key, arg1_component_obj) {
 		//Convert from parameters
-		let components_obj = arg0_components_obj;
-		
-		//Declare local instance variables
-		let defined_dimensions = ve.Interface.getDefinedComponentDimensions(components_obj);
-		
-		//2. Append undefined coordinates vertically to their relevant X or Y axis, depending on which is defined. Vertical stacking with X = 0 defined by default
-		Object.iterate(components_obj, (local_key, local_value) => {
-			try {
-				if (local_value.is_vercengen_component) {
-					let has_x = (typeof local_value.x === "number");
-					let has_y = (typeof local_value.y === "number");
-					
-					if (has_x && has_y) return;
-					
-					if (!has_x && has_y) {
-						defined_dimensions[0]++;
-						local_value.x = defined_dimensions[0];
-					} else if (has_x && !has_y) {
-						defined_dimensions[1]++;
-						local_value.y = defined_dimensions[1];
-					} else {
-						local_value.x = 0;
-						
-						defined_dimensions[1]++;
-						local_value.y = defined_dimensions[1];
-					}
-				}
-			} catch (e) { console.error(e); }
-		});
-		
-		//Return statement
-		return components_obj;
-	}
-	
-	static getDefinedComponentDimensions (arg0_components_obj) {
-		//Convert from parameters
-		let components_obj = arg0_components_obj;
-		
-		//Declare local instance variables
-		let defined_dimensions = [0, 0];
-		
-		//Fetch defined dimensions [width, height] by iterating over components_obj
-		Object.iterate(components_obj, (local_key, local_value) => {
-			try {
-				if (local_value.is_vercengen_component)
-					if (typeof local_value.x === "number" && typeof local_value.y === "number") {
-						defined_dimensions[0] = Math.max(defined_dimensions[0], local_value.x);
-						defined_dimensions[1] = Math.max(defined_dimensions[1], local_value.y);
-					}
-			} catch (e) { console.error(e); }
-		});
-		
-		//Return statement
-		return defined_dimensions;
-	}
-	
-	addComponent (arg0_component_id, arg1_component_obj) {
-		//Convert from parameters
-		let component_id = arg0_component_id;
+		let component_key = arg0_component_key;
 		let component_obj = arg1_component_obj;
 		
 		//Assign x, y coordinates to component_obj
-		this.components_obj[component_id] = component_obj;
+		this.components_obj[component_key] = component_obj;
 		this.redraw();
 	}
 	
 	/**
 	 * Redraws the entire UI for {@link ve.Interface}, including refreshing individual table cells.
+	 * - Method of: {@link ve.Interface}
 	 */
 	redraw () {
 		this.components_obj = ve.Interface.assignComponentCoordinates(this.components_obj);
@@ -155,6 +147,10 @@ ve.Interface = class veInterface extends ve.Component {
 		this.refresh();
 	}
 	
+	/**
+	 * Refreshes the current UI without recalculating coordinates.
+	 * - Method of: {@link ve.Interface}
+	 */
 	refresh () {
 		//Iterate over all extant this.components_obj and remove all their elements
 		Object.iterate(this.components_obj, (local_key, local_value) => {
@@ -190,6 +186,12 @@ ve.Interface = class veInterface extends ve.Component {
 		});
 	}
 	
+	/**
+	 * Removes a component mounted to the current interface.
+	 * - Method of: {@link ve.Interface}
+	 * 
+	 * @param {ve.Component} arg0_component_obj
+	 */
 	removeComponent (arg0_component_obj) {
 		//Convert from parameters
 		let component_obj = arg0_component_obj;
@@ -200,6 +202,12 @@ ve.Interface = class veInterface extends ve.Component {
 				component_obj.element.parentElement.removeChild(component_obj.element);
 	}
 	
+	/**
+	 * Resizes the `.dimensions` of the present interface component.
+	 * 
+	 * @param {number} arg0_width
+	 * @param {number} arg1_height
+	 */
 	resize (arg0_width, arg1_height) {
 		//Convert from parameters
 		let width = parseInt(arg0_width);
@@ -251,4 +259,85 @@ ve.Interface = class veInterface extends ve.Component {
 			for (let x = 0; x < table_el.rows[i].cells.length; x++)
 				table_el.rows[i].cells[x].id = `${x}-${i}`;
 	}
+	
+	/**
+	 * Iterates over all components and assigns their coordinates.
+	 * - Static method of: {@link ve.Interface}
+	 * 
+	 * @param {Object} arg0_components_obj
+	 */
+	static assignComponentCoordinates (arg0_components_obj) {
+		//Convert from parameters
+		let components_obj = arg0_components_obj;
+		
+		//Declare local instance variables
+		let defined_dimensions = ve.Interface.getDefinedComponentDimensions(components_obj);
+		
+		//2. Append undefined coordinates vertically to their relevant X or Y axis, depending on which is defined. Vertical stacking with X = 0 defined by default
+		Object.iterate(components_obj, (local_key, local_value) => {
+			try {
+				if (local_value.is_vercengen_component) {
+					let has_x = (typeof local_value.x === "number");
+					let has_y = (typeof local_value.y === "number");
+					
+					if (has_x && has_y) return;
+					
+					if (!has_x && has_y) {
+						defined_dimensions[0]++;
+						local_value.x = defined_dimensions[0];
+					} else if (has_x && !has_y) {
+						defined_dimensions[1]++;
+						local_value.y = defined_dimensions[1];
+					} else {
+						local_value.x = 0;
+						
+						defined_dimensions[1]++;
+						local_value.y = defined_dimensions[1];
+					}
+				}
+			} catch (e) { console.error(e); }
+		});
+		
+		//Return statement
+		return components_obj;
+	}
+	
+	/**
+	 * Returns the current `.dimensions` [width, height] of defined components prior to assigning coordinates to non-defined coordinates.
+	 * 
+	 * @param {{"<component_key>": ve.Component}} arg0_components_obj
+	 * 
+	 * @returns {number[]}
+	 */
+	static getDefinedComponentDimensions (arg0_components_obj) {
+		//Convert from parameters
+		let components_obj = arg0_components_obj;
+		
+		//Declare local instance variables
+		let defined_dimensions = [0, 0];
+		
+		//Fetch defined dimensions [width, height] by iterating over components_obj
+		Object.iterate(components_obj, (local_key, local_value) => {
+			try {
+				if (local_value.is_vercengen_component)
+					if (typeof local_value.x === "number" && typeof local_value.y === "number") {
+						defined_dimensions[0] = Math.max(defined_dimensions[0], local_value.x);
+						defined_dimensions[1] = Math.max(defined_dimensions[1], local_value.y);
+					}
+			} catch (e) { console.error(e); }
+		});
+		
+		//Return statement
+		return defined_dimensions;
+	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Interface}
+ */
+veInterface = function () {
+	//Return statement
+	return new ve.Interface(...arguments);
 };

@@ -1,3 +1,94 @@
+/**
+ * <span color = "yellow">{@link ve.Component}</span>: Components represent inputs and displays that yield a value via `.v`. They are typically encapsulated by a <span color="yellow">{@link ve.Feature}</span>, but can be manually mounted via <span color=00ffff>{@link ve.Component.bind|bind}</span>(arg0_container_el:{@link HTMLElement}).
+ * 
+ * ##### Constructor:
+ * - `arg0_options`: {@link Object}
+ *   - All bindings accept 'this'/'global'/'window' variables.
+ *   - `.binding`: {@link string} - Related event: `.onchange`. Bidirectional data binding for both `.from_binding`/`.to_binding`.
+ *   - `.from_binding`: {@link string} - Related event: `.onprogramchange`. Unidirectional data binding.
+ *   - `.to_binding`: {@link string} - Related event: `.onuserchange`. Unidirectional data binding.
+ *   - 
+ *   - `.onchange`: {@link function}(this.v, this:{@link ve.Component})
+ *   - `.onprogramchange`: {@link function}(this.v, this:{@link ve.Component})
+ *   - `.onuserchange`: {@link function}(this.v, this:{@link ve.Component})
+ *   -
+ *   - `.attributes`: {@link Object} - Any attributes to place on the mounted `this.element`.
+ *     - `<attribute_key>`: {@link string}
+ *   - `.limit=true`: {@link function}(this.v)|{@link undefined} | {@link boolean} - Whether to display the current Component. Immediate mode.
+ *   - `.onload`: {@link function}(this:{@link ve.Component})
+ *   - `.tooltip`: {@link Object}<{@link ve.Component}>|{@link string}
+ *   - `.style`: {@link Object} - The CSS/Telestyle object to use for the current element. Immediate mode CSS if function is declared.
+ *     - `<selector_key>`: {@link string} - CSS query selector. :nth-parent() is acceptable.
+ *       - `<css_property>`: {@link function}|{@link string}
+ *     - `<css_property>`: {@link function}|{@link string}
+ *
+ * ##### DOM:
+ * - `.instance`: this:{@link ve.Component}
+ *
+ * ##### Instance:
+ * - `.child_class=this.constructor`: {@link ve.Component} - The constructor object of the child class.
+ * - `.is_vercengen_component=true`: {@link boolean} - Whether to mark this ve.Component as a Vercengen component.
+ * - `.parent_el`: {@link HTMLElement} - The parent element of the current component, should it exist.
+ * -
+ * - `.height=1`: {@link number}
+ * - `.width=1`: {@link number}
+ * - `.x=0`: {@link number} - Switches to an n+1 default if only `.y` is defined.
+ * - `.y=n + 1`: {@link number} - Switches to 0 if only `.x` is defined.
+ * -
+ * - The linter/engine guarantees the following fields:
+ * - `.element`: {@link HTMLElement} - The HTMLElement that the ve.Component is mounted to.
+ * - `.name`: {@link string} - The name to display for the current ve.Component.
+ * - `.owner`: {@link any} - The root owner of the current ve.Component. This is typically a {@link ve.Class}, but can also be a {@link ve.Feature} or {@link global}/{@link window}.
+ * - `.owners`: {@link Array}<{@link any}> - A list of relevant owners in descending orders.
+ * - `.v`: {@link any} - The value stored by the component. Getter/setter.
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.Component.addComponent|addComponent}</span>() - Attempts to mount the current component on its parent_el.
+ * - <span color=00ffff>{@link ve.Component.bind|bind}</span>(arg0_container_el:{@link HTMLElement}) - Manually mounts the current component to arg0_container_el.
+ * - <span color=00ffff>{@link ve.Component.fireFromBinding|fireFromBinding}</span>() - Pseudo-setter from binding. Fires only upon program-driven changes to `.v` directly.
+ * - <span color=00ffff>{@link ve.Component.fireToBinding|fireToBinding}</span>() - Pseudo-setter to binding. Fires only upon user-driven changes to `.v`.
+ * - <span color=00ffff>{@link ve.Component.remove|remove}</span>() - Removes the component/element from the DOM.
+ * - <span color=00ffff>{@link ve.Component.removeComponent|removeComponent}</span>() - Unmounts the current component from its parent_el.
+ * - <span color=00ffff>{@link ve.Component.setOwner|setOwner}</span>(arg0_value:{@link Object}, arg1_owner_array=[]:{@link Array}<{@link Object}>) - Used by the reflection engine in {@link ve.Class} to set the owner hierarchy automatically.
+ * 
+ * ##### Static Methods:
+ * - <span color=00ffff>{@link ve.Component.linter|linter}</span>() - Run at startup if {@link ve.debug_mode} is true. Lints all Vercengen components.
+ * 
+ * ##### Types:
+ * Types are annotated by both their constructor function and what they return after the pipe separator (`.v`). 
+ * 
+ * \* indicates a recursive Object of that type.
+ * - {@link ve.FileExplorer|veFileExplorer}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string} - The file path the File Explorer is currently navigating.
+ * - {@link ve.Hierarchy|veHierarchy}(arg0_value:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) | {@link Object}<{@link ve.Component}> - Note. It is recommended to use {@link ve.HierarchyDatatype} as the specific {@link ve.Component} for `arg0_value`.
+ *   - {@link ve.HierarchyDatatype|veHierarchyDatatype}({@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) | {@link Object}<{@link ve.Component}> - Represents individual items in a hierarchy.
+ * 
+ * - {@link ve.BIUF|veBIUF}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string} - Single-line rich text input. `.v` is an HTML string.
+ * - {@link ve.Button|veButton}(arg0_value:{@link function}, arg1_options:{@link Object}) | {@link function}
+ * - {@link ve.Checkbox|veCheckbox}(arg0_value:{@link boolean}|{@link Object}<{@link boolean}>\*, arg1_options: {@link Object}) | {@link boolean}|{@link Object}<{@link boolean}>\* - A recursive list of checkboxes, or a single toggleable input.
+ * - {@link ve.Colour|veColour}(arg0_value:{@link Array}<{@link number}, {@link number}, {@link number}|{@link string}, arg1_options: {@link Object}>) | {@link Array}<{@link number}, {@link number}, {@link number}> - RGB colour selector.
+ * - {@link ve.Datalist|veDatalist}(arg0_value:{@link Object}<{@link string}>, arg1_options: {@link Object})
+ * - {@link ve.Date|veDate}(arg0_value:{@link UF.Date}, arg1_options: {@link Object}) | {@link UF.Date}
+ * - {@link ve.DateLength|veDateLength}(arg0_value:{@link UF.Date}, arg1_options: {@link Object}) | {@link UF.Date}
+ * - {@link ve.File|veFile}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string} - The file/folder path selected by the user.
+ * - {@link ve.HTML|veHTML}(arg0_value:{@link function}|{@link HTMLElement}|{@link string}, arg1_options: {@link Object}) | {@link string}
+ * - {@link ve.Interface|veInterface}(arg0_value:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) | {@link Object}<{@link ve.Component}>
+ * - {@link ve.Map|veMap}(arg0_value:{@link maptalks.Map}, arg1_options:{@link Object}) | {@link maptalks.Map}
+ * - {@link ve.Number|veNumber}(arg0_value:{@link number}, arg1_options:{@link Object}) | {@link number}
+ * - {@link ve.PageMenu|vePageMenu}(arg0_value:{@link Object}, arg1_options:{@link Object}) | {@link string} - The `.page` key currently displayed.
+ * - {@link ve.Password|vePassword}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string}
+ * - {@link ve.Radio|veRadio}(arg0_value:{@link Object}<{@link boolean}>\* | {@link Object}<{@link boolean}>\*
+ * - {@link ve.Range|veRange}(arg0_value:{@link number}, arg1_options: {@link Object}) | {@link number}
+ * - {@link ve.RawInterface|veRawInterface}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) | {@link Object}<{@link ve.Component}>
+ * - {@link ve.Select|veSelect}(arg0_value:{@link ve.Object}<{@link string}>, arg1_options:{@link Object}) | {@link string} - The key of the selected option.
+ * - {@link ve.Telephone|veTelephone}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string}
+ * - {@link ve.Text|veText}(arg0_value:{@link string}, arg1_options: {@link Object}) | {@link string}
+ * - {@link ve.Time|veTime}(arg0_value:{hour:{@link number}, minute:{@link number}}, arg1_options:{@link Object}) | {hour:{@link number}, minute:{@link number}}
+ * - {@link ve.Toggle|veToggle}(arg0_value:{@link boolean}, arg1_options:{@link Object}) | {@link boolean}
+ * - {@link ve.UndoRedo|veUndoRedo}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string} - The {@link DALS.Timeline} ID that the UndoRedo component is currently navigating.
+ * - {@link ve.URL|veURL}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string}
+ * 
+ * @type {ve.Component}
+ */
 ve.Component = class {
 	constructor (arg0_options) {
 		//Convert from parameters
@@ -50,11 +141,23 @@ ve.Component = class {
 	
 	//ve.Component getters/setters
 	
+	/**
+	 * Tests the current {@link this.limit} by calling {@link this.limit_function}({@link this.v}, {@link this}). Otherwise resolves to true if no `.options.limit` is set.
+	 * - Accessor of: {@link ve.Component}
+	 * 
+	 * @returns {boolean}
+	 */
 	get limit () {
 		//Return statement
 		return (this.limit_function) ? this.limit_function(this.v, this) : true;
 	}
 	
+	/**
+	 * Sets the present {@link this.limit} or clears it (if undefined). Calls {@link this.limit_function}({@link this.v}, {@link this}) when polled.
+	 * - Accessor of: {@link ve.Component}
+	 * 
+	 * @param {function|undefined} arg0_function
+	 */
 	set limit (arg0_function) {
 		//Convert from parameters
 		this.limit_function = arg0_function;
@@ -74,6 +177,12 @@ ve.Component = class {
 		}
 	}
 	
+	/**
+	 * Returns the visual name of the present {@link ve.Component},
+	 * - Accessor of: {@link ve.Component}
+	 * 
+	 * @returns {string}
+	 */
 	get name () {
 		//Internal guard clause for this.components_obj.name.v
 		if (this.components_obj && this.components_obj.name)
@@ -87,6 +196,12 @@ ve.Component = class {
 			return name_el.innerHTML;
 	}
 	
+	/**
+	 * Sets the visual name of the present {@link ve.Component}
+	 * - Accessor of: {@link ve.Component}
+	 * 
+	 * @param {string} arg0_value
+	 */
 	set name (arg0_value) {
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : "";
@@ -109,6 +224,7 @@ ve.Component = class {
 	
 	/**
 	 * Pseudo-setter from binding. Fires only upon program-driven changes to .v directly, which means that this has to be monitored manually component-side in set v(). This should always come last in set v().
+	 * - Method of: {@link ve.Component}
 	 */
 	fireFromBinding () {
 		//Convert from parameters
@@ -144,6 +260,7 @@ ve.Component = class {
 	
 	/**
 	 * Pseudo-setter to binding. Fires only upon user-driven changes, which means that this has to be monitored manually component-side.
+	 * - Method of: {@link ve.Component}
 	 */
 	fireToBinding () {
 		//Declare local instance variables
@@ -182,6 +299,14 @@ ve.Component = class {
 			Object.setValue(initial_object, variable_string, local_value);
 	}
 	
+	/**
+	 * Internal `.from_binding` setter for handling .options.from_binding. Accepts a string literal that is then parsed to a variable reference. 
+	 * 
+	 * `.to_binding` counterparts are manually handled child-side.
+	 * - Accessor of: {@link ve.Component}
+	 * 
+	 * @param {string} arg0_variable_string
+	 */
 	set from_binding (arg0_variable_string) {
 		//Convert from parameters
 		let variable_string = arg0_variable_string;
@@ -232,6 +357,13 @@ ve.Component = class {
 		}
 	}
 	
+	/**
+	 * Sets the root parent and ownership tree. Influences {@link this.parent_el}, {@link this.owner}, {@link this.owners}.
+	 * - Method of: {@link ve.Component}
+	 * 
+	 * @param arg0_value
+	 * @param arg1_owner_array
+	 */
 	setOwner (arg0_value, arg1_owner_array) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -253,6 +385,10 @@ ve.Component = class {
 	
 	//ve.Component UI functions
 	
+	/**
+	 * Adds the current component to {@link this.parent_el} should it exist.
+	 * - Method of: {@link ve.Component}
+	 */
 	addComponent () {
 		if (this.parent_el) try {
 			if (!this.parent_el.contains(this.element))
@@ -260,6 +396,12 @@ ve.Component = class {
 		} catch (e) { console.error(e); }
 	}
 	
+	/**
+	 * Manually binds/mounts the present <span color="yellow">{@link ve.Component}</span> into the visual DOM.
+	 * - Method of: {@link ve.Component}
+	 * 
+	 * @param {HTMLElement} arg0_container_el
+	 */
 	bind (arg0_container_el) {
 		//Convert from parameters
 		let container_el = arg0_container_el;
@@ -270,6 +412,7 @@ ve.Component = class {
 	
 	/**
 	 * Removes the component/element from the DOM.
+	 * - Method of: {@link ve.Component}
 	 */
 	remove () {
 		//Declare local instance variables
@@ -288,6 +431,10 @@ ve.Component = class {
 			this.element.remove();
 	}
 	
+	/**
+	 * Removes the current component from {@link this.parent_el} should it exist.
+	 * - Method of: {@link ve.Component}
+	 */
 	removeComponent () {
 		if (this.element.parentElement) try {
 			if (this.element.parentElement.contains(this.element)) {
@@ -297,7 +444,14 @@ ve.Component = class {
 		} catch (e) { console.error(e); }
 	}
 	
-	//Runs over all ve classes that extend ve.Component and lint them
+	/**
+	 * Runs over all Vercengen components that extend <span color="yellow">{@link ve.Component}</span> and lints them in addition to declaring `ve[local_key]`() as a functional binding for each.
+	 * - Static method of: {@link ve.Component}
+	 * 
+	 * Ensures the following properties if `ve.debug_mode=true`:
+	 * - get v()/set v()
+	 * - Not a duplicate component
+	 */
 	static linter () {
 		Object.iterate(global.ve, (local_key, local_value) => {
 			try {
@@ -312,8 +466,8 @@ ve.Component = class {
 							//Return statement
 							return new ve[local_key](...arguments);
 						};
-					} else {
-						console.error(`ve.${local_key} cannot have its functional binding registered, since it is already reserved elsewhere. Use Ctrl + F to find where it has been reserved in your codebase.`);
+					} else if (typeof global[`ve${local_key}`] !== "function") {
+						console.error(`ve.${local_key} cannot have its functional binding registered, since it is already reserved elsewhere as a non-function. Use Ctrl + F to find where it has been reserved in your codebase.`);
 					}
 					
 					if (ve.debug_mode)

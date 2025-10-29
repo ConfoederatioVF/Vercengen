@@ -1,12 +1,24 @@
 /**
- * <span color = "yellow">{@link ve.Component}</span>: ve.Select
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Conventional select dropdown that returns the key of the option selected by the end user.
+ * - Functional binding: <span color=00ffff>veSelect</span>().
  * 
  * ##### Constructor:
  * - `arg0_value`: {@link Object}
- *   - `<select_key>`: {@link Object}|{@link string}
+ *   - `<option_key>`: {@link Object|string}
  *     - `.name`: {@link string}
- *     - `.selected`: {@link boolean}
- *   
+ *     - `.selected`: {@link boolean} - Whether the current option is selected.
+ * - `arg1_options`: {@link Object}
+ *   - `.disabled=false`: {@link boolean}
+ * 
+ * ##### Instance:
+ * - `.v`: {@link string} - The selected option key. 
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.Select.generateHTML|generateHTML}</span>() | {@link Array}<{@link string}> - Returns the HTML for the present select input.
+ * 
+ * @augments {@link ve.Component}
  * @type {ve.Select}
  */
 ve.Select = class veSelect extends ve.Component {
@@ -27,7 +39,7 @@ ve.Select = class veSelect extends ve.Component {
 	};
 	
 	constructor (arg0_value, arg1_options) {
-		//Convert from arameters
+		//Convert from parameters
 		let value = arg0_value;
 		let options = (arg1_options) ? arg1_options : {};
 			super(options);
@@ -66,6 +78,12 @@ ve.Select = class veSelect extends ve.Component {
 		this.v = this.value;
 	}
 	
+	/**
+	 * Gets the currently selected key from its `.id`.
+	 * - Accessor of: {@link ve.Select}
+	 * 
+	 * @returns {string}
+	 */
 	get v () {
 		//Return statement
 		return this.element.querySelectorAll("option")[
@@ -73,6 +91,12 @@ ve.Select = class veSelect extends ve.Component {
 		].id;
 	}
 	
+	/**
+	 * Sets the current selected key value.
+	 * - Accessor of: {@link ve.Select}
+	 * 
+	 * @param {string} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -91,6 +115,11 @@ ve.Select = class veSelect extends ve.Component {
 		this.fireFromBinding();
 	}
 	
+	/**
+	 * Returns the HTML string of the present component as an {@link Array}<{@link string}>
+	 * 
+	 * @returns {string[]}
+	 */
 	generateHTML () {
 		//Declare local instance variables
 		let html_string = [];
@@ -108,4 +137,14 @@ ve.Select = class veSelect extends ve.Component {
 		//Return statement
 		return html_string;
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Select}
+ */
+veSelect = function () {
+	//Return statement
+	return new ve.Select(...arguments);
 };

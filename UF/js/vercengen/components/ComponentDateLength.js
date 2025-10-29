@@ -1,4 +1,21 @@
-ve.DateLength = class veDateLength extends ve.Component {
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Date length component used for managing historical time durations. The value stored is an object with the structure { year: {@link number}, month: {@link number}, day: {@link number}, hour: {@link number}, minute: {@link number} }, with negative years representing BC. This data structure is otherwise known as a {@link UF.Date}.
+ * - Functional binding: <span color=00ffff>veDateLength</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link UF.Date}
+ * - `arg1_options`: {@link Object}
+ *   - `.disabled=false`: {@link boolean}
+ * 
+ * ##### Instance:
+ * - `.v`: {@link UF.Date}
+ * 
+ * @augments {@link ve.Component}
+ * @type {ve.veDateLength}
+ */
+ve.DateLength = class extends ve.Component {
 	static demo_value = { year: 1000, month: 12, day: 31 };
 	
 	constructor (arg0_value, arg1_options) {
@@ -48,6 +65,11 @@ ve.DateLength = class veDateLength extends ve.Component {
 		this.v = value;
 	}
 	
+	/**
+	 * Returns the date length contained in the current component.
+	 * 
+	 * @returns {{year: number, month: number, day: number, hour: number, minute: number}} arg0_value
+	 */
 	get v () {
 		//Return statement
 		return Date.convertTimestampToDate(Date.getTimestamp({
@@ -59,6 +81,11 @@ ve.DateLength = class veDateLength extends ve.Component {
 		}));
 	}
 	
+	/**
+	 * Sets the date length contained in the current component.
+	 * 
+	 * @param {{year: number, month: number, day: number, hour: number, minute: number}} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -72,3 +99,13 @@ ve.DateLength = class veDateLength extends ve.Component {
 		this.fireFromBinding();
 	}
 }
+
+//Functional binding
+
+/**
+ * @returns {ve.DateLength}
+ */
+veDateLength = function () {
+	//Return statement
+	return new ve.DateLength(...arguments);
+};

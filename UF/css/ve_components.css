@@ -124,6 +124,9 @@
 
 /* -- ve.Interface -- */
 [component="ve-interface"] {
+    summary#name {
+        padding-bottom: var(--cell-padding);
+    }
     summary:hover {
         cursor: pointer;
     }
@@ -202,9 +205,16 @@ td:has([component="ve-interface"]) {
 
 /* -- ve.Toggle -- */
 [component="ve-toggle"] {
-    .toggle-icon {
+    > #name {
+        align-items: center;
         cursor: pointer;
+        display: flex;
+    }
+    .toggle-icon {
+    }
+    .toggle-icon {
         font-size: calc(var(--body-font-size)*2);
+        height: var(--body-font-size);
     }
     .toggle-icon.off {
         color: rgb(240, 60, 60);

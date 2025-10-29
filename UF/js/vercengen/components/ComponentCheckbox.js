@@ -1,39 +1,27 @@
 /**
- * <span color = "yellow">{@link ve.Component}</span>:ve.Checkbox
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Either used as a toggle (boolean) or more extensively as a nested checkbox list (Object), depending on the type.
+ * - Functional binding: <span color=00ffff>veCheckbox</span>().
  * 
  * ##### Constructor:
- * - `arg0_value=false`: {@link boolean|Object}
- *   - `<checkbox_key>`: {@link boolean}
- *   - `<category_key>`: {@link Object}
+ * - `arg0_value`: {@link boolean|Object}
+ *   - `<checkbox_group_key>`: {@link Object}
  *     - `.name`: {@link string}
  *     - `<checkbox_key>`: {@link boolean}
+ *   - `<checkbox_key>`: {@link boolean}
  * - `arg1_options`: {@link Object}
- *   - `.attributes`: {@link Object}
- *     - `<attribute_key>`: {@link string}
- *   - `.name`: {@link string}
- *   - `.onchange`: {@link function}(this:{@link ve.Checkbox})
- *   - `.style`: {@link Object}
- *     - `<style_key>`: {@link string}
- * 
- * ##### DOM:
- * - `.instance`: this:{@link ve.Checkbox}
  * 
  * ##### Instance:
- * - `.element`: {@link HTMLElement}
- * - `.name`: {@link string}
- * - `.v`: {@link Object}
- *   - `<checkbox_key>`: {@link boolean}
- *   - `<category_key>`: {@link Object}
- *     - `.name`: {@link string}
- *     - `<checkbox_key>`: {@link boolean}
- *     
- * ##### Methods:
- * - static:<span color=00ffff>{@link ve.Button.generateHTMLRecursively|generateHTMLRecursively}</span>(arg0_value: {@link Object})
- * - <span color=00ffff>{@link ve.Button.remove|remove}</span>()
+ * - `.v`: {@link boolean}|{@link Object} - Equivalent to the `arg0_value` initialiser in structure.
  * 
- * @type {ve.veCheckbox}
+ * ##### Static Methods:
+ * - <span color=00ffff>{@link ve.Checkbox.generateHTMLRecursively}</span>(arg0_value:{@link boolean}|{@link Object}) | {@link Array}<{@link string}>
+ * 
+ * @augments {@link ve.Component}
+ * @type {ve.Checkbox}
  */
-ve.Checkbox = class veCheckbox extends ve.Component {
+ve.Checkbox = class extends ve.Component {
 	static demo_value = {
 		checkbox_one: true,
 		checkbox_two: false,
@@ -100,35 +88,11 @@ ve.Checkbox = class veCheckbox extends ve.Component {
 	}
 	
 	/**
-	 * Generates HTML recursively for a nested checkbox element.
+	 * Returns the present ve.Checkbox list value.
+	 * - Accessor of {@link ve.Checkbox}
 	 * 
-	 * @param {{"checkbox_key": boolean|{"name": string, "checkbox_key": boolean|Object|string}|string}} arg0_value
-	 * @returns {string[]}
+	 * @returns {{"checkbox_key": boolean|{"name": string, "checkbox_key": boolean|Object|string}|string}}
 	 */
-	static generateHTMLRecursively (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Declare local instance variables
-		let html_string = [];
-		
-		//Iterate over all keys in value
-		Object.iterate(value, (local_key, local_value) => {
-			if (typeof local_value === "boolean") {
-				html_string.push(`<li><input id = "${local_key}" type = "checkbox"${(local_value) ? " checked" : ""}>${(local_key) ? `<label for = "${local_key}">${local_key}</label>` : ""}</li>`);
-			} else if (typeof local_value === "object") {
-				html_string.push(`<ul id = "${local_key}">`);
-					html_string.push(...ve.Checkbox.generateHTMLRecursively(local_value));
-				html_string.push(`</ul>`);
-			} else if (typeof local_value === "string") {
-				html_string.push(`<li><b>${local_value}</b></li>`);
-			}
-		});
-		
-		//Return statement
-		return html_string;
-	}
-	
 	get v () {
 		//Declare local instance variables
 		let root_el = this.element.querySelector("ul");
@@ -156,6 +120,12 @@ ve.Checkbox = class veCheckbox extends ve.Component {
 		return traverse(root_el);
 	}
 	
+	/**
+	 * Sets the present ve.Checkbox list value.
+	 * - Accessor of: {@link ve.Checkbox}
+	 * 
+	 * @param {{"checkbox_key": boolean|{"name": string, "checkbox_key": boolean|Object|string}|string}} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = (typeof arg0_value !== "undefined") ? arg0_value : false;
@@ -185,4 +155,45 @@ ve.Checkbox = class veCheckbox extends ve.Component {
 		}
 		this.fireFromBinding();
 	}
+	
+	/**
+	 * Generates HTML recursively for a nested checkbox element.
+	 * - Static method of: {@link ve.Checkbox}
+	 * 
+	 * @param {{"checkbox_key": boolean|{"name": string, "checkbox_key": boolean|Object|string}|string}} arg0_value
+	 * @returns {string[]}
+	 */
+	static generateHTMLRecursively (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
+		
+		//Declare local instance variables
+		let html_string = [];
+		
+		//Iterate over all keys in value
+		Object.iterate(value, (local_key, local_value) => {
+			if (typeof local_value === "boolean") {
+				html_string.push(`<li><input id = "${local_key}" type = "checkbox"${(local_value) ? " checked" : ""}>${(local_key) ? `<label for = "${local_key}">${local_key}</label>` : ""}</li>`);
+			} else if (typeof local_value === "object") {
+				html_string.push(`<ul id = "${local_key}">`);
+					html_string.push(...ve.Checkbox.generateHTMLRecursively(local_value));
+				html_string.push(`</ul>`);
+			} else if (typeof local_value === "string") {
+				html_string.push(`<li><b>${local_value}</b></li>`);
+			}
+		});
+		
+		//Return statement
+		return html_string;
+	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Checkbox}
+ */
+veCheckbox = function () {
+	//Return statement
+	return new ve.Checkbox(...arguments);
 };

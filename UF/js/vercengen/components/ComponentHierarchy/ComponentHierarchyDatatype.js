@@ -1,41 +1,44 @@
 /**
- * <span color = "yellow">{@link ve.Component}</span>:ve.HierarchyDatatype
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  * 
+ * Hierarchy datatype used as a nested draggable item/group for {@link ve.Hierarchy}. Item by default.
+ * - Functional binding: <span color=00ffff>veHierarchyDatatype</span>().
+ *  
  * ##### Constructor:
  * - `arg0_value`: {@link Object}<{@link ve.Component}>
  * - `arg1_options`: {@link Object}
- *   - `.attributes`: {@link Object}
- *     - `<attribute_key>`: {@link string}
- *   - `.disabled=false`: {@link boolean}
- *   - `.id=Class.generateRandomID(ve.HierarchyDatatype)`: {@link string}
- *   - `.name`: {@link string}
- *   - `.onchange`: {@link function}(this:{@link ve.HierarchyDatatype})
- *   - `.style`: {@link Object}
- *     - `<style_key>`: {@link string}
- *   - `.type="item"`: {@link string} - Either 'item'/'group'.
- *     
- * ##### DOM:
- * - `.instance`: this:{@link ve.Button}
- *
+ *   - `.disabled=false`: {@link boolean} - Whether the item is draggable within the hierarchy.
+ *   - `.id`: {@link string}
+ *   - `.type="item"`: {@link string} - Either 'group'/'item'.
+ * 
  * ##### Instance:
- * - `.element`: {@link HTMLElement}
- * - `.name`: {@link string}
- * - `.v`: {@link Object}<{@link ve.Component}>
+ * - `.components_obj`: {@link Object}<{@link ve.Component}>
+ * - `.is_vercengen_hierarchy_datatype=true`: {@link boolean}
+ * - `.name`; {@link string} - Accessor. Differs from {@link ve.Component.name} in that it is a {@link ve.Text}.v value instead of a span element.
+ * - `.type="item"`: {@link string} - Determined by `.options.type`.
+ * - `.v`: {@link Object}<{@link ve.Component}> - Accessor. Same as `.components_obj`.
  * 
  * ##### Methods:
- * - <span color=00ffff>{@link ve.HierarchyDatatype.refresh|refresh}</span>()
- * - <span color=00ffff>{@link ve.HierarchyDatatype.remove|remove}</span>()
+ * - <span color=00ffff>{@link ve.HierarchyDatatype.refresh|refresh}</span>() - Refreshes the display of the current datatype.
  * 
- * @function veHierarchyDatatype
- * @type {ve.veHierarchyDatatype}
+ * ##### Static Fields:
+ * - `.instances`: {@link Array}<this:{@link ve.HierarchyDatatype}>
+ *   
+ * @augments {@link ve.Component}
+ * @type {ve.HierarchyDatatype}
  */
-ve.HierarchyDatatype = class veHierarchyDatatype extends ve.Component {
+ve.HierarchyDatatype = class extends ve.Component {
 	/*static demo_value = {
 		name: veText(`Entry #${Math.randomNumber(0, 1000000)}`),
 		context_menu_button: veButton((e) => {
 			console.log(e);
 		}, { name: "Options"})
 	};*/
+	
+	/**
+	 * Contains a list of all instances of {@link ve.HierarchyDatatype}s.
+	 * @type ve.HierarchyDatatype[]
+	 */
 	static instances = [];
 	
 	constructor (arg0_components_obj, arg1_options) {
@@ -75,11 +78,23 @@ ve.HierarchyDatatype = class veHierarchyDatatype extends ve.Component {
 		ve.HierarchyDatatype.instances.push(this);
 	}
 	
+	/**
+	 * Returns the present name value of the hierarchy datatype.
+	 * - Accessor of {@link ve.HierarchyDatatype}
+	 * 
+	 * @returns {string}
+	 */
 	get name () {
 		//Return statement
 		return (this.components_obj.name) ? this.components_obj.name.v : "";
 	}
 	
+	/**
+	 * Sets the new name of the hierarchy datatype.
+	 * - Accessor of {@link ve.HierarchyDatatype}
+	 *
+	 * @param {string} arg0_value
+	 */
 	set name (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -93,11 +108,23 @@ ve.HierarchyDatatype = class veHierarchyDatatype extends ve.Component {
 		}
 	}
 	
+	/**
+	 * Returns the current {@link this.components_obj}, which contains the actions bar.
+	 * - Accessor of {@link ve.HierarchyDatatype}
+	 * 
+	 * @returns {{"<component_key>": ve.Component}}
+	 */
 	get v () {
 		//Return statement
 		return this.components_obj;
 	}
 	
+	/**
+	 * Sets a new {@link this.components_obj}, which contains the actions bar.
+	 * - Accessor of {@link ve.HierarchyDatatype}
+	 * 
+	 * @param {{"<component_key>": ve.Component}} arg0_components_obj
+	 */
 	set v (arg0_components_obj) {
 		//Convert from parameters
 		let components_obj = arg0_components_obj;
@@ -143,4 +170,14 @@ ve.HierarchyDatatype = class veHierarchyDatatype extends ve.Component {
 			this.element.appendChild(ol_el);
 		}
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.HierarchyDatatype}
+ */
+veHierarchyDatatype = function () {
+	//Return statement
+	return new ve.HierarchyDatatype(...arguments);
 };

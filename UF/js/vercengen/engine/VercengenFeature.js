@@ -1,5 +1,42 @@
 if (!global.ve) global.ve = {};
 
+/**
+ * <span color = "yellow">{@link ve.Feature}</span>: Features in Vercengen represent special containers such as panels, windows, tooltips, or interface which encapsulate <span color = "yellow">{@link ve.Component}</span> types. 
+ * 
+ * Used to automatically destructure `arg0_components_obj`.
+ * 
+ * ##### Constructor:
+ * - `arg0_components_obj`: {@link function}|{@link Object}<{@link ve.Component}>|{@link string}|{@link ve.Component}
+ * - `arg1_options`: {@link Object} - Fed into this.options for localised parsing.
+ * 
+ * ##### DOM:
+ * - `.instance`: this:{@link ve.Component}
+ * 
+ * ##### Instance:
+ * - `.child_class=this.constructor`: {@link ve.Feature} - The constructor object of the child class.
+ * - `.child_class_obj=ve[htis.child_class.prototype.constructor.name]`: {@link ve.Feature} - The actual object of the child class.
+ * - `.is_vercengen_feature=true`: {@link boolean} - Whether to mark this ve.Feature as a Vercengen feature.
+ * - `.options`: {@link Object}
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.Feature.addComponents|addComponents}</span>(arg0_components_obj:{@link Object}<{@link ve.Component}>) - Appends new components to the present ve.Feature.
+ * - <span color=00ffff>{@link ve.Feature.close|close}</span>() - Alias for .remove()
+ * - <span color=00ffff>{@link ve.Feature.remove|remove}</span>() - Removes the current feature.
+ * - <span color=00ffff>{@link ve.Feature.removeComponents|removeComponents}</span>(arg0_components_obj:{@link Object}<{@link ve.Component}>) - Removes components from the current {@link this.element} based on key names.
+ * 
+ * ##### Types:
+ * - {@link ve.Confirm}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) - Confirm dialogue/modal.
+ * - {@link ve.ContextMenu}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) - Pop-up context menu located at the cursor with an assigned `.id` to prevent duplicates.
+ * - {@link ve.Modal}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) - Overlays a modal on top of the current Vercengen overlay interface. Must be responded to before conventional windows.
+ * - {@link ve.Navbar}(arg0_navbar_obj:{@link Object}, arg1_options:{@link Object}) - Creates an action topbar with recursive dropdown menus and keybind settings.
+ * - {@link ve.PageMenuWindow}(arg0_page_obj:{@link Object}, arg1_options:{@link Object}) - Creates a page menu window, which encapsulates components in pages instead of interfaces.
+ * - {@link ve.Scene}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) - Creates a full-viewport rendering scene.
+ * - {@link ve.Toast}(arg0_components_obj:{@link Object}<{@link ve.Component}>|{@link string}, arg1_options:{@link Object}) - Spawns a toast at the current cursor.
+ * - {@link ve.Tooltip}(arg0_components_obj:{@link Object}<{@link ve.Component}>|{@link string}|{@link ve.Component}, arg1_options:{@link Object}) - Spawns a tooltip for the given `.options.element`.
+ * - {@link ve.Window}(arg0_components_obj:{@link Object}<{@link ve.Component}>|{@link string}, arg1_options:{@link Object}) - Default ve.Feature for encapsulating components in <span color = "yellow">{@link ve.Class}</span>.
+ * 
+ * @type {ve.Feature}
+ */
 ve.Feature = class {
 	constructor (arg0_components_obj, arg1_options) {
 		//Convert from parameters
@@ -21,7 +58,7 @@ ve.Feature = class {
 		} else {
 			this.components_obj = components_obj;
 		}
-		this.options = (arg1_options) ? arg1_options : {};
+		this.options = (options) ? options : {};
 		
 		//Destructure this.components_obj into available variables
 		try {
@@ -31,6 +68,11 @@ ve.Feature = class {
 		} catch (e) { console.error(e); }
 	}
 	
+	/**
+	 * Adds components to the present {@link this.element}.
+	 * 
+	 * @param {{"<component_key>": ve.Component}} arg0_components_obj
+	 */
 	addComponents (arg0_components_obj) {
 		//Convert from parameters
 		let components_obj = (arg0_components_obj) ? arg0_components_obj : {};
@@ -52,10 +94,16 @@ ve.Feature = class {
 		
 	}
 	
+	/**
+	 * Alias for {@link remove|this.remove}().
+	 */
 	close () {
 		this.remove();
 	}
 	
+	/**
+	 * Removes the {@link ve.Feature} from its static `.instances` field in addition to unmounting the feature from the DOM.
+	 */
 	remove () {
 		//Iterate over all instances in ve.Window.instances
 		if (this.child_class_obj && this.child_class_obj.instances && this.id)
@@ -69,6 +117,11 @@ ve.Feature = class {
 		if (this.element) this.element.remove();
 	}
 	
+	/**
+	 * Removes components from the present {@link this.element}.
+	 * 
+	 * @param {{"<component_key>": ve.Component}} arg0_components_obj
+	 */
 	removeComponents (arg0_components_obj) {
 		//Convert from parameters
 		let components_obj = (arg0_components_obj) ? arg0_components_obj : {};

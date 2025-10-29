@@ -1,33 +1,16 @@
 /**
- * <span color = "yellow">{@link ve.Component}</span>:ve.Button
- *
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Generic button used to call a function upon user click. If multiple buttons are to be inline, they may be appended using {@link ve.RawInterface} as a container.
+ * 
  * ##### Constructor:
- * - `arg0_value`: {@link function}(e:{@link MouseEvent})
+ * - `arg0_value`: {@link function}({@link MouseEvent}) - The function to call upon user click.
  * - `arg1_options`: {@link Object}
- *   - `.attributes`: {@link Object}
- *     - `<attribute_key>`: {@link string}
- *   - `.name`: {@link string}
- *   - 
- *   - `.binding`/`.from_binding`/`.to_binding`: {@link string} - Accepts 'this'/'global'/'window' prefixes.
- *   - `.onchange`/`.onprogramchange`/`.onuserchange`: {@link function}(v:{@link function}, this:{@link ve.Button})
- *   - `.style`: {@link Object}
- *     - `<style_key>`: {@link string}
- *     
- * ##### DOM:
- * - `.instance`: this:{@link ve.Button}
  * 
  * ##### Instance:
- * - `.element`: {@link HTMLElement}
- * - `.name`: {@link string}
- * - `.v`: {@link function}
- * 
- * ##### Methods:
- * - <span color=00ffff>{@link ve.Button.remove|remove}</span>()
- *
- * @function veButton
- * @type {ve.Button}
+ * - `.v`: {@link function} - Accessor. The current function stored by the {@link ve.Button} component.
  */
-ve.Button = class veButton extends ve.Component {
+ve.Button = class extends ve.Component {
 	static demo_value = () => { window.alert("This is an alert from ve.Button."); };
 	
 	constructor (arg0_value, arg1_options) {
@@ -67,11 +50,23 @@ ve.Button = class veButton extends ve.Component {
 		this.v = this.value;
 	}
 	
+	/**
+	 * Returns the function bound to the present button.
+	 * - Accessor of: {@link ve.Button}
+	 * 
+	 * @returns {function}
+	 */
 	get v () {
 		//Return statement
 		return this.value;
 	}
 	
+	/**
+	 * Sets the function for the present button.
+	 * - Accessor of: {@link ve.Button} 
+	 * 
+	 * @param {function} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -80,4 +75,14 @@ ve.Button = class veButton extends ve.Component {
 		this.value = value;
 		this.fireFromBinding();
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Button}
+ */
+veButton = function () {
+	//Return statement
+	return new ve.Button(...arguments);
 };

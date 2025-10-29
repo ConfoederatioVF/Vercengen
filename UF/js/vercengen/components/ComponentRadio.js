@@ -1,4 +1,29 @@
-ve.Radio = class veRadio extends ve.Component {
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Mutually exclusive radio input with a specific reserved namespace. Consider using {@link ve.Checkbox} if you do not intend inputs to be mutually exclusive.
+ * - Functional binding: <span color=00ffff>{@link ve.Radio}</span>
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link Object}
+ *   - `<radio_group_key>`: {@link Object}
+ *     - `<radio_key>`: {@link boolean}
+ *   - `<radio_key>`: {@link boolean}
+ * - `arg1_options`: {@link Object}
+ * 
+ * ##### Instance:
+ * - `.v`: {@link Object}<{@link boolean}> - Recursive value, the same as `arg0_value`.
+ * 
+ * ##### Static Fields:
+ * - `.instances`: {@link Array}<{@link ve.Radio}>
+ *   
+ * ##### Static Methods:
+ * - <span color=00ffff>{@link ve.Radio.generateHTMLRecursively|generateHTMLRecursively}</span>(arg0_value:{@link Object}<{@link boolean}>, arg1_this:{@link ve.Radio}) | {@link string}
+ * 
+ * @augments {@link ve.Component}
+ * @type {ve.Radio}
+ */
+ve.Radio = class extends ve.Component {
 	static demo_value = {
 		radio_one: true,
 		radio_two: false,
@@ -53,34 +78,23 @@ ve.Radio = class veRadio extends ve.Component {
 		this.v = this.value;
 	}
 	
-	static generateHTMLRecursively (arg0_value, arg1_this) {
-		//Convert from parameters
-		let value = arg0_value;
-		let local_this = arg1_this;
-		
-		//Declare local instance variables
-		let html_string = [];
-		
-		//Iterate over all keys in value
-		Object.iterate(value, (local_key, local_value) => {
-			if (typeof local_value === "boolean") {
-				html_string.push(`<li><input id = "${local_key}" name = "radio-${local_this.id}" type = "radio"${(local_value) ? " checked" : ""}>${(local_key) ? `<label for = "${local_key}">${local_key}</label>` : ""}</li>`);
-			} else if (typeof local_value === "object") {
-				html_string.push(`<ul id = "${local_key}">`);
-					html_string.push(...ve.Radio.generateHTMLRecursively(local_value, local_this));
-				html_string.push(`</ul>`);
-			}
-		});
-		
-		//Return statement
-		return html_string;
-	}
-	
+	/**
+	 * Returns the present value of the checked options.
+	 * - Accessor of: {@link ve.Radio}
+	 * 
+	 * @returns {Object<boolean>}
+	 */
 	get v () {
 		//Declare local instance variables
 		return this.element.querySelector(`input[type="radio"]:checked`).value;
 	}
 	
+	/**
+	 * Sets the present value of the checked options.
+	 * - Accessor of: {@link ve.Radio}
+	 * 
+	 * @param {Object<boolean>} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -110,4 +124,46 @@ ve.Radio = class veRadio extends ve.Component {
 		}
 		this.fireFromBinding();
 	}
+	
+	/**
+	 * Generates HTML recursively given a current value compatible with the component's initialising `arg0_value`.
+	 * - Static method of: {@link ve.Radio}
+	 * 
+	 * @param {Object<boolean>} arg0_value
+	 * @param {ve.Radio} arg1_this
+	 * 
+	 * @returns {string}
+	 */
+	static generateHTMLRecursively (arg0_value, arg1_this) {
+		//Convert from parameters
+		let value = arg0_value;
+		let local_this = arg1_this;
+		
+		//Declare local instance variables
+		let html_string = [];
+		
+		//Iterate over all keys in value
+		Object.iterate(value, (local_key, local_value) => {
+			if (typeof local_value === "boolean") {
+				html_string.push(`<li><input id = "${local_key}" name = "radio-${local_this.id}" type = "radio"${(local_value) ? " checked" : ""}>${(local_key) ? `<label for = "${local_key}">${local_key}</label>` : ""}</li>`);
+			} else if (typeof local_value === "object") {
+				html_string.push(`<ul id = "${local_key}">`);
+					html_string.push(...ve.Radio.generateHTMLRecursively(local_value, local_this));
+				html_string.push(`</ul>`);
+			}
+		});
+		
+		//Return statement
+		return html_string;
+	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Radio}
+ */
+veRadio = function () {
+	//Return statement
+	return new ve.Radio(...arguments);
 };

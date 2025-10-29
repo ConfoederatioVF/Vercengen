@@ -1,4 +1,23 @@
-ve.HTML = class veHTML extends ve.Component {
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Custom component used to encapsulate any HTML that may need to be mounted to Vercengen. Also used for immediate-mode displays.
+ * - Functional binding: <span color=00ffff>veHTML</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link function}|{@link HTMLElement}|{@link string} - If a function, the function must return a string, preferably in closure.
+ * - `arg1_options`: {@link Object}
+ * 
+ * ##### Instance:
+ * - `.v`: {@link HTMLElement}
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.HTML.toString|toString}</span>() | {@link string}
+ * 
+ * @augments {@link ve.Component}
+ * @type {ve.HTML}
+ */
+ve.HTML = class extends ve.Component {
 	static demo_value = (e) => `<b>Test HTML.</b> This is mock text. <kbd>Date:</kbd>${new Date()}`;
 	
 	constructor (arg0_value, arg1_options) {
@@ -22,11 +41,22 @@ ve.HTML = class veHTML extends ve.Component {
 		this.v = this.value;
 	}
 	
+	/**
+	 * Returns the current HTMLElement from the component.
+	 * 
+	 * @returns {HTMLDivElement}
+	 */
 	get v () {
 		//Return statement
 		return this.element;
 	}
 	
+	/**
+	 * Sets the current function/HTMLElement/string for the present HTML component.
+	 * - Accessor of: {@link ve.HTML}
+	 * 
+	 * @param {function|HTMLElement|string} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -57,8 +87,23 @@ ve.HTML = class veHTML extends ve.Component {
 		this.fireFromBinding();
 	}
 	
-	//Class methods
+	/**
+	 * Returns the string from the present .innerHTML.
+	 * - Method of: {@link ve.HTML}
+	 * 
+	 * @returns {string}
+	 */
 	toString () {
 		return String(this.element.innerHTML);
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.HTML}
+ */
+veHTML = function () {
+	//Return statement
+	return new ve.HTML(...arguments);
 };

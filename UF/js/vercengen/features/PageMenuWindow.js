@@ -1,15 +1,16 @@
 /**
- * Represents a PageMenuWindow Feature that contains a page_obj type directly analogous to that used in {@link ve.PageMenu}. The associated {@link ve.Window} is stored in `.window`.
- * @type {ve.PageMenuWindow}
+ * Refer to <span color = "yellow">{@link ve.Feature}</span> for methods or fields inherited from the parent, such as automatic destructuring.
  * 
- * ##### Options:
+ * Represents a PageMenuWindow Feature that contains a page_obj type directly analogous to that used in {@link ve.PageMenu}. The associated {@link ve.Window} is stored in `.window`.
+ * - Functional binding: <span color=00ffff>vePageMenuWindow</span>().
+ * 
+ * ##### Constructor:
  * - `arg0_page_obj`: {@link Object}
  *   - `<page_key>`: {@link Object}
  *     - `.name`: {@link string} - '<page_key>' by default.
  *     - `.components_obj:` {@link Object}<{@link ve.Component}>
  *     - `.options`: {@link Object} - Options for the {@link ve.Interface} .components_obj will be wrapped inside.
- * - `arg1_options`: {@link Object}
- *   - Inherited from {@link ve.Window|ve.Window.options}:
+ * - `arg1_options`: {@link Object} - Superset of `.options` for {@link ve.Window}.
  *   - `anchor="top_left"` - Either 'bottom_left'/'bottom_right'/'top_left'/'top_right'.
  *   - `height="12rem"`: {@link number}
  *   - `width="12rem"`: {@link number}
@@ -33,6 +34,9 @@
  *     - `.onchange`: {@link function}(this:{@link ve.PageMenu})
  *     - `.style`: {@link Object}
  *       - `<style_key>`: {@link string}
+ *
+ * @augments {@link ve.Feature}
+ * @type {ve.PageMenuWindow}
  */
 ve.PageMenuWindow = class extends ve.Feature {
 	constructor (arg0_page_obj, arg1_options) {
@@ -48,4 +52,14 @@ ve.PageMenuWindow = class extends ve.Feature {
 		this.page_menu = new ve.PageMenu(page_obj, options.page_menu_options);
 		this.window = new ve.Window({ page_menu_obj: this.page_menu }, options);
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.PageMenuWindow}
+ */
+vePageMenuWindow = function () {
+	//Return statement
+	return new ve.PageMenuWindow(...arguments);
 };

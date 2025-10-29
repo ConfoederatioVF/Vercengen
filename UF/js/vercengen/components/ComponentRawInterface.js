@@ -1,31 +1,23 @@
 /**
- * <span color = "yellow">{@link ve.Component}</span>:ve.RawInterface
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Raw interface used for creating a container {@link HTMLElement} that encapsulates components underneath it. Additionally destructures any components contained within.
+ * - Functional binding: <span color=00ffff>veRawInterface</span>().
  * 
  * ##### Constructor:
  * - `arg0_components_obj`: {@link Object}<{@link ve.Component}>
  * - `arg1_options`: {@link Object}
- *   - `.attributes`: {@link Object}
- *     - `<attribute_key>`: {@link string}
- *   - `.name`: {@link string}
- *   - `.onchange`: {@link function}(this:{@link ve.HierarchyDatatype})
- *   - `.style`: {@link Object}
- *     - `<style_key>`: {@link string}
- *     
- * ##### DOM:
- * - `.instance`: this:{@link ve.RawInterface}
  * 
  * ##### Instance:
- * - `.element`: {@link HTMLElement}
- * - `.name`: {@link string}
+ * - `<component_key>`: {@link ve.Component} - Contains any destructured components.
+ * - `.components_obj`: {@link Object}<{@link ve.Component}>
+ * - `.reserved_keys`: {@link Array}<{@link string}> - Controls what keys are reserved and cannot be destructured.
  * - `.v`: {@link Object}<{@link ve.Component}>
  * 
- * ##### Methods:
- * - <span color=00ffff>{@link ve.RawInterface.remove|remove}</span>()
- * 
- * @function veRawInterface
- * @type {ve.veRawInterface}
+ * @augments {@link ve.Component}
+ * @type {ve.RawInterface}
  */
-ve.RawInterface = class veRawInterface extends ve.Component {
+ve.RawInterface = class extends ve.Component {
 	constructor (arg0_components_obj, arg1_options) {
 		//Convert from parameters
 		let components_obj = (arg0_components_obj) ? arg0_components_obj : {};
@@ -53,11 +45,23 @@ ve.RawInterface = class veRawInterface extends ve.Component {
 		this.v = components_obj;
 	}
 	
+	/**
+	 * Returns the current {@link this.components_obj}.
+	 * - Accessor of: {@link ve.RawInterface} 
+	 * 
+	 * @returns {{"<component_key>": ve.Component}}}
+	 */
 	get v () {
 		//Return statement
 		return this.components_obj;
 	}
 	
+	/**
+	 * Sets and redraws {@link this.components_obj}.
+	 * - Accessor of: {@link ve.RawInterface}
+	 * 
+	 * @param {{"<component_key>": ve.Component}} arg0_components_obj
+	 */
 	set v (arg0_components_obj) {
 		//Convert from parameters
 		let components_obj = arg0_components_obj;
@@ -78,4 +82,14 @@ ve.RawInterface = class veRawInterface extends ve.Component {
 		});
 		if (this.options.onchange) this.options.onchange(this);
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.RawInterface}
+ */
+veRawInterface = function () {
+	//Return statement
+	return new ve.RawInterface(...arguments);
 };

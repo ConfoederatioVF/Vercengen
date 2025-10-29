@@ -1,9 +1,33 @@
-ve.Number = class veNumber extends ve.Component {
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Represents a number input that can be set by the user.
+ * - Functional binding: <span color=00ffff>veNumber</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value=0`: {@link number}
+ * - `arg1_options`: {@link Object}
+ *   - `.disabled=false`: {@link boolean}
+ *   - `.max`: {@link number}
+ *   - `.min`: {@link number}
+ *   - `.step`: {@link number}
+ * 
+ * ##### Instance:
+ * - `.v`: {@link number} 
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.Number.toString|toString}</span>() | {@link string}
+ * - <span color=00ffff>{@link ve.Number.valueOf|valueOf}</span>() | {@link number}
+ * 
+ * @augments {@link ve.Component}
+ * @type {ve.Number}
+ */
+ve.Number = class extends ve.Component {
 	static demo_value = 1;
 	
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
-		let value = arg0_value;
+		let value = Math.returnSafeNumber(arg0_value);
 		let options = (arg1_options) ? arg1_options : {};
 			super(options);
 		
@@ -42,11 +66,23 @@ ve.Number = class veNumber extends ve.Component {
 		this.v = this.value;
 	}
 	
+	/**
+	 * Returns the present number stored by the component.
+	 * - Accessor of: {@link ve.Number}
+	 * 
+	 * @returns {number}
+	 */
 	get v () {
 		//Return statement
 		return this.value;
 	}
 	
+	/**
+	 * Sets the number stored by the component.
+	 * - Accessor of: {@link ve.Number}
+	 * 
+	 * @param {number} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -57,12 +93,33 @@ ve.Number = class veNumber extends ve.Component {
 		this.fireFromBinding();
 	}
 	
-	//Class methods
+	/**
+	 * Converts the present number to a string.
+	 * - Method of: {@link ve.Number}
+	 * 
+	 * @returns {string}
+	 */
 	toString () {
 		return String(this.value);
 	}
 	
+	/**
+	 * Converts the present value to a number.
+	 * - Method of: {@link ve.Number}
+	 * 
+	 * @returns {number}
+	 */
 	valueOf () {
 		return this.value;
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.Number}
+ */
+veNumber = function () {
+	//Return statement
+	return new ve.Number(...arguments);
 };

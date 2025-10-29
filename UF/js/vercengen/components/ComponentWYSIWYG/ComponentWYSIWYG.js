@@ -1,3 +1,36 @@
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Multiline rich text editor used as a word processor.
+ * - Functional binding: <span color=00ffff>veWYSIWYG</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link string} - The HTML contents of the current text editor.
+ * - `arg1_options`: {@link Object}
+ * 
+ * ##### Instance:
+ * - `.v`: {@link string} - The current HTML contents, same as `arg0_value`.
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.WYSIWYG.handleEvents|handleEvents}</span>() - Initialises event handlers for the present component.
+ * - <span color=00ffff>{@link ve.WYSIWYG.getWYSIWYGFromFields|getWYSIWYGFromFields}</span>(arg0_wysiwyg_el:{@link HTMLElement}) | {@link string} - Fetches the internal .innerHTML value, resolving conflicts between visual/code views.
+ * - <span color=00ffff>{@link ve.WYSIWYG.initWYSIWYG|initWYSIWYG}</span>() - Internal helper function. Initialises the component.
+ * - 
+ * - <span color=00ffff>{@link ve.WYSIWYG.addParagraphTag|addParagraphTag}</span>(arg0_e:{@link KeyboardEvent})
+ * - <span color=00ffff>{@link ve.WYSIWYG.parentTagActive|parentTagActive}</span>(arg0_el:{@link HTMLElement}) | {@link boolean}
+ * - <span color=00ffff>{@link ve.WYSIWYG.selectionChange|selectionChange}</span>(arg0_e:{@link Event}, arg1_buttons:{@link Array}<{@link HTMLElement}>, arg2_editor:{@link HTMLElement}) | {@link boolean} - Fires an internal selection change event.
+ * - <span color=00ffff>{@link ve.WYSIWYG.pasteEvent|pasteEvent}</span>(arg0_e:{@link ClipboardEvent})
+ * 
+ * ##### Static Methods:
+ * - <span color=00ffff>{@link ve.WYSIWYG.execCodeAction|execCodeAction}</span>(arg0_button_el:{@link HTMLElement}, arg1_editor_el:{@link HTMLElement}, arg2_visual_view_el:{@link HTMLElement}, arg3_html_view_el:{@link HTMLElement})
+ * - <span color=00ffff>{@link ve.WYSIWYG.execDefaultAction|execDefaultAction}</span>(arg0_action:{@link string})
+ * - <span color=00ffff>{@link ve.WYSIWYG.execLinkAction|execLinkAction}</span>(arg0_modal_el:{@link HTMLElement})
+ * - <span color=00ffff>{@link ve.WYSIWYG.restoreSelection|restoreSelection}</span>(arg0_saved_selection:{@link Selection})
+ * - <span color=00ffff>{@link ve.WYSIWYG.saveSelection|saveSelection}</span>() | {@link Range}
+ * 
+ * @augments {@link ve.Component}
+ * @type {ve.WYSIWYG}
+ */
 ve.WYSIWYG = class extends ve.Component {
 	static demo_value = `This is an immediate test for WYSIWYG editors being ported.`;
 	static demo_options = {
@@ -136,7 +169,35 @@ ve.WYSIWYG = class extends ve.Component {
 	}
 	
 	/**
+	 * Returns the innerHTML of the present Component's input value.
+	 * - Accessor of: {@link ve.WYSIWYG}
+	 *
+	 * @returns {string}
+	 */
+	get v () {
+		//Return statement
+		return this.getWYSIWYGFromFields(this.element);
+	}
+	
+	/**
+	 * Sets the HTML value for the present Component as a string.
+	 * - Accessor of: {@link ve.WYSIWYG}
+	 * 
+	 * @param {string} arg0_value
+	 */
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = (arg0_value) ? arg0_value : "";
+		
+		//Set element .html-view, .visual-view content
+		this.element.querySelector(`.html-view`).value = value;
+		this.element.querySelector(`.visual-view`).innerHTML = value;
+		this.fireFromBinding();
+	}
+	
+	/**
 	 * Initialises event handlers for the present Component.
+	 * - Method of: {@link ve.WYSIWYG}
 	 */
 	handleEvents () {
 		//Declare local instance variables
@@ -153,8 +214,30 @@ ve.WYSIWYG = class extends ve.Component {
 	}
 	
 	//Internal helper functions
+	
+	/**
+	 * Adds a paragraph tag on newline.
+	 * - Method of: {@link ve.WYSIWYG}
+	 * 
+	 * @param {KeyboardEvent} arg0_e
+	 */
+	addParagraphTag (arg0_e) {
+		//Convert from parameters
+		let e = arg0_e;
+		
+		//Check if keyCode was Enter
+		if (e.keyCode === "13") {
+			//Guard clause; Don't add a p tag on list item
+			if (window.getSelection().anchorNode.parentNode.tagName === "LI") return;
+			
+			//Otherwise, add a p tag
+			document.execCommand("formatBlock", false, "p");
+		}
+	}
+	
 	/**
 	 * Fetches the internal .innerHTML value, resolving any conflicts between the visual view and the code view.
+	 * - Method of: {@link ve.WYSIWYG}
 	 *
 	 * @param {HTMLElement} arg0_wysiwyg_el
 	 *
@@ -175,105 +258,156 @@ ve.WYSIWYG = class extends ve.Component {
 	
 	/**
 	 * Initialises the present WYSIWYG Component.
+	 * - Method of: {@link ve.WYSIWYG}
 	 */
 	initWYSIWYG () {
 		//Declare local instance variables
-		var editor = this.element.querySelector(`.wysiwyg-editor`);
-		var modal = editor.getElementsByClassName("modal")[0];
-		var toolbar = editor.getElementsByClassName("toolbar")[0];
+		let editor = this.element.querySelector(`.wysiwyg-editor`);
+		let modal = editor.getElementsByClassName("modal")[0];
+		let toolbar = editor.getElementsByClassName("toolbar")[0];
 		
-		var buttons = toolbar.querySelectorAll(`.editor-button:not(.has-submenu)`);
-		var content_area = editor.getElementsByClassName("content-area")[0];
-		var visual_view = content_area.getElementsByClassName(`visual-view`)[0];
+		let buttons = toolbar.querySelectorAll(`.editor-button:not(.has-submenu)`);
+		let content_area = editor.getElementsByClassName("content-area")[0];
+		let visual_view = content_area.getElementsByClassName(`visual-view`)[0];
 		
-		var html_view = content_area.getElementsByClassName(`html-view`)[0];
+		let html_view = content_area.getElementsByClassName(`html-view`)[0];
 		
 		//Add active tag event
-		document.addEventListener("selectionchange", function (e) {
-			selectionChange(e, buttons, editor);
+		document.addEventListener("selectionchange", (e) => {
+			this.selectionChange(e, buttons, editor);
 		});
 		
 		//Add paste event
-		visual_view.addEventListener("paste", pasteEvent);
+		visual_view.addEventListener("paste", this.pasteEvent);
 		
 		//Add paragraph tag on newline
-		content_area.addEventListener("keypress", addParagraphTag);
+		content_area.addEventListener("keypress", this.addParagraphTag);
 		
 		//Add toolbar button actions
-		for (var i = 0; i < buttons.length; i++) {
-			var local_button = buttons[i];
+		for (let i = 0; i < buttons.length; i++) {
+			let local_button = buttons[i];
 			
 			local_button.addEventListener("click", function (e) {
-				var action = this.dataset.action;
+				let action = this.dataset.action;
 				
 				//execCommand handler
 				switch (action) {
 					case "toggle-view":
-						execCodeAction(this, editor, visual_view, html_view);
+						ve.WYSIWYG.execCodeAction(this, editor, visual_view, html_view);
 						break;
 					case "createLink":
-						execLinkAction(modal);
+						ve.WYSIWYG.execLinkAction(modal);
 						break;
 					default:
-						execDefaultAction(action);
+						ve.WYSIWYG.execDefaultAction(action);
 				}
 			});
 		}
 	}
 	
-	remove () {
-		this.element.remove();
-	}
-	
 	/**
-	 * Returns the innerHTML of the present Component's input value.
-	 *
-	 * @returns {string}
+	 * Check if the parent tag of an element was active.
+	 * - Method of: {@link ve.WYSIWYG}
+	 * 
+	 * @param {HTMLElement} arg0_el
+	 * 
+	 * @returns {boolean}
 	 */
-	get v () {
+	parentTagActive (arg0_el) {
+		//Convert from parameters
+		let element = arg0_el;
+		
+		//Guard clause for visual view
+		if (!element || !element.classList || element.classList.contains("visual-view"))
+			return false;
+		
+		//Declare local instance variables
+		let tag_name = element.tagName.toLowerCase();
+		let text_align = element.style.textAlign;
+		let toolbar_button;
+		
+		//Active by tag name
+		toolbar_button = document.querySelectorAll(`.toolbar .editor-button[data-tag-name="${tag_name}"]`)[0];
+		
+		//Active by text-align
+		toolbar_button = document.querySelectorAll(`.toolbar .editor-button[data-style="textAlign:${text_align}"]`)[0];
+		
+		//Set toolbar_button to being active if toolbar_button is defined
+		if (toolbar_button)
+			toolbar_button.classList.add("active");
+		
 		//Return statement
-		return this.getWYSIWYGFromFields(this.element);
+		return this.parentTagActive(element.parentNode);
 	}
 	
 	/**
-	 * Sets the HTML value for the present Component as a string.
-	 *
-	 * @param {string} arg0_value
+	 * Internal helper function for monitoring selection changes.
+	 * - Method of: {@link ve.WYSIWYG}
+	 * 
+	 * @param {Event} arg0_e
+	 * @param {HTMLElement[]} arg1_buttons
+	 * @param {HTMLElement} arg2_editor
+	 * 
+	 * @returns {boolean}
 	 */
-	set v (arg0_value) {
+	selectionChange (arg0_e, arg1_buttons, arg2_editor) {
 		//Convert from parameters
-		var value = (arg0_value) ? arg0_value : "";
+		let e = arg0_e;
+		let buttons = arg1_buttons;
+		let editor = arg2_editor;
 		
-		//Set element .html-view, .visual-view content
-		this.element.querySelector(`.html-view`).value = value;
-		this.element.querySelector(`.visual-view`).innerHTML = value;
-		this.fireFromBinding();
-	}
-};
-
-//Initialise functions
-{
-	//addParagraphTag() - Adds a paragraph tag when enter key is pressed
-	function addParagraphTag (arg0_e) {
-		//Convert from parameters
-		var e = arg0_e;
-		
-		//Check if keyCode was enter
-		if (e.keyCode == "13") {
-			//Guard clause; Don't add a p tag on list item
-			if (window.getSelection().anchorNode.parentNode.tagName == "LI") return;
+		//Declare local instance variables
+		for (let i = 0; i < buttons.length; i++) {
+			let local_button = buttons[i];
 			
-			//Otherwise, add a p tag
-			document.execCommand("formatBlock", false, "p");
+			//Don't remove active class on code toggle button
+			if (local_button.dataset.action === "toggle-view") continue;
+			
+			local_button.classList.remove("active");
 		}
+		
+		try {
+			if (!childOf(window.getSelection().anchorNode.parentNode, editor))
+				//Return statement; guard clause
+				return false;
+			
+			this.parentTagActive(window.getSelection().anchorNode.parentNode);
+		} catch {}
 	}
 	
-	function execCodeAction (arg0_button_el, arg1_editor_el, arg2_visual_view_el, arg3_html_view_el) {
+	/**
+	 * 	pasteEvent() - Handles paste event by removing all HTML tags.
+	 * - Method of: {@link ve.WYSIWYG}
+	 * 
+	 * @param {ClipboardEvent} arg0_e
+	 */
+	pasteEvent (arg0_e) {
 		//Convert from parameters
-		var button_el = arg0_button_el;
-		var editor_el = arg1_editor_el;
-		var visual_view = arg2_visual_view_el;
-		var html_view = arg3_html_view_el;
+		let e = arg0_e;
+		
+		//Declare local instance variables
+		let text = (e.originalEvent || e).clipboardData.getData("text/plain");
+		
+		e.preventDefault();
+		document.execCommand("insertHTML", false, text);
+	}
+	
+	//Static helper methods
+	
+	/**
+	 * Executes a code action and changes the formatting within the {@link ve.WYSIWYG} component.
+	 * - Static method of: {@link ve.WYSIWYG}
+	 * 
+	 * @param {HTMLElement} arg0_button_el - The button_el that determines the code action to execute.
+	 * @param {HTMLElement} arg1_editor_el
+	 * @param {HTMLElement} arg2_visual_view_el
+	 * @param {HTMLElement} arg3_html_view_el
+	 */
+	static execCodeAction (arg0_button_el, arg1_editor_el, arg2_visual_view_el, arg3_html_view_el) {
+		//Convert from parameters
+		let button_el = arg0_button_el;
+		let visual_view = arg2_visual_view_el;
+		let html_view = arg3_html_view_el;
 		
 		//Toggle visual/HTML view depending on current state
 		if (button_el.classList.contains("active")) { //Show visual view
@@ -291,41 +425,53 @@ ve.WYSIWYG = class extends ve.Component {
 		}
 	}
 	
-	function execDefaultAction (arg0_action) {
+	/**
+	 * Executes a default action given its string via {@link document.execCommand}.
+	 * - Static method of: {@link ve.WYSIWYG}
+	 * 
+	 * @param {string} arg0_action
+	 */
+	static execDefaultAction (arg0_action) {
 		//Convert from parameters
-		var action = arg0_action;
+		let action = arg0_action;
 		
 		//Invoke execCommand
 		document.execCommand(action, false);
 	}
 	
-	function execLinkAction (arg0_modal_el) {
+	/**
+	 * Adds a link to the current {@link ve.WYSIWYG} editor being mentioned.
+	 * - Static method of: {@link ve.WYSIWYG}
+	 * 
+	 * @param {HTMLElement} arg0_modal_el
+	 */
+	static execLinkAction (arg0_modal_el) {
 		//Convert from parameters
-		var modal = arg0_modal_el;
+		let modal = arg0_modal_el;
 		
 		//Declare local instance variables
-		var close = modal.querySelectorAll(".close")[0];
-		var selection = saveSelection();
-		var submit = modal.querySelectorAll("button.done")[0];
+		let close = modal.querySelectorAll(".close")[0];
+		let selection = ve.WYSIWYG.saveSelection();
+		let submit = modal.querySelectorAll("button.done")[0];
 		
 		//Set modal to visible
 		modal.style.display = "block";
 		
 		//Add link once done button is active
-		submit.addEventListener("click", function (e) {
+		submit.addEventListener("click", (e) => {
 			e.preventDefault();
 			
-			var new_tab_checkbox = modal.querySelectorAll(`#new-tab`)[0];
-			var link_input = modal.querySelectorAll(`#link-value`)[0];
-			var link_value = link_input.value;
-			var new_tab = new_tab_checkbox.checked;
+			let new_tab_checkbox = modal.querySelectorAll(`#new-tab`)[0];
+			let link_input = modal.querySelectorAll(`#link-value`)[0];
+			let link_value = link_input.value;
+			let new_tab = new_tab_checkbox.checked;
 			
 			//Restore selection
-			restoreSelection(selection);
+			ve.WYSIWYG.restoreSelection(selection);
 			
 			//Handle selection
 			if (window.getSelection().toString()) {
-				var local_a = document.createElement("a");
+				let local_a = document.createElement("a");
 				
 				local_a.href = link_value;
 				if (new_tab)
@@ -337,15 +483,15 @@ ve.WYSIWYG = class extends ve.Component {
 			modal.style.display = "none";
 			link_input.value = "";
 			
-			submit.removeEventListener("click", arguments.callee);
+			submit.removeEventListener("click", arguments.callee); //[WIP] - Deprecate callee at a later date
 			close.removeEventListener("click", arguments.callee);
 		});
 		
 		//Close modal on close button click
-		close.addEventListener("click", function (e) {
+		close.addEventListener("click", (e) => {
 			e.preventDefault();
 			
-			var link_input = modal.querySelectorAll("#link-value")[0];
+			let link_input = modal.querySelectorAll("#link-value")[0];
 			
 			//Hide modal, deregister modal events
 			modal.style.display = "none";
@@ -356,72 +502,45 @@ ve.WYSIWYG = class extends ve.Component {
 		});
 	}
 	
-	function parentTagActive (arg0_el) {
+	/**
+	 * Restores a saved selection for the current {@link ve.WYSIWYG} component.
+	 * - Static method of: {@link ve.WYSIWYG}
+	 * 
+	 * @param {Selection} arg0_saved_selection
+	 */
+	static restoreSelection (arg0_saved_selection) {
 		//Convert from parameters
-		var element = arg0_el;
-		
-		//Guard clause for visual view
-		if (!element || !element.classList || element.classList.contains("visual-view"))
-			return false;
-		
-		//Declare local instance variables
-		var tag_name = element.tagName.toLowerCase();
-		var text_align = element.style.textAlign;
-		var toolbar_button;
-		
-		//Active by tag name
-		toolbar_button = document.querySelectorAll(`.toolbar .editor-button[data-tag-name="${tag_name}"]`)[0];
-		
-		//Active by text-align
-		toolbar_button = document.querySelectorAll(`.toolbar .editor-button[data-style="textAlign:${text_align}"]`)[0];
-		
-		//Set toolbar_button to being active if toolbar_button is defined
-		if (toolbar_button)
-			toolbar_button.classList.add("active");
-		
-		//Return statement
-		return parentTagActive(element.parentNode);
-	}
-	
-	//pasteEvent() - Handles paste event by removing all HTML tags
-	function pasteEvent (arg0_e) {
-		//Convert from parameters
-		var e = arg0_e;
-		
-		//Declare local instance variables
-		var text = (e.originalEvent || e).clipboardData.getData("text/plain");
-		
-		e.preventDefault();
-		document.execCommand("insertHTML", false, text);
-	}
-	
-	function restoreSelection (arg0_saved_selection) {
-		//Convert from parameters
-		var saved_selection = arg0_saved_selection;
+		let saved_selection = arg0_saved_selection;
 		
 		//Restore selection
 		if (saved_selection)
 			if (window.getSelection) {
-				selection = window.getSelection();
+				let selection = window.getSelection();
 				selection.removeAllRanges();
 				
 				//Populate selection ranges
-				for (var i = 0, length = saved_selection.length; i < length; i++)
+				for (let i = 0, length = saved_selection.length; i < length; i++)
 					selection.addRange(saved_selection[i]);
 			} else if (document.selection && saved_selection.select) {
 				saved_selection.select();
 			}
 	}
 	
-	function saveSelection () {
+	/**
+	 * Saves the current selection for later restoration by {@link ve.WYSIWYG.restoreSelection}().
+	 * - Static method of: {@link ve.WYSIWYG}
+	 * 
+	 * @returns {Range}
+	 */
+	static saveSelection () {
 		if (window.getSelection) {
-			var selection = window.getSelection();
+			let selection = window.getSelection();
 			
 			if (selection.getRangeAt && selection.rangeCount) {
-				var ranges = [];
+				let ranges = [];
 				
 				//Iterate over selection.rangeCount to populate ranges
-				for (var i = 0, length = selection.rangeCount; i < length; i++)
+				for (let i = 0, length = selection.rangeCount; i < length; i++)
 					ranges.push(selection.getRangeAt(i));
 				
 				//Return statement
@@ -432,29 +551,14 @@ ve.WYSIWYG = class extends ve.Component {
 			return document.selection.createRange();
 		}
 	}
-	
-	function selectionChange (arg0_e, arg1_buttons, arg2_editor) {
-		//Convert from parameters
-		var e = arg0_e;
-		var buttons = arg1_buttons;
-		var editor = arg2_editor;
-		
-		//Declare local instance variables
-		for (var i = 0; i < buttons.length; i++) {
-			var local_button = buttons[i];
-			
-			//Don't remove active class on code toggle button
-			if (local_button.dataset.action == "toggle-view") continue;
-			
-			local_button.classList.remove("active");
-		}
-		
-		try {
-			if (!childOf(window.getSelection().anchorNode.parentNode, editor))
-				//Return statement; guard clause
-				return false;
-			
-			parentTagActive(window.getSelection().anchorNode.parentNode);
-		} catch {}
-	}
-}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.WYSIWYG}
+ */
+veWYSIWYG = function () {
+	//Return statement
+	return new ve.WYSIWYG(...arguments);
+};
