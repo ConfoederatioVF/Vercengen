@@ -54,13 +54,13 @@
         <article><img src = "https://i.postimg.cc/ZZk34WkC/vercengen-logo.png">
 <span style = "display: flex;">
     <span>UI ⊆ State.</span>
-    <span style = "margin-left: auto; order: 99; padding: 0;"><small>(<u>UI as a subset of state</u>).</small></span>
+    <span style = "margin-left: auto; order: 99; padding: 0;"><small>(<u>UI is a subset of state</u>).</small></span>
 </span>
 <br>
 <h2 id="less-is-more.">Less Is More.</h2>
 <p>Vercengen is a software engine built to halve your work by eliminating frontend redundancy. Instead, UIs are declared as variable types in your data structures with immediate reflection and directional control.</p>
-<p>All interfaces are split into <b>Components</b>, which represent user-facing inputs and displays, and <b>Features</b>, which encapsulate Components; UI is rendered in <i>de facto</i> immediate mode. Everything in Vercengen is in service of the developer: there exists no build process, auto-documentation, first-class Undo/Redo, associated util libraries, and inline documentation for usage.</p>
-<p>[WIP] - Remaining content is a work-in-progress.</p>
+<p>All interfaces are split into <b><a href = "ve.Component.html">Components</a></b>, which represent user-facing inputs and displays, and <b><a href = "ve.Feature.html">Features</a></b>, which encapsulate Components; UI is rendered in <i>de facto</i> immediate mode. Everything in Vercengen is in service of the developer: there exists no build process, auto-documentation, first-class Undo/Redo, immediate-mode CSS-in-JS, associated util libraries, variable theming, and inline documentation for usage.</p>
+<p><strong>Batteries Included:</strong> Unlike other frameworks, a default features and components library is included out-of-the-box, and can be modified as needed.</p>
 <h2 id="examples%3A">Examples:</h2>
 <p>Example: Separately updating counters.</p>
 <p>Vercengen (10 lines):</p>
@@ -75,13 +75,48 @@
 new Counter().open(&quot;instance&quot;, { name: &quot;Counter 1&quot; });
 new Counter().open(&quot;instance&quot;, { name: &quot;Counter 2&quot; });
 </code></pre>
-<p>Example: WYSIWYG Word Editor:</p>
+<p>Example: WYSIWYG Word Editor.</p>
 <p>Vercengen (4 lines):</p>
 <pre class="prettyprint source lang-js"><code>word_editor = veWindow({
   file_explorer: veFileExplorer(__dirname, { y: 0 }),
   text_editor: veWYSIWYG(&quot;Hello world.&quot;, { y: 0 })
 }, { name: &quot;Word Editor&quot;, width: &quot;40rem&quot; });
-</code></pre></article>
+</code></pre>
+<h2 id="extensibility%3A">Extensibility:</h2>
+<p>Need to import a third-party component? Boilerplate for Vercengen is minimal:</p>
+<pre class="prettyprint source lang-js"><code>ve.CustomComponent = class extends ve.Component {
+  constructor (arg0_value, arg1_options) {
+    this.element; //Must export this.element, any user-driven changes should call this.fireToBinding();
+    this.value = arg0_value;
+  }
+  
+  get v () { //Returns the value stored in the component
+    return this.value;
+  }
+  set v (arg0_value) { //Sets the value stored in the component
+    this.value = arg0_value;
+    this.fireFromBinding();
+  }
+};
+</code></pre>
+<h2 id="getting-started%3A">Getting Started:</h2>
+<p>Vercengen is currently native to <strong>Electron</strong>/<strong>Node.js</strong> with better support planned for in-browser versions via a single-file CDN. Building a Vercengen app is as simple as 1, 2, 3.</p>
+<ol>
+<li><a href="https://github.com/Confoederatio/Vercengen/">Download</a> the current UF folder and drop it into your root directory.</li>
+<li>In your <code>index.html</code>, add the following script tag:<pre class="prettyprint source lang-js"><code>&lt;script src = &quot;./UF/js/vercengen/startup/vercengen_startup.js&quot; type = &quot;text/javascript&quot;>&lt;/script>
+</code></pre>
+</li>
+<li>Customise your load directories/files. Patterns accept wildcards (*), exclusions (!), and folders/file paths. Last match wins.<pre class="prettyprint source lang-js"><code>ve.start({ load_files: [
+  &quot;core/&quot;,
+  &quot;!core/startup.js&quot;
+]});
+</code></pre>
+</li>
+</ol>
+<p>But if that's too much work for you, fork our <a href="github.com/Confoederatio/Vercengen/">bootstrap repository</a> instead.</p>
+<hr>
+<p><small>CTD. Generated with Vercengen/Autodoc.</small><br>
+<a href = "https://confoederatio.org/">Confoederatio</a> | <a href = "https://confoederatiodocs.info/">Confoederatio Docs</a></p></article>
     </section>
 
 
