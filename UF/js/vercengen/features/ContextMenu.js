@@ -1,13 +1,13 @@
 /**
+ * Refer to <span color = "yellow">{@link ve.Feature}</span> for methods or fields inherited from the parent, such as automatic destructuring.
+ * 
  * Represents a ContextMenu Feature that contains a set of components. {@link ve.Window} instances are stored in `.windows`. Recursive.
+ * - Functional binding: <span color=00ffff>veContextMenu</span>().
+ * - Inherits feature: {@link ve.Window}
  * 
  * The immediate {@link ve.Button} element bound to the ContextMenu instance is contained in `.element`.
- * @type {ve.ContextMenu}
  * 
- * ##### DOM:
- * - `.instance`: this:{@link ve.ContextMenu} - Applies to `this.element` only.
- * 
- * ##### Options:
+ * ##### Constructor:
  * - `arg0_components_obj`: {@link Object}<{@link ve.Component}>
  * - `arg1_options`: {@link Object}
  *   - `.anchor="left"/"right"` - Either 'left'/'right'. Position defaults to the side that has the most space.
@@ -25,6 +25,9 @@
  * - <span color=00ffff>{@link ve.ContextMenu.getCurrentOffset|getCurrentOffset}</span>() | {@link number}
  * - <span color=00ffff>{@link ve.ContextMenu.open|open}</span>() | this:{@link ve.ContextMenu}
  * - <span color=00ffff>{@link ve.ContextMenu.removeContextMenu|removeContextMenu}</span>(arg0_index: this:{@link number}) | {@link ve.ContextMenu}
+ * 
+ * @augments {@link ve.Feature}
+ * @type {ve.ContextMenu}
  */
 ve.ContextMenu = class extends ve.Feature { //[WIP] - Finish class body
 	constructor (arg0_components_obj, arg1_options) {
@@ -56,6 +59,17 @@ ve.ContextMenu = class extends ve.Feature { //[WIP] - Finish class body
 		});
 	}
 	
+	/**
+	 * Adds a given context menu with a set `.options.id` to prevent duplicates.
+	 * - Method of: {@link ve.ContextMenu}
+	 * 
+	 * @param {{"<component_key>": ve.Component}} arg0_components_obj
+	 * @param {Object} [arg1_options]
+	 *  @param {string} [arg1_options.anchor] - Either 'left'/'right', depending on available screen-space.
+	 *  @param {string} [arg1_options.id]
+	 *  
+	 * @returns {ve.Window}
+	 */
 	addContextMenu (arg0_components_obj, arg1_options) {
 		//Convert from parameters
 		let components_obj = arg0_components_obj;
@@ -143,6 +157,12 @@ ve.ContextMenu = class extends ve.Feature { //[WIP] - Finish class body
 		return window_obj;
 	}
 	
+	/**
+	 * Closes the present context menu and all its associated layers.
+	 * - Method of: {@link ve.ContextMenu}
+	 * 
+	 * @returns {ve.ContextMenu}
+	 */
 	close () {
 		//Iterate over all open context menus to close them in this.windows
 		for (let i = 0; i < this.windows.length; i++)
@@ -153,6 +173,12 @@ ve.ContextMenu = class extends ve.Feature { //[WIP] - Finish class body
 		return this;
 	}
 	
+	/**
+	 * Returns the current X offset in px from the anchored first layer. Default padding is 4px.
+	 * - Method of: {@link ve.ContextMenu}
+	 * 
+	 * @returns {number}
+	 */
 	getCurrentOffset () {
 		//Declare local instance variables
 		let offset_x = 0;
@@ -165,6 +191,12 @@ ve.ContextMenu = class extends ve.Feature { //[WIP] - Finish class body
 		return offset_x;
 	}
 	
+	/**
+	 * Opens the present context menu with its bound {@link this.components_obj}.
+	 * - Method of: {@link ve.ContextMenu}
+	 * 
+	 * @returns {ve.ContextMenu}
+	 */
 	open () {
 		//Open current context menu with bound this.components_obj
 		this.addContextMenu(this.components_obj);
@@ -173,6 +205,14 @@ ve.ContextMenu = class extends ve.Feature { //[WIP] - Finish class body
 		return this;
 	}
 	
+	/**
+	 * Removes a context menu layer based on its order.
+	 * - Method of: {@link ve.ContextMenu} 
+	 * 
+	 * @param {number} arg0_index
+	 * 
+	 * @returns {ve.ContextMenu}
+	 */
 	removeContextMenu (arg0_index) {
 		//Convert from parameters
 		let index = parseInt(arg0_index);
@@ -190,4 +230,14 @@ ve.ContextMenu = class extends ve.Feature { //[WIP] - Finish class body
 		//Return statement
 		return this;
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.ContextMenu}
+ */
+veContextMenu = function () {
+	//Return statement
+	return new ve.ContextMenu(...arguments);
 };
