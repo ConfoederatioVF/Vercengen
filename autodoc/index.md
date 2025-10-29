@@ -12,6 +12,8 @@ Vercengen is a software engine built to halve your work by eliminating frontend 
 
 All interfaces are split into <b>Components</b>, which represent user-facing inputs and displays, and <b>Features</b>, which encapsulate Components; UI is rendered in <i>de facto</i> immediate mode. Everything in Vercengen is in service of the developer: there exists no build process, auto-documentation, first-class Undo/Redo, associated util libraries, and inline documentation for usage.
 
+[WIP] - Remaining content is a work-in-progress.
+
 ## Examples:
 
 Example: Separately updating counters.
