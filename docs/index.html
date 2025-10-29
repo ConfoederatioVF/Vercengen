@@ -13,8 +13,10 @@
     <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
-<link rel="stylesheet" href="../autodoc/css/global.css">
-</head>
+
+						<link rel="stylesheet" href="../autodoc/css/global.css">
+						<link rel="stylesheet" href="/autodoc/css/global.css">
+					</head>
 <body>
 
 <input type="checkbox" id="nav-trigger" class="nav-trigger" />
@@ -49,7 +51,7 @@
 
 
     <section class="readme">
-        <article><img src = "../gfx/vercengen_logo.png">
+        <article><img src = "https://i.postimg.cc/ZZk34WkC/vercengen-logo.png">
 <span style = "display: flex;">
     <span>UI ⊆ State.</span>
     <span style = "margin-left: auto; order: 99; padding: 0;"><small>(<u>UI as a subset of state</u>).</small></span>
@@ -61,7 +63,7 @@
 <p>[WIP] - Remaining content is a work-in-progress.</p>
 <h2 id="examples%3A">Examples:</h2>
 <p>Example: Separately updating counters.</p>
-<p>Vercengen (10 lines), Vanilla JS:</p>
+<p>Vercengen (10 lines):</p>
 <pre class="prettyprint source lang-js"><code>Counter = class extends ve.Class { constructor () {
 	super();
 	this.count = veNumber(0, { name: &quot;Counter:&quot; });
@@ -73,49 +75,7 @@
 new Counter().open(&quot;instance&quot;, { name: &quot;Counter 1&quot; });
 new Counter().open(&quot;instance&quot;, { name: &quot;Counter 2&quot; });
 </code></pre>
-<p>Vue (18 lines), <a href="https://vuejs.org/guide/essentials/component-basics">adapted source</a>:</p>
-<pre class="prettyprint source lang-js"><code>//./ButtonCounter.vue
-import { ref } from 'vue'
-export default {
-	setup() {
-		const count = ref(0)
-		return { count }
-	},
-	template: `
-    You clicked me {{ count }} times.
-    &lt;button @click=&quot;count--&quot;>Decrement&lt;/button>
-    &lt;button @click=&quot;count++&quot;>Increment&lt;/button>`
-}
-//SFC, separate file
-&lt;script setup>
-import ButtonCounter from './ButtonCounter.vue'
-&lt;/script>
-&lt;template>
-  &lt;ButtonCounter />
-  &lt;ButtonCounter />
-&lt;/template>
-</code></pre>
-<p>React (18 lines), <a href="https://react.dev/learn">source</a>:</p>
-<pre class="prettyprint source lang-jsx"><code>import { useState } from 'react';
-export default function MyApp() {
-	return (
-		&lt;div>
-			&lt;h1>Counters that update separately&lt;/h1>
-			&lt;MyButton />
-			&lt;MyButton />
-		&lt;/div>
-	);
-}
-function MyButton() {
-	const [count, setCount] = useState(0);
-	return (&lt;>
-        &lt;button onClick={() => setCount(count - 1)}>Decrement&lt;/button>
-        &lt;span> {count} &lt;/span>
-        &lt;button onClick={() => setCount(count + 1)}>Increment&lt;/button>
-    &lt;/>);
-}
-</code></pre>
-<p>WYSIWYG Word Editor:</p>
+<p>Example: WYSIWYG Word Editor:</p>
 <p>Vercengen (4 lines):</p>
 <pre class="prettyprint source lang-js"><code>word_editor = veWindow({
   file_explorer: veFileExplorer(__dirname, { y: 0 }),

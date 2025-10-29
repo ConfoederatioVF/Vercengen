@@ -26,7 +26,10 @@ exports.handlers = {
 				
 				html = html.replace(
 					/<\/head>/i,
-					`<link rel="stylesheet" href="../autodoc/css/global.css">\n</head>`
+					`
+						<link rel="stylesheet" href="../autodoc/css/global.css">
+						<link rel="stylesheet" href="/autodoc/css/global.css">
+					</head>`
 				);
 				html = html.replace(
 					/<\/body>/i,

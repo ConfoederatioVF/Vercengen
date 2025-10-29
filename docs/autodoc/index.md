@@ -1,4 +1,4 @@
-<img src = "../gfx/vercengen_logo.png">
+<img src = "https://i.postimg.cc/ZZk34WkC/vercengen-logo.png">
 
 <span style = "display: flex;">
     <span>UI ⊆ State.</span>
@@ -18,7 +18,7 @@ All interfaces are split into <b>Components</b>, which represent user-facing inp
 
 Example: Separately updating counters.
 
-Vercengen (10 lines), Vanilla JS:
+Vercengen (10 lines):
 ```js
 Counter = class extends ve.Class { constructor () {
 	super();
@@ -32,53 +32,7 @@ new Counter().open("instance", { name: "Counter 1" });
 new Counter().open("instance", { name: "Counter 2" });
 ```
 
-Vue (18 lines), [adapted source](https://vuejs.org/guide/essentials/component-basics):
-```js
-//./ButtonCounter.vue
-import { ref } from 'vue'
-export default {
-	setup() {
-		const count = ref(0)
-		return { count }
-	},
-	template: `
-    You clicked me {{ count }} times.
-    <button @click="count--">Decrement</button>
-    <button @click="count++">Increment</button>`
-}
-//SFC, separate file
-<script setup>
-import ButtonCounter from './ButtonCounter.vue'
-</script>
-<template>
-  <ButtonCounter />
-  <ButtonCounter />
-</template>
-```
-
-React (18 lines), [source](https://react.dev/learn):
-```jsx
-import { useState } from 'react';
-export default function MyApp() {
-	return (
-		<div>
-			<h1>Counters that update separately</h1>
-			<MyButton />
-			<MyButton />
-		</div>
-	);
-}
-function MyButton() {
-	const [count, setCount] = useState(0);
-	return (<>
-        <button onClick={() => setCount(count - 1)}>Decrement</button>
-        <span> {count} </span>
-        <button onClick={() => setCount(count + 1)}>Increment</button>
-    </>);
-}
-```
-
-WYSIWYG Word Editor:
+Example: WYSIWYG Word Editor:
 
 Vercengen (4 lines):
 ```js
