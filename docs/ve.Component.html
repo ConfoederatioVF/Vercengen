@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Component - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.BIUF.html">BIUF</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.BIUF.html#handleBIUF">handleBIUF</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.BIUF.html#initBIUFToolbar">initBIUFToolbar</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.BIUF.html#sendOnchangeEvent">sendOnchangeEvent</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Button.html">Button</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Checkbox.html">Checkbox</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Checkbox.html#.generateHTMLRecursively">generateHTMLRecursively</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Class.html">Class</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#close">close</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#draw">draw</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#getState">getState</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#isClosed">isClosed</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#isOpen">isOpen</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#open">open</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#updateOwner">updateOwner</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Colour.html">Colour</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Colour.html#getHex">getHex</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Colour.html#toString">toString</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Component.html">Component</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#addComponent">addComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#bind">bind</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#fireFromBinding">fireFromBinding</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#fireToBinding">fireToBinding</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#remove">remove</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#removeComponent">removeComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#setOwner">setOwner</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#.linter">linter</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Confirm.html">Confirm</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Confirm.html#close">close</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.ContextMenu.html">ContextMenu</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Datalist.html">Datalist</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Date.html">Date</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Date.html#handleEvents">handleEvents</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.DateLength.html">DateLength</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Feature.html">Feature</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#addComponents">addComponents</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#close">close</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#remove">remove</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#removeComponents">removeComponents</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.File.html">File</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.FileExplorer.html">FileExplorer</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#clearClipboard">clearClipboard</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#deselect">deselect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#deselectAll">deselectAll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#refresh">refresh</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#select">select</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#selectAll">selectAll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#setClipboard">setClipboard</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.HTML.html">HTML</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.HTML.html#toString">toString</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Hierarchy.html">Hierarchy</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Hierarchy.html#addItem">addItem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Hierarchy.html#getHierarchyObject">getHierarchyObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Hierarchy.html#removeItem">removeItem</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.HierarchyDatatype.html">HierarchyDatatype</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Interface.html">Interface</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#addComponent">addComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#redraw">redraw</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#refresh">refresh</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#removeComponent">removeComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#resize">resize</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#.assignComponentCoordinates">assignComponentCoordinates</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#.getDefinedComponentDimensions">getDefinedComponentDimensions</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Map.html">Map</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Modal.html">Modal</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Modal.html#close">close</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Navbar.html">Navbar</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Navbar.html#generateHTMLRecursively">generateHTMLRecursively</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Number.html">Number</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Number.html#toString">toString</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Number.html#valueOf">valueOf</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.PageMenu.html">PageMenu</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.PageMenu.html#updateUnderline">updateUnderline</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.PageMenuWindow.html">PageMenuWindow</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Password.html">Password</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Radio.html">Radio</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Radio.html#.generateHTMLRecursively">generateHTMLRecursively</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Range.html">Range</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Range.html#toString">toString</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Range.html#valueOf">valueOf</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.RawInterface.html">RawInterface</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Scene.html">Scene</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Scene.html#draw">draw</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Select.html">Select</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Select.html#generateHTML">generateHTML</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Telephone.html">Telephone</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Text.html">Text</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Time.html">Time</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Toast.html">Toast</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Toast.html#refresh">refresh</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Toggle.html">Toggle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Toggle.html#updateName">updateName</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Tooltip.html">Tooltip</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.URL.html">URL</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.WYSIWYG.html">WYSIWYG</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#addParagraphTag">addParagraphTag</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#getWYSIWYGFromFields">getWYSIWYGFromFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#handleEvents">handleEvents</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#initWYSIWYG">initWYSIWYG</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#parentTagActive">parentTagActive</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#pasteEvent">pasteEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#selectionChange">selectionChange</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.execCodeAction">execCodeAction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.execDefaultAction">execDefaultAction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.execLinkAction">execLinkAction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.restoreSelection">restoreSelection</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.saveSelection">saveSelection</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Window.html">Window</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#getZIndex">getZIndex</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#refresh">refresh</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#select">select</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#setCoords">setCoords</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#setSize">setSize</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#.getHighestZIndex">getHighestZIndex</a></span></li><li class="nav-heading">Namespaces</li><li class="nav-heading"><span class="nav-item-type type-namespace">N</span><span class="nav-item-name"><a href="ve.html">ve</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.getFilesInFolder">getFilesInFolder</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.getImportFiles">getImportFiles</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.getWildcardsInFolder">getWildcardsInFolder</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.initialise">initialise</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.start">start</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veBIUF">veBIUF</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veButton">veButton</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veCheckbox">veCheckbox</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veColour">veColour</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veConfirm">veConfirm</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veDatalist">veDatalist</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veDate">veDate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veDateLength">veDateLength</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veFile">veFile</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veFileExplorer">veFileExplorer</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veHTML">veHTML</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veHierarchy">veHierarchy</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veHierarchyDatatype">veHierarchyDatatype</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veInterface">veInterface</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veMap">veMap</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veModal">veModal</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veNavbar">veNavbar</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veNumber">veNumber</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#vePageMenu">vePageMenu</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#vePageMenuWindow">vePageMenuWindow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veRadio">veRadio</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veRange">veRange</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veRawInterface">veRawInterface</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veScene">veScene</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veSelect">veSelect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veTelephone">veTelephone</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veText">veText</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veToast">veToast</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veToggle">veToggle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veTooltip">veTooltip</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veURL">veURL</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veWYSIWYG">veWYSIWYG</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veWindow">veWindow</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Component</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="ve.html">ve</a>.</span>
+        
+        Component
+        </h2>
+        
+            <div class="class-description"><p><span color = "yellow"><a href="ve.Component.html">ve.Component</a></span>: Components represent inputs and displays that yield a value via <code>.v</code>. They are typically encapsulated by a <span color="yellow"><a href="ve.Feature.html">ve.Feature</a></span>, but can be manually mounted via <span color=00ffff>bind</span>(arg0_container_el:HTMLElement).</p>
+<h5 id="constructor%3A">Constructor:</h5>
+<ul>
+<li><code>arg0_options</code>: <a href="Object.html">Object</a>
+<ul>
+<li>All bindings accept 'this'/'global'/'window' variables.</li>
+<li><code>.binding</code>: string - Related event: <code>.onchange</code>. Bidirectional data binding for both <code>.from_binding</code>/<code>.to_binding</code>.</li>
+<li><code>.from_binding</code>: string - Related event: <code>.onprogramchange</code>. Unidirectional data binding.</li>
+<li><code>.to_binding</code>: string - Related event: <code>.onuserchange</code>. Unidirectional data binding.</li>
+<li></li>
+<li><code>.onchange</code>: function(this.v, this:<a href="ve.Component.html">ve.Component</a>)</li>
+<li><code>.onprogramchange</code>: function(this.v, this:<a href="ve.Component.html">ve.Component</a>)</li>
+<li><code>.onuserchange</code>: function(this.v, this:<a href="ve.Component.html">ve.Component</a>)</li>
+<li></li>
+<li><code>.attributes</code>: <a href="Object.html">Object</a> - Any attributes to place on the mounted <code>this.element</code>.
+<ul>
+<li><code>&lt;attribute_key&gt;</code>: string</li>
+</ul>
+</li>
+<li><code>.limit=true</code>: function(this.v)|undefined | boolean - Whether to display the current Component. Immediate mode.</li>
+<li><code>.onload</code>: function(this:<a href="ve.Component.html">ve.Component</a>)</li>
+<li><code>.tooltip</code>: <a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt;|string</li>
+<li><code>.style</code>: <a href="Object.html">Object</a> - The CSS/Telestyle object to use for the current element. Immediate mode CSS if function is declared.
+<ul>
+<li><code>&lt;selector_key&gt;</code>: string - CSS query selector. :nth-parent() is acceptable.
+<ul>
+<li><code>&lt;css_property&gt;</code>: function|string</li>
+</ul>
+</li>
+<li><code>&lt;css_property&gt;</code>: function|string</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="dom%3A">DOM:</h5>
+<ul>
+<li><code>.instance</code>: this:<a href="ve.Component.html">ve.Component</a></li>
+</ul>
+<h5 id="instance%3A">Instance:</h5>
+<ul>
+<li><code>.child_class=this.constructor</code>: <a href="ve.Component.html">ve.Component</a> - The constructor object of the child class.</li>
+<li><code>.is_vercengen_component=true</code>: boolean - Whether to mark this ve.Component as a Vercengen component.</li>
+<li><code>.parent_el</code>: HTMLElement - The parent element of the current component, should it exist.</li>
+<li></li>
+<li><code>.height=1</code>: number</li>
+<li><code>.width=1</code>: number</li>
+<li><code>.x=0</code>: number - Switches to an n+1 default if only <code>.y</code> is defined.</li>
+<li><code>.y=n + 1</code>: number - Switches to 0 if only <code>.x</code> is defined.</li>
+<li></li>
+<li>The linter/engine guarantees the following fields:</li>
+<li><code>.element</code>: HTMLElement - The HTMLElement that the ve.Component is mounted to.</li>
+<li><code>.name</code>: string - The name to display for the current ve.Component.</li>
+<li><code>.owner</code>: any - The root owner of the current ve.Component. This is typically a <a href="ve.Class.html">ve.Class</a>, but can also be a <a href="ve.Feature.html">ve.Feature</a> or <a href="global.html">global</a>/window.</li>
+<li><code>.owners</code>: Array&lt;any&gt; - A list of relevant owners in descending orders.</li>
+<li><code>.v</code>: any - The value stored by the component. Getter/setter.</li>
+</ul>
+<h5 id="methods%3A">Methods:</h5>
+<ul>
+<li><span color=00ffff>addComponent</span>() - Attempts to mount the current component on its parent_el.</li>
+<li><span color=00ffff>bind</span>(arg0_container_el:HTMLElement) - Manually mounts the current component to arg0_container_el.</li>
+<li><span color=00ffff>fireFromBinding</span>() - Pseudo-setter from binding. Fires only upon program-driven changes to <code>.v</code> directly.</li>
+<li><span color=00ffff>fireToBinding</span>() - Pseudo-setter to binding. Fires only upon user-driven changes to <code>.v</code>.</li>
+<li><span color=00ffff>remove</span>() - Removes the component/element from the DOM.</li>
+<li><span color=00ffff>removeComponent</span>() - Unmounts the current component from its parent_el.</li>
+<li><span color=00ffff>setOwner</span>(arg0_value:<a href="Object.html">Object</a>, arg1_owner_array=[]:Array&lt;<a href="Object.html">Object</a>&gt;) - Used by the reflection engine in <a href="ve.Class.html">ve.Class</a> to set the owner hierarchy automatically.</li>
+</ul>
+<h5 id="static-methods%3A">Static Methods:</h5>
+<ul>
+<li><span color=00ffff><a href="ve.Component.html#.linter">linter</a></span>() - Run at startup if ve.debug_mode is true. Lints all Vercengen components.</li>
+</ul>
+<h5 id="types%3A">Types:</h5>
+<p>Types are annotated by both their constructor function and what they return after the pipe separator (<code>.v</code>).</p>
+<p>* indicates a recursive Object of that type.</p>
+<ul>
+<li>
+<p><a href="ve.FileExplorer.html">veFileExplorer</a>(arg0_value:string, arg1_options:<a href="Object.html">Object</a>) | string - The file path the File Explorer is currently navigating.</p>
+</li>
+<li>
+<p><a href="ve.Hierarchy.html">veHierarchy</a>(arg0_value:<a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt;, arg1_options:<a href="Object.html">Object</a>) | <a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt; - Note. It is recommended to use <a href="ve.HierarchyDatatype.html">ve.HierarchyDatatype</a> as the specific <a href="ve.Component.html">ve.Component</a> for <code>arg0_value</code>.</p>
+<ul>
+<li><a href="ve.HierarchyDatatype.html">veHierarchyDatatype</a>(<a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt;, arg1_options:<a href="Object.html">Object</a>) | <a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt; - Represents individual items in a hierarchy.</li>
+</ul>
+</li>
+<li>
+<p><a href="ve.BIUF.html">veBIUF</a>(arg0_value:string, arg1_options:<a href="Object.html">Object</a>) | string - Single-line rich text input. <code>.v</code> is an HTML string.</p>
+</li>
+<li>
+<p><a href="ve.Button.html">veButton</a>(arg0_value:function, arg1_options:<a href="Object.html">Object</a>) | function</p>
+</li>
+<li>
+<p><a href="ve.Checkbox.html">veCheckbox</a>(arg0_value:boolean|<a href="Object.html">Object</a>&lt;boolean&gt;*, arg1_options: <a href="Object.html">Object</a>) | boolean|<a href="Object.html">Object</a>&lt;boolean&gt;* - A recursive list of checkboxes, or a single toggleable input.</p>
+</li>
+<li>
+<p><a href="ve.Colour.html">veColour</a>(arg0_value:Array&lt;number, number, number|string, arg1_options: <a href="Object.html">Object</a>&gt;) | Array&lt;number, number, number&gt; - RGB colour selector.</p>
+</li>
+<li>
+<p><a href="ve.Datalist.html">veDatalist</a>(arg0_value:<a href="Object.html">Object</a>&lt;string&gt;, arg1_options: <a href="Object.html">Object</a>)</p>
+</li>
+<li>
+<p><a href="ve.Date.html">veDate</a>(arg0_value:UF.Date, arg1_options: <a href="Object.html">Object</a>) | UF.Date</p>
+</li>
+<li>
+<p><a href="ve.DateLength.html">veDateLength</a>(arg0_value:UF.Date, arg1_options: <a href="Object.html">Object</a>) | UF.Date</p>
+</li>
+<li>
+<p><a href="ve.File.html">veFile</a>(arg0_value:string, arg1_options:<a href="Object.html">Object</a>) | string - The file/folder path selected by the user.</p>
+</li>
+<li>
+<p><a href="ve.HTML.html">veHTML</a>(arg0_value:function|HTMLElement|string, arg1_options: <a href="Object.html">Object</a>) | string</p>
+</li>
+<li>
+<p><a href="ve.Interface.html">veInterface</a>(arg0_value:<a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt;, arg1_options:<a href="Object.html">Object</a>) | <a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt;</p>
+</li>
+<li>
+<p><a href="ve.Map.html">veMap</a>(arg0_value:maptalks.Map, arg1_options:<a href="Object.html">Object</a>) | maptalks.Map</p>
+</li>
+<li>
+<p><a href="ve.Number.html">veNumber</a>(arg0_value:number, arg1_options:<a href="Object.html">Object</a>) | number</p>
+</li>
+<li>
+<p><a href="ve.PageMenu.html">vePageMenu</a>(arg0_value:<a href="Object.html">Object</a>, arg1_options:<a href="Object.html">Object</a>) | string - The <code>.page</code> key currently displayed.</p>
+</li>
+<li>
+<p><a href="ve.Password.html">vePassword</a>(arg0_value:string, arg1_options:<a href="Object.html">Object</a>) | string</p>
+</li>
+<li>
+<p><a href="ve.Radio.html">veRadio</a>(arg0_value:<a href="Object.html">Object</a>&lt;boolean&gt;* | <a href="Object.html">Object</a>&lt;boolean&gt;*</p>
+</li>
+<li>
+<p><a href="ve.Range.html">veRange</a>(arg0_value:number, arg1_options: <a href="Object.html">Object</a>) | number</p>
+</li>
+<li>
+<p><a href="ve.RawInterface.html">veRawInterface</a>(arg0_components_obj:<a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt;, arg1_options:<a href="Object.html">Object</a>) | <a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt;</p>
+</li>
+<li>
+<p><a href="ve.Select.html">veSelect</a>(arg0_value:ve.Object&lt;string&gt;, arg1_options:<a href="Object.html">Object</a>) | string - The key of the selected option.</p>
+</li>
+<li>
+<p><a href="ve.Telephone.html">veTelephone</a>(arg0_value:string, arg1_options:<a href="Object.html">Object</a>) | string</p>
+</li>
+<li>
+<p><a href="ve.Text.html">veText</a>(arg0_value:string, arg1_options: <a href="Object.html">Object</a>) | string</p>
+</li>
+<li>
+<p><a href="ve.Time.html">veTime</a>(arg0_value:{hour:number, minute:number}, arg1_options:<a href="Object.html">Object</a>) | {hour:number, minute:number}</p>
+</li>
+<li>
+<p><a href="ve.Toggle.html">veToggle</a>(arg0_value:boolean, arg1_options:<a href="Object.html">Object</a>) | boolean</p>
+</li>
+<li>
+<p>veUndoRedo(arg0_value:string, arg1_options:<a href="Object.html">Object</a>) | string - The DALS.Timeline ID that the UndoRedo component is currently navigating.</p>
+</li>
+<li>
+<p><a href="ve.URL.html">veURL</a>(arg0_value:string, arg1_options:<a href="Object.html">Object</a>) | string</p>
+</li>
+</ul></div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+<div class="section-method">
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="Component"><span class="type-signature"></span>new Component<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_VercengenComponent.js.html">js/vercengen/engine/VercengenComponent.js</a>, <a href="js_vercengen_engine_VercengenComponent.js.html#line92">line 92</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="from_binding"><span class="type-signature"></span>from_binding<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Internal <code>.from_binding</code> setter for handling .options.from_binding. Accepts a string literal that is then parsed to a variable reference.</p>
+<p><code>.to_binding</code> counterparts are manually handled child-side.</p>
+<ul>
+<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_VercengenComponent.js.html">js/vercengen/engine/VercengenComponent.js</a>, <a href="js_vercengen_engine_VercengenComponent.js.html#line310">line 310</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="limit"><span class="type-signature"></span>limit<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Tests the current this.limit by calling this.limit_function(this.v, <a href="this.html">this</a>). Otherwise resolves to true if no <code>.options.limit</code> is set.</p>
+<ul>
+<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_VercengenComponent.js.html">js/vercengen/engine/VercengenComponent.js</a>, <a href="js_vercengen_engine_VercengenComponent.js.html#line150">line 150</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="limit"><span class="type-signature"></span>limit<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Sets the present this.limit or clears it (if undefined). Calls this.limit_function(this.v, <a href="this.html">this</a>) when polled.</p>
+<ul>
+<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_VercengenComponent.js.html">js/vercengen/engine/VercengenComponent.js</a>, <a href="js_vercengen_engine_VercengenComponent.js.html#line161">line 161</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="name"><span class="type-signature"></span>name<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Returns the visual name of the present <a href="ve.Component.html">ve.Component</a>,</p>
+<ul>
+<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_VercengenComponent.js.html">js/vercengen/engine/VercengenComponent.js</a>, <a href="js_vercengen_engine_VercengenComponent.js.html#line186">line 186</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="name"><span class="type-signature"></span>name<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Sets the visual name of the present <a href="ve.Component.html">ve.Component</a></p>
+<ul>
+<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_VercengenComponent.js.html">js/vercengen/engine/VercengenComponent.js</a>, <a href="js_vercengen_engine_VercengenComponent.js.html#line205">line 205</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="addComponent"><span class="type-signature"></span>addComponent<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Adds the current component to this.parent_el should it exist.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_VercengenComponent.js.html">js/vercengen/engine/VercengenComponent.js</a>, <a href="js_vercengen_engine_VercengenComponent.js.html#line392">line 392</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="bind"><span class="type-signature"></span>bind<span class="signature">(arg0_container_el)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Manually binds/mounts the present <span color="yellow"><a href="ve.Component.html">ve.Component</a></span> into the visual DOM.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_VercengenComponent.js.html">js/vercengen/engine/VercengenComponent.js</a>, <a href="js_vercengen_engine_VercengenComponent.js.html#line405">line 405</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arg0_container_el</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>HTMLElement</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="fireFromBinding"><span class="type-signature"></span>fireFromBinding<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Pseudo-setter from binding. Fires only upon program-driven changes to .v directly, which means that this has to be monitored manually component-side in set v(). This should always come last in set v().</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_VercengenComponent.js.html">js/vercengen/engine/VercengenComponent.js</a>, <a href="js_vercengen_engine_VercengenComponent.js.html#line229">line 229</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="fireToBinding"><span class="type-signature"></span>fireToBinding<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Pseudo-setter to binding. Fires only upon user-driven changes, which means that this has to be monitored manually component-side.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_VercengenComponent.js.html">js/vercengen/engine/VercengenComponent.js</a>, <a href="js_vercengen_engine_VercengenComponent.js.html#line265">line 265</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="remove"><span class="type-signature"></span>remove<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Removes the component/element from the DOM.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_VercengenComponent.js.html">js/vercengen/engine/VercengenComponent.js</a>, <a href="js_vercengen_engine_VercengenComponent.js.html#line417">line 417</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="removeComponent"><span class="type-signature"></span>removeComponent<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Removes the current component from this.parent_el should it exist.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_VercengenComponent.js.html">js/vercengen/engine/VercengenComponent.js</a>, <a href="js_vercengen_engine_VercengenComponent.js.html#line438">line 438</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="setOwner"><span class="type-signature"></span>setOwner<span class="signature">(arg0_value, arg1_owner_array)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Sets the root parent and ownership tree. Influences this.parent_el, this.owner, this.owners.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_VercengenComponent.js.html">js/vercengen/engine/VercengenComponent.js</a>, <a href="js_vercengen_engine_VercengenComponent.js.html#line367">line 367</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arg0_value</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>arg1_owner_array</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".linter"><span class="type-signature">(static) </span>linter<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Runs over all Vercengen components that extend <span color="yellow"><a href="ve.Component.html">ve.Component</a></span> and lints them in addition to declaring <code>ve[local_key]</code>() as a functional binding for each.</p>
+<ul>
+<li>Static method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+<p>Ensures the following properties if <code>ve.debug_mode=true</code>:</p>
+<ul>
+<li>get v()/set v()</li>
+<li>Not a duplicate component</li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_VercengenComponent.js.html">js/vercengen/engine/VercengenComponent.js</a>, <a href="js_vercengen_engine_VercengenComponent.js.html#line455">line 455</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>js/vercengen/components/ComponentDateLength.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.BIUF.html">BIUF</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.BIUF.html#handleBIUF">handleBIUF</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.BIUF.html#initBIUFToolbar">initBIUFToolbar</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.BIUF.html#sendOnchangeEvent">sendOnchangeEvent</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Button.html">Button</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Checkbox.html">Checkbox</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Checkbox.html#.generateHTMLRecursively">generateHTMLRecursively</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Class.html">Class</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#close">close</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#draw">draw</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#getState">getState</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#isClosed">isClosed</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#isOpen">isOpen</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#open">open</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#updateOwner">updateOwner</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Colour.html">Colour</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Colour.html#getHex">getHex</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Colour.html#toString">toString</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Component.html">Component</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#addComponent">addComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#bind">bind</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#fireFromBinding">fireFromBinding</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#fireToBinding">fireToBinding</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#remove">remove</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#removeComponent">removeComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#setOwner">setOwner</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#.linter">linter</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Confirm.html">Confirm</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Confirm.html#close">close</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.ContextMenu.html">ContextMenu</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Datalist.html">Datalist</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Date.html">Date</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Date.html#handleEvents">handleEvents</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.DateLength.html">DateLength</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Feature.html">Feature</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#addComponents">addComponents</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#close">close</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#remove">remove</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#removeComponents">removeComponents</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.File.html">File</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.FileExplorer.html">FileExplorer</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#clearClipboard">clearClipboard</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#deselect">deselect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#deselectAll">deselectAll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#refresh">refresh</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#select">select</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#selectAll">selectAll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#setClipboard">setClipboard</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.HTML.html">HTML</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.HTML.html#toString">toString</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Hierarchy.html">Hierarchy</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Hierarchy.html#addItem">addItem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Hierarchy.html#getHierarchyObject">getHierarchyObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Hierarchy.html#removeItem">removeItem</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.HierarchyDatatype.html">HierarchyDatatype</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Interface.html">Interface</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#addComponent">addComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#redraw">redraw</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#refresh">refresh</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#removeComponent">removeComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#resize">resize</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#.assignComponentCoordinates">assignComponentCoordinates</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#.getDefinedComponentDimensions">getDefinedComponentDimensions</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Map.html">Map</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Modal.html">Modal</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Modal.html#close">close</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Navbar.html">Navbar</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Navbar.html#generateHTMLRecursively">generateHTMLRecursively</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Number.html">Number</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Number.html#toString">toString</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Number.html#valueOf">valueOf</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.PageMenu.html">PageMenu</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.PageMenu.html#updateUnderline">updateUnderline</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.PageMenuWindow.html">PageMenuWindow</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Password.html">Password</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Radio.html">Radio</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Radio.html#.generateHTMLRecursively">generateHTMLRecursively</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Range.html">Range</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Range.html#toString">toString</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Range.html#valueOf">valueOf</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.RawInterface.html">RawInterface</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Scene.html">Scene</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Scene.html#draw">draw</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Select.html">Select</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Select.html#generateHTML">generateHTML</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Telephone.html">Telephone</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Text.html">Text</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Time.html">Time</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Toast.html">Toast</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Toast.html#refresh">refresh</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Toggle.html">Toggle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Toggle.html#updateName">updateName</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Tooltip.html">Tooltip</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.URL.html">URL</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.WYSIWYG.html">WYSIWYG</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#addParagraphTag">addParagraphTag</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#getWYSIWYGFromFields">getWYSIWYGFromFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#handleEvents">handleEvents</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#initWYSIWYG">initWYSIWYG</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#parentTagActive">parentTagActive</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#pasteEvent">pasteEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#selectionChange">selectionChange</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.execCodeAction">execCodeAction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.execDefaultAction">execDefaultAction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.execLinkAction">execLinkAction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.restoreSelection">restoreSelection</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.saveSelection">saveSelection</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Window.html">Window</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#getZIndex">getZIndex</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#refresh">refresh</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#select">select</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#setCoords">setCoords</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#setSize">setSize</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#.getHighestZIndex">getHighestZIndex</a></span></li><li class="nav-heading">Namespaces</li><li class="nav-heading"><span class="nav-item-type type-namespace">N</span><span class="nav-item-name"><a href="ve.html">ve</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.getFilesInFolder">getFilesInFolder</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.getImportFiles">getImportFiles</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.getWildcardsInFolder">getWildcardsInFolder</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.initialise">initialise</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.start">start</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veBIUF">veBIUF</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veButton">veButton</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veCheckbox">veCheckbox</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veColour">veColour</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veConfirm">veConfirm</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veDatalist">veDatalist</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veDate">veDate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veDateLength">veDateLength</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veFile">veFile</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veFileExplorer">veFileExplorer</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veHTML">veHTML</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veHierarchy">veHierarchy</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veHierarchyDatatype">veHierarchyDatatype</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veInterface">veInterface</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veMap">veMap</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veModal">veModal</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veNavbar">veNavbar</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veNumber">veNumber</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#vePageMenu">vePageMenu</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#vePageMenuWindow">vePageMenuWindow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veRadio">veRadio</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veRange">veRange</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veRawInterface">veRawInterface</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veScene">veScene</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veSelect">veSelect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veTelephone">veTelephone</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veText">veText</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veToast">veToast</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veToggle">veToggle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veTooltip">veTooltip</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veURL">veURL</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veWYSIWYG">veWYSIWYG</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veWindow">veWindow</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">js/vercengen/components/ComponentDateLength.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Refer to &lt;span color = "yellow">{@link ve.Component}&lt;/span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Date length component used for managing historical time durations. The value stored is an object with the structure { year: {@link number}, month: {@link number}, day: {@link number}, hour: {@link number}, minute: {@link number} }, with negative years representing BC. This data structure is otherwise known as a {@link UF.Date}.
+ * - Functional binding: &lt;span color=00ffff>veDateLength&lt;/span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link UF.Date}
+ * - `arg1_options`: {@link Object}
+ *   - `.disabled=false`: {@link boolean}
+ * 
+ * ##### Instance:
+ * - `.v`: {@link UF.Date}
+ * 
+ * @augments {@link ve.Component}
+ * @type {ve.veDateLength}
+ */
+ve.DateLength = class extends ve.Component {
+	static demo_value = { year: 1000, month: 12, day: 31 };
+	
+	constructor (arg0_value, arg1_options) {
+		//Convert from parameters
+		let value = (arg0_value) ? arg0_value : {};
+		let options = (arg1_options) ? arg1_options : {};
+			super(options);
+			
+		//Initialise options
+		options.attributes = (options.attributes) ? options.attributes : {};
+		
+		//Declare local instance variables
+		let attributes = {
+			readonly: options.disabled,
+			...options.attributes
+		};
+		this.element = document.createElement("div");
+			this.element.setAttribute("component", "ve-datelength");
+			this.element.instance = this;
+		HTML.applyTelestyle(this.element, options.style);
+		this.options = options;
+		this.value = value;
+		
+		//Format HTML string
+		let attributes_string = HTML.objectToAttributes(attributes);
+		let html_string = [];
+		html_string.push(`&lt;span id = "name">&lt;/span> `);
+		html_string.push(`
+			&lt;div class = "date-container">
+				&lt;input id = "years" size = "6" type = "number" placeholder = "Years"${attributes_string}>
+				&lt;input id = "months" size = "6" type = "number" min = "1" max = "12" placeholder = "Months"${attributes_string}>
+				&lt;input id = "days" size = "5" type = "number" placeholder = "Days"${attributes_string}>
+			&lt;/div>
+			&lt;div class = "clock-container">
+				&lt;input id = "hours" size = "2" min = "0" max = "23" type = "number" placeholder = "HH"${attributes_string}> :
+				&lt;input id = "minutes" size = "2" min = "0" max = "23" type = "number" placeholder = "MM"${attributes_string}>
+			&lt;/div>
+		`);
+		
+		//Populate element and initialise handlers
+		this.element.innerHTML = html_string.join("");
+		let all_input_els = this.element.querySelectorAll("input");
+		
+		all_input_els.forEach((local_el) => local_el.addEventListener("change", (e) => {
+			this.fireToBinding();
+		}));
+		this.v = value;
+	}
+	
+	/**
+	 * Returns the date length contained in the current component.
+	 * 
+	 * @returns {{year: number, month: number, day: number, hour: number, minute: number}} arg0_value
+	 */
+	get v () {
+		//Return statement
+		return Date.convertTimestampToDate(Date.getTimestamp({
+			year: parseInt(this.element.querySelector(`#years`).value),
+			month: parseInt(this.element.querySelector(`#months`).value),
+			day: parseInt(this.element.querySelector(`#days`).value),
+			hour: parseInt(this.element.querySelector(`#hours`).value),
+			minute: parseInt(this.element.querySelector(`#minutes`).value)
+		}));
+	}
+	
+	/**
+	 * Sets the date length contained in the current component.
+	 * 
+	 * @param {{year: number, month: number, day: number, hour: number, minute: number}} arg0_value
+	 */
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
+		
+		//Declare local instance variables
+		this.element.querySelector(`#years`).value = Math.returnSafeNumber(value.year);
+		this.element.querySelector(`#months`).value = Math.returnSafeNumber(value.month)
+		this.element.querySelector(`#days`).value = Math.returnSafeNumber(value.day);
+		this.element.querySelector(`#hours`).value = Math.returnSafeNumber(value.hour);
+		this.element.querySelector(`#minutes`).value = Math.returnSafeNumber(value.minute);
+		this.fireFromBinding();
+	}
+}
+
+//Functional binding
+
+/**
+ * @returns {ve.DateLength}
+ */
+veDateLength = function () {
+	//Return statement
+	return new ve.DateLength(...arguments);
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

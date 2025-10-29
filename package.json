@@ -23,7 +23,11 @@
   "author": "Vis/Australis",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^38.1.2"
+    "better-docs": "^2.7.3",
+    "electron": "^38.1.2",
+    "jsdoc": "^4.0.5",
+    "minami": "^1.2.3",
+    "taffydb": "^2.7.3"
   },
   "dependencies": {
     "shell": "^0.12.0"

@@ -1,0 +1,25 @@
+{
+  "source": {
+    "include": ["UF"],
+    "includePattern": ".+\\.(js|jsx|mjs)$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "opts": {
+    "destination": "./docs",
+    "recurse": true,
+    "template": "node_modules/minami"
+  },
+  "templates": {
+    "default": {
+      "includeDate": false
+    }
+  },
+  "markdown": {
+    "parser": "gfm",
+    "hardwrap": false,
+    "idInHeadings": true
+  }
+}

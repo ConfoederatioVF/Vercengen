@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>js/vercengen/components/ComponentBIUF.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.BIUF.html">BIUF</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.BIUF.html#handleBIUF">handleBIUF</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.BIUF.html#initBIUFToolbar">initBIUFToolbar</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.BIUF.html#sendOnchangeEvent">sendOnchangeEvent</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Button.html">Button</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Checkbox.html">Checkbox</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Checkbox.html#.generateHTMLRecursively">generateHTMLRecursively</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Class.html">Class</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#close">close</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#draw">draw</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#getState">getState</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#isClosed">isClosed</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#isOpen">isOpen</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#open">open</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#updateOwner">updateOwner</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Colour.html">Colour</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Colour.html#getHex">getHex</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Colour.html#toString">toString</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Component.html">Component</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#addComponent">addComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#bind">bind</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#fireFromBinding">fireFromBinding</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#fireToBinding">fireToBinding</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#remove">remove</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#removeComponent">removeComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#setOwner">setOwner</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#.linter">linter</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Confirm.html">Confirm</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Confirm.html#close">close</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.ContextMenu.html">ContextMenu</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Datalist.html">Datalist</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Date.html">Date</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Date.html#handleEvents">handleEvents</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.DateLength.html">DateLength</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Feature.html">Feature</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#addComponents">addComponents</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#close">close</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#remove">remove</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#removeComponents">removeComponents</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.File.html">File</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.FileExplorer.html">FileExplorer</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#clearClipboard">clearClipboard</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#deselect">deselect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#deselectAll">deselectAll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#refresh">refresh</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#select">select</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#selectAll">selectAll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#setClipboard">setClipboard</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.HTML.html">HTML</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.HTML.html#toString">toString</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Hierarchy.html">Hierarchy</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Hierarchy.html#addItem">addItem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Hierarchy.html#getHierarchyObject">getHierarchyObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Hierarchy.html#removeItem">removeItem</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.HierarchyDatatype.html">HierarchyDatatype</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Interface.html">Interface</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#addComponent">addComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#redraw">redraw</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#refresh">refresh</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#removeComponent">removeComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#resize">resize</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#.assignComponentCoordinates">assignComponentCoordinates</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#.getDefinedComponentDimensions">getDefinedComponentDimensions</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Map.html">Map</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Modal.html">Modal</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Modal.html#close">close</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Navbar.html">Navbar</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Navbar.html#generateHTMLRecursively">generateHTMLRecursively</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Number.html">Number</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Number.html#toString">toString</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Number.html#valueOf">valueOf</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.PageMenu.html">PageMenu</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.PageMenu.html#updateUnderline">updateUnderline</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.PageMenuWindow.html">PageMenuWindow</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Password.html">Password</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Radio.html">Radio</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Radio.html#.generateHTMLRecursively">generateHTMLRecursively</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Range.html">Range</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Range.html#toString">toString</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Range.html#valueOf">valueOf</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.RawInterface.html">RawInterface</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Scene.html">Scene</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Scene.html#draw">draw</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Select.html">Select</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Select.html#generateHTML">generateHTML</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Telephone.html">Telephone</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Text.html">Text</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Time.html">Time</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Toast.html">Toast</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Toast.html#refresh">refresh</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Toggle.html">Toggle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Toggle.html#updateName">updateName</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Tooltip.html">Tooltip</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.URL.html">URL</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.WYSIWYG.html">WYSIWYG</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#addParagraphTag">addParagraphTag</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#getWYSIWYGFromFields">getWYSIWYGFromFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#handleEvents">handleEvents</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#initWYSIWYG">initWYSIWYG</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#parentTagActive">parentTagActive</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#pasteEvent">pasteEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#selectionChange">selectionChange</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.execCodeAction">execCodeAction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.execDefaultAction">execDefaultAction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.execLinkAction">execLinkAction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.restoreSelection">restoreSelection</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.saveSelection">saveSelection</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Window.html">Window</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#getZIndex">getZIndex</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#refresh">refresh</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#select">select</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#setCoords">setCoords</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#setSize">setSize</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#.getHighestZIndex">getHighestZIndex</a></span></li><li class="nav-heading">Namespaces</li><li class="nav-heading"><span class="nav-item-type type-namespace">N</span><span class="nav-item-name"><a href="ve.html">ve</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.getFilesInFolder">getFilesInFolder</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.getImportFiles">getImportFiles</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.getWildcardsInFolder">getWildcardsInFolder</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.initialise">initialise</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.start">start</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veBIUF">veBIUF</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veButton">veButton</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veCheckbox">veCheckbox</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veColour">veColour</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veConfirm">veConfirm</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veDatalist">veDatalist</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veDate">veDate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veDateLength">veDateLength</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veFile">veFile</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veFileExplorer">veFileExplorer</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veHTML">veHTML</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veHierarchy">veHierarchy</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veHierarchyDatatype">veHierarchyDatatype</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veInterface">veInterface</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veMap">veMap</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veModal">veModal</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veNavbar">veNavbar</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veNumber">veNumber</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#vePageMenu">vePageMenu</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#vePageMenuWindow">vePageMenuWindow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veRadio">veRadio</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veRange">veRange</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veRawInterface">veRawInterface</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veScene">veScene</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veSelect">veSelect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veTelephone">veTelephone</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veText">veText</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veToast">veToast</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veToggle">veToggle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veTooltip">veTooltip</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veURL">veURL</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veWYSIWYG">veWYSIWYG</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veWindow">veWindow</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">js/vercengen/components/ComponentBIUF.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Refer to &lt;span color = "yellow">{@link ve.Component}&lt;/span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Single-line rich text editor with bold, italic, underline, and clear text formatting options. 
+ * 
+ * Stands for Bold, Italic, Underline, Formatting.
+ * - Functional binding: &lt;span color=00ffff>veBIUF&lt;/span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link string} - The HTML content to initialise the component with.
+ * - `arg1_options`: {@link Object}
+ *   - `.disabled=false`: {@link boolean} - Controls the .readonly attribute.
+ * 
+ * ##### Instance:
+ * - `.v`: {@link string} - Returns an HTML string.
+ * 
+ * ##### Methods:
+ * - &lt;span color=00ffff>{@link ve.BIUF.handleBIUF|handleBIUF}&lt;/span>(arg0_biuf_el:{@link HTMLElement})
+ * - &lt;span color=00ffff>{@link ve.BIUF.initBIUFToolbar|initBIUFToolbar}&lt;/span>()
+ * - &lt;span color=00ffff>{@link ve.BIUF.sendOnchangeEvent|sendOnchangeEvent}&lt;/span>()
+ * 
+ * @augments {@link ve.Component}
+ * @type {ve.ComponentBIUF}
+ */
+ve.BIUF = class extends ve.Component {
+	static demo_value = `&lt;b>Bold&lt;/b> &lt;i>Italic&lt;/i>, &lt;u>Underline&lt;/u>, and regular text formatting are supported by BIUF fields.`;
+	static demo_options = {
+		onchange: (e) => {
+			console.log(`ve.ComponentBIUF:`, e);
+		}
+	};
+	
+	constructor (arg0_value, arg1_options) {
+		//Convert from parameters
+		let value = (arg0_value) ? arg0_value : "";
+		let options = (arg1_options) ? arg1_options : {};
+			super(options);
+		
+		//Initialise options
+		options.attributes = (options.attributes) ? options.attributes : {};
+		
+		//Declare local instance variables
+		let attributes = {
+			readonly: options.disabled,
+			...options.attributes
+		};
+		this.element = document.createElement("div");
+			this.element.setAttribute("component", "ve-biuf");
+			this.element.instance = this;
+		this.options = options;
+		HTML.applyTelestyle(this.element, options.style);
+		
+		this.value = value;
+		
+		//Format html_string
+		let html_string = [];
+		
+		html_string.push(`&lt;span id = "name">&lt;/span>`);
+		html_string.push(`&lt;div id = "biuf-toolbar" class = "biuf-toolbar">`);
+			html_string.push(`&lt;button id = "bold-button" class = "bold-icon">&lt;icon>format_bold&lt;/icon>&lt;/button>`);
+			html_string.push(`&lt;button id = "italic-button" class = "italic-icon">&lt;icon>format_italic&lt;/icon>&lt;/button>`);
+			html_string.push(`&lt;button id = "underline-button" class = "underline-icon">&lt;icon>format_underline&lt;/icon>&lt;/button>`);
+			html_string.push(`&lt;button id = "clear-button" class = "clear-icon">&lt;icon>format_clear&lt;/icon>&lt;/button>`);
+		html_string.push(`&lt;/div>`);
+		html_string.push(`&lt;div id = "biuf-input" class = "biuf-input" contenteditable = "true" ${HTML.objectToAttributes(attributes)}>&lt;/div>`);
+		
+		//Populate element and initialise handlers
+		this.element.innerHTML = html_string.join("");
+		this.element.querySelector(`#biuf-input`).addEventListener("input", (e) => {
+			this.sendOnchangeEvent();
+			this.handleBIUF(e.target);
+		});
+		this.initBIUFToolbar();
+		super.name = options.name;
+		this.v = this.value;
+	}
+	
+	/**
+	 * Returns the current HTML content in the present Component.
+	 * - Accessor of {@link ve.ComponentBIUF}
+	 * 
+	 * @returns {string}
+	 */
+	get v () {
+		//Return statement
+		return this.element.querySelector(`#biuf-input`).innerHTML;
+	}
+	
+	/**
+	 * Sets the HTML content value for {@link ve.ComponentBIUF}
+	 * - Accessor of {@link ve.ComponentBIUF}
+	 * 
+	 * @param {string} arg0_value
+	 */
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = (arg0_value) ? arg0_value : "";
+		if (value === undefined) return; //Internal guard clause if value is undefined
+		
+		//Set #biuf-input value
+		this.element.querySelector(`#biuf-input`).innerHTML = value;
+	}
+	
+	//Internal helper functions
+	
+	/**
+	 * Initialises all event handlers for BIUF buttons and keybinds.
+	 * - Method of: {@link ve.ComponentBIUF}
+	 * 
+	 * @param {HTMLElement} arg0_biuf_el - The mounted BIUF element.
+	 */
+	handleBIUF (arg0_biuf_el) {
+		//Convert from parameters
+		let biuf_el = arg0_biuf_el;
+		
+		//Declare local instance variables
+		let child_el = biuf_el.firstChild;
+		
+		//Declare while loop, break when next sibling element can no longer be found.
+		while (child_el) {
+			let remove_node = null;
+			
+			//Check if child_el is not of &lt;b>&lt;i>&lt;u> tags.
+			if (child_el.tagName &amp;&amp; (!["b", "i", "u"].includes(child_el.tagName.toLowerCase())))
+				remove_node = child_el;
+			child_el = child_el.nextSibling;
+			
+			//Remove node if flag is true
+			if (remove_node)
+				remove_node.parentNode.removeChild(remove_node);
+		}
+	}
+	
+	/**
+	 * Initialises the present BIUF toolbar.
+	 * - Method of: {@link ve.ComponentBIUF}
+	 */
+	initBIUFToolbar () {
+		//Declare local instance variables
+		let toolbar_el = this.element.querySelector(`#biuf-toolbar`);
+		
+		//Declare element references
+		let bold_button = toolbar_el.querySelector("#bold-button");
+		let clear_button = toolbar_el.querySelector("#clear-button");
+		let italic_button = toolbar_el.querySelector("#italic-button");
+		let underline_button = toolbar_el.querySelector("#underline-button");
+		
+		//Show toolbar when text is selected
+		toolbar_el.style.display = "none";
+		document.addEventListener("mouseup", (e) => {
+			let selection = window.getSelection();
+			
+			if (selection.toString() !== "" &amp;&amp; this.element.querySelector(`#biuf-input:focus`)) {
+				//var range = selection.getRangeAt(0);
+				let rect = toolbar_el.getBoundingClientRect();
+				
+				toolbar_el.style.display = "table";
+				toolbar_el.style.top = `-${toolbar_el.offsetHeight/2.5}px`;
+			} else {
+				toolbar_el.style.display = "none";
+			}
+		});
+		
+		//Apply formatting when various toolbar buttons are clicked
+		bold_button.addEventListener("click", () => {
+			document.execCommand("bold");
+		});
+		clear_button.addEventListener("click", () => {
+			document.execCommand("removeFormat");
+		});
+		italic_button.addEventListener("click", () => {
+			document.execCommand("italic");
+		});
+		underline_button.addEventListener("click", () => {
+			document.execCommand("underline");
+		});
+	}
+	
+	/**
+	 * Fires an onuserchange event whilst synchronising the present value.
+	 * - Method of: {@link ve.ComponentBIUF}
+	 */
+	sendOnchangeEvent () {
+		this.value = this.v;
+		this.fireToBinding();
+	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.ComponentBIUF}
+ */
+veBIUF = function () {
+	//Return statement
+	return new ve.BIUF(...arguments);
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

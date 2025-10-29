@@ -4,7 +4,13 @@ global.path = require("path");
 
 //Initialise functions
 {
-	if (!global.ve) global.ve = {};
+	if (!global.ve)
+		/**
+		 * The root namespace for all Vercengen classes and options.
+		 * 
+		 * @namespace ve
+		 */
+		global.ve = {};
 	ve.debug_mode = true;
 	
 	/**

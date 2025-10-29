@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>js/vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.BIUF.html">BIUF</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.BIUF.html#handleBIUF">handleBIUF</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.BIUF.html#initBIUFToolbar">initBIUFToolbar</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.BIUF.html#sendOnchangeEvent">sendOnchangeEvent</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Button.html">Button</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Checkbox.html">Checkbox</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Checkbox.html#.generateHTMLRecursively">generateHTMLRecursively</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Class.html">Class</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#close">close</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#draw">draw</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#getState">getState</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#isClosed">isClosed</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#isOpen">isOpen</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#open">open</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Class.html#updateOwner">updateOwner</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Colour.html">Colour</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Colour.html#getHex">getHex</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Colour.html#toString">toString</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Component.html">Component</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#addComponent">addComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#bind">bind</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#fireFromBinding">fireFromBinding</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#fireToBinding">fireToBinding</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#remove">remove</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#removeComponent">removeComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#setOwner">setOwner</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Component.html#.linter">linter</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Confirm.html">Confirm</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Confirm.html#close">close</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.ContextMenu.html">ContextMenu</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Datalist.html">Datalist</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Date.html">Date</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Date.html#handleEvents">handleEvents</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.DateLength.html">DateLength</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Feature.html">Feature</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#addComponents">addComponents</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#close">close</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#remove">remove</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Feature.html#removeComponents">removeComponents</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.File.html">File</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.FileExplorer.html">FileExplorer</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#clearClipboard">clearClipboard</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#deselect">deselect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#deselectAll">deselectAll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#refresh">refresh</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#select">select</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#selectAll">selectAll</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.FileExplorer.html#setClipboard">setClipboard</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.HTML.html">HTML</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.HTML.html#toString">toString</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Hierarchy.html">Hierarchy</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Hierarchy.html#addItem">addItem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Hierarchy.html#getHierarchyObject">getHierarchyObject</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Hierarchy.html#removeItem">removeItem</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.HierarchyDatatype.html">HierarchyDatatype</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Interface.html">Interface</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#addComponent">addComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#redraw">redraw</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#refresh">refresh</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#removeComponent">removeComponent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#resize">resize</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#.assignComponentCoordinates">assignComponentCoordinates</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Interface.html#.getDefinedComponentDimensions">getDefinedComponentDimensions</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Map.html">Map</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Modal.html">Modal</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Modal.html#close">close</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Navbar.html">Navbar</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Navbar.html#generateHTMLRecursively">generateHTMLRecursively</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Number.html">Number</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Number.html#toString">toString</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Number.html#valueOf">valueOf</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.PageMenu.html">PageMenu</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.PageMenu.html#updateUnderline">updateUnderline</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.PageMenuWindow.html">PageMenuWindow</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Password.html">Password</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Radio.html">Radio</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Radio.html#.generateHTMLRecursively">generateHTMLRecursively</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Range.html">Range</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Range.html#toString">toString</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Range.html#valueOf">valueOf</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.RawInterface.html">RawInterface</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Scene.html">Scene</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Scene.html#draw">draw</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Select.html">Select</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Select.html#generateHTML">generateHTML</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Telephone.html">Telephone</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Text.html">Text</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Time.html">Time</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Toast.html">Toast</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Toast.html#refresh">refresh</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Toggle.html">Toggle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Toggle.html#updateName">updateName</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Tooltip.html">Tooltip</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.URL.html">URL</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.WYSIWYG.html">WYSIWYG</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#addParagraphTag">addParagraphTag</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#getWYSIWYGFromFields">getWYSIWYGFromFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#handleEvents">handleEvents</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#initWYSIWYG">initWYSIWYG</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#parentTagActive">parentTagActive</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#pasteEvent">pasteEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#selectionChange">selectionChange</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.execCodeAction">execCodeAction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.execDefaultAction">execDefaultAction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.execLinkAction">execLinkAction</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.restoreSelection">restoreSelection</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.WYSIWYG.html#.saveSelection">saveSelection</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ve.Window.html">Window</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#getZIndex">getZIndex</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#refresh">refresh</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#select">select</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#setCoords">setCoords</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#setSize">setSize</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.Window.html#.getHighestZIndex">getHighestZIndex</a></span></li><li class="nav-heading">Namespaces</li><li class="nav-heading"><span class="nav-item-type type-namespace">N</span><span class="nav-item-name"><a href="ve.html">ve</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.getFilesInFolder">getFilesInFolder</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.getImportFiles">getImportFiles</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.getWildcardsInFolder">getWildcardsInFolder</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.initialise">initialise</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ve.html#.start">start</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veBIUF">veBIUF</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veButton">veButton</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veCheckbox">veCheckbox</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veColour">veColour</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veConfirm">veConfirm</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veDatalist">veDatalist</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veDate">veDate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veDateLength">veDateLength</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veFile">veFile</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veFileExplorer">veFileExplorer</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veHTML">veHTML</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veHierarchy">veHierarchy</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veHierarchyDatatype">veHierarchyDatatype</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veInterface">veInterface</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veMap">veMap</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veModal">veModal</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veNavbar">veNavbar</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veNumber">veNumber</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#vePageMenu">vePageMenu</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#vePageMenuWindow">vePageMenuWindow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veRadio">veRadio</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veRange">veRange</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veRawInterface">veRawInterface</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veScene">veScene</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veSelect">veSelect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veTelephone">veTelephone</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veText">veText</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veToast">veToast</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veToggle">veToggle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veTooltip">veTooltip</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veURL">veURL</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veWYSIWYG">veWYSIWYG</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#veWindow">veWindow</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">js/vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Refer to &lt;span color = "yellow">{@link ve.Component}&lt;/span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * File explorer used either for navigation (i.e. saving/loading) or as a generic file explorer primitive.
+ * - Functional binding: &lt;span color=00ffff>veFileExplorer&lt;/span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link string} - The file path in which the FileExplorer should be initialised.
+ * - `arg1_options`: {@link Object}
+ *   - `.file_components_obj={select: ...}`: {@link Object}&lt;{@link ve.Component}>
+ *   - `.file_icon="&lt;icon>description&lt;/icon>"`: {@link string}
+ *   - `.file_options`: {@link Object}
+ *   - `.folder_components_obj={select: ...}`: {@link Object}&lt;{@link ve.Component}>
+ *   - `.folder_icon="&lt;icon>folder&lt;/icon>"`: {@link string}
+ *   - `.folder_options`: {@link Object}
+ *   - `.name`: {@link string}
+ *   - `.navigation_only=false`: {@link boolean}
+ *   
+ * ##### Instance:
+ * - `.clipboard`: {@link Array}&lt;{@link string}> - The list of full file paths currently stored in the clipboard.
+ * - `.selected`: {@link Array}&lt;{@link string}> - The list of selected file paths.
+ * - `.v`: {@link string} - Accessor. The current file path.
+ * 
+ * ##### Methods:
+ * - &lt;span color=00ffff>{@link ve.FileExplorer.clearClipboard|clearClipboard}&lt;/span>()
+ * - &lt;span color=00ffff>{@link ve.FileExplorer.deselect|deselect}&lt;/span>(arg0_file_path:{@link string}, arg1_options:{do_not_modify_classes: {@link boolean}}) | {@link Array}&lt;{@link string}>
+ * - &lt;span color=00ffff>{@link ve.FileExplorer.deselectAll|deselectAll}&lt;/span>()
+ * - &lt;span color=00ffff>{@link ve.FileExplorer.fireSelectToggle|fireSelectToggle}(v:{@link boolean}, e:{@link ve.Toggle}) - Internal handler for toggling file/folder selection.
+ * - &lt;span color=00ffff>{@link ve.FileExplorer.select|select}&lt;/span>(arg0_file_path:{@link string}) | {@link Array}&lt;{@link string}>
+ * - &lt;span color=00ffff>{@link ve.FileExplorer.selectAll|selectAll}&lt;/span>()
+ * - &lt;span color=00ffff>{@link ve.FileExplorer.setClipboard|setClipboard}&lt;/span>() - Sets the clipboard to currently selected file paths.
+ * - &lt;span color=00ffff>{@link ve.FileExplorer.refresh|refresh}&lt;/span>() - Refreshes the current ve.FileExplorer display. Handled automatically.
+ *
+ * @augments {@link ve.Component}
+ * @type {ve.FileExplorer}
+ */
+ve.FileExplorer = class extends ve.Component {
+	constructor (arg0_value, arg1_options) {
+		//Convert from parameters
+		let value = (arg0_value) ? arg0_value : __dirname;
+		let options = (arg1_options) ? arg1_options : {};
+			super(options);
+			
+		//Initialise options
+		options.attributes = (options.attributes) ? options.attributes : {};
+		options.file_components_obj = (options.file_components_obj) ? options.file_components_obj : {
+			select: new ve.Toggle(false, {
+				off_name: `&lt;icon>check_box_outline_blank&lt;/icon>`,
+				on_name: `&lt;icon>check_box&lt;/icon>`,
+				onchange: (v, e) => this.fireSelectToggle(v, e),
+				tooltip: "Select"
+			})
+		};
+		options.file_icon = (options.file_icon) ? options.file_icon : "&lt;icon>description&lt;/icon>";
+		options.file_options = (options.file_options) ? options.file_options : {};
+		options.folder_components_obj = (options.folder_components_obj) ? options.folder_components_obj : {
+			select: new ve.Toggle(false, {
+				off_name: `&lt;icon>check_box_outline_blank&lt;/icon>`,
+				on_name: `&lt;icon>indeterminate_check_box&lt;/icon>`,
+				onchange: (v, e) => this.fireSelectToggle(v, e),
+				tooltip: "Select"
+			})
+		};
+		options.folder_icon = (options.folder_icon) ? options.folder_icon : "&lt;icon>folder&lt;/icon>";
+		options.folder_options = (options.folder_options) ? options.folder_options : {};
+		options.name = (options.name) ? options.name : "";
+		
+		//options.navigation_only override
+		if (options.navigation_only)
+			options = {
+				...options,
+				disable_actions: true,
+				file_components_obj: {},
+				folder_components_obj: {},
+				onload: (e) => e.name = ""
+			};
+		
+		//Declare local instance variables
+		this.element = document.createElement("div");
+			this.element.setAttribute("component", "ve-file-explorer");
+			Object.iterate(options.attributes, (local_key, local_value) => {
+				this.element.setAttribute(local_key, local_value.toString());
+			});
+			this.element.instance = this;
+		HTML.applyTelestyle(this.element, options.style);
+			
+		//Format html_string
+		let html_string = [];
+		
+		html_string.push(`&lt;span id = "name">&lt;/span>`);
+		html_string.push(`&lt;div id = "file-explorer-body">&lt;/div>`);
+		this.element.innerHTML = html_string.join("");
+		
+		/**
+		 * Contains all file paths currently in the clipboard.
+		 * - Field of: {@link ve.FileExplorer}
+		 * @type {string[]}
+		 */
+		this.clipboard = []; //Array&lt;String> containing file paths currently in clipboard
+		
+		/**
+		 * Contains all currently selected file paths.
+		 * - Field of: {@link ve.FileExplorer}
+		 * @type {string[]}
+		 */
+		this.selected = []; //Array&lt;String> containing file paths that are currently selected
+		
+		//Refresh file explorer display
+		this.options = options;
+		this.name = this.options.name;
+		this.value = value;
+		this.refresh();
+	}
+	
+	/**
+	 * Returns the present file path.
+	 * - Accessor of {@link ve.FileExplorer} 
+	 * 
+	 * @returns {string}
+	 */
+	get v () {
+		//Return statement
+		return this.value;
+	}
+	
+	/**
+	 * Sets the present file path.
+	 * - Accessor of {@link ve.FileExplorer}
+	 * 
+	 * @param {string} arg0_value
+	 */
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
+		
+		//Set new folder path before refreshing display
+		this.deselectAll();
+		this.value = value;
+		this.refresh();
+		this.fireFromBinding();
+	}
+	
+	/**
+	 * Clears the present keyboard.
+	 * - Method of {@link ve.FileExplorer}
+	 */
+	clearClipboard () {
+		this.clipboard = [];
+	}
+	
+	/**
+	 * Deselects a specific file path and removes it from {@link this.selected}.
+	 * - Method of {@link ve.FileExplorer} 
+	 * 
+	 * @param {string} arg0_file_path
+	 * @param {Object} [arg1_options]
+	 *  @param {boolean} [arg1_options.do_not_modify_classes=false]
+	 * 
+	 * @returns string[]
+	 */
+	deselect (arg0_file_path, arg1_options) {
+		//Convert from parameters
+		let file_path = arg0_file_path;
+		let options = (arg1_options) ? arg1_options : {};
+		
+		//Iterate over all this.selected and splice
+		for (let i = 0; i &lt; this.selected.length; i++)
+			if (this.selected[i] === file_path) {
+				//Try to find the element in question and remove .selected
+				if (!options.do_not_modify_classes)
+					Object.iterate(this.hierarchy.components_obj, (local_key, local_value) => {
+						if (local_key === file_path)
+							local_value.element.classList.remove("selected");
+					});
+				this.selected.splice(i, 1);
+			}
+		
+		//Return statement
+		return this.selected;
+	}
+	
+	/**
+	 * Deselects all file paths, clearing {@link this.selected}.
+	 * - Method of {@link ve.FileExplorer}
+	 */
+	deselectAll () {
+		//Iterate over all this.selected and deselect them
+		for (let i = this.selected.length - 1; i >= 0; i--)
+			this.deselect(this.selected[i], { do_not_modify_classes: true });
+		//Iterate over all this.hierarchy.components_obj and update their classes to be deselected
+		Object.iterate(this.hierarchy.components_obj, (local_key, local_value) => {
+			local_value.element.classList.remove("selected");
+		});
+	}
+	
+	fireSelectToggle (v, e) {
+		if (e.owners)
+			for (let i = e.owners.length - 1; i >= 0; i--)
+				if (e.owners[i] instanceof ve.HierarchyDatatype) try {
+					let full_path = e.owners[i].element.getAttribute("data-path");
+					(v) ? this.select(full_path) : this.deselect(full_path);
+					break;
+				} catch (e) { console.error(e); }
+	}
+	
+	/**
+	 * Refreshes the current file explorer path, rerendering the display for folders and files within the Component.
+	 * - Method of: {@link ve.FileExplorer}
+	 */
+	refresh () {
+		//Declare local instance variables
+		let all_files_in_directory = fs.readdirSync(this.value, { withFileTypes: true });
+		let hierarchy_obj = {};
+		
+		//Add item button to move up one folder at the top
+		let previous_folder_path = path.join(this.value, "..");
+		
+		hierarchy_obj.file_path = new ve.HierarchyDatatype({
+			information: new ve.HTML(() => this.v)
+		}, { disabled: true });
+		if (!this.options.disable_actions)
+			hierarchy_obj.selection = new ve.HierarchyDatatype({
+				information: new ve.HTML((e) => `${(this.clipboard.length > 0) ? `Clipboard (${String.formatNumber(this.clipboard.length)})` : "Clipboard is empty."} &amp;nbsp; | &amp;nbsp; ${(this.selected.length > 0) ? `
+				${String.formatNumber(this.selected.length)} Element(s) selected &amp;nbsp; ` : ""}
+				`, { style: { padding: 0 }}),
+				actions_menu: new ve.RawInterface({
+					copy_button: new ve.Button((e) => {
+						if (this.selected.length === 0) return; //Internal guard clause if nothing is selected
+						this.setClipboard();
+						new ve.Toast(`Copied ${String.formatNumber(this.clipboard.length)} elements to clipboard.`);
+					}, { name: "&lt;icon>copy&lt;/icon>", limit: () => this.selected.length, tooltip: "Copy Selected" }),
+					cut_button: new ve.Button((e) => {
+						//This has to use a new file explorer in a modal with .options.disable_actions=true, since it would be fatal otherwise
+						if (this.selected.length === 0) return; //Internal guard clause if nothing is selected
+						
+						//Declare local instance variables
+						let modal = new ve.Modal({
+							file_explorer: new ve.FileExplorer(this.v, { navigation_only: true }),
+							confirm_button: new ve.Button((e) => {
+								modal.close();
+								ve.FileExplorer_move(this.selected, modal.components_obj.file_explorer.v, () => {
+									this.refresh();
+									this.deselectAll();
+								});
+							}, { name: "Confirm" })
+						}, { name: `Cut/Paste ${String.formatNumber(this.selected.length)} files`, draggable: true, resizeable: true, width: "24rem" });
+					}, { name: "&lt;icon>cut&lt;/icon>", limit: () => this.selected.length, tooltip: "Cut Selected" }),
+					paste_button: new ve.Button((e) => {
+						let confirm = new ve.Confirm(`Are you sure you want to copy/paste ${String.formatNumber(this.clipboard.length)} file(s) to ${this.v}?`, {
+							name: `Paste ${String.formatNumber(this.clipboard.length)} files`,
+							special_function: () => {
+								confirm.close();
+								ve.FileExplorer_copy(this.clipboard, this.v, () => this.refresh());
+							}
+						});
+					}, { name: "&lt;icon>paste&lt;/icon>", limit: () => this.clipboard.length, tooltip: "Paste Clipboard" }),
+					
+					//clear_clipboard
+					clear_clipboard: new ve.Button((e) => {
+						this.clipboard = [];
+					}, { name: "&lt;icon>content_paste_off&lt;/icon>", limit: () => this.clipboard.length, tooltip: "Clear Clipboard" }),
+					
+					//move_button, delete_button
+					move_button: new ve.Button((e) => {
+						let modal = new ve.Modal({
+							file_explorer: new ve.FileExplorer(this.v, { navigation_only: true }),
+							confirm_button: new ve.Button((e) => {
+								modal.close();
+								ve.FileExplorer_move(this.selected, modal.components_obj.file_explorer.v, () => {
+									this.refresh();
+									this.deselectAll();
+								});
+							}, { name: "Confirm" })
+						}, { name: `Move ${String.formatNumber(this.selected.length)} files`, draggable: true, resizeable: true, width: "24rem" });
+					}, { name: "&lt;icon>arrow_forward&lt;/icon>", limit: () => this.selected.length, tooltip: "Move Selected" }),
+					delete_button: new ve.Button((e) => {
+						let confirm = new ve.Confirm(`Are you sure you want to delete the following files?&lt;br>&lt;br>${this.selected.join(", ")}&lt;br>&lt;br>This action cannot be undone!`, {
+							name: `Delete ${String.formatNumber(this.selected.length)} files`,
+							special_function: () => {
+								confirm.close();
+								ve.FileExplorer_delete(this.selected, () => this.refresh());
+							}
+						});
+					}, { name: "&lt;icon>delete&lt;/icon>", limit: () => this.selected.length, tooltip: "Delete Selected" }),
+					
+					new_folder_button: new ve.Button((e) => {
+						let local_modal = new ve.Window({
+							html: new ve.HTML(`Create a new folder:`),
+							new_folder_name: new ve.Text("",  { name: " " }),
+							confirm_button: new ve.Button((e) => {
+								let new_folder_path = path.join(this.v, local_modal.components_obj.new_folder_name.v);
+								
+								if (local_modal.components_obj.new_folder_name.v.length > 0) {
+									fs.mkdirSync(new_folder_path, { recursive: true });
+									this.refresh();
+								} else {
+									new ve.Toast(`You cannot create a folder with no name.`);
+								}
+							})
+						}, { name: "Create New Folder" })
+					}, { name: "&lt;icon>create_new_folder&lt;/icon>", tooltip: "Create New Folder" })
+				}, {
+					style: { marginLeft: "auto", order: 99, padding: 0 }
+				}),
+			}, {
+				attributes: { "data-ve-is-information": true },
+				disabled: true
+			});
+		hierarchy_obj[previous_folder_path] = new ve.HierarchyDatatype({
+			up_icon: new ve.HTML(`&lt;icon>subdirectory_arrow_left&lt;/icon>`, { style: { padding: 0 }}),
+			two_dots: new ve.HTML(`Back`)
+		}, { disabled: true, limit: () => !File.isDrive(this.v) });
+		
+		let previous_folder_obj = hierarchy_obj[previous_folder_path];
+		previous_folder_obj.element.ondblclick = (e) => {
+			this.v = previous_folder_path;
+			this.fireToBinding();
+		};
+		
+		//Special handling for drive switching
+		if (File.isDrive(this.v)) {
+			let all_drives = File.getAllDrives();
+			
+			for (let i = 0; i &lt; all_drives.length; i++) {
+				if (path.resolve(this.v) === path.resolve(all_drives[i])) continue; //Internal guard clause if paths are the same
+				hierarchy_obj[all_drives[i]] = new ve.HierarchyDatatype({
+					drive_icon: new ve.HTML(`&lt;icon>storage&lt;/icon>`, { style: { padding: 0 } } )
+				}, {
+					attributes: {
+						"data-folder": true,
+						"data-path": all_drives[i]
+					},
+					name: all_drives[i],
+					disabled: true
+				});
+				hierarchy_obj[all_drives[i]].element.ondblclick = () => {
+					this.v = all_drives[i];
+					this.fireToBinding();
+				};
+			}
+		}
+		
+		//Iterate over all files and folders in the current directory
+		for (let i = 0; i &lt; all_files_in_directory.length; i++) {
+			let local_full_path = path.join(this.value, all_files_in_directory[i].name);
+			
+			//Check to make sure local_full_path is a directory
+			if (all_files_in_directory[i].isDirectory()) {
+				hierarchy_obj[local_full_path] = new ve.HierarchyDatatype(
+					{
+						folder_icon: new ve.HTML(this.options.folder_icon, {
+							style: { padding: 0 }
+						}),
+						actions_menu: new ve.RawInterface({
+							rename: new ve.Button((e) => {
+								ve.FileExplorer_rename(local_full_path, () => this.refresh());
+							}, {
+								name: `&lt;icon>drive_file_rename_outline&lt;/icon>`,
+								tooltip: "Rename",
+								style: { padding: `var(--cell-padding)` }
+							}),
+							...Object.fromEntries(
+								Object.entries(this.options.folder_components_obj).map(([local_key, local_component]) => {
+									return [local_key, local_component.clone ?
+										local_component.clone() :
+										new local_component.constructor(local_component.value, local_component.options)];
+								})
+							)
+						}, {
+							attributes: { "data-ve-is-actions-menu": true },
+							style: { display: "flex", marginLeft: "auto", order: 99, padding: 0 },
+							...this.options.folder_options
+						})
+					}, {
+						attributes: {
+							"data-folder": true,
+							"data-path": local_full_path
+						},
+						name: all_files_in_directory[i].name,
+						disabled: true,
+						...this.options.folder_options
+					}
+				);
+				
+				//Add onclick event handler to hierarchy_obj[local_full_path] since we need navigation to work into a folder
+				let local_folder_obj = hierarchy_obj[local_full_path];
+				//local_folder_obj.setOwner(this.owner);
+				local_folder_obj.element.ondblclick = (e) => {
+					//Internal guard clause for protected elements
+					if (e.target.closest(`button, input, .tippy-arrow, .tippy-box, .tippy-content`)) return;
+					
+					this.v = local_full_path;
+					this.fireToBinding();
+				};
+			}
+		}
+		for (let i = 0; i &lt; all_files_in_directory.length; i++) {
+			let local_full_path = path.join(this.value, all_files_in_directory[i].name);
+			
+			//Check to make sure local_full_path is a directory is a file
+			if (all_files_in_directory[i].isFile()) {
+				hierarchy_obj[local_full_path] = new ve.HierarchyDatatype(
+					{
+						file_icon: new ve.HTML(this.options.file_icon, {
+							style: { opacity: 0.6, padding: 0 }
+						}),
+						actions_menu: new ve.RawInterface({
+							rename: new ve.Button((e) => {
+								ve.FileExplorer_rename(local_full_path, () => this.refresh());
+							}, {
+								name: `&lt;icon>drive_file_rename_outline&lt;/icon>`,
+								tooltip: "Rename",
+								style: { padding: `var(--cell-padding)` }
+							}),
+							...Object.fromEntries(
+								Object.entries(this.options.file_components_obj).map(([local_key, local_component]) => {
+									return [local_key, local_component.clone ?
+										local_component.clone() :
+										new local_component.constructor(local_component.value, local_component.options)];
+								})
+							)
+						}, {
+							style: { display: "flex", marginLeft: "auto", order: 99, padding: 0 },
+							...this.options.folder_options
+						})
+					}, {
+						attributes: {
+							"data-file": true,
+							"data-path": local_full_path
+						},
+						name: all_files_in_directory[i].name,
+						disabled: true,
+						...this.options.file_options
+					}
+				);
+			}
+		}
+		
+		//Set hierarchy depending on whether it already exists or not
+		let file_explorer_el = this.element.querySelector(`#file-explorer-body`);
+		
+		this.hierarchy = new ve.Hierarchy(hierarchy_obj);
+		file_explorer_el.innerHTML = "";
+		file_explorer_el.appendChild(this.hierarchy.element);
+		
+		//[WIP] - Set .name.options.onuserchange listener for all this.hierarchy.components_obj
+		
+		setTimeout(() => {
+			this.hierarchy.setOwner(this.owner, [this.owner]);
+		});
+	}
+	
+	/**
+	 * Selects a specific file path, then returns {@link this.selected}.
+	 * - Method of {@link ve.FileExplorer}
+	 * 
+	 * @param {string} arg0_file_path
+	 * 
+	 * @returns string[]
+	 */
+	select (arg0_file_path) {
+		//Convert from parameters
+		let file_path = arg0_file_path;
+		
+		//Push to this.selected if not already selected
+		if (!this.selected.includes(file_path)) {
+			this.selected.push(file_path);
+			if (this.hierarchy.components_obj[file_path])
+				this.hierarchy.components_obj[file_path].element.classList.add("selected");
+		}
+		
+		//Return statement
+		return this.selected;
+	}
+	
+	/**
+	 * Selects all file paths in the current folder being navigated.
+	 * - Method of {@link ve.FileExplorer}
+	 */
+	selectAll () {
+		//Declare local instance variables
+		let all_files_in_directory = fs.readdirSync(this.value, { withFileTypes: true });
+		this.deselectAll(); //Reset this.selected
+		
+		//Iterate over all_files_in_directory and select them
+		for (let i = 0; i &lt; all_files_in_directory.length; i++) {
+			let local_full_path = path.join(this.value, all_files_in_directory[i].name);
+			this.select(local_full_path);
+		}
+	}
+	
+	/**
+	 * Sets the clipboard to the current selection.
+	 * - Method of {@link ve.FileExplorer}
+	 */
+	setClipboard () {
+		this.clipboard = structuredClone(this.selected);
+	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.FileExplorer}
+ */
+veFileExplorer = function () {
+	//Return statement
+	return new ve.FileExplorer(...arguments);
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
