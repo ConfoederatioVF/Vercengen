@@ -100,11 +100,6 @@ body {
 footer {
     display: none;
 }
-@media only screen and (min-width: 320px) and (max-width: 680px) {
-    #main h1.page-title {
-        margin: auto;
-    }
-}
 #main {
     height: 100dvh;
     left: 0;
@@ -112,13 +107,22 @@ footer {
     max-width: 50dvw;
     min-width: 20rem;
     overflow-y: auto;
-    position: absolute;
+    position: static;
     right: 0;
 }
 nav {
     grid-row: 1/span 2;
     padding: 1rem;
+    position: static;
     width: fit-content;
+}
+@media only screen and (min-width: 320px) and (max-width: 680px) {
+    #main h1.page-title {
+        margin: auto;
+    }
+    nav {
+        position: fixed;
+    }
 }
 
 :not(.prettyprint.source) {
