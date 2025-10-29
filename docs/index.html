@@ -61,6 +61,14 @@
 <p>Vercengen is a software engine built to halve your work by eliminating frontend redundancy. Instead, UIs are declared as variable types in your data structures with immediate reflection and directional control.</p>
 <p>All interfaces are split into <b><a href = "ve.Component.html">Components</a></b>, which represent user-facing inputs and displays, and <b><a href = "ve.Feature.html">Features</a></b>, which encapsulate Components; UI is rendered in <i>de facto</i> immediate mode. Everything in Vercengen is in service of the developer: there exists no build process, auto-documentation, first-class Undo/Redo, immediate-mode CSS-in-JS, associated util libraries, variable theming, and inline documentation for usage.</p>
 <p><strong>Batteries Included:</strong> Unlike other frameworks, a default features and components library is included out-of-the-box, and can be modified as needed.</p>
+<h2 id="dataflow%3A">Dataflow:</h2>
+<p>Vercengen provides directional bindings for your data, without the risk of race conditions, as the program and user agent can never be the same.</p>
+<ul>
+<li><code>.binding</code>: string, UI &lt;-&gt; State, fires <code>.onchange(v, e)</code> Event.</li>
+<li><code>.from_binding</code>: string, UI &lt;- State, fires <code>.onprogramchange(v, e)</code> Event.</li>
+<li><code>.to_binding</code>: string, UI -&gt; State, fires <code>.onuserchange(v, e)</code> Event.</li>
+</ul>
+<p><code>global</code>, <code>this</code>, and <code>window</code> are all acceptable prefixes for binding strings, and a reflection engine automatically ensures directional synchronisation. <code>v</code> contains the value, and <code>e</code> the referenced <a href = "ve.Component.html">ve.Component</a>.</p>
 <h2 id="examples%3A">Examples:</h2>
 <p>Example: Separately updating counters.</p>
 <p>Vercengen (10 lines):</p>

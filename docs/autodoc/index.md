@@ -14,6 +14,15 @@ All interfaces are split into <b><a href = "ve.Component.html">Components</a></b
 
 **Batteries Included:** Unlike other frameworks, a default features and components library is included out-of-the-box, and can be modified as needed.
 
+## Dataflow:
+
+Vercengen provides directional bindings for your data, without the risk of race conditions, as the program and user agent can never be the same.
+- `.binding`: string, UI <-> State, fires `.onchange(v, e)` Event.
+- `.from_binding`: string, UI <- State, fires `.onprogramchange(v, e)` Event.
+- `.to_binding`: string, UI -> State, fires `.onuserchange(v, e)` Event.
+
+`global`, `this`, and `window` are all acceptable prefixes for binding strings, and a reflection engine automatically ensures directional synchronisation. `v` contains the value, and `e` the referenced <a href = "ve.Component.html">ve.Component</a>.
+
 ## Examples:
 
 Example: Separately updating counters.
