@@ -8,6 +8,12 @@
 
 ## Less Is More.
 
+Vercengen is a software engine built to halve your work by eliminating frontend redundancy. Instead, UIs are declared as variable types in your data structures with immediate reflection and directional control.
+
+All interfaces are split into <b>Components</b>, which represent user-facing inputs and displays, and <b>Features</b>, which encapsulate Components; UI is rendered in <i>de facto</i> immediate mode. Everything in Vercengen is in service of the developer: there exists no build process, auto-documentation, first-class Undo/Redo, associated util libraries, and inline documentation for usage.
+
+## Examples:
+
 Example: Separately updating counters.
 
 Vercengen (10 lines), Vanilla JS:
@@ -68,4 +74,14 @@ function MyButton() {
         <button onClick={() => setCount(count + 1)}>Increment</button>
     </>);
 }
+```
+
+WYSIWYG Word Editor:
+
+Vercengen (4 lines):
+```js
+word_editor = veWindow({
+  file_explorer: veFileExplorer(__dirname, { y: 0 }),
+  text_editor: veWYSIWYG("Hello world.", { y: 0 })
+}, { name: "Word Editor", width: "40rem" });
 ```
