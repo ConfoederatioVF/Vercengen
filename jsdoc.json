@@ -6,11 +6,11 @@
   },
   "plugins": [
     "plugins/markdown",
-    "./autodoc/publish.js"
+    "./docs/autodoc/publish.js"
   ],
   "opts": {
     "destination": "./docs",
-    "readme": "./autodoc/index.md",
+    "readme": "./docs/autodoc/index.md",
     "recurse": true,
     "template": "node_modules/minami"
   },
