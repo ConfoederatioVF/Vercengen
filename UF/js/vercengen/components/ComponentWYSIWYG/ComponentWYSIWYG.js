@@ -28,7 +28,9 @@
  * - <span color=00ffff>{@link ve.WYSIWYG.restoreSelection|restoreSelection}</span>(arg0_saved_selection:{@link Selection})
  * - <span color=00ffff>{@link ve.WYSIWYG.saveSelection|saveSelection}</span>() | {@link Range}
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.WYSIWYG}
  */
 ve.WYSIWYG = class extends ve.Component {

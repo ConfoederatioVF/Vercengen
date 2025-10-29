@@ -15,6 +15,11 @@
  * 
  * ##### Methods:
  * - <span color=00ffff>{@link ve.Toggle.updateName|updateName}</span>()
+ * 
+ * @augments ve.Component
+ * @augments {@link ve.Component}
+ * @memberof ve.Component
+ * @type {ve.Toggle}
  */
 ve.Toggle = class extends ve.Component {
 	static demo_value = () => { window.alert("This is an alert from ve.Toggle."); };

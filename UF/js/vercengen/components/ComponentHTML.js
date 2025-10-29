@@ -14,7 +14,9 @@
  * ##### Methods:
  * - <span color=00ffff>{@link ve.HTML.toString|toString}</span>() | {@link string}
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.HTML}
  */
 ve.HTML = class extends ve.Component {

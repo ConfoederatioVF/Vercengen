@@ -24,7 +24,9 @@
  * ##### Static Fields:
  * - `.instances`: {@link Array}<this:{@link ve.HierarchyDatatype}>
  *   
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.HierarchyDatatype}
  */
 ve.HierarchyDatatype = class extends ve.Component {

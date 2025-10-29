@@ -12,7 +12,9 @@
  * ##### Instance:
  * - `.v`: {@link string}
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.URL}
  */
 ve.URL = class extends ve.Component {

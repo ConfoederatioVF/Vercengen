@@ -5,7 +5,8 @@
     "excludePattern": "(^|\\/|\\\\)_"
   },
   "plugins": [
-    "plugins/markdown"
+    "plugins/markdown",
+    "./autodoc/publish.js"
   ],
   "opts": {
     "destination": "./docs",

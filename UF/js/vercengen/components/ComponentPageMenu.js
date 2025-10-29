@@ -22,7 +22,9 @@
  * ##### Methods:
  * - <span color=00ffff>{@link ve.PageMenu.updateUnderline|updateUnderline}</span>()
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.PageMenu}
  */
 ve.PageMenu = class extends ve.Component { //[WIP] - This should be updated later to allow arg0_page_obj to take in Array<components_obj> instead, which would create a conventional paginated menu instead of a tabbed one.

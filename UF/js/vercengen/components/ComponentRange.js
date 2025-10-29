@@ -19,7 +19,9 @@
  * - <span color=00ffff>{@link ve.Range.toString|toString}</span>() | {@link string}
  * - <span color=00ffff>{@link ve.Range.valueOf|valueOf}</span>() | {@link number}
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.Range}
  */
 ve.Range = class extends ve.Component {

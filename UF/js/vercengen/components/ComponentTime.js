@@ -14,6 +14,9 @@
  * ##### Instance:
  * - `.v`: {hour: {@link number}, minute: {@link number}}
  * 
+ * @augments ve.Component
+ * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.Time}
  */
 ve.Time = class extends ve.Component {

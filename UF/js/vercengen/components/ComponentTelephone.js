@@ -13,6 +13,9 @@
  * ##### Instance:
  * - `.v`: {@link string}
  * 
+ * @augments ve.Component
+ * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.Telephone}
  */
 ve.Telephone = class extends ve.Component {

@@ -1,0 +1,175 @@
+/* -- Font declaration -- */
+/* ---------- Fira Code ---------- */
+@font-face {
+    font-family: "Fira Code";
+    src: url("../fonts/Fira_Code.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* ---------- Karla ---------- */
+@font-face {
+    font-family: "Karla";
+    src: url("../fonts/Karla.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Karla";
+    src: url("../fonts/Karla_Italic.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+}
+
+/* ---------- DM Mono ---------- */
+@font-face {
+    font-family: "DM Mono";
+    src: url("../fonts/DMMono_Light.ttf") format("truetype");
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "DM Mono";
+    src: url("../fonts/DMMono_Light_Italic.ttf") format("truetype");
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "DM Mono";
+    src: url("../fonts/DMMono_Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "DM Mono";
+    src: url("../fonts/DMMono_Italic.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "DM Mono";
+    src: url("../fonts/DMMono_Medium.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "DM Mono";
+    src: url("../fonts/DMMono_MediumItalic.ttf") format("truetype");
+    font-weight: 500;
+    font-style: italic;
+}
+@font-face {
+    font-family: "Tacitus";
+    src: url("../fonts/Tacitus.ttf") format("truetype");
+    font-weight: 400;
+}
+
+:root {
+    --body-font-family: "Karla";
+    --code-font-family: "Fira Code";
+    --header-font-family: "Tacitus"; 
+}
+
+/* -- Code pages -- */
+pre.prettyprint,
+pre.prettyprinted,
+pre.prettyprinted code,
+pre.prettyprint code {
+    white-space: pre-wrap !important; /* Wrap long lines */
+    word-wrap: break-word;
+    overflow-x: auto; /* Optional: allows smooth scrolling for extra-long lines */
+    line-break: anywhere; /* Modern browsers: safe wrapping */
+}
+.prettyprint.linenums {
+    overflow-y: hidden;
+}
+
+/* -- Conventional pages -- */
+body {
+    display: grid;
+    font-family: var(--body-font-family);
+    grid-template-columns: fit-content(100%) 1fr;
+    grid-template-rows: 1fr auto;
+}
+footer {
+    display: none;
+}
+@media only screen and (min-width: 320px) and (max-width: 680px) {
+    #main h1.page-title {
+        margin: auto;
+    }
+}
+#main {
+    height: 100dvh;
+    left: 0;
+    margin-inline: auto;
+    max-width: 50dvw;
+    min-width: 20rem;
+    overflow-y: auto;
+    position: absolute;
+    right: 0;
+}
+nav {
+    grid-row: 1/span 2;
+    padding: 1rem;
+    width: fit-content;
+}
+
+:not(.prettyprint.source) {
+    .ancestors {
+        visibility: hidden;
+    }
+    .ancestors:after {
+        content: ":";
+        visibility: visible;
+    }
+    .ancestors > a {
+        line-height: 48px;
+        visibility: visible;
+    }
+    .class-description {
+        font-size: 1rem;
+    }
+    code, kbd {
+        font-family: var(--code-font-family);
+    }
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--header-font-family);
+    }
+    h1.page-title {
+        margin-top: 2rem;
+    }
+    h2 {
+        margin-bottom: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    li:empty {
+        list-style-type: none;
+    }
+    li:empty:after {
+        content: "¦";
+    }
+    .subsection-title + ul > li:not(:has(a)) {
+        display: none;
+    }
+}
+
+/* -- Left Sidebar -- */
+.nav-heading .nav-item-name {
+    font-family: var(--header-font-family);
+    font-size: 1rem;
+    font-weight: 400;
+}
+.nav-item .nav-item-name {
+    font-family: var(--code-font-family);
+    font-size: 1rem;
+}
+.nav-item {
+    margin-left: 1rem;
+}

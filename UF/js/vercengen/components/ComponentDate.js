@@ -15,7 +15,9 @@
  * ##### Methods:
  * - <span color=00ffff>{@link ve.Date.handleEvents|handleEvents}</span>() - Used internally to handle events for all date inputs.
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.Date}
  */
 ve.Date = class extends ve.Component {

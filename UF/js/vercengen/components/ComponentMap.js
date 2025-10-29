@@ -12,7 +12,9 @@
  * - `.map`: {@link maptalks.Map}
  * - `.v`: {@link maptalks.Map}
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.Map}
  */
 ve.Map = class extends ve.Component {

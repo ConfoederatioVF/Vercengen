@@ -18,7 +18,9 @@
  * ##### Static Methods:
  * - <span color=00ffff>{@link ve.Checkbox.generateHTMLRecursively}</span>(arg0_value:{@link boolean}|{@link Object}) | {@link Array}<{@link string}>
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.Checkbox}
  */
 ve.Checkbox = class extends ve.Component {

@@ -28,7 +28,9 @@
  * - <span color=00ffff>{@link ve.Interface.assignComponentCoordinates|assignComponentCoordinates}</span>(arg0_components_obj:{@link Object}<{@link ve.Component}>)
  * - <span color=00ffff>{@link ve.Interface.getDefinedComponentDimensions|getDefinedComponentDimensions}</span>(arg0_components_obj:{@link Object}<{@link ve.Component}>)
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.Interface}
  */
 ve.Interface = class extends ve.Component {

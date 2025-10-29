@@ -12,7 +12,9 @@
  * ##### Instance:
  * - `.v`: {@link UF.Date}
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.veDateLength}
  */
 ve.DateLength = class extends ve.Component {

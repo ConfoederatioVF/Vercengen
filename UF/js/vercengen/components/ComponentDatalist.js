@@ -12,7 +12,9 @@
  * ##### Instance:
  * - `.v`: {@link string} - The current ID selected by the datalist. If no valid ID is found, the raw `.value` of the datalist element is returned.
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.Datalist}
  */
 ve.Datalist = class extends ve.Component {

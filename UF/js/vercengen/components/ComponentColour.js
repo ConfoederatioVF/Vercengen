@@ -15,7 +15,9 @@
  * - <span color=00ffff>{@link ve.Colour.getHex|getHex}</span>() | {@link string} - Returns the hex value of the present R, G, B value.
  * - <span color=00ffff>{@link ve.Colour.toString|toString}</span>() | {@link string} - Returns the R,G,B value as a string.
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.Colour}
  */
 ve.Colour = class extends ve.Component {

@@ -20,7 +20,9 @@
  * ##### Static Methods:
  * - <span color=00ffff>{@link ve.Radio.generateHTMLRecursively|generateHTMLRecursively}</span>(arg0_value:{@link Object}<{@link boolean}>, arg1_this:{@link ve.Radio}) | {@link string}
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.Radio}
  */
 ve.Radio = class extends ve.Component {

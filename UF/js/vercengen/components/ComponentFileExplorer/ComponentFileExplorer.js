@@ -31,7 +31,9 @@
  * - <span color=00ffff>{@link ve.FileExplorer.setClipboard|setClipboard}</span>() - Sets the clipboard to currently selected file paths.
  * - <span color=00ffff>{@link ve.FileExplorer.refresh|refresh}</span>() - Refreshes the current ve.FileExplorer display. Handled automatically.
  *
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.FileExplorer}
  */
 ve.FileExplorer = class extends ve.Component {

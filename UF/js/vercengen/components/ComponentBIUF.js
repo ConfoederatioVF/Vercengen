@@ -19,7 +19,9 @@
  * - <span color=00ffff>{@link ve.BIUF.initBIUFToolbar|initBIUFToolbar}</span>()
  * - <span color=00ffff>{@link ve.BIUF.sendOnchangeEvent|sendOnchangeEvent}</span>()
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.BIUF}
  */
 ve.BIUF = class extends ve.Component {

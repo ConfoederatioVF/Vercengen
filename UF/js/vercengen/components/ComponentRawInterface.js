@@ -14,7 +14,9 @@
  * - `.reserved_keys`: {@link Array}<{@link string}> - Controls what keys are reserved and cannot be destructured.
  * - `.v`: {@link Object}<{@link ve.Component}>
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.RawInterface}
  */
 ve.RawInterface = class extends ve.Component {

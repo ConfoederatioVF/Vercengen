@@ -12,7 +12,9 @@
  * ##### Instance:
  * - `.v`: {@link string}
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.Password}
  */
 ve.Password = class extends ve.Component {

@@ -18,7 +18,9 @@
  * - <span color=00ffff>{@link ve.Hierarchy.getHierarchyObject|getHierarchyObject}</span>(arg0_options:{flatten_object: {@link boolean} }) | {@link Object}
  * - <span color=00ffff>{@link ve.Hierarchy.removeItem|removeItem}</span>(arg0_hierarchy_datatype:{@link ve.HierarchyDatatype})
  * 
+ * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.Hierarchy}
  */
 ve.Hierarchy = class extends ve.Component {

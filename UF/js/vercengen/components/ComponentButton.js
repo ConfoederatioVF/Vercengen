@@ -9,6 +9,11 @@
  * 
  * ##### Instance:
  * - `.v`: {@link function} - Accessor. The current function stored by the {@link ve.Button} component.
+ * 
+ * @augments ve.Component
+ * @augments {@link ve.Component}
+ * @memberof ve.Component
+ * @type {ve.Button}
  */
 ve.Button = class extends ve.Component {
 	static demo_value = () => { window.alert("This is an alert from ve.Button."); };
