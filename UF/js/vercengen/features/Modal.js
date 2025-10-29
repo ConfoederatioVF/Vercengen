@@ -13,7 +13,9 @@
  * ##### Methods:
  * - <span color=00ffff>{@link ve.Modal.close|close}</span>()
  * 
+ * @augments ve.Feature
  * @augments {@link ve.Feature}
+ * @memberof ve.Feature
  * @type {ve.Modal}
  */
 ve.Modal = class extends ve.Feature {

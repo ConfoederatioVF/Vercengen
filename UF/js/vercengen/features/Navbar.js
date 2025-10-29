@@ -27,7 +27,9 @@
  * ##### Methods:
  * - <span color=00ffff>{@link ve.Navbar.generateHTMLRecursively|generateHTMLRecursively}</span>(arg0_navbar_obj: {@link Object}) | {@link HTMLUListElement}
  * 
+ * @augments ve.Feature
  * @augments {@link ve.Feature}
+ * @memberof ve.Feature
  * @type {ve.Navbar}
  */
 ve.Navbar = class extends ve.Feature {

@@ -20,7 +20,7 @@
  * - <span color=00ffff>{@link ve.BIUF.sendOnchangeEvent|sendOnchangeEvent}</span>()
  * 
  * @augments {@link ve.Component}
- * @type {ve.ComponentBIUF}
+ * @type {ve.BIUF}
  */
 ve.BIUF = class extends ve.Component {
 	static demo_value = `<b>Bold</b> <i>Italic</i>, <u>Underline</u>, and regular text formatting are supported by BIUF fields.`;

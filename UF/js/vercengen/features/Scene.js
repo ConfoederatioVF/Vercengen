@@ -11,7 +11,9 @@
  * ##### Instance:
  * - `.v`: {@link Object}<{@link ve.Component}>
  * 
+ * @augments ve.Feature
  * @augments {@link ve.Feature}
+ * @memberof ve.Feature
  * @type {ve.Scene}
  */
 ve.Scene = class extends ve.Feature {

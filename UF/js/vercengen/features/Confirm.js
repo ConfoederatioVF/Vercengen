@@ -12,8 +12,10 @@
  * 
  * ##### Methods::
  * - <span color=00ffff>{@link ve.Confirm.close|close}</span>()
- * 
+ *
+ * @augments ve.Feature
  * @augments {@link ve.Feature}
+ * @memberof ve.Feature
  * @type {ve.Confirm}
  */
 ve.Confirm = class extends ve.Feature {

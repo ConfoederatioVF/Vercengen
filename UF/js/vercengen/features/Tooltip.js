@@ -15,7 +15,9 @@
  * - `.anchor_element`: {@link HTMLElement}
  * - `.v`: {@link HTMLElement}
  *     
+ * @augments ve.Feature
  * @augments {@link ve.Feature}
+ * @memberof ve.Feature
  * @type {ve.Tooltip}
  */
 ve.Tooltip = class extends ve.Feature {

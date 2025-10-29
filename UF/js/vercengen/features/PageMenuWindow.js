@@ -35,7 +35,9 @@
  *     - `.style`: {@link Object}
  *       - `<style_key>`: {@link string}
  *
+ * @augments ve.Feature
  * @augments {@link ve.Feature}
+ * @memberof ve.Feature
  * @type {ve.PageMenuWindow}
  */
 ve.PageMenuWindow = class extends ve.Feature {

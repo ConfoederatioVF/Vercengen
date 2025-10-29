@@ -40,7 +40,9 @@
  * ##### Static Methods:
  * - <span color=00ffff>{@link ve.Window.getHighestZIndex}</span>(arg0_options:{ return_object=false: {@link boolean} }) | {@link number}|{@link ve.Window}
  *   
+ * @augments ve.Feature
  * @augments {@link ve.Feature}
+ * @memberof ve.Feature
  * @type {ve.Window}
  */
 ve.Window = class extends ve.Feature {

@@ -26,7 +26,9 @@
  * - <span color=00ffff>{@link ve.ContextMenu.open|open}</span>() | this:{@link ve.ContextMenu}
  * - <span color=00ffff>{@link ve.ContextMenu.removeContextMenu|removeContextMenu}</span>(arg0_index: this:{@link number}) | {@link ve.ContextMenu}
  * 
+ * @augments ve.Feature
  * @augments {@link ve.Feature}
+ * @memberof ve.Feature
  * @type {ve.ContextMenu}
  */
 ve.ContextMenu = class extends ve.Feature { //[WIP] - Finish class body

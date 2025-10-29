@@ -9,6 +9,7 @@
   ],
   "opts": {
     "destination": "./docs",
+    "readme": "./autodoc/index.md",
     "recurse": true,
     "template": "node_modules/minami"
   },

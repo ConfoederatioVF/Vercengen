@@ -25,16 +25,19 @@ if (!global.ve) global.ve = {};
  * - <span color=00ffff>{@link ve.Feature.removeComponents|removeComponents}</span>(arg0_components_obj:{@link Object}<{@link ve.Component}>) - Removes components from the current {@link this.element} based on key names.
  * 
  * ##### Types:
- * - {@link ve.Confirm}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) - Confirm dialogue/modal.
- * - {@link ve.ContextMenu}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) - Pop-up context menu located at the cursor with an assigned `.id` to prevent duplicates.
- * - {@link ve.Modal}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) - Overlays a modal on top of the current Vercengen overlay interface. Must be responded to before conventional windows.
- * - {@link ve.Navbar}(arg0_navbar_obj:{@link Object}, arg1_options:{@link Object}) - Creates an action topbar with recursive dropdown menus and keybind settings.
- * - {@link ve.PageMenuWindow}(arg0_page_obj:{@link Object}, arg1_options:{@link Object}) - Creates a page menu window, which encapsulates components in pages instead of interfaces.
- * - {@link ve.Scene}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) - Creates a full-viewport rendering scene.
- * - {@link ve.Toast}(arg0_components_obj:{@link Object}<{@link ve.Component}>|{@link string}, arg1_options:{@link Object}) - Spawns a toast at the current cursor.
- * - {@link ve.Tooltip}(arg0_components_obj:{@link Object}<{@link ve.Component}>|{@link string}|{@link ve.Component}, arg1_options:{@link Object}) - Spawns a tooltip for the given `.options.element`.
- * - {@link ve.Window}(arg0_components_obj:{@link Object}<{@link ve.Component}>|{@link string}, arg1_options:{@link Object}) - Default ve.Feature for encapsulating components in <span color = "yellow">{@link ve.Class}</span>.
+ * - {@link ve.Feature.ve.Confirm|ve.Confirm}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) - Confirm dialogue/modal.
+ * - {@link ve.Feature.ve.ContextMenu|ve.ContextMenu}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) - Pop-up context menu located at the cursor with an assigned `.id` to prevent duplicates.
+ * - {@link ve.Feature.ve.Modal|ve.Modal}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) - Overlays a modal on top of the current Vercengen overlay interface. Must be responded to before conventional windows.
+ * - {@link ve.Feature.ve.Navbar|ve.Navbar}(arg0_navbar_obj:{@link Object}, arg1_options:{@link Object}) - Creates an action topbar with recursive dropdown menus and keybind settings.
+ * - {@link ve.Feature.ve.PageMenuWindow|ve.PageMenuWindow}(arg0_page_obj:{@link Object}, arg1_options:{@link Object}) - Creates a page menu window, which encapsulates components in pages instead of interfaces.
+ * - {@link ve.Feature.ve.Scene|ve.Scene}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) - Creates a full-viewport rendering scene.
+ * - {@link ve.Feature.ve.Toast|ve.Toast}(arg0_components_obj:{@link Object}<{@link ve.Component}>|{@link string}, arg1_options:{@link Object}) - Spawns a toast at the current cursor.
+ * - {@link ve.Feature.ve.Tooltip|ve.Tooltip}(arg0_components_obj:{@link Object}<{@link ve.Component}>|{@link string}|{@link ve.Component}, arg1_options:{@link Object}) - Spawns a tooltip for the given `.options.element`.
+ * - {@link ve.Feature.ve.Window|ve.Window}(arg0_components_obj:{@link Object}<{@link ve.Component}>|{@link string}, arg1_options:{@link Object}) - Default ve.Feature for encapsulating components in <span color = "yellow">{@link ve.Class}</span>.
  * 
+ * @class
+ * @memberof ve
+ * @namespace ve.Feature
  * @type {ve.Feature}
  */
 ve.Feature = class {
