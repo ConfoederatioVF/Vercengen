@@ -90,6 +90,24 @@ new Counter().open(&quot;instance&quot;, { name: &quot;Counter 2&quot; });
   text_editor: veWYSIWYG(&quot;Hello world.&quot;, { y: 0 })
 }, { name: &quot;Word Editor&quot;, width: &quot;40rem&quot; });
 </code></pre>
+<p>Example: Nested Bindings with Delay.</p>
+<p>Vercengen (15 lines):</p>
+<pre class="prettyprint source lang-js"><code>ColourPicker = class extends ve.Class { constructor () {
+	super();
+	this.interface = veInterface({
+		colour: veColour([255, 255, 255], {
+			binding: &quot;this.colour&quot; }),
+		opacity: veRange(1, {
+			binding: &quot;this.opacity&quot; })
+	});
+	
+	//Wait 1 second
+	setTimeout(() => {
+		this.colour = [0, 0, 0]; //Alias binding, immediately reflected
+		this.interface.opacity.v = 0.5; //Native binding
+	}, 1000);
+} };
+</code></pre>
 <h2 id="extensibility%3A">Extensibility:</h2>
 <p>Need to import a third-party component? Boilerplate for Vercengen is minimal:</p>
 <pre class="prettyprint source lang-js"><code>ve.CustomComponent = class extends ve.Component {

@@ -51,6 +51,27 @@ word_editor = veWindow({
 }, { name: "Word Editor", width: "40rem" });
 ```
 
+Example: Nested Bindings with Delay.
+
+Vercengen (15 lines):
+```js
+ColourPicker = class extends ve.Class { constructor () {
+	super();
+	this.interface = veInterface({
+		colour: veColour([255, 255, 255], {
+			binding: "this.colour" }),
+		opacity: veRange(1, {
+			binding: "this.opacity" })
+	});
+	
+	//Wait 1 second
+	setTimeout(() => {
+		this.colour = [0, 0, 0]; //Alias binding, immediately reflected
+		this.interface.opacity.v = 0.5; //Native binding
+	}, 1000);
+} };
+```
+
 ## Extensibility:
 Need to import a third-party component? Boilerplate for Vercengen is minimal:
 
