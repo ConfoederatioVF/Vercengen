@@ -87,7 +87,7 @@ Vercengen is currently native to **Electron**/**Node.js** with better support pl
    ]});
    ```
 
-But if that's too much work for you, fork our [bootstrap repository](github.com/Confoederatio/Vercengen/) instead.
+But if that's too much work for you, fork our [bootstrap repository](https://github.com/Confoederatio/Vercengen/) instead.
 
 ---
 
