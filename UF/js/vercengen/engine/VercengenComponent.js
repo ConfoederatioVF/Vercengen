@@ -3,7 +3,7 @@
  * 
  * ##### Constructor:
  * - `arg0_options`: {@link Object}
- *   - All bindings accept 'this'/'global'/'window' variables.
+ *   - All bindings accept 'this'/'global'/'window' variables. Bindings propagate recursively upwards (i.e. a userchange at a lower level will register as a userchange in an upper level).
  *   - `.binding`: {@link string} - Related event: `.onchange`. Bidirectional data binding for both `.from_binding`/`.to_binding`.
  *   - `.from_binding`: {@link string} - Related event: `.onprogramchange`. Unidirectional data binding.
  *   - `.to_binding`: {@link string} - Related event: `.onuserchange`. Unidirectional data binding.
@@ -291,7 +291,18 @@ ve.Component = class {
 		
 		//Set value of to object by fetching this.v
 		let local_value = this.v; //Because this is a getter, run it once
-		//console.log(initial_object, variable_string, local_value);
+		
+		//Traverse up the .owners tree and fire onchange/onuserchange
+		if (this.owners) 
+			for (let i = this.owners.length - 1; i >= 0; i--)
+				if (this.owners[i].options) {
+					let local_options = this.owners[i].options;
+					
+					if (typeof local_options.onchange === "function")
+						local_options.onchange(this.owners[i].v, this.owners[i]);
+					if (typeof local_options.onuserchange === "function") //Fire onuserchange (unidirectional)
+						local_options.onuserchange(this.owners[i].v, this.owners[i]);
+				}
 		
 		if (typeof this.options.onchange === "function") //Fire onchange (bidirectional)
 			this.options.onchange(local_value, this);
@@ -343,6 +354,18 @@ ve.Component = class {
 					//Declare local instance variables
 					let is_same_value = Boolean.strictEquality(local_value, this.v);
 					if (is_same_value) return;
+					
+					//Traverse up the .owners tree and fire onchange/onprogramchange
+					if (this.owners)
+						for (let i = this.owners.length - 1; i >= 0; i--)
+							if (this.owners[i].options) {
+								let local_options = this.owners[i].options;
+								
+								if (typeof local_options.onchange === "function") //Fire onchange (bidirectional)
+									local_options.onchange(this.owners[i].v, this.owners[i]);
+								if (typeof local_options.onprogramchange === "function") //Fire onprogramchange (unidirectional)
+									local_options.onprogramchange(this.owners[i].v, this.owners[i]);
+							}
 					
 					if (typeof this.options.onchange === "function") //Fire onchange (bidirectional)
 						this.options.onchange(local_value, this);

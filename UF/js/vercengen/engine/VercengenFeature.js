@@ -15,6 +15,8 @@ if (!global.ve) global.ve = {};
  * ##### Instance:
  * - `.child_class=this.constructor`: {@link ve.Feature} - The constructor object of the child class.
  * - `.child_class_obj=ve[htis.child_class.prototype.constructor.name]`: {@link ve.Feature} - The actual object of the child class.
+ * - `.components_obj`: {@link Array}<{@link ve.Component}>
+ * - `.id`: {@link string}
  * - `.is_vercengen_feature=true`: {@link boolean} - Whether to mark this ve.Feature as a Vercengen feature.
  * - `.options`: {@link Object}
  * 
@@ -23,6 +25,10 @@ if (!global.ve) global.ve = {};
  * - <span color=00ffff>{@link ve.Feature.close|close}</span>() - Alias for .remove()
  * - <span color=00ffff>{@link ve.Feature.remove|remove}</span>() - Removes the current feature.
  * - <span color=00ffff>{@link ve.Feature.removeComponents|removeComponents}</span>(arg0_components_obj:{@link Object}<{@link ve.Component}>) - Removes components from the current {@link this.element} based on key names.
+ * - <span color=00ffff>{@link ve.Feature.updateOwner|updateOwner}</span>() - Updates the `.owner`/`.owners` fields for all encapsulated components to ve.Feature if no {@link ve.Class} owner could be found.
+ * 
+ * ##### Static Fields:
+ * - `.instances`: {@link Array}<{@link ve.Feature}>
  * 
  * ##### Types:
  * - {@link ve.Feature.ve.Confirm|ve.Confirm}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) - Confirm dialogue/modal.
@@ -41,6 +47,13 @@ if (!global.ve) global.ve = {};
  * @type {ve.Feature}
  */
 ve.Feature = class {
+	//Declare local static variables
+	
+	/**
+	 * @type ve.Feature[]
+	 */
+	static instances = [];
+	
 	constructor (arg0_components_obj, arg1_options) {
 		//Convert from parameters
 		let components_obj = arg0_components_obj;
@@ -49,6 +62,7 @@ ve.Feature = class {
 		//Declare local instance variables
 		this.child_class = this.constructor;
 		this.child_class_obj = ve[this.child_class.prototype.constructor.name];
+		this.id = Class.generateRandomID(ve.Feature);
 		this.is_vercengen_feature = true;
 		if (typeof components_obj === "function" || typeof components_obj === "string") {
 			this.components_obj = {
@@ -65,6 +79,7 @@ ve.Feature = class {
 		
 		//Destructure this.components_obj into available variables
 		try {
+			this.updateOwner();
 			Object.iterate(this.components_obj, (local_key, local_value) => {
 				if (!this[local_key]) this[local_key] = local_value;
 			});
@@ -73,6 +88,7 @@ ve.Feature = class {
 	
 	/**
 	 * Adds components to the present {@link this.element}.
+	 * - Method of: {@link ve.Feature}
 	 * 
 	 * @param {{"<component_key>": ve.Component}} arg0_components_obj
 	 */
@@ -92,6 +108,7 @@ ve.Feature = class {
 				if (this.element)
 					this.element.appendChild(local_value.element);
 				this.components_obj[local_key] = local_value;
+				this.updateOwner();
 			} catch (e) { console.error(e); }
 		});
 		
@@ -99,6 +116,7 @@ ve.Feature = class {
 	
 	/**
 	 * Alias for {@link remove|this.remove}().
+	 * - Method of: {@link ve.Feature}
 	 */
 	close () {
 		this.remove();
@@ -106,6 +124,7 @@ ve.Feature = class {
 	
 	/**
 	 * Removes the {@link ve.Feature} from its static `.instances` field in addition to unmounting the feature from the DOM.
+	 * - Method of: {@link ve.Feature}
 	 */
 	remove () {
 		//Iterate over all instances in ve.Window.instances
@@ -116,12 +135,27 @@ ve.Feature = class {
 					break;
 				}
 		
+		//Reset any child owners if their first owner is this ve.Feature
+		if (this.components_obj)
+			Object.iterate(this.components_obj, (local_key, local_value) => {
+				if (local_value.owner && local_value.owner.is_vercengen_feature)
+					if (local_value.owner.id === this.id) {
+						//Remove the .owner
+						delete local_value.owner;
+						
+						//Splice .owners to remove the present .owner
+						if (local_value.owners.length >= 1)
+							local_value.owners.splice(0, 1);
+					}
+			});
+		
 		//Remove element
 		if (this.element) this.element.remove();
 	}
 	
 	/**
 	 * Removes components from the present {@link this.element}.
+	 * - Method of: {@link ve.Feature}
 	 * 
 	 * @param {{"<component_key>": ve.Component}} arg0_components_obj
 	 */
@@ -132,11 +166,33 @@ ve.Feature = class {
 		//Iterate over all components_obj and remove them based on keys
 		Object.iterate(components_obj, (local_key, local_value) => {
 			try {
-				if (this.components_obj[local_key])
-					this.components_obj[local_key].remove();
-				local_value.remove();
+				if (local_value) {
+					local_value.removeComponent();
+					if (local_value.owner && local_value.owner.is_vercengen_feature)
+						if (local_value.owner.id === this.id) {
+							//Remove the .owner
+							delete local_value.owner;
+							
+							//Splice .owners to remove the present .owner
+							if (local_value.owners.length >= 1)
+								local_value.owners.splice(0, 1);
+						}
+				}
 				delete this.components_obj[local_key];
 			} catch (e) { console.error(e); }
 		});
+	}
+	
+	/**
+	 * Iterates over all present Vercengen components in {@link ve.Feature} and sets their owner to the current Feature if they do not already have populated `.owner`/`.owners` fields.
+	 * - Method of: {@link ve.Feature}
+	 */
+	updateOwner () {
+		//Iterate over all this.components_obj
+		if (this.components_obj)
+			Object.iterate(this.components_obj, (local_key, local_value) => {
+				if (!local_value.owner || local_value.owner.is_vercengen_feature)
+					this.components_obj[local_key].setOwner(this, [this]);
+			});
 	}
 };
