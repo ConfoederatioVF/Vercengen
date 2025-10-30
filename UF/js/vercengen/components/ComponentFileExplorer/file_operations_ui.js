@@ -1,8 +1,16 @@
 global.stream_promises = require("stream/promises");
 
-//Initialise functions - [WIP] - Finish ve.FileExplorer_delete, ve.FileExplorer_move
+//Initialise functions
 {
-	ve.FileExplorer_getFiles = function (arg0_file_paths) {
+	/**
+	 * Returns all the subpaths in the set of file/folder paths given.
+	 * - Method of: {@link ve.FileExplorer}
+	 * 
+	 * @param {string[]} arg0_file_paths
+	 * 
+	 * @returns {string[]}
+	 */
+	ve.FileExplorer.getFiles = function (arg0_file_paths) {
 		//Convert from parameters
 		let file_paths = arg0_file_paths;
 		
@@ -15,6 +23,7 @@ global.stream_promises = require("stream/promises");
 				//Iterate over all_file_paths in local directory 
 				let all_file_paths = fs.readdirSync(file_paths[i], { recursive: true });
 				
+				//Iterates over all_file_paths to recursively 
 				for (let x = 0; x < all_file_paths.length; x++)
 					actual_paths.push(path.join(file_paths[i], all_file_paths[x]));
 			} else {
@@ -25,8 +34,15 @@ global.stream_promises = require("stream/promises");
 		return actual_paths;
 	};
 	
-	//Copy
-	ve.FileExplorer_copy = function (arg0_file_paths, arg1_file_path, arg2_function) {
+	/**
+	 * Copies specific file paths in `arg0_file_paths` to `arg1_file_path`.
+	 * - Method of: {@link ve.FileExplorer}
+	 * 
+	 * @param {string[]} arg0_file_paths - The file paths to copy.
+	 * @param {string} arg1_file_path - Where to copy the file paths to.
+	 * @param {function} arg2_function - Callback function once the copy operation is finished.
+	 */
+	ve.FileExplorer.copy = function (arg0_file_paths, arg1_file_path, arg2_function) {
 		//Convert from parameters
 		let file_paths = arg0_file_paths;
 		let file_path = arg1_file_path;
@@ -198,8 +214,14 @@ global.stream_promises = require("stream/promises");
 		copyFileAtIndex(file_paths[0]);
 	};
 	
-	//Delete
-	ve.FileExplorer_delete = function (arg0_file_paths, arg1_function) {
+	/**
+	 * Deletes selected file paths in `arg0_file_paths` recursively with error logging.
+	 * - Method of: {@link ve.FileExplorer}
+	 * 
+	 * @param {string[]} arg0_file_paths - The file paths to delete.
+	 * @param {function} arg1_function - Callback function once the delete operation is finished.
+	 */
+	ve.FileExplorer.delete = function (arg0_file_paths, arg1_function) {
 		// Convert parameters
 		let file_paths = arg0_file_paths;
 		let callback_function = arg1_function;
@@ -317,22 +339,29 @@ global.stream_promises = require("stream/promises");
 		}
 	};
 	
-	//Cut/Move
-	ve.FileExplorer_move = function (arg0_file_paths, arg1_file_path, arg2_function) {
+	/**
+	 * Moves files from selected file paths in `arg0_file_paths` to `arg1_file_path`.
+	 * - Method of: {@link ve.FileExplorer}
+	 * 
+	 * @param {string[]} arg0_file_paths - The file paths to move.
+	 * @param {string} arg1_file_path - The folder path to move to.
+	 * @param {function} arg2_function - Callback function once the move operation is finished.
+	 */
+	ve.FileExplorer.move = function (arg0_file_paths, arg1_file_path, arg2_function) {
 		//Convert from parameters
 		let file_paths = arg0_file_paths;
 		let file_path = arg1_file_path;
 		let callback_function = arg2_function;
 		
 		//Declare local instance variables
-		let files_total = String.formatNumber(ve.FileExplorer_getFiles(file_paths).length);
+		let files_total = String.formatNumber(ve.FileExplorer.getFiles(file_paths).length);
 		
 		//1. Copy files into new folder first
-		ve.FileExplorer_copy(file_paths, file_path, (local_modal) => {
+		ve.FileExplorer.copy(file_paths, file_path, (local_modal) => {
 			local_modal.remove();
 			
 			//2. Delete files afterwards
-			ve.FileExplorer_delete(file_paths, (local_modal) => {
+			ve.FileExplorer.delete(file_paths, (local_modal) => {
 				local_modal.remove();
 				
 				let modal = new ve.Window(`Finished moving ${files_total} file(s) to ${file_path}`, { name: "Finished moving files", width: "24rem" });
@@ -342,7 +371,14 @@ global.stream_promises = require("stream/promises");
 		});
 	};
 	
-	ve.FileExplorer_rename = function (arg0_file_path, arg1_function) {
+	/**
+	 * Creates a modal for renaming a specific file path in `arg0_file_path`.
+	 * - Method of: {@link ve.FileExplorer}
+	 * 
+	 * @param {string} arg0_file_path - The file path to rename.
+	 * @param {function} arg1_function - Callback function after the rename operation is complete.
+	 */
+	ve.FileExplorer.rename = function (arg0_file_path, arg1_function) {
 		//Convert from parameters
 		let file_path = arg0_file_path;
 		let callback_function = arg1_function;

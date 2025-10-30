@@ -30,6 +30,12 @@
  * - <span color=00ffff>{@link ve.FileExplorer.selectAll|selectAll}</span>()
  * - <span color=00ffff>{@link ve.FileExplorer.setClipboard|setClipboard}</span>() - Sets the clipboard to currently selected file paths.
  * - <span color=00ffff>{@link ve.FileExplorer.refresh|refresh}</span>() - Refreshes the current ve.FileExplorer display. Handled automatically.
+ * - 
+ * - <span color=00ffff>{@link ve.FileExplorer.getFiles|getFiles}</span>(arg0_file_paths:{@link Array}<{@link string}>) | {@link Array}<{@link string}> - Returns all the subpaths in the set of file/folder paths given.
+ * - <span color=00ffff>{@link ve.FileExplorer.copy|copy}</span>(arg0_file_paths:{@link Array}<{@link string}>, arg1_file_path:{@link string}, arg2_function:{@link function}) - Opens a copy files modal with a callback function.
+ * - <span color=00ffff>{@link ve.FileExplorer.delete|delete}</span>(arg0_file_paths:{@link Array}<{@link string}>, arg1_file_path:{@link string}, arg2_function:{@link function}) - Opens a delete files modal with a callback function.
+ * - <span color=00ffff>{@link ve.FileExplorer.move|move}</span>(arg0_file_paths:{@link Array}<{@link string}>, arg1_file_path:{@link string}, arg2_function:{@link function}) - Opens a move files modal with a callback function.
+ * - <span color=00ffff>{@link ve.FileExplorer.rename|rename}</span>(arg0_file_path:{@link string}, arg1_function:{@link function}) - Opens a rename file modal with a callback function.
  *
  * @augments ve.Component
  * @augments {@link ve.Component}
@@ -240,7 +246,7 @@ ve.FileExplorer = class extends ve.Component {
 							file_explorer: new ve.FileExplorer(this.v, { navigation_only: true }),
 							confirm_button: new ve.Button((e) => {
 								modal.close();
-								ve.FileExplorer_move(this.selected, modal.components_obj.file_explorer.v, () => {
+								ve.FileExplorer.move(this.selected, modal.components_obj.file_explorer.v, () => {
 									this.refresh();
 									this.deselectAll();
 								});
@@ -252,7 +258,7 @@ ve.FileExplorer = class extends ve.Component {
 							name: `Paste ${String.formatNumber(this.clipboard.length)} files`,
 							special_function: () => {
 								confirm.close();
-								ve.FileExplorer_copy(this.clipboard, this.v, () => this.refresh());
+								ve.FileExplorer.copy(this.clipboard, this.v, () => this.refresh());
 							}
 						});
 					}, { name: "<icon>paste</icon>", limit: () => this.clipboard.length, tooltip: "Paste Clipboard" }),
@@ -268,7 +274,7 @@ ve.FileExplorer = class extends ve.Component {
 							file_explorer: new ve.FileExplorer(this.v, { navigation_only: true }),
 							confirm_button: new ve.Button((e) => {
 								modal.close();
-								ve.FileExplorer_move(this.selected, modal.components_obj.file_explorer.v, () => {
+								ve.FileExplorer.move(this.selected, modal.components_obj.file_explorer.v, () => {
 									this.refresh();
 									this.deselectAll();
 								});
@@ -280,7 +286,7 @@ ve.FileExplorer = class extends ve.Component {
 							name: `Delete ${String.formatNumber(this.selected.length)} files`,
 							special_function: () => {
 								confirm.close();
-								ve.FileExplorer_delete(this.selected, () => this.refresh());
+								ve.FileExplorer.delete(this.selected, () => this.refresh());
 							}
 						});
 					}, { name: "<icon>delete</icon>", limit: () => this.selected.length, tooltip: "Delete Selected" }),
@@ -355,7 +361,7 @@ ve.FileExplorer = class extends ve.Component {
 						}),
 						actions_menu: new ve.RawInterface({
 							rename: new ve.Button((e) => {
-								ve.FileExplorer_rename(local_full_path, () => this.refresh());
+								ve.FileExplorer.rename(local_full_path, () => this.refresh());
 							}, {
 								name: `<icon>drive_file_rename_outline</icon>`,
 								tooltip: "Rename",
@@ -408,7 +414,7 @@ ve.FileExplorer = class extends ve.Component {
 						}),
 						actions_menu: new ve.RawInterface({
 							rename: new ve.Button((e) => {
-								ve.FileExplorer_rename(local_full_path, () => this.refresh());
+								ve.FileExplorer.rename(local_full_path, () => this.refresh());
 							}, {
 								name: `<icon>drive_file_rename_outline</icon>`,
 								tooltip: "Rename",

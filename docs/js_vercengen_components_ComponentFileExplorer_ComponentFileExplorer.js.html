@@ -284,7 +284,7 @@ ve.FileExplorer = class extends ve.Component {
 							file_explorer: new ve.FileExplorer(this.v, { navigation_only: true }),
 							confirm_button: new ve.Button((e) => {
 								modal.close();
-								ve.FileExplorer_move(this.selected, modal.components_obj.file_explorer.v, () => {
+								ve.FileExplorer.move(this.selected, modal.components_obj.file_explorer.v, () => {
 									this.refresh();
 									this.deselectAll();
 								});
@@ -296,7 +296,7 @@ ve.FileExplorer = class extends ve.Component {
 							name: `Paste ${String.formatNumber(this.clipboard.length)} files`,
 							special_function: () => {
 								confirm.close();
-								ve.FileExplorer_copy(this.clipboard, this.v, () => this.refresh());
+								ve.FileExplorer.copy(this.clipboard, this.v, () => this.refresh());
 							}
 						});
 					}, { name: "&lt;icon>paste&lt;/icon>", limit: () => this.clipboard.length, tooltip: "Paste Clipboard" }),
@@ -312,7 +312,7 @@ ve.FileExplorer = class extends ve.Component {
 							file_explorer: new ve.FileExplorer(this.v, { navigation_only: true }),
 							confirm_button: new ve.Button((e) => {
 								modal.close();
-								ve.FileExplorer_move(this.selected, modal.components_obj.file_explorer.v, () => {
+								ve.FileExplorer.move(this.selected, modal.components_obj.file_explorer.v, () => {
 									this.refresh();
 									this.deselectAll();
 								});
@@ -324,7 +324,7 @@ ve.FileExplorer = class extends ve.Component {
 							name: `Delete ${String.formatNumber(this.selected.length)} files`,
 							special_function: () => {
 								confirm.close();
-								ve.FileExplorer_delete(this.selected, () => this.refresh());
+								ve.FileExplorer.delete(this.selected, () => this.refresh());
 							}
 						});
 					}, { name: "&lt;icon>delete&lt;/icon>", limit: () => this.selected.length, tooltip: "Delete Selected" }),
@@ -399,7 +399,7 @@ ve.FileExplorer = class extends ve.Component {
 						}),
 						actions_menu: new ve.RawInterface({
 							rename: new ve.Button((e) => {
-								ve.FileExplorer_rename(local_full_path, () => this.refresh());
+								ve.FileExplorer.rename(local_full_path, () => this.refresh());
 							}, {
 								name: `&lt;icon>drive_file_rename_outline&lt;/icon>`,
 								tooltip: "Rename",
@@ -452,7 +452,7 @@ ve.FileExplorer = class extends ve.Component {
 						}),
 						actions_menu: new ve.RawInterface({
 							rename: new ve.Button((e) => {
-								ve.FileExplorer_rename(local_full_path, () => this.refresh());
+								ve.FileExplorer.rename(local_full_path, () => this.refresh());
 							}, {
 								name: `&lt;icon>drive_file_rename_outline&lt;/icon>`,
 								tooltip: "Rename",
