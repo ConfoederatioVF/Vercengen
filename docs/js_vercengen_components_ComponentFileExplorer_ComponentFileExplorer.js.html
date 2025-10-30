@@ -74,6 +74,12 @@
  * - &lt;span color=00ffff>{@link ve.FileExplorer.selectAll|selectAll}&lt;/span>()
  * - &lt;span color=00ffff>{@link ve.FileExplorer.setClipboard|setClipboard}&lt;/span>() - Sets the clipboard to currently selected file paths.
  * - &lt;span color=00ffff>{@link ve.FileExplorer.refresh|refresh}&lt;/span>() - Refreshes the current ve.FileExplorer display. Handled automatically.
+ * - 
+ * - &lt;span color=00ffff>{@link ve.FileExplorer.getFiles|getFiles}&lt;/span>(arg0_file_paths:{@link Array}&lt;{@link string}>) | {@link Array}&lt;{@link string}> - Returns all the subpaths in the set of file/folder paths given.
+ * - &lt;span color=00ffff>{@link ve.FileExplorer.copy|copy}&lt;/span>(arg0_file_paths:{@link Array}&lt;{@link string}>, arg1_file_path:{@link string}, arg2_function:{@link function}) - Opens a copy files modal with a callback function.
+ * - &lt;span color=00ffff>{@link ve.FileExplorer.delete|delete}&lt;/span>(arg0_file_paths:{@link Array}&lt;{@link string}>, arg1_file_path:{@link string}, arg2_function:{@link function}) - Opens a delete files modal with a callback function.
+ * - &lt;span color=00ffff>{@link ve.FileExplorer.move|move}&lt;/span>(arg0_file_paths:{@link Array}&lt;{@link string}>, arg1_file_path:{@link string}, arg2_function:{@link function}) - Opens a move files modal with a callback function.
+ * - &lt;span color=00ffff>{@link ve.FileExplorer.rename|rename}&lt;/span>(arg0_file_path:{@link string}, arg1_function:{@link function}) - Opens a rename file modal with a callback function.
  *
  * @augments ve.Component
  * @augments {@link ve.Component}
