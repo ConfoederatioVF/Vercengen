@@ -191,8 +191,9 @@ ve.Feature = class {
 		//Iterate over all this.components_obj
 		if (this.components_obj)
 			Object.iterate(this.components_obj, (local_key, local_value) => {
-				if (!local_value.owner || local_value.owner.is_vercengen_feature)
-					this.components_obj[local_key].setOwner(this, [this]);
+				if (local_value.is_vercengen_component)
+					if (!local_value.owner || local_value.owner.is_vercengen_feature)
+						this.components_obj[local_key].setOwner(this, [this]);
 			});
 	}
 };
