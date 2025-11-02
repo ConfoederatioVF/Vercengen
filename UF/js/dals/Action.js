@@ -1,41 +1,73 @@
 //Initialise class
 if (!global.DALS) global.DALS = {};
 
+/**
+ * Refer to <span color = "yellow">{@link DALS.Timeline}</span> for the encapsulating element, as {@link DALS.Action} is stored after the head state ([0]) of a DALS.Timeline `.value`.
+ * 
+ * Represents a state mutation that changes the head state, from which a new relative state can be computed.
+ * 
+ * ##### Constructor:
+ * - `arg0_json`: {@link Object}|{@link string}
+ *   - `.options`: {@link Object}
+ *     - `.name`: {@link string}
+ * 
+ * ##### Instance:
+ * - `.id=Class.generateRandomID(DALS.Action)`: {@link string}
+ * - `.options`: {@link Object} - Reference variable to `json.options`.
+ * - `.name="New Action"`: {@link string} - Reference variable to `json.options.name`.
+ * - `.timeline`: {@link string}
+ * - `.value`: {@link Object} - The parsed JSON object contained within the object.
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link DALS.Action.delete|delete}</span>(arg0_options:{ removed_from_timeline:{@link boolean} }) - Deletes the present action and removes it from the associated timeline.
+ * - <span color=00ffff>{@link DALS.Action.jumpTo|jumpTo}</span>() - Forces program state to jump to the present action.
+ * 
+ * ##### Static Fields:
+ * - `.instances`: {@link Object}<{@link DALS.Action}>
+ * 
+ * @type {DALS.Action}
+ */
 DALS.Action = class {
 	//Declare local static variables
+	/**
+	 * @type {DALS.Action[]}
+	 */
 	static instances = [];
 	
-	//Constructor/getter/setter
-	constructor (arg0_redo_function, arg1_options) {
+	constructor (arg0_json) {
 		//Convert from parameters
-		let redo_function = arg0_redo_function;
-		let options = (arg1_options) ? arg1_options : {};
+		let json = arg0_json;
 		
-		//Internal guard clauses
-		if (typeof redo_function !== "function")
-			throw new Error(`arg0_redo_function must be of type 'function' for DALS.Action.`);
+		//Serialise/deserialise to JSON to ensure syntactic correctness
+		if (typeof json !== "string") json = JSON.stringify(json);
+		if (typeof json === "string") json = JSON.parse(json);
 		
 		//Declare local instance variables
 		this.id = Class.generateRandomID(DALS.Action);
-		this.options = options;
-		this.name = (this.options.name) ? this.options.name : "New Action";
-		this.redo_function = redo_function;
+		this.options = (json.options) ? json.options : {};
+			this.name = (json.options.name) ? json.options.name : "New Action";
 		this.timeline = undefined; //Populated upon .addAction()
+		this.value = json;
 		
 		//Assign Action to DALS.Timeline
-		if (!options.timeline) {
+		if (!this.options.timeline) {
 			//Assign to current_timeline
-			DALS.Timeline.current_timeline.addAction(this);
+			DALS.Timeline.getTimeline(DALS.Timeline.current_timeline).value.push(this);
+			DALS.Timeline.current_index++;
 		} else {
 			//Assign to specified timeline
-			DALS.Timeline.getTimeline(options.timeline)
-				.addAction(this);
+			DALS.Timeline.getTimeline(this.options.timeline).value.push(this);
 		}
-		
 		DALS.Action.instances.push(this);
 	}
 	
-	//Class methods
+	/**
+	 * Deletes the present action and removes it from the associated timeline.
+	 * - Method of: {@link DALS.Action}
+	 * 
+	 * @param {Object} [arg0_options]
+	 *  @param {boolean} [arg0_options.removed_from_timeline=false]
+	 */
 	delete (arg0_options) {
 		//Declare local instance variables
 		let options = (arg0_options) ? arg0_options : {
@@ -50,9 +82,13 @@ DALS.Action = class {
 			}
 		if (!options.removed_from_timeline)
 			if (this.timeline)
-				this.timeline.removeAction(this);
+				this.timeline.removeAction(this.id);
 	}
 	
+	/**
+	 * Forces the current program state to jump to this {@link DALS.Action}.
+	 * - Method of: {@link DALS.Action}
+	 */
 	jumpTo () {
 		this.timeline.jumpToAction(this.id);
 	}

@@ -215,6 +215,8 @@ global.path = require("path");
 			"UF/libraries/mapbox-gl.js",
 			"UF/libraries/mapbox-gl.css",
 			"UF/libraries/maptalks.mapboxgl.min.js",
+			"UF/js/dals/Timeline.js",
+			"UF/js/dals/Timeline_state.js",
 			"UF/js/vercengen/engine",
 			"UF/js/vercengen/engine/Demo.js",
 			"UF/js/vercengen/components",
