@@ -420,9 +420,11 @@ ve.Component = class {
 			});
 		} catch (e) {
 			let error_array = [];
-				error_array.push(`ve.Component: ${this.child_class.prototype.constructor.name}: this.from_binding failed. Are you sure you called this.updateOwner() synchronously in your constructor?`);
+				error_array.push(`ve.Component: ${this.child_class.prototype.constructor.name}: this.from_binding failed.`);
 				if (initial_object === undefined)
 					error_array.push(`- this.updateOwner() has not been called synchronously (check constructors and/or ve.Component updates).`);
+			if (this.options.binding &amp;&amp; error_array.length &lt;= 1) return; //Internal guard clause if this is a valid bidirectional binding
+				
 			console.error(`${error_array.join("\n")}\n- initial_object:`, initial_object, `variable_string:`, variable_string);
 		}
 	}
