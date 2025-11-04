@@ -163,7 +163,7 @@ ve.Radio = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Component.ve.Radio}
+ * @returns {ve.Radio}
  */
 veRadio = function () {
 	//Return statement

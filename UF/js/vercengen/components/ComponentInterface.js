@@ -337,7 +337,7 @@ ve.Interface = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Component.ve.Interface}
+ * @returns {ve.Interface}
  */
 veInterface = function () {
 	//Return statement

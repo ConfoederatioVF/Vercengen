@@ -346,7 +346,7 @@ ve.Window = class extends ve.Feature {
 //Functional binding
 
 /**
- * @returns {ve.Feature.ve.Window}
+ * @returns {ve.Window}
  */
 veWindow = function () {
 	//Return statement

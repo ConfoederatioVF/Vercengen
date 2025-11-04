@@ -76,7 +76,7 @@ ve.Modal = class extends ve.Feature {
 //Functional binding
 
 /**
- * @returns {ve.Feature.ve.Modal}
+ * @returns {ve.Modal}
  */
 veModal = function () {
 	//Return statement

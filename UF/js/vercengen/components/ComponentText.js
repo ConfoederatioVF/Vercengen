@@ -98,7 +98,7 @@ ve.Text = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Component.ve.Text}
+ * @returns {ve.Text}
  */
 veText = function () {
 	//Return statement

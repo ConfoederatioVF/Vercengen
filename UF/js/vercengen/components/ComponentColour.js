@@ -110,7 +110,7 @@ ve.Colour = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Component.ve.Colour}
+ * @returns {ve.Colour}
  */
 veColour = function () {
 	//Return statement

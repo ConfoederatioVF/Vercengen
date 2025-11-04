@@ -66,7 +66,7 @@ ve.Confirm = class extends ve.Feature {
 //Functional binding
 
 /**
- * @returns {ve.Feature.ve.Confirm}
+ * @returns {ve.Confirm}
  */
 veConfirm = function () {
 	//Return statement

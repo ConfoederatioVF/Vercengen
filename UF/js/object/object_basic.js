@@ -1,6 +1,6 @@
 //Initialise methods
 {
-	Object.addGetterSetter = function (arg0_object, arg1_variable_string, arg2_options) { //[WIP] - Finish function body
+	Object.addGetterSetter = function (arg0_object, arg1_variable_string, arg2_options) {
 		//Convert from parameters
 		let object = arg0_object;
 		let variable_string = (arg1_variable_string) ? arg1_variable_string : "";
@@ -19,40 +19,54 @@
 		
 		//Set the value at the last key if available
 		let old_value;
-			try { old_value = structuredClone(current_obj[all_keys[all_keys.length - 1]]); } catch (e) {}
+		try {
+			// Try to clone, but fallback to original if it fails
+			try {
+				old_value = structuredClone(current_obj[all_keys[all_keys.length - 1]]);
+			} catch {
+				old_value = current_obj[all_keys[all_keys.length - 1]];
+			}
+		} catch (e) {}
 		
 		let internal_value = old_value;
+		let setter_context;
 		
-		//Helper function to wrap objects/arrays with a Proxy for deep mutation tracking - [WIP] - Refactor at a later date
-		function createDeepProxy (arg0_target, arg1_onchange) {
-			//Convert from parameters
-			let target = arg0_target, onChange = arg1_onchange;
-			
+		//Helper function to wrap objects/arrays with a Proxy for deep mutation tracking
+		function createDeepProxy(target, rootOnChange) {
 			if (typeof target !== "object" || target === null) return target;
 			
 			let handler = {
-				set (obj, prop, value, receiver) {
-					const result = Reflect.set(obj, prop, value, receiver);
+				set(obj, prop, value, receiver) {
+					// If setting an object/array, make it a proxy too
 					if (typeof value === "object" && value !== null) {
-						obj[prop] = createDeepProxy(value, onChange);
+						value = createDeepProxy(value, rootOnChange);
 					}
-					if (typeof onChange === "function") onChange(obj);
+					
+					const result = Reflect.set(obj, prop, value, receiver);
+					
+					// Call the root change handler
+					if (typeof rootOnChange === "function") {
+						rootOnChange();
+					}
+					
 					return result;
 				},
-				deleteProperty (obj, prop) {
+				deleteProperty(obj, prop) {
 					const result = Reflect.deleteProperty(obj, prop);
-					if (typeof onChange === "function") onChange(obj);
+					if (typeof rootOnChange === "function") {
+						rootOnChange();
+					}
 					return result;
 				}
 			};
 			
-			//Proxy recursion for existing object properties/array values
-			Object.keys(target).forEach((k) => {
-				if (typeof target[k] === "object" && target[k] !== null)
-					target[k] = createDeepProxy(target[k], onChange);
-			});
+			// Recursively proxy existing properties
+			for (let key in target) {
+				if (target.hasOwnProperty(key) && typeof target[key] === "object" && target[key] !== null) {
+					target[key] = createDeepProxy(target[key], rootOnChange);
+				}
+			}
 			
-			//Return statement
 			return new Proxy(target, handler);
 		}
 		
@@ -61,33 +75,34 @@
 			configurable: true,
 			enumerable: true,
 			
-			get () {
+			get() {
 				if (options.get_function)
-					//Return statement
 					return options.get_function.call(this);
 				return internal_value;
 			},
-			set (arg0_value) {
-				//Convert from parameters
-				let value = arg0_value;
+			
+			set(value) {
+				setter_context = this;
 				
-				//Pseudo-return statement
+				// Create change handler that triggers set_function
+				let rootOnChange = function() {
+					if (typeof options.set_function === "function") {
+						options.set_function.call(setter_context, internal_value);
+					}
+				};
+				
+				// Always proxy objects/arrays, keep primitives as-is
+				// No cloning - work with original object
 				if (typeof value === "object" && value !== null) {
-					let change_handler = (local_value) => {
-						//On mutation, treat it as a 'set'
-						if (typeof options.set_function === "function") {
-							options.set_function.call(this, local_value);
-						} else {
-							internal_value = local_value;
-						}
-					};
-					internal_value = createDeepProxy(value, change_handler);
+					internal_value = createDeepProxy(value, rootOnChange);
 				} else {
 					internal_value = value;
 				}
 				
-				if (options.set_function)
-					options.set_function.call(this, value);
+				// Call set_function for initial assignment
+				if (options.set_function) {
+					options.set_function.call(this, internal_value);
+				}
 			}
 		});
 		

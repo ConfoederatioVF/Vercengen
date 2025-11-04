@@ -93,7 +93,7 @@ ve.Telephone = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Component.ve.Telephone}
+ * @returns {ve.Telephone}
  */
 veTelephone = function () {
 	//Return statement

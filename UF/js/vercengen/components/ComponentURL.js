@@ -94,7 +94,7 @@ ve.URL = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Component.ve.URL}
+ * @returns {ve.URL}
  */
 veURL = function () {
 	//Return statement

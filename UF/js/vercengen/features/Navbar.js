@@ -144,7 +144,7 @@ ve.Navbar = class extends ve.Feature {
 //Functional binding
 
 /**
- * @returns {ve.Feature.ve.Navbar}
+ * @returns {ve.Navbar}
  */
 veNavbar = function () {
 	//Return statement

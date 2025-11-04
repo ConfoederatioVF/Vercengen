@@ -1,3 +1,4 @@
+if (!ve) ve = {};
 /**
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  *
@@ -21,9 +22,9 @@
  *
  * @augments ve.Component
  * @augments {@link ve.Component}
- * @memberof ve.Component
  * @type {ve.BIUF}
  */
+ve.BIUF = undefined;
 ve.BIUF = class extends ve.Component {
 	static demo_value = `<b>Bold</b> <i>Italic</i>, <u>Underline</u>, and regular text formatting are supported by BIUF fields.`;
 	static demo_options = {
@@ -79,7 +80,7 @@ ve.BIUF = class extends ve.Component {
 	
 	/**
 	 * Returns the current HTML content in the present Component.
-	 * - Accessor of {@link ve.BIUF}
+	 * - Accessor of {@link ve.ComponentBIUF}
 	 * 
 	 * @returns {string}
 	 */
@@ -89,8 +90,8 @@ ve.BIUF = class extends ve.Component {
 	}
 	
 	/**
-	 * Sets the HTML content value for {@link ve.BIUF}
-	 * - Accessor of {@link ve.BIUF}
+	 * Sets the HTML content value for {@link ve.ComponentBIUF}
+	 * - Accessor of {@link ve.ComponentBIUF}
 	 * 
 	 * @param {string} arg0_value
 	 */
@@ -107,7 +108,7 @@ ve.BIUF = class extends ve.Component {
 	
 	/**
 	 * Initialises all event handlers for BIUF buttons and keybinds.
-	 * - Method of: {@link ve.BIUF}
+	 * - Method of: {@link ve.ComponentBIUF}
 	 * 
 	 * @param {HTMLElement} arg0_biuf_el - The mounted BIUF element.
 	 */
@@ -135,7 +136,7 @@ ve.BIUF = class extends ve.Component {
 	
 	/**
 	 * Initialises the present BIUF toolbar.
-	 * - Method of: {@link ve.BIUF}
+	 * - Method of: {@link ve.ComponentBIUF}
 	 */
 	initBIUFToolbar () {
 		//Declare local instance variables
@@ -180,7 +181,7 @@ ve.BIUF = class extends ve.Component {
 	
 	/**
 	 * Fires an onuserchange event whilst synchronising the present value.
-	 * - Method of: {@link ve.BIUF}
+	 * - Method of: {@link ve.ComponentBIUF}
 	 */
 	sendOnchangeEvent () {
 		this.value = this.v;
@@ -191,7 +192,7 @@ ve.BIUF = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Component.ve.BIUF}
+ * @returns {ve.ComponentBIUF}
  */
 veBIUF = function () {
 	//Return statement

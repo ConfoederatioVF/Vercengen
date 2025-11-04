@@ -85,7 +85,7 @@ ve.Button = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Component.ve.Button}
+ * @returns {ve.Button}
  */
 veButton = function () {
 	//Return statement

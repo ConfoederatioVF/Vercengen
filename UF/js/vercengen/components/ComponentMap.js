@@ -86,7 +86,7 @@ ve.Map = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Component.ve.Map}
+ * @returns {ve.Map}
  */
 veMap = function () {
 	//Return statement

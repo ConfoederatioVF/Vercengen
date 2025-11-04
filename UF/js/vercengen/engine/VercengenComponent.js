@@ -347,8 +347,10 @@ ve.Component = class {
 			
 			//Set init value if applicable
 			let from_value = Object.getValue(initial_object, variable_string);
-			if (!(this.options.binding && from_value === undefined))
-				this.v = from_value;
+			if (this.options.binding && from_value === undefined)
+				Object.setValue(initial_object, variable_string, this.v);
+			from_value = Object.getValue(initial_object, variable_string);
+			this.v = from_value;
 			
 			//Add getter/setter
 			Object.addGetterSetter(initial_object, variable_string, {
@@ -358,6 +360,10 @@ ve.Component = class {
 					if (this.from_binding_fire_silently) return;
 					
 					//Declare local instance variables
+					this.from_binding_fire_silently = true;
+					this.v = local_value;
+					this.from_binding_fire_silently = false;
+					
 					let is_same_value = Boolean.strictEquality(local_value, this.v);
 					if (is_same_value) return;
 					
@@ -380,6 +386,8 @@ ve.Component = class {
 					this.v = local_value;
 				}
 			});
+			let temp = from_value;
+			Object.setValue(initial_object, variable_string, temp);
 		} catch (e) {
 			let error_array = [];
 				error_array.push(`ve.Component: ${this.child_class.prototype.constructor.name}: this.from_binding failed.`);

@@ -177,7 +177,7 @@ ve.HierarchyDatatype = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Component.ve.HierarchyDatatype}
+ * @returns {ve.HierarchyDatatype}
  */
 veHierarchyDatatype = function () {
 	//Return statement

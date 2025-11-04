@@ -180,7 +180,7 @@ ve.PageMenu = class extends ve.Component { //[WIP] - This should be updated late
 //Functional binding
 
 /**
- * @returns {ve.Component.ve.PageMenu}
+ * @returns {ve.PageMenu}
  */
 vePageMenu = function () {
 	//Return statement

@@ -121,7 +121,7 @@ ve.Datalist = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Component.ve.Datalist}
+ * @returns {ve.Datalist}
  */
 veDatalist = function () {
 	//Return statement

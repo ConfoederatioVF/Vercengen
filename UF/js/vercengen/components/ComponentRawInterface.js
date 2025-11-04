@@ -89,7 +89,7 @@ ve.RawInterface = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Component.ve.RawInterface}
+ * @returns {ve.RawInterface}
  */
 veRawInterface = function () {
 	//Return statement

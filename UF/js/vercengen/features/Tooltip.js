@@ -73,7 +73,7 @@ ve.Tooltip = class extends ve.Feature {
 //Functional binding
 
 /**
- * @returns {ve.Feature.ve.Tooltip}
+ * @returns {ve.Tooltip}
  */
 veTooltip = function () {
 	//Return statement

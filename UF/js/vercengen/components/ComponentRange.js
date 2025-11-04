@@ -124,7 +124,7 @@ ve.Range = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Component.ve.Range}
+ * @returns {ve.Range}
  */
 veRange = function () {
 	//Return statement
