@@ -1,6 +1,6 @@
 //Initialise methods
 {
-	Object.addGetterSetter = function (arg0_object, arg1_variable_string, arg2_options) {
+	Object.addGetterSetter = function (arg0_object, arg1_variable_string, arg2_options) { //[WIP] - Refactor later
 		//Convert from parameters
 		let object = arg0_object;
 		let variable_string = (arg1_variable_string) ? arg1_variable_string : "";
@@ -19,54 +19,46 @@
 		
 		//Set the value at the last key if available
 		let old_value;
-		try {
-			// Try to clone, but fallback to original if it fails
+			//Try to clone, but fallback to original if it fails
 			try {
 				old_value = structuredClone(current_obj[all_keys[all_keys.length - 1]]);
 			} catch {
 				old_value = current_obj[all_keys[all_keys.length - 1]];
 			}
-		} catch (e) {}
-		
 		let internal_value = old_value;
-		let setter_context;
 		
 		//Helper function to wrap objects/arrays with a Proxy for deep mutation tracking
-		function createDeepProxy(target, rootOnChange) {
-			if (typeof target !== "object" || target === null) return target;
+		function createDeepProxy (target, root_on_change) {
+			if (typeof target !== "object" || target === null) return target; //Internal guard clause if target is a non-object
 			
 			let handler = {
-				set(obj, prop, value, receiver) {
-					// If setting an object/array, make it a proxy too
-					if (typeof value === "object" && value !== null) {
-						value = createDeepProxy(value, rootOnChange);
-					}
+				set (obj, prop, value, receiver) {
+					//If setting an object/array, make it a proxy too
+					if (typeof value === "object" && value !== null)
+						value = createDeepProxy(value, root_on_change);
+					let result = Reflect.set(obj, prop, value, receiver);
 					
-					const result = Reflect.set(obj, prop, value, receiver);
+					//Call the root change handler
+					if (typeof root_on_change === "function") root_on_change();
 					
-					// Call the root change handler
-					if (typeof rootOnChange === "function") {
-						rootOnChange();
-					}
-					
+					//Return statement
 					return result;
 				},
-				deleteProperty(obj, prop) {
-					const result = Reflect.deleteProperty(obj, prop);
-					if (typeof rootOnChange === "function") {
-						rootOnChange();
-					}
+				deleteProperty (obj, prop) {
+					let result = Reflect.deleteProperty(obj, prop);
+					if (typeof root_on_change === "function") root_on_change();
+					
+					//Return statement
 					return result;
 				}
 			};
 			
-			// Recursively proxy existing properties
-			for (let key in target) {
-				if (target.hasOwnProperty(key) && typeof target[key] === "object" && target[key] !== null) {
-					target[key] = createDeepProxy(target[key], rootOnChange);
-				}
-			}
+			//Recursively proxy existing properties
+			for (let key in target)
+				if (target.hasOwnProperty(key) && typeof target[key] === "object" && target[key] !== null)
+					target[key] = createDeepProxy(target[key], root_on_change);
 			
+			//Return statement
 			return new Proxy(target, handler);
 		}
 		
@@ -74,35 +66,25 @@
 		Object.defineProperty(current_obj, all_keys[all_keys.length - 1], {
 			configurable: true,
 			enumerable: true,
-			
 			get() {
 				if (options.get_function)
 					return options.get_function.call(this);
 				return internal_value;
 			},
-			
 			set(value) {
-				setter_context = this;
-				
-				// Create change handler that triggers set_function
-				let rootOnChange = function() {
-					if (typeof options.set_function === "function") {
-						options.set_function.call(setter_context, internal_value);
-					}
-				};
-				
-				// Always proxy objects/arrays, keep primitives as-is
-				// No cloning - work with original object
+				//Always proxy objects/arrays, keep primitives as-is
 				if (typeof value === "object" && value !== null) {
-					internal_value = createDeepProxy(value, rootOnChange);
+					internal_value = createDeepProxy(value, () => {
+						if (typeof options.set_function === "function")
+							options.set_function.call(this, internal_value);
+					});
 				} else {
 					internal_value = value;
 				}
 				
-				// Call set_function for initial assignment
-				if (options.set_function) {
+				//Call set_function for initial assignment
+				if (options.set_function)
 					options.set_function.call(this, internal_value);
-				}
 			}
 		});
 		
