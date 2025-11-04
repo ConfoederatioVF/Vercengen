@@ -193,7 +193,7 @@ ve.Checkbox = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Checkbox}
+ * @returns {ve.Component.ve.Checkbox}
  */
 veCheckbox = function () {
 	//Return statement

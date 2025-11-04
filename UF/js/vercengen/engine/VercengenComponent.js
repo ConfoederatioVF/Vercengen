@@ -99,6 +99,7 @@ ve.Component = class {
 		
 		//Declare local instance variables
 		this.child_class = this.constructor;
+		this.do_not_fire_to_binding = false;
 		this.is_vercengen_component = true;
 		
 		this.height = options.height;
@@ -270,6 +271,9 @@ ve.Component = class {
 		let initial_object = global;
 		let variable_string = this.to_binding;
 		
+		//Internal guard clause if this.do_not_fire_to_binding is active
+		if (this.do_not_fire_to_binding) return;
+		
 		//Internal guard clause if this.to_binding is not defined
 		if (this.to_binding) {
 			if (typeof this.to_binding !== "string") {
@@ -342,7 +346,9 @@ ve.Component = class {
 			}
 			
 			//Set init value if applicable
-			this.v = Object.getValue(initial_object, variable_string);
+			let from_value = Object.getValue(initial_object, variable_string);
+			if (!(this.options.binding && from_value === undefined))
+				this.v = from_value;
 			
 			//Add getter/setter
 			Object.addGetterSetter(initial_object, variable_string, {

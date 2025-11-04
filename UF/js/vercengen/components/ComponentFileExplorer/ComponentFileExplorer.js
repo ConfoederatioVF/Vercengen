@@ -509,7 +509,7 @@ ve.FileExplorer = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.FileExplorer}
+ * @returns {ve.Component.ve.FileExplorer}
  */
 veFileExplorer = function () {
 	//Return statement

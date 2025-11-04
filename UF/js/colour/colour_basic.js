@@ -109,7 +109,11 @@
 		if (typeof rgb === "string" && rgb.startsWith("#")) return rgb;
 		
 		// Copy array to avoid mutation
-		rgb = rgb.slice();
+		try {
+			rgb = rgb.slice();
+		} catch (e) { 
+			console.error("RGB:", rgb, e); 
+		}
 		
 		// Clamp each value between 0 and 255
 		rgb[0] = Math.max(0, Math.min(255, rgb[0]));

@@ -558,7 +558,7 @@ ve.WYSIWYG = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.WYSIWYG}
+ * @returns {ve.Component.ve.WYSIWYG}
  */
 veWYSIWYG = function () {
 	//Return statement

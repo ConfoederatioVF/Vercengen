@@ -119,7 +119,7 @@ ve.Number = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Number}
+ * @returns {ve.Component.ve.Number}
  */
 veNumber = function () {
 	//Return statement

@@ -215,7 +215,7 @@ ve.Date = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Date}
+ * @returns {ve.Component.ve.Date}
  */
 veDate = function () {
 	//Return statement

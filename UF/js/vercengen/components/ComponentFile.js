@@ -102,7 +102,7 @@ ve.File = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.File}
+ * @returns {ve.Component.ve.File}
  */
 veFile = function () {
 	//Return statement

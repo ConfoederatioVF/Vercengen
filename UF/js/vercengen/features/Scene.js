@@ -101,7 +101,7 @@ ve.Scene = class extends ve.Feature {
 //Functional binding
 
 /**
- * @returns {ve.Scene}
+ * @returns {ve.Feature.ve.Scene}
  */
 veScene = function () {
 	//Return statement

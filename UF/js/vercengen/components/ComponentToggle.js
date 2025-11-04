@@ -102,7 +102,7 @@ ve.Toggle = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Toggle}
+ * @returns {ve.Component.ve.Toggle}
  */
 veToggle = function () {
 	//Return statement

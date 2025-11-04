@@ -91,7 +91,7 @@ ve.Toast = class extends ve.Feature {
 //Functional binding
 
 /**
- * @returns {ve.Toast}
+ * @returns {ve.Feature.ve.Toast}
  */
 veToast = function () {
 	//Return statement

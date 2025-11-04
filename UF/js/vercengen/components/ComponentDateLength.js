@@ -105,7 +105,7 @@ ve.DateLength = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.DateLength}
+ * @returns {ve.Component.ve.DateLength}
  */
 veDateLength = function () {
 	//Return statement

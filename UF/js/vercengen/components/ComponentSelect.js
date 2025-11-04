@@ -144,7 +144,7 @@ ve.Select = class veSelect extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Select}
+ * @returns {ve.Component.ve.Select}
  */
 veSelect = function () {
 	//Return statement

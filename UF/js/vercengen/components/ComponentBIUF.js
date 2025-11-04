@@ -1,24 +1,24 @@
 /**
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
- * 
- * Single-line rich text editor with bold, italic, underline, and clear text formatting options. 
- * 
+ *
+ * Single-line rich text editor with bold, italic, underline, and clear text formatting options.
+ *
  * Stands for Bold, Italic, Underline, Formatting.
  * - Functional binding: <span color=00ffff>veBIUF</span>().
- * 
+ *
  * ##### Constructor:
  * - `arg0_value`: {@link string} - The HTML content to initialise the component with.
  * - `arg1_options`: {@link Object}
  *   - `.disabled=false`: {@link boolean} - Controls the .readonly attribute.
- * 
+ *
  * ##### Instance:
  * - `.v`: {@link string} - Returns an HTML string.
- * 
+ *
  * ##### Methods:
  * - <span color=00ffff>{@link ve.BIUF.handleBIUF|handleBIUF}</span>(arg0_biuf_el:{@link HTMLElement})
  * - <span color=00ffff>{@link ve.BIUF.initBIUFToolbar|initBIUFToolbar}</span>()
  * - <span color=00ffff>{@link ve.BIUF.sendOnchangeEvent|sendOnchangeEvent}</span>()
- * 
+ *
  * @augments ve.Component
  * @augments {@link ve.Component}
  * @memberof ve.Component
@@ -79,7 +79,7 @@ ve.BIUF = class extends ve.Component {
 	
 	/**
 	 * Returns the current HTML content in the present Component.
-	 * - Accessor of {@link ve.ComponentBIUF}
+	 * - Accessor of {@link ve.BIUF}
 	 * 
 	 * @returns {string}
 	 */
@@ -89,8 +89,8 @@ ve.BIUF = class extends ve.Component {
 	}
 	
 	/**
-	 * Sets the HTML content value for {@link ve.ComponentBIUF}
-	 * - Accessor of {@link ve.ComponentBIUF}
+	 * Sets the HTML content value for {@link ve.BIUF}
+	 * - Accessor of {@link ve.BIUF}
 	 * 
 	 * @param {string} arg0_value
 	 */
@@ -107,7 +107,7 @@ ve.BIUF = class extends ve.Component {
 	
 	/**
 	 * Initialises all event handlers for BIUF buttons and keybinds.
-	 * - Method of: {@link ve.ComponentBIUF}
+	 * - Method of: {@link ve.BIUF}
 	 * 
 	 * @param {HTMLElement} arg0_biuf_el - The mounted BIUF element.
 	 */
@@ -135,7 +135,7 @@ ve.BIUF = class extends ve.Component {
 	
 	/**
 	 * Initialises the present BIUF toolbar.
-	 * - Method of: {@link ve.ComponentBIUF}
+	 * - Method of: {@link ve.BIUF}
 	 */
 	initBIUFToolbar () {
 		//Declare local instance variables
@@ -180,7 +180,7 @@ ve.BIUF = class extends ve.Component {
 	
 	/**
 	 * Fires an onuserchange event whilst synchronising the present value.
-	 * - Method of: {@link ve.ComponentBIUF}
+	 * - Method of: {@link ve.BIUF}
 	 */
 	sendOnchangeEvent () {
 		this.value = this.v;
@@ -191,7 +191,7 @@ ve.BIUF = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.ComponentBIUF}
+ * @returns {ve.Component.ve.BIUF}
  */
 veBIUF = function () {
 	//Return statement

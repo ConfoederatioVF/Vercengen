@@ -103,7 +103,7 @@ ve.HTML = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.HTML}
+ * @returns {ve.Component.ve.HTML}
  */
 veHTML = function () {
 	//Return statement

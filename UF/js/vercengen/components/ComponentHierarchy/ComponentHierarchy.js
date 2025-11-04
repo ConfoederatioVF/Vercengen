@@ -180,7 +180,7 @@ ve.Hierarchy = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Hierarchy}
+ * @returns {ve.Component.ve.Hierarchy}
  */
 veHierarchy = function () {
 	//Return statement

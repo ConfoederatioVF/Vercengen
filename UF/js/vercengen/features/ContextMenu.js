@@ -237,7 +237,7 @@ ve.ContextMenu = class extends ve.Feature { //[WIP] - Finish class body
 //Functional binding
 
 /**
- * @returns {ve.ContextMenu}
+ * @returns {ve.Feature.ve.ContextMenu}
  */
 veContextMenu = function () {
 	//Return statement

@@ -59,7 +59,7 @@ ve.PageMenuWindow = class extends ve.Feature {
 //Functional binding
 
 /**
- * @returns {ve.PageMenuWindow}
+ * @returns {ve.Feature.ve.PageMenuWindow}
  */
 vePageMenuWindow = function () {
 	//Return statement

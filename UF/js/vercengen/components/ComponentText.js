@@ -85,8 +85,10 @@ ve.Text = class extends ve.Component {
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
+		if (value === undefined) return;
 		
 		//Set value and update UI
+		//console.trace(`Fired .v for`, this, arg0_value);
 		this.value = value;
 		this.element.querySelector("input").value = this.value;
 		this.fireFromBinding();
@@ -96,7 +98,7 @@ ve.Text = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Text}
+ * @returns {ve.Component.ve.Text}
  */
 veText = function () {
 	//Return statement

@@ -8,7 +8,6 @@ if (!global.DALS) global.DALS = {
 	 */
 	timeline: undefined
 };
-if (!global.main) global.main = {};
 
 //Define DALS.timeline as DALS.Timeline.current_timeline
 Object.defineProperty(DALS, "timeline", {

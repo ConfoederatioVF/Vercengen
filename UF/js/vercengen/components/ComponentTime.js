@@ -101,6 +101,10 @@ ve.Time = class extends ve.Component {
 };
 
 //Functional binding
+
+/**
+ * @returns {ve.Component.ve.Time}
+ */
 veTime = function () {
 	//Return statement
 	return new ve.Time(...arguments);
