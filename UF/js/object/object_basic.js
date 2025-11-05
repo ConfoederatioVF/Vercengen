@@ -1,6 +1,6 @@
 //Initialise methods
 {
-	Object.addGetterSetter = function (arg0_object, arg1_variable_string, arg2_options) { //[WIP] - Refactor later
+	Object.addGetterSetter = function (arg0_object, arg1_variable_string, arg2_options) {
 		//Convert from parameters
 		let object = arg0_object;
 		let variable_string = (arg1_variable_string) ? arg1_variable_string : "";
@@ -19,72 +19,101 @@
 		
 		//Set the value at the last key if available
 		let old_value;
-			//Try to clone, but fallback to original if it fails
+		try {
+			// Try to clone, but fallback to original if it fails
 			try {
 				old_value = structuredClone(current_obj[all_keys[all_keys.length - 1]]);
 			} catch {
 				old_value = current_obj[all_keys[all_keys.length - 1]];
 			}
-		let internal_value = old_value;
+		} catch (e) {}
 		
-		//Helper function to wrap objects/arrays with a Proxy for deep mutation tracking
-		function createDeepProxy (target, root_on_change) {
-			if (typeof target !== "object" || target === null) return target; //Internal guard clause if target is a non-object
+		let internal_value = old_value;
+		let proxied_objects = new WeakSet();
+		let setter_context;
+		
+		function createDeepProxy(target, rootOnChange) {
+			if (typeof target !== "object" || target === null) return target;
+			
+			// Check if this object is already proxied
+			if (proxied_objects.has(target)) {
+				return target;
+			}
 			
 			let handler = {
-				set (obj, prop, value, receiver) {
-					//If setting an object/array, make it a proxy too
-					if (typeof value === "object" && value !== null)
-						value = createDeepProxy(value, root_on_change);
-					let result = Reflect.set(obj, prop, value, receiver);
+				set(obj, prop, value, receiver) {
+					// If setting an object/array, make it a proxy too
+					if (typeof value === "object" && value !== null) {
+						value = createDeepProxy(value, rootOnChange);
+					}
 					
-					//Call the root change handler
-					if (typeof root_on_change === "function") root_on_change();
+					const result = Reflect.set(obj, prop, value, receiver);
 					
-					//Return statement
+					// Call the root change handler
+					if (typeof rootOnChange === "function") {
+						rootOnChange();
+					}
+					
 					return result;
 				},
-				deleteProperty (obj, prop) {
-					let result = Reflect.deleteProperty(obj, prop);
-					if (typeof root_on_change === "function") root_on_change();
-					
-					//Return statement
+				deleteProperty(obj, prop) {
+					const result = Reflect.deleteProperty(obj, prop);
+					if (typeof rootOnChange === "function") {
+						rootOnChange();
+					}
 					return result;
 				}
 			};
 			
-			//Recursively proxy existing properties
-			for (let key in target)
-				if (target.hasOwnProperty(key) && typeof target[key] === "object" && target[key] !== null)
-					target[key] = createDeepProxy(target[key], root_on_change);
+			// Recursively proxy existing properties
+			for (let key in target) {
+				if (target.hasOwnProperty(key) && typeof target[key] === "object" && target[key] !== null) {
+					target[key] = createDeepProxy(target[key], rootOnChange);
+				}
+			}
 			
-			//Return statement
-			return new Proxy(target, handler);
+			const proxy = new Proxy(target, handler);
+			
+			// Mark both the original object and proxy as proxied
+			proxied_objects.add(target);
+			proxied_objects.add(proxy);
+			
+			return proxy;
 		}
 		
 		//Add getter/setter
 		Object.defineProperty(current_obj, all_keys[all_keys.length - 1], {
 			configurable: true,
 			enumerable: true,
+			
 			get() {
 				if (options.get_function)
 					return options.get_function.call(this);
 				return internal_value;
 			},
+			
 			set(value) {
-				//Always proxy objects/arrays, keep primitives as-is
+				setter_context = this;
+				
+				// Create change handler that triggers set_function
+				let rootOnChange = function() {
+					if (typeof options.set_function === "function") {
+						options.set_function.call(setter_context, internal_value);
+					}
+				};
+				
+				// Always proxy objects/arrays, keep primitives as-is
+				// No cloning - work with original object
 				if (typeof value === "object" && value !== null) {
-					internal_value = createDeepProxy(value, () => {
-						if (typeof options.set_function === "function")
-							options.set_function.call(this, internal_value);
-					});
+					internal_value = createDeepProxy(value, rootOnChange);
 				} else {
 					internal_value = value;
 				}
 				
-				//Call set_function for initial assignment
-				if (options.set_function)
+				// Call set_function for initial assignment
+				if (options.set_function) {
 					options.set_function.call(this, internal_value);
+				}
 			}
 		});
 		

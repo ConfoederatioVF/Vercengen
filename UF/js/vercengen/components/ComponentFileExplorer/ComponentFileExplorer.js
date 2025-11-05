@@ -321,7 +321,9 @@ ve.FileExplorer = class extends ve.Component {
 		
 		let previous_folder_obj = hierarchy_obj[previous_folder_path];
 		previous_folder_obj.element.ondblclick = (e) => {
+			this.from_binding_fire_silently = true;
 			this.v = previous_folder_path;
+			this.from_binding_fire_silently = false;
 			this.fireToBinding();
 		};
 		
@@ -342,7 +344,9 @@ ve.FileExplorer = class extends ve.Component {
 					disabled: true
 				});
 				hierarchy_obj[all_drives[i]].element.ondblclick = () => {
+					this.from_binding_fire_silently = true;
 					this.v = all_drives[i];
+					this.from_binding_fire_silently = false;
 					this.fireToBinding();
 				};
 			}
@@ -397,7 +401,9 @@ ve.FileExplorer = class extends ve.Component {
 					//Internal guard clause for protected elements
 					if (e.target.closest(`button, input, .tippy-arrow, .tippy-box, .tippy-content`)) return;
 					
+					this.from_binding_fire_silently = true;
 					this.v = local_full_path;
+					this.from_binding_fire_silently = false;
 					this.fireToBinding();
 				};
 			}

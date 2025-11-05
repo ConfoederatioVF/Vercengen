@@ -64,9 +64,9 @@ ve.Interface = class extends ve.Component {
 		let html_string = [];
 		if (options.is_folder) {
 			html_string.push(`<details class = "ve interface-folder"${HTML.objectToAttributes(attributes)}>`);
+			html_string.push(`<summary id = "name"></summary>`);
 		}
-				html_string.push(`<summary id = "name"></summary>`);
-				html_string.push(`<table></table>`);
+			html_string.push(`<table></table>`);
 		if (options.is_folder)
 			html_string.push(`</details>`);
 		
@@ -103,6 +103,8 @@ ve.Interface = class extends ve.Component {
 		//1. Reset old destructured bindings for components_obj by deleting their addresses
 		Object.iterate(components_obj, (local_key, local_value) => {
 			if (!this.reserved_keys.includes(local_key)) delete this[local_key];
+			if (this.components_obj[local_key])
+				this.removeComponent(this.components_obj[local_key]);
 		});
 		this.components_obj = components_obj;
 		//2. Set new destructured bindings for components_obj by deleting their addresses

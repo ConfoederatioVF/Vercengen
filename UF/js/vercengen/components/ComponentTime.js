@@ -60,7 +60,9 @@ ve.Time = class extends ve.Component {
 		input_el.addEventListener("input", (e) => {
 			let split_value = e.target.value.split(":");
 			
+			this.from_binding_fire_silently = true;
 			this.v = { hour: parseInt(split_value[0]), minute: parseInt(split_value[1]) };
+			delete this.from_binding_fire_silently;
 			this.fireToBinding();
 		});
 		this.v = this.value;

@@ -51,7 +51,7 @@ ve.Colour = class extends ve.Component {
 		
 		let input_el = this.element.querySelector("input");
 		input_el.addEventListener("input", (e) => {
-			this.v = e.target.value;
+			this.value = e.target.value;
 			this.fireToBinding();
 		});
 		this.name = options.name;
@@ -80,6 +80,7 @@ ve.Colour = class extends ve.Component {
 		let value = Colour.convertRGBToHex(arg0_value);
 		
 		//Set value and update UI
+		//console.trace(`Should I fire this.fireFromBinding()?`, !this.from_binding_fire_silently)
 		this.value = value;
 		this.element.querySelector("input").value = this.value;
 		this.fireFromBinding();

@@ -61,7 +61,9 @@ ve.Number = class extends ve.Component {
 		
 		let input_el = this.element.querySelector("input");
 		input_el.addEventListener("input", (e) => {
+			this.from_binding_fire_silently = true;
 			this.v = global.Number(e.target.value);
+			delete this.from_binding_fire_silently;
 			this.fireToBinding();
 		});
 		this.name = options.name;

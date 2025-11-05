@@ -63,7 +63,9 @@ ve.Checkbox = class extends ve.Component {
 			this.element.querySelector(`input[type="checkbox"]`).addEventListener("change", (e) => {
 				this.fireToBinding();
 				this.value = this.v;
+				this.from_binding_fire_silently = true;
 				this.v = this.value; //Needs to run setter
+				this.from_binding_fire_silently = false;
 			});
 		} else if (typeof value === "object") {
 			html_string.push(`<ul>`);
@@ -80,7 +82,9 @@ ve.Checkbox = class extends ve.Component {
 			let all_checkbox_els = this.element.querySelectorAll("input");
 			all_checkbox_els.forEach((el) => el.addEventListener("change", (e) => {
 				this.value = this.v;
+				this.from_binding_fire_silently = true;
 				this.v = this.value; //Needs to run setter
+				this.from_binding_fire_silently = false;
 				this.fireToBinding();
 			}));
 		}

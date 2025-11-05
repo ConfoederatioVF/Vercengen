@@ -74,7 +74,9 @@ ve.Select = class veSelect extends ve.Component {
 		let input_el = this.element.querySelector("select");
 		input_el.addEventListener("change", (e) => {
 			let selected_id = this.element.querySelectorAll("option")[e.target.selectedIndex].id;
+			this.from_binding_fire_silently = true;
 			this.v = global.String(selected_id);
+			delete this.from_binding_fire_silently;
 			this.fireToBinding();
 		});
 		this.v = this.value;

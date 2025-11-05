@@ -24,7 +24,6 @@ if (!ve) ve = {};
  * @augments {@link ve.Component}
  * @type {ve.BIUF}
  */
-ve.BIUF = undefined;
 ve.BIUF = class extends ve.Component {
 	static demo_value = `<b>Bold</b> <i>Italic</i>, <u>Underline</u>, and regular text formatting are supported by BIUF fields.`;
 	static demo_options = {

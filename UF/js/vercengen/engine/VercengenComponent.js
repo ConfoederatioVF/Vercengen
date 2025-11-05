@@ -233,6 +233,7 @@ ve.Component = class {
 	fireFromBinding () {
 		//Convert from parameters
 		let variable_string = (this.from_binding_string) ? JSON.parse(JSON.stringify(this.from_binding_string)) : undefined;
+			if (this.from_binding_fire_silently) return; //Internal guard clause if this.from_binding is to fire silently
 			if (variable_string === undefined) return; //Internal guard clause if variable_string is undefined
 		
 		//Declare local instance variables
@@ -273,6 +274,7 @@ ve.Component = class {
 		
 		//Internal guard clause if this.do_not_fire_to_binding is active
 		if (this.do_not_fire_to_binding) return;
+		this.from_binding_fire_silently = true;
 		
 		//Internal guard clause if this.to_binding is not defined
 		if (this.to_binding) {
@@ -315,6 +317,7 @@ ve.Component = class {
 		
 		if (this.to_binding)
 			Object.setValue(initial_object, variable_string, local_value);
+		this.from_binding_fire_silently = false;
 	}
 	
 	/**
@@ -350,7 +353,9 @@ ve.Component = class {
 			if (this.options.binding && from_value === undefined)
 				Object.setValue(initial_object, variable_string, this.v);
 			from_value = Object.getValue(initial_object, variable_string);
+			this.from_binding_fire_silently = true;
 			this.v = from_value;
+			delete this.from_binding_fire_silently;
 			
 			//Add getter/setter
 			Object.addGetterSetter(initial_object, variable_string, {
@@ -360,9 +365,7 @@ ve.Component = class {
 					if (this.from_binding_fire_silently) return;
 					
 					//Declare local instance variables
-					this.from_binding_fire_silently = true;
 					this.v = local_value;
-					this.from_binding_fire_silently = false;
 					
 					let is_same_value = Boolean.strictEquality(local_value, this.v);
 					if (is_same_value) return;
@@ -387,7 +390,9 @@ ve.Component = class {
 				}
 			});
 			let temp = from_value;
+			this.from_binding_fire_silently = true;
 			Object.setValue(initial_object, variable_string, temp);
+			delete this.from_binding_fire_silently;
 		} catch (e) {
 			let error_array = [];
 				error_array.push(`ve.Component: ${this.child_class.prototype.constructor.name}: this.from_binding failed.`);

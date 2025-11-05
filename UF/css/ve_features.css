@@ -244,6 +244,7 @@
     }
     .feature-header {
         padding: var(--padding);
+        padding-bottom: calc(var(--padding)*0.5);
     }
     .resize-handle:hover {
         background-color: var(--hover-colour);
@@ -283,6 +284,7 @@
         font-size: var(--body-font-size);
         font-weight: var(--body-font-weight);
         padding: var(--padding);
+        padding-top: calc(var(--padding)*0.5);
 
         overflow-x: auto;
         scrollbar-color: white transparent;

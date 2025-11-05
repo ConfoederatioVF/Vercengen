@@ -134,6 +134,9 @@
         vertical-align: top;
     }
 }
+/*[component="ve-interface"]:not(:has(details)) {
+    [component] { padding: 0; }
+}*/
 td:has([component="ve-interface"]) {
     padding-inline-start: 0.5rem;
 }

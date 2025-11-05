@@ -56,7 +56,9 @@ ve.Telephone = class extends ve.Component {
 			let filtered = e.target.value.replace(/[^0-9()+\-]/g, "");
 			
 			if (e.target.value !== filtered) e.target.value = filtered;
+			this.from_binding_fire_silently = true;
 			this.v = global.String(e.target.value);
+			delete this.from_binding_fire_silently;
 			this.fireToBinding();
 		});
 		this.v = this.value;

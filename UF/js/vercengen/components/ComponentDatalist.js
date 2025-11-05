@@ -63,7 +63,9 @@ ve.Datalist = class extends ve.Component {
 		
 		let input_el = this.element.querySelector("input");
 		input_el.addEventListener("change", (e) => {
+			this.from_binding_fire_silently = true;
 			this.v = e.target.value.toString();
+			delete this.from_binding_fire_silently;
 			this.fireToBinding();
 		});
 		this.name = options.name;
