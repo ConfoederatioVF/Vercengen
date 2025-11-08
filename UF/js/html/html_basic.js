@@ -13,6 +13,26 @@
 		});
 	};
 	
+	HTML.getCanvasScale = function (arg0_canvas_el) {
+		//Convert from parameters
+		let canvas_el = arg0_canvas_el;
+		
+		//Declare local instance variables
+		let transform_matrix = window.getComputedStyle(canvas_el).transform;
+			if (transform_matrix === "none") return 1; //Internal guard clause if no scale is present
+		
+		let matrix_values = transform_matrix.match(/matrix\(([^)]+)\)/);
+		
+		//Return statement; extract scale from matrix_values if possible
+		if (matrix_values) {
+			let matrix_array = matrix_values[1].split(", ").map(parseFloat);
+			return Math.sqrt(matrix_array[0]**2 + matrix_array[1]**2); //Extract scale from matrix
+		}
+		
+		//Return statement
+		return 1;
+	};
+	
 	HTML.getCSSPosition = function (arg0_anchor, arg1_x, arg2_y) {
 		//Convert from parameters
 		let anchor = (arg0_anchor) ? arg0_anchor : "top_left";

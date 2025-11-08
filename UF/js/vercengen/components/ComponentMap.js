@@ -12,6 +12,9 @@
  * - `.map`: {@link maptalks.Map}
  * - `.v`: {@link maptalks.Map}
  * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.Component.Map.clear|clear}</span>()
+ * 
  * @augments ve.Component
  * @augments {@link ve.Component}
  * @memberof ve.Component
@@ -80,6 +83,28 @@ ve.Map = class extends ve.Component {
 		
 		//Declare local instance variables
 		this.map = new maptalks.Map(this.element, value);
+	}
+	
+	/**
+	 * Clears the present map whilst preserving any {@link maptalks.VectorLayer} where possible.
+	 * - Method of: {@link ve.Map}
+	 */
+	clear () {
+		//Declare local instance variables
+		let all_layers = this.map.getLayers();
+		
+		//Iterate over all_layers and remove all geometries in them
+		for (let i = 0; i < all_layers.length; i++)
+			if (all_layers[i] instanceof maptalks.VectorLayer) {
+				//Iterate over all_geometries in the local layer
+				let all_geometries = all_layers[i].getGeometries();
+				
+				for (let x = 0; x < all_geometries.length; x++)
+					all_geometries[x].remove();
+			} else {
+				//Simply remove the layer itself from the map if possible
+				all_layers[i].remove();
+			}
 	}
 }
 

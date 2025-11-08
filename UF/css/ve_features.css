@@ -1,5 +1,7 @@
 /* -- ve.ContextMenu -- */
 .ve.window {
+    scrollbar-width: none;
+    
     .context-menu-close-button {
         border-radius: 50%;
         position: absolute;
@@ -221,6 +223,7 @@
     font-weight: var(--header-font-weight);
     max-height: 100dvh;
     max-width: 100dvw;
+    overflow-x: hidden;
     width: var(--default-width);
 
     /* -- Feature styling -- */
@@ -283,10 +286,11 @@
         font-family: var(--body-font-family);
         font-size: var(--body-font-size);
         font-weight: var(--body-font-weight);
+        height: 100%;
         padding: var(--padding);
         padding-top: calc(var(--padding)*0.5);
 
-        overflow-x: auto;
+        overflow: auto;
         scrollbar-color: white transparent;
         scrollbar-width: thin;
     }

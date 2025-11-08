@@ -121,6 +121,28 @@
 		return old_value;
 	};
 	
+	Object.generateRandomID = function (arg0_object) {
+		//Convert from parameters
+		let object = arg0_object;
+		
+		//Declare local instance variables
+		let random_id = Math.randomNumber(0, 100000000000).toString();
+		
+		//Check if object is defined
+		if (typeof object === "object") {
+			while (true) {
+				let local_id = Object.generateRandomID();
+				
+				//Return statement; break once a true ID is found
+				if (!object[local_id])
+					return local_id;
+			}
+		} else {
+			//Return statement
+			return random_id;
+		}
+	};
+	
 	Object.getValue = function (arg0_object, arg1_variable_string) {
 		//Convert from parameters
 		let object = arg0_object;

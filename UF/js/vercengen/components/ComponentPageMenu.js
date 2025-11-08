@@ -8,6 +8,7 @@
  * - `arg0_page_obj`: {@link Object}
  *   - `<page_key>`: {@link Object}
  *     - `.name`: {@link string}
+ *     - `.options`: {@link Object} - Same as the `.options` in {@link ve.Interface}.
  *     - `.components_obj`: {@link Object}<{@link ve.Component}>
  * - `arg1_options`: {@link Object}
  *   - `.starting_page=Object.keys(page_obj)[0]`
@@ -69,6 +70,7 @@ ve.PageMenu = class extends ve.Component { //[WIP] - This should be updated late
 			Object.iterate(page_obj, (local_key, local_value) => {
 				let local_name = (local_value.name) ? local_value.name : local_key;
 				let local_name_el = document.createElement("div");
+				
 				local_name_el.classList.add("tab");
 				if (local_key === options.starting_page)
 					local_name_el.classList.add("active");
@@ -77,6 +79,9 @@ ve.PageMenu = class extends ve.Component { //[WIP] - This should be updated late
 				
 				//Format navbar_el; populate this.interfaces_obj
 				this.navbar_el.appendChild(local_name_el);
+				if (!local_value.options) local_value.options = {};
+					if (local_value.options.is_folder !== true) local_value.options.is_folder = false;
+					
 				this.interfaces_obj[local_key] = new ve.Interface(local_value.components_obj, local_value.options);
 			});
 			this.underline_el = document.createElement("span");
@@ -96,6 +101,9 @@ ve.PageMenu = class extends ve.Component { //[WIP] - This should be updated late
 				local_tab.addEventListener("click", () => {
 					all_tabs.forEach((local_tab) => local_tab.classList.remove("active"));
 					local_tab.classList.add("active");
+					this.from_binding_fire_silently = true;
+					this.v = local_tab.id;
+					delete this.from_binding_fire_silently;
 					this.updateUnderline();
 					this.fireToBinding();
 				});
@@ -104,6 +112,11 @@ ve.PageMenu = class extends ve.Component { //[WIP] - This should be updated late
 		
 		//2. Body handling; display starting interface
 		{
+			let initialise_underline_loop = setInterval(() => {
+				if (!document.contains(this.element)) return;
+				this.updateUnderline();
+				clearInterval(initialise_underline_loop);
+			});
 			this.v = options.starting_page;
 			if (options.name) this.name = options.name;
 		}

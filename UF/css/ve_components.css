@@ -34,7 +34,6 @@
         border: 1px solid var(--bg-primary-colour);
         color: var(--body-colour);
         font-family: var(--body-font-family);
-        margin-left: var(--padding);
         margin-right: var(--padding);
         padding: calc(var(--padding)*0.25) calc(var(--padding)*0.5);
         transition: all 0.5s ease;
@@ -66,19 +65,27 @@
 /* -- ve.Button -- */
 [component="ve-button"] {
     display: inline;
+    
+    button:has(icon) {
+        padding: var(--cell-padding);
+    }
 }
 
 /* -- ve.Checkbox -- */
 [component="ve-checkbox"] {
-    > #name {
-        padding: calc(var(--padding)*0.75) 0;
-    }
-    
     input {
+        margin-left: 0;
         min-width: auto;
+        position: relative;
+        top: -1px;
+        vertical-align: middle;
     }
     li:has(b) {
         padding: calc(var(--padding)*0.75) 0;
+    }
+    #name:not(:empty) {
+        display: inline;
+        margin-right: calc(var(--cell-padding)*1.5);
     }
     ul {
         list-style: none;
@@ -134,14 +141,21 @@
         vertical-align: top;
     }
 }
-/*[component="ve-interface"]:not(:has(details)) {
-    [component] { padding: 0; }
-}*/
-td:has([component="ve-interface"]) {
+[component="ve-interface"]:not(:has(summary)) {
+    padding-inline-start: 0;
+    
+    td[id^="0-"] [component] {
+        padding-left: 0;
+    }
+}
+[component="ve-interface"]:has(summary) td:has([component="ve-interface"]) {
     padding-inline-start: 0.5rem;
 }
-.ve-disable-nesting > table > tbody > tr > td {
-    padding: 0;
+.ve-disable-nesting {
+    > table > tbody > tr > td {
+        padding: 0;
+        padding-inline-start: 0;
+    }
 }
 
 /* -- ve.PageMenu -- */
@@ -191,8 +205,19 @@ td:has([component="ve-interface"]) {
     input[type="range"] {
         vertical-align: middle;
     }
+    #name:not(:empty) {
+        margin-right: calc(var(--padding)*0.5);
+    }
     #value-label {
+        margin-left: calc(var(--padding)*0.5);
         vertical-align: middle;
+    }
+}
+
+/* -- ve.RawInterface -- */
+[component="ve-raw-interface"] {
+    > [component="ve-button"] {
+      padding: 0;
     }
 }
 
@@ -224,6 +249,15 @@ td:has([component="ve-interface"]) {
     }
     .toggle-icon.on {
         color: rgb(0, 204, 106);
+    }
+}
+
+/* -- ve.UndoRedo -- */
+[component="ve-undo-redo"] {
+    [component="ve-html"]:has(#canvas-container) {
+        max-height: 40rem;
+        min-height: 40rem;
+        overflow: clip;
     }
 }
 

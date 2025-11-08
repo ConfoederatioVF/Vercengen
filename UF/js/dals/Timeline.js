@@ -81,6 +81,7 @@ DALS.Timeline = class {
 		//Declare local instance variables
 		if (DALS.Timeline.instances.length === 0)
 			this.initial_timeline = true;
+		this.child_timelines = []; //Cache: tracker variable
 		this.id = Class.generateRandomID(DALS.Timeline);
 		this.name = (options.name) ? options.name : `Timeline ${this.id}`;
 		this.options = options;
@@ -121,10 +122,37 @@ DALS.Timeline = class {
 	}
 	
 	/**
+	 * Assigns the `.child_timelines` field for the present timeline by looking for any attached {@link DALS.Timeline} instances.
+	 * - Method of: {@link DALS.Timeline}
+	 */
+	assignChildTimelines () {
+		//Declare local instance variables
+		let timeline_obj = true;
+		
+		//Iterate over DALS.Timeline.instances
+		for (let i = 0; i < DALS.Timeline.instances.length; i++) {
+			let local_child_timelines = [];
+			let local_timeline = DALS.Timeline.instances[i];
+			
+			//Iterate over all DALS.Timeline.instances again to finish assignment
+			for (let x = 0; x < DALS.Timeline.instances.length; x++) {
+				let local_second_timeline = DALS.Timeline.instances[x];
+				
+				if (local_second_timeline.parent_timeline && local_second_timeline.parent_timeline[0] === local_timeline.id)
+					if (!local_child_timelines.includes(local_second_timeline.id) && local_second_timeline.id !== local_timeline.id)
+						local_child_timelines.push(local_second_timeline.id);
+			}
+			
+			if (local_child_timelines.length > 0)
+				local_timeline.child_timelines = local_child_timelines;
+		}
+	}
+	
+	/**
 	 * Branches off a new timeline from the current timeline. If the current timeline is not selected, the branch node is automatically placed at the end of the timeline.
 	 * - Method of: {@link DALS.Timeline}
 	 * 
-	 * @param {Object} arg0_options - Refer to {@link DALS.Timeline}.options for information on what options are acceptable.
+	 * @param {Object} [arg0_options={}] - Refer to {@link DALS.Timeline}.options for information on what options are acceptable.
 	 * 
 	 * @returns {DALS.Timeline}
 	 */
@@ -177,6 +205,181 @@ DALS.Timeline = class {
 					break;
 				}
 		}
+	}
+	
+	/**
+	 * Flips a generated graph from generateGraph() by switching the `.x`/`.y` coordinates of each node.
+	 * - Method of: {@link DALS.Timeline}
+	 * 
+	 * @returns {Object}
+	 */
+	generateFlippedGraph () {
+		//Declare local instance variables
+		let timeline_graph = this.generateGraph();
+		
+		//Iterate over timeline_graph and flip coordinates
+		Object.iterate(timeline_graph, (local_key, local_value) => {
+			if (local_value.x !== undefined && local_value.y !== undefined) {
+				let old_x = JSON.parse(JSON.stringify(local_value.x));
+				let old_y = JSON.parse(JSON.stringify(local_value.y));
+				
+				//Flip coordinates
+				local_value.x = old_y;
+				local_value.y = old_x;
+			}
+		});
+		
+		//Return statement
+		return timeline_graph;
+	}
+	
+	/**
+	 * Generates a timeline graph starting from the current {@link DALS.Timeline} instance with plotted `.x`/`.y` fields for node positions. Used in {@link ve.Component.UndoRedo} for rendering canvas displays.
+	 * - Method of: {@link DALS.Timeline}
+	 * 
+	 * @param {Object} arg0_options
+	 * 
+	 * @returns {Object}
+	 */
+	generateGraph (arg0_options) {
+		//Convert from parameters
+		let options = (arg0_options) ? arg0_options : {};
+		
+		//Declare local instance variables
+		let current_y_offset = Math.returnSafeNumber(options.y_offset);
+		let timeline_graph = {};
+		let timeline_obj = this;
+		let x_offset = Math.returnSafeNumber(options.x_offset);
+		let y_offset = Math.returnSafeNumber(options.y_offset);
+		
+		//1. Create list of .child_timelines first
+		if (this.initial_timeline)
+			this.assignChildTimelines();
+		
+		//2. Produce graph at this layer only for the current timeline and all .child_timelines connected to it, then call recursively
+		if (timeline_obj.child_timelines)
+			for (let i = 0; i < timeline_obj.child_timelines.length; i++) {
+				let local_child_timeline = DALS.Timeline.getTimeline(this.child_timelines[i]);
+				let local_x_offset = Math.returnSafeNumber(local_child_timeline.parent_timeline[1]);
+				
+				//Iterate recursively
+				let new_timeline_graph = local_child_timeline.generateGraph({
+					x_offset: local_x_offset,
+					y_offset: i,
+					
+					x_original: x_offset,
+					y_original: y_offset
+				});
+				Object.iterate(new_timeline_graph, (local_key, local_value) => {
+					timeline_graph[local_key] = new_timeline_graph[local_key];
+				});
+			}
+			
+		//3. Parse connections - [WIP] - This needs to group together actions with the same .key value. It currently does not
+		let last_id = "";
+		let timeline_groups = this.getGroups.call(timeline_obj);
+		
+		for (let i = 0; i < timeline_groups.length; i++) {
+			let group = timeline_groups[i];
+			let local_id = Object.generateRandomID(timeline_graph);
+				timeline_graph[local_id] = {};
+				
+			let first_action = group[0];
+			
+			//Connect to previous group
+			if (last_id) timeline_graph[local_id].connection_ids = [last_id];
+			
+			timeline_graph[local_id].timeline_id = timeline_obj.id;
+			timeline_graph[local_id].timeline_index = first_action.options.timeline_index;
+			timeline_graph[local_id].timeline_group_index = i;
+			timeline_graph[local_id].value = group;
+				timeline_graph[local_id].value.options = first_action.value.options;
+					timeline_graph[local_id].value.options.domain = [
+						first_action.options.timeline_index,
+						group[group.length - 1].options.timeline_index
+					];
+					timeline_graph[local_id].value.options.length = group.length;
+			timeline_graph[local_id].x = i;
+			timeline_graph[local_id].y = current_y_offset;
+			
+			last_id = local_id;
+		}
+			
+		//4. Add x_offset; y_offset to timeline graph and to connections
+		Object.iterate(timeline_graph, (local_key, local_value) => {
+			local_value.x += x_offset;
+			local_value.y++;
+		});
+		
+		//Return statement
+		return timeline_graph;
+	}
+	
+	/**
+	 * Groups together actions with the same `.key` field to avoid their duplication and returns the grouped `.value` of the present timeline acoordingly.
+	 * - Method of: {@link DALS.Timeline}
+	 * 
+	 * @returns {DALS.Action[][]}
+	 */
+	getGroups () {
+		//Declare local instance variables
+		let current_group = [];
+		let timeline_groups = [];
+		
+		if (this.value.length > 1) {
+			//Start with first action after state head
+			current_group.push(this.value[1]);
+			
+			//Iterate over remaining mutations in timeline
+			for (let i = 2; i < this.value.length; i++) {
+				let current_action = this.value[i];
+				let previous_action = this.value[i - 1];
+				
+				//Continue the same group if .key is the same
+				current_action.options.timeline_index = i;
+				if (current_action.options.key === previous_action.options.key) {
+					current_group.push(current_action);
+				} else {
+					//Different .key, push finished group, start new one
+					timeline_groups.push(current_group);
+					current_group = [current_action];
+				}
+			}
+		}
+		
+		//Push the final group after loop
+		if (current_group.length > 0) timeline_groups.push(current_group);
+		
+		//Return statement
+		return timeline_groups;
+	}
+	
+	/**
+	 * Returns the width of the present timeline, accounting for any `.child_timelines` that may exist.
+	 * - Method of: {@link DALS.Timeline}
+	 * 
+	 * @returns {number}
+	 */
+	getTimelineWidth () {
+		//Declare local instance variables
+		let timeline_width = 0;
+		
+		//1. Iterate over all DALS.Timeline.instances; assign child_timelines to parent first
+		for (let i = 0; i < DALS.Timeline.instances.length; i++)
+			if (DALS.Timeline.instances[i].initial_timeline)
+				DALS.Timeline.instances[i].assignChildTimelines();
+		
+		//2. Check if timeline has child_timelines
+		if (this.child_timelines)
+			for (let i = 0; i < this.child_timelines.length; i++) {
+				let local_child_timeline = DALS.Timeline.getTimeline(this.child_timelines[i]);
+				
+				timeline_width += this.child_timelines.length;
+				timeline_width += local_child_timeline.getTimelineWidth();
+			}
+		
+		//Return statement
+		return timeline_width;
 	}
 	
 	/**
@@ -270,6 +473,69 @@ DALS.Timeline = class {
 	}
 	
 	/**
+	 * Generates a global timeline graph from the root {@link DALS.Timeline.initial_timeline}.
+	 * - Static method of: {@link DALS.Timeline}
+	 * 
+	 * @returns {Object}
+	 */
+	static generateGraph () {
+		//Return statement
+		for (let i = 0; i < DALS.Timeline.instances.length; i++)
+			if (DALS.Timeline.instances[i].initial_timeline)
+				return DALS.Timeline.instances[i].generateGraph();
+	}
+	
+	/**
+	 * Returns the max `.x` value from a given graph from <span color=00ffff>{@link DALS.Timeline.generateGraph}</span>() to assess its dimensions.
+	 * - Static method of: {@link DALS.Timeline}
+	 *
+	 * @param {Object} arg0_graph
+	 *
+	 * @returns {number}
+	 */
+	static getGraphMaxX (arg0_graph) {
+		//Convert from parameters
+		let timeline_graph = arg0_graph;
+		
+		//Declare local instance variables
+		let max_x = 0;
+		
+		//Iterate over timeline_graph
+		Object.iterate(timeline_graph, (local_key, local_value) => {
+			if (local_value.x > max_x)
+				max_x = local_value.x;
+		});
+		
+		//Return statement
+		return max_x;
+	}
+	
+	/**
+	 * Returns the max `.y` value from a given graph from <span color=00ffff>{@link DALS.Timeline.generateGraph}</span>() to assess its dimensions.
+	 * - Static method of: {@link DALS.Timeline}
+	 * 
+	 * @param {Object} arg0_graph
+	 * 
+	 * @returns {number}
+	 */
+	static getGraphMaxY (arg0_graph) {
+		//Convert from parameters
+		let timeline_graph = arg0_graph;
+		
+		//Declare local instance variables
+		let max_y = 0;
+		
+		//Iterate over timeline_graph
+		Object.iterate(timeline_graph, (local_key, local_value) => {
+			if (local_value.y > max_y)
+				max_y = local_value.y;
+		});
+		
+		//Return statement
+		return max_y;
+	}
+	
+	/**
 	 * Returns a {@link DALS.Timeline} object based upon a timeline ID string.
 	 * - Static method of: {@link DALS.Timeline}
 	 * 
@@ -326,6 +592,47 @@ DALS.Timeline = class {
 	}
 	
 	/**
+	 * Redoes an action group in the current timeline. Returns the jumped to index.
+	 * - Static method of: {@link DALS.Timeline}
+	 * 
+	 * @returns {number}
+	 */
+	static redo () {
+		//Declare local instance variables
+		let timeline_obj = DALS.Timeline.getTimeline(DALS.Timeline.current_timeline);
+		
+		//Iterate over all timeline_groups and figure out the last_group to rewind to
+		let current_index = 1;
+		let next_index = 1;
+		let timeline_groups = timeline_obj.getGroups();
+		
+		for (let i = 0; i < timeline_groups.length; i++) {
+			let local_domain = [current_index, current_index + timeline_groups[i].length];
+			
+			//Check if DALS.Timeline.current_index is within local_domain
+			if (DALS.Timeline.current_index > local_domain[0] && DALS.Timeline.current_index <= local_domain[1]) {
+				let next_group = timeline_groups[i + 1];
+				if (next_group) {
+					next_index = local_domain[1] + next_group.length; 
+				} else {
+					next_index = local_domain[1];
+				}
+				
+				break;
+			}
+			
+			//Increment current_index to keep track of things
+			current_index += timeline_groups[i].length;
+		}
+		
+		//Jump to next_index
+		timeline_obj.jumpToAction(next_index);
+		
+		//Return statement
+		return next_index;
+	}
+	
+	/**
 	 * Saves the present state as JSON to a new file path.
 	 * - Static method of: {@link DALS.Timeline}
 	 * 
@@ -339,5 +646,46 @@ DALS.Timeline = class {
 		fs.writeFile(file_path, JSON.stringify(DALS.Timeline.saveState()), (err) => {
 			if (err) console.error(err);
 		});
+	}
+	
+	/**
+	 * Undoes an action group in the current timeline. Returns the jumped to index.
+	 * - Static method of: {@link DALS.Timeline}
+	 * 
+	 * @returns {number}
+	 */
+	static undo () {
+		//Declare local instance variables
+		let timeline_obj = DALS.Timeline.getTimeline(DALS.Timeline.current_timeline);
+		
+		//Iterate over all timeline_groups and figure out the last_group to rewind to
+		let current_index = 1;
+		let last_index = 1;
+		let timeline_groups = timeline_obj.getGroups();
+		
+		for (let i = 0; i < timeline_groups.length; i++) {
+			let local_domain = [current_index, current_index + timeline_groups[i].length];
+			
+			//Check if DALS.Timeline.current_index is within local_domain
+			if (DALS.Timeline.current_index > local_domain[0] && DALS.Timeline.current_index <= local_domain[1]) {
+				let last_group = timeline_groups[i - 1];
+				if (last_group) {
+					last_index = local_domain[0] - 1;
+				} else {
+					last_index = local_domain[1];
+				}
+				
+				break;
+			}
+			
+			//Increment current_index to keep track of things
+			current_index += timeline_groups[i].length;
+		}
+		
+		//Jump to next_index
+		timeline_obj.jumpToAction(last_index);
+		
+		//Return statement
+		return last_index;
 	}
 };

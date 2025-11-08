@@ -293,7 +293,7 @@
 			document.onmousemove = internalElementDrag;
 		}
 		
-		//[WIP] - Tidy up dimensional constraints later on
+		//Tidy up dimensional constraints later on
 		setTimeout(() => {
 			const vw = window.innerWidth;
 			const vh = window.innerHeight;
