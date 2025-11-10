@@ -38,6 +38,7 @@ global.Test = class Test extends ve.Class {
 					test_two: veHierarchyDatatype({}, { name: "Test 2" }),
 					test_three: veHierarchyDatatype({}, { name: "Test 3" }),
 					subgroup: veHierarchyDatatype({
+						icon: new ve.HTML(`<icon>folder</icon>`, { style: { padding: 0 } } ),
 						test_four: veHierarchyDatatype({}, { name: "Test 4" })
 					}, { name: "Subgroup", type: "group" } )
 				}, {
