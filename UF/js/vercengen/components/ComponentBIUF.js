@@ -50,8 +50,6 @@ ve.BIUF = class extends ve.Component {
 			this.element.setAttribute("component", "ve-biuf");
 			this.element.instance = this;
 		this.options = options;
-		HTML.applyTelestyle(this.element, options.style);
-		
 		this.value = value;
 		
 		//Format html_string

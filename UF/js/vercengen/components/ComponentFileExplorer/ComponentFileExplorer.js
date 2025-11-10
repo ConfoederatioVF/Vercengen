@@ -90,7 +90,6 @@ ve.FileExplorer = class extends ve.Component {
 				this.element.setAttribute(local_key, local_value.toString());
 			});
 			this.element.instance = this;
-		HTML.applyTelestyle(this.element, options.style);
 			
 		//Format html_string
 		let html_string = [];

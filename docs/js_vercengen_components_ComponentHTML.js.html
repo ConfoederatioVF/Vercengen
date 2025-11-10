@@ -78,8 +78,11 @@ ve.HTML = class extends ve.Component {
 		//Declare local instance variables
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-html");
+			Object.iterate(options.attributes, (local_key, local_value) => {
+				this.element.setAttribute(local_key, local_value.toString());
+			});
 			this.element.instance = this;
-		HTML.applyTelestyle(this.element, options.style);
+		
 		this.options = options;
 		this.value = value;
 		
@@ -117,6 +120,7 @@ ve.HTML = class extends ve.Component {
 			this.draw_function = this.value;
 			
 			if (this.options.do_not_refresh !== true) {
+				this.v = this.draw_function(this);
 				this.draw_loop = setInterval(() => {
 					this.v = this.draw_function(this);
 				}, 100);

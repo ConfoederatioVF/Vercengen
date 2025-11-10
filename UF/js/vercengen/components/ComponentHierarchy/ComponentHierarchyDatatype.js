@@ -71,7 +71,6 @@ ve.HierarchyDatatype = class extends ve.Component {
 		this.is_vercengen_hierarchy_datatype = true;
 		this.options = options;
 		this.type = options.type;
-		HTML.applyTelestyle(this.element, options.style);
 		
 		//Append components_obj elements to this.element
 		this.components_obj = components_obj;

@@ -254,6 +254,14 @@
 
 /* -- ve.UndoRedo -- */
 [component="ve-undo-redo"] {
+    [data-is-selected="true"] {
+        background: var(--body-colour);
+        color: var(--bg-primary-colour);
+        padding-left: 0.5rem  !important;
+    }
+    .no-markers {
+        list-style: none;
+    }
     [component="ve-html"]:has(#canvas-container) {
         max-height: 40rem;
         min-height: 40rem;

@@ -45,6 +45,28 @@
             <pre class="prettyprint source linenums"><code>//[WIP] - Document Telestyle
 //Initialise functions
 {
+	/**
+	 * Applies static (non-function) styles recursively, once.
+	 */
+	HTML.applyStaticTelestyle = function (arg0_el, arg1_style_obj) {
+		//Convert from parameters
+		let el = arg0_el;
+		let style_obj = arg1_style_obj;
+		
+		//Iterate over all entries in style_obj
+		Object.iterate(style_obj, (local_key, local_value) => {
+			if (typeof local_value === "object" &amp;&amp; !Array.isArray(local_value)) {
+				let targets = HTML.resolveSelector(el, local_key);
+				
+				//Iterate over all targets to apply any static styles that might exist
+				for (let i = 0; i &lt; targets.length; i++)
+					HTML.applyStaticTelestyle(targets[i], local_value);
+			} else if (typeof local_value !== "function") {
+				el.style[local_key] = local_value.toString();
+			}
+		});
+	};
+	
 	HTML.applyTelestyle = function (arg0_el, arg1_style) {
 		//Convert from parameters
 		let el = (typeof arg0_el === "object") ? arg0_el : document.querySelector(arg0_el);
@@ -106,28 +128,6 @@
 	};
 	
 	/**
-	 * Applies static (non-function) styles recursively, once.
-	 */
-	HTML.applyStaticTelestyle = function (arg0_el, arg1_style_obj) {
-		//Convert from parameters
-		let el = arg0_el;
-		let style_obj = arg1_style_obj;
-		
-		//Iterate over all entries in style_obj
-		Object.iterate(style_obj, (local_key, local_value) => {
-			if (typeof local_value === "object" &amp;&amp; !Array.isArray(local_value)) {
-				let targets = HTML.resolveSelector(el, local_key);
-				
-				//Iterate over all targets to apply any static styles that might exist
-				for (let local_target of targets) 
-					HTML.applyStaticTelestyle(local_target, local_value);
-			} else if (typeof local_value !== "function") {
-				el.style[local_key] = local_value.toString();
-			}
-		});
-	};
-	
-	/**
 	 * Resolves a selector relative to an element.
 	 * Supports :nth-parent(n) and normal query selectors.
 	 */
@@ -153,8 +153,9 @@
 		
 		//Return statement; normal descendant functions
 		try {
-			return Array.from(el.querySelectorAll(selector));
+			return el.querySelectorAll(selector);
 		} catch (e) {
+			console.error(e);
 			return [];
 		}
 	}

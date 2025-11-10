@@ -98,23 +98,26 @@ DALS.Action = class {
 			//If current_index is not at the end of the present timeline, branch off into new timeline
 			let old_timeline = DALS.Timeline.getTimeline(DALS.Timeline.current_timeline);
 			
-			//console.log(DALS.Timeline.current_index, old_timeline.value.length - 1)
 			if (DALS.Timeline.current_index !== old_timeline.value.length - 1) {
 				let new_timeline = old_timeline.branch();
-					DALS.Timeline.current_timeline = new_timeline;
+					DALS.Timeline.current_timeline = new_timeline.id;
 					DALS.Timeline.current_index = 0;
 				
 				//Assign to new_timeline if state is behind current
+				new_timeline.last_modified = new Date();
 				new_timeline.value.push(this);
 			} else {
 				//Assign to old_timeline if state is at current
+				old_timeline.last_modified = new Date();
 				old_timeline.value.push(this);
 			}
 			
 			DALS.Timeline.current_index++;
 		} else {
 			//Assign to specified timeline
-			DALS.Timeline.getTimeline(this.options.timeline).value.push(this);
+			let local_timeline = DALS.Timeline.getTimeline(this.options.timeline);
+			local_timeline.last_modified = new Date();
+			local_timeline.value.push(this);
 		}
 		DALS.Action.instances.push(this);
 	}

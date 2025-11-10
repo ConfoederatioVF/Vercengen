@@ -32,7 +32,7 @@ ve.RawInterface = class extends ve.Component {
 			this.element.setAttribute("component", "ve-raw-interface");
 			this.element.instance = this;
 			HTML.setAttributesObject(this.element, options.attributes);
-			HTML.applyTelestyle(this.element, options.style);
+			
 		this.options = options;
 		
 		//Format html_string

@@ -32,7 +32,6 @@ ve.Button = class extends ve.Component {
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-button");
 			this.element.instance = this;
-			HTML.applyTelestyle(this.element, options.style);
 		this.options = options;
 		this.value = value;
 		
@@ -53,6 +52,7 @@ ve.Button = class extends ve.Component {
 		});
 		this.name = options.name;
 		this.v = this.value;
+		
 	}
 	
 	/**

@@ -47,7 +47,7 @@ ve.Range = class extends ve.Component {
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-range");
 			this.element.instance = this;
-		HTML.applyTelestyle(this.element, options.style);
+		
 		this.options = options;
 		this.value = value;
 		
