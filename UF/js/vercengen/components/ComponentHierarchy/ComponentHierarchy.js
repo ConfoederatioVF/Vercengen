@@ -68,7 +68,8 @@ ve.Hierarchy = class extends ve.Component {
 		//Convert from parameters
 		let components_obj = arg0_components_obj;
 		
-		//Reset element; re-append all components in components_obj to element 
+		//Reset element; re-append all components in components_obj to element
+		this.element.innerHTML = "";
 		
 		/**
 		 * Stores the components currently displayed in the {@link ve.Hierarchy}.
@@ -77,7 +78,6 @@ ve.Hierarchy = class extends ve.Component {
 		 * @type {ve.Component[]}
 		 */
 		this.components_obj = components_obj;
-		this.element.innerHTML = "";
 		
 		//1. Append all non-hierarchy datatype Vercengen components to controls; iterate over all this.components_obj
 		Object.iterate(this.components_obj, (local_key, local_value) => {
@@ -95,7 +95,8 @@ ve.Hierarchy = class extends ve.Component {
 		});
 		this.element.appendChild(ol_el);
 		this.nestable = new Nestable(ol_el, { items: ".group, .item" });
-		this.nestable.on("stop", () => {
+		this.nestable.on("stop", (e) => {
+			this.on_stop_data = e;
 			this.fireToBinding();
 		});
 		this.fireFromBinding();
@@ -133,6 +134,7 @@ ve.Hierarchy = class extends ve.Component {
 		
 		//Declare local instance variables
 		let ol_el = this.element.querySelector("ol");
+		let reserved_keys = ["id", "element", "instance", "name", "type", "reserved_keys"];
 		
 		//Return statement
 		return HTML.listToObject(ol_el, (local_el) => {
@@ -142,20 +144,27 @@ ve.Hierarchy = class extends ve.Component {
 			
 			//Return statement
 			if (local_el.tagName === "OL") {
+				let parent_el = local_el.parentElement;
 				try {
-					local_name = local_el.parentElement.instance.name;
+					local_name = parent_el.instance.name;
 				} catch {}
 				
 				return {
-					id: local_el.id,
-					element: (!options.flatten_object) ? local_el : undefined,
-					name: (local_name) ? local_name : undefined
+					id: parent_el.id,
+					element: (!options.flatten_object) ? parent_el : undefined,
+					instance: parent_el.instance,
+					name: (local_name) ? local_name : undefined,
+					reserved_keys: reserved_keys,
+					type: "group"
 				};
 			} else if (local_el.tagName === "LI") {
 				return {
 					id: local_el.id,
 					element: (!options.flatten_object) ? local_el : undefined,
-					name: (local_name) ? local_name : undefined
+					instance: local_el.instance,
+					name: (local_name) ? local_name : undefined,
+					reserved_keys: reserved_keys,
+					type: "item"
 				};
 			}
 		});

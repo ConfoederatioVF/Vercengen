@@ -11,7 +11,6 @@
     padding: 0;
     position: relative;
 	
-    > .nst-button { display: none; }
     > .nst-content {
         border: 1px solid var(--bg-primary-colour);
         border-radius: 3px;
@@ -86,6 +85,13 @@ li > .nst-list {
 
 /* -- Vercengen Nestable styling -- */
 .ve-hierarchy {
+    .nst-button { display: none; }
+    .nst-content:has(~ ol) .nst-button { display: block; }
+    .nst-list {
+        li {
+            list-style: none;
+        }
+    }
     ol, ul {
         box-sizing: border-box;
         margin-left: 1rem;
@@ -94,11 +100,6 @@ li > .nst-list {
 
         li {
             width: 100%;
-        }
-    }
-    .nst-list {
-        li {
-            list-style: none;
         }
     }
     

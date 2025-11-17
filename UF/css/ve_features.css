@@ -21,6 +21,7 @@
     
     .ve.window:not(.modal) {
         opacity: 0.5;
+        pointer-events: none;
     }
     .ve.window.modal {
         pointer-events: auto;

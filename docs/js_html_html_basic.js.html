@@ -57,7 +57,27 @@
 		});
 	};
 	
-	HTML.getCanvasScale = function (arg0_canvas_el) {
+	HTML.getAllParentElements = function (arg0_el) {
+		//Convert from parameters
+		let el = (typeof arg0_el === "object") ? arg0_el : document.querySelector(arg0_el);
+		
+		if (!el) return []; //Internal guard clause if element is invalid
+		
+		//Declare local instance variables
+		let current_el = el.parentElement;
+		let parent_els = [];
+		
+		//Iterate over all ancestors
+		while (current_el) {
+			parent_els.push(current_el);
+			current_el = current_el.parentElement;
+		}
+		
+		//Return statement
+		return parent_els;
+	};
+	
+	HTML.getCanvasScale = function (arg0_canvas_el) { //[WIP] - Not currently functional due to regex replacement issues.
 		//Convert from parameters
 		let canvas_el = arg0_canvas_el;
 		

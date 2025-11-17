@@ -3,18 +3,24 @@
  * 
  * Hierarchy datatype used as a nested draggable item/group for {@link ve.Hierarchy}. Item by default.
  * - Functional binding: <span color=00ffff>veHierarchyDatatype</span>().
+ * 
+ * [WIP] - This section, especially with `.oncollapse` and `.instance.is_collapsed`:{@link boolean} reflection is scheduled to be reworked in future updates.
  *  
  * ##### Constructor:
  * - `arg0_value`: {@link Object}<{@link ve.Component}>
  * - `arg1_options`: {@link Object}
  *   - `.disabled=false`: {@link boolean} - Whether the item is draggable within the hierarchy.
  *   - `.id`: {@link string}
+ *   - `.name_options`: {@link Object} - Any options that should be carried over to `.components_obj.name`. Same options as {@link ve.Text}.
+ *   - `.no_folders=false`: {@link boolean} - Whether minimising/maximising individual folders should be allowed.
  *   - `.type="item"`: {@link string} - Either 'group'/'item'.
  * 
  * ##### Instance:
  * - `.components_obj`: {@link Object}<{@link ve.Component}>
+ * - `.instance`: {@link any} - The bound object which this HierarchyDatatype is visualising.
  * - `.is_vercengen_hierarchy_datatype=true`: {@link boolean}
  * - `.name`; {@link string} - Accessor. Differs from {@link ve.Component.name} in that it is a {@link ve.Text}.v value instead of a span element.
+ * - `.oncollapse`: {@link function}(v:{@link boolean}, e:{@link ve.HierarchyDatatype}) - Fires upon a user toggling the collapse button.
  * - `.type="item"`: {@link string} - Determined by `.options.type`.
  * - `.v`: {@link Object}<{@link ve.Component}> - Accessor. Same as `.components_obj`.
  * 
@@ -104,7 +110,10 @@ ve.HierarchyDatatype = class extends ve.Component {
 		if (this.components_obj.name) {
 			this.components_obj.name.v = value;
 		} else {
-			this.components_obj.name = new ve.Text(value, { disabled: this.options.disabled });
+			this.components_obj.name = new ve.Text(value, { 
+				disabled: this.options.disabled,
+				...this.options.name_options
+			});
 			this.v = this.components_obj;
 		}
 	}
@@ -146,8 +155,11 @@ ve.HierarchyDatatype = class extends ve.Component {
 		//Declare local instance variables
 		let has_subitems = false;
 		
-		//0. Append .nst-handle el
-		this.element.innerHTML = `<div class = "nst-handle">⋯</div>`;
+		//0. Append .nst-handle, .nst-button element
+		this.element.innerHTML = [
+			`<div class = "nst-handle">⋯</div>`,
+			(this.type === "group" && this.options.no_folders !== true) ? `<button class = "nst-button" type = "button">${(this.options.is_collapsed) ? "+" : "-"}</button>` : ""
+		].join("");
 		
 		//1. Append regular components first as group components
 		Object.iterate(this.components_obj, (local_key, local_value) => {
@@ -170,6 +182,16 @@ ve.HierarchyDatatype = class extends ve.Component {
 			});
 			this.element.appendChild(ol_el);
 		}
+		
+		//3. Check if folder is meant to be collapsed
+		let button_el = this.element.querySelector(`.nst-button`);
+		if (button_el) button_el.onclick = () => {
+			this.options.is_collapsed = this.element.classList.contains("nst-collapsed");
+			if (this.options.instance) this.options.instance.is_collapsed = this.options.is_collapsed;
+			if (this.options.oncollapse) this.options.oncollapse(this.options.is_collapsed, this);
+		};
+		if (this.options.is_collapsed === true)
+			this.element.classList.add("nst-collapsed");
 	}
 };
 

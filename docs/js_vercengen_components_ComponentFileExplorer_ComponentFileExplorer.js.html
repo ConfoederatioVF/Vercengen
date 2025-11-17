@@ -59,6 +59,10 @@
  *   - `.folder_options`: {@link Object}
  *   - `.name`: {@link string}
  *   - `.navigation_only=false`: {@link boolean}
+ *   - 
+ *   - `.load_function`: {@link function} - Automatically loads the text content of a valid extension into this function.
+ *   - `.save_extension`: {@link string} - The save dot extension that files can be loaded from.
+ *   - `.save_function`: {@link function}
  *   
  * ##### Instance:
  * - `.clipboard`: {@link Array}&lt;{@link string}> - The list of full file paths currently stored in the clipboard.
@@ -357,8 +361,55 @@ ve.FileExplorer = class extends ve.Component {
 				attributes: { "data-ve-is-information": true },
 				disabled: true
 			});
+		
+		//options.save_function
+		if (this.options.save_function) {
+			hierarchy_obj.save_button = new ve.HierarchyDatatype({
+				save_as_icon: new ve.HTML(`&lt;icon>save_as&lt;/icon>`),
+				save_name: new ve.HTML(`Save File`)
+			}, { disabled: true });
+			hierarchy_obj.save_button.element.onclick = () => {
+				let local_modal = new ve.Window({
+					html: new ve.HTML(`Save file as:`),
+					new_file_name: new ve.Text(`autosave${(this.options.save_extension) ? this.options.save_extension : ""}`, { name: " " }),
+					confirm_button: new ve.Button((e) => {
+						let save_file_name = path.join(this.v, local_modal.new_file_name.v);
+						
+						if (this.options.save_function)
+							try {
+								let save_string;
+								let save_value = this.options.save_function();
+								
+								if (typeof save_value === "object") {
+									save_string = JSON.stringify(save_value);
+								} else {
+									save_string = save_value.toString();
+								}
+								
+								//Check if file already exists, if so send a confirmation prompt
+								let save_function = () => {
+									fs.writeFile(save_file_name, save_string, () => {
+										veToast(`Successfully saved file as: ${save_file_name}`);
+										local_modal.remove();
+										this.refresh();
+									});
+								};
+								
+								(!fs.existsSync(save_file_name)) ?
+									save_function() :
+									veConfirm(`File already exists. Do you want to overwrite it?`, {
+										special_function: () => save_function()
+									});
+							} catch (e) {
+								veToast(e.toString());
+							}
+					})
+				}, { name: "Save File" });
+			};
+		}
+		
 		hierarchy_obj[previous_folder_path] = new ve.HierarchyDatatype({
-			up_icon: new ve.HTML(`&lt;icon>subdirectory_arrow_left&lt;/icon>`, { style: { padding: 0 }}),
+			up_icon: new ve.HTML(`&lt;icon>subdirectory_arrow_left&lt;/icon>`),
 			two_dots: new ve.HTML(`Back`)
 		}, { disabled: true, limit: () => !File.isDrive(this.v) });
 		
@@ -377,7 +428,7 @@ ve.FileExplorer = class extends ve.Component {
 			for (let i = 0; i &lt; all_drives.length; i++) {
 				if (path.resolve(this.v) === path.resolve(all_drives[i])) continue; //Internal guard clause if paths are the same
 				hierarchy_obj[all_drives[i]] = new ve.HierarchyDatatype({
-					drive_icon: new ve.HTML(`&lt;icon>storage&lt;/icon>`, { style: { padding: 0 } } )
+					drive_icon: new ve.HTML(`&lt;icon>storage&lt;/icon>`, { style: { padding: 0 } })
 				}, {
 					attributes: {
 						"data-folder": true,
@@ -403,9 +454,7 @@ ve.FileExplorer = class extends ve.Component {
 			if (all_files_in_directory[i].isDirectory()) {
 				hierarchy_obj[local_full_path] = new ve.HierarchyDatatype(
 					{
-						folder_icon: new ve.HTML(this.options.folder_icon, {
-							style: { padding: 0 }
-						}),
+						folder_icon: new ve.HTML(this.options.folder_icon),
 						actions_menu: new ve.RawInterface({
 							rename: new ve.Button((e) => {
 								ve.FileExplorer.rename(local_full_path, () => this.refresh());
@@ -459,7 +508,7 @@ ve.FileExplorer = class extends ve.Component {
 				hierarchy_obj[local_full_path] = new ve.HierarchyDatatype(
 					{
 						file_icon: new ve.HTML(this.options.file_icon, {
-							style: { opacity: 0.6, padding: 0 }
+							style: { opacity: 0.6 }
 						}),
 						actions_menu: new ve.RawInterface({
 							rename: new ve.Button((e) => {
@@ -467,6 +516,31 @@ ve.FileExplorer = class extends ve.Component {
 							}, {
 								name: `&lt;icon>drive_file_rename_outline&lt;/icon>`,
 								tooltip: "Rename",
+								style: { padding: `var(--cell-padding)` }
+							}),
+							load_file: new ve.Button((e) => {
+								veConfirm(`Are you sure you want to load ${local_full_path}?`, {
+									special_function: () => {
+										fs.readFile(local_full_path, "utf8", (err, data) => {
+											if (err) {
+												veToast(`Error upon loading file ${local_full_path}: ${e}`);
+												return;
+											}
+											if (this.options.load_function)
+												try {
+													this.options.load_function(data);
+													veToast(`Loaded savefile ${local_full_path}`);
+												} catch (e) {
+													veWindow(`Error loading savefile: ${e}`, { name: `Error loading savefile` });
+													console.error(e);
+												}
+										});
+									}
+								});
+							}, {
+								name: `&lt;icon>sync_arrow_down&lt;/icon>`,
+								tooltip: "Load Savefile",
+								limit: () => this.options.load_function &amp;&amp; (this.options.save_extension === undefined || path.extname(local_full_path) === this.options.save_extension),
 								style: { padding: `var(--cell-padding)` }
 							}),
 							...Object.fromEntries(

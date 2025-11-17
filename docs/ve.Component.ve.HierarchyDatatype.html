@@ -55,6 +55,7 @@
 <ul>
 <li>Functional binding: <span color=00ffff>veHierarchyDatatype</span>().</li>
 </ul>
+<p>[WIP] - This section, especially with <code>.oncollapse</code> and <code>.instance.is_collapsed</code>:boolean reflection is scheduled to be reworked in future updates.</p>
 <h5 id="constructor%3A">Constructor:</h5>
 <ul>
 <li><code>arg0_value</code>: <a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt;</li>
@@ -62,6 +63,8 @@
 <ul>
 <li><code>.disabled=false</code>: boolean - Whether the item is draggable within the hierarchy.</li>
 <li><code>.id</code>: string</li>
+<li><code>.name_options</code>: <a href="Object.html">Object</a> - Any options that should be carried over to <code>.components_obj.name</code>. Same options as <a href="ve.Text.html">ve.Text</a>.</li>
+<li><code>.no_folders=false</code>: boolean - Whether minimising/maximising individual folders should be allowed.</li>
 <li><code>.type=&quot;item&quot;</code>: string - Either 'group'/'item'.</li>
 </ul>
 </li>
@@ -69,8 +72,10 @@
 <h5 id="instance%3A">Instance:</h5>
 <ul>
 <li><code>.components_obj</code>: <a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt;</li>
+<li><code>.instance</code>: any - The bound object which this HierarchyDatatype is visualising.</li>
 <li><code>.is_vercengen_hierarchy_datatype=true</code>: boolean</li>
 <li><code>.name</code>; string - Accessor. Differs from ve.Component.name in that it is a <a href="ve.Text.html">ve.Text</a>.v value instead of a span element.</li>
+<li><code>.oncollapse</code>: function(v:boolean, e:<a href="ve.HierarchyDatatype.html">ve.HierarchyDatatype</a>) - Fires upon a user toggling the collapse button.</li>
 <li><code>.type=&quot;item&quot;</code>: string - Determined by <code>.options.type</code>.</li>
 <li><code>.v</code>: <a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt; - Accessor. Same as <code>.components_obj</code>.</li>
 </ul>
@@ -135,7 +140,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_vercengen_components_ComponentHierarchy_ComponentHierarchyDatatype.js.html">js/vercengen/components/ComponentHierarchy/ComponentHierarchyDatatype.js</a>, <a href="js_vercengen_components_ComponentHierarchy_ComponentHierarchyDatatype.js.html#line32">line 32</a>
+        <a href="js_vercengen_components_ComponentHierarchy_ComponentHierarchyDatatype.js.html">js/vercengen/components/ComponentHierarchy/ComponentHierarchyDatatype.js</a>, <a href="js_vercengen_components_ComponentHierarchy_ComponentHierarchyDatatype.js.html#line38">line 38</a>
     </li></ul></dd>
     
 
@@ -316,7 +321,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_vercengen_components_ComponentHierarchy_ComponentHierarchyDatatype.js.html">js/vercengen/components/ComponentHierarchy/ComponentHierarchyDatatype.js</a>, <a href="js_vercengen_components_ComponentHierarchy_ComponentHierarchyDatatype.js.html#line44">line 44</a>
+        <a href="js_vercengen_components_ComponentHierarchy_ComponentHierarchyDatatype.js.html">js/vercengen/components/ComponentHierarchy/ComponentHierarchyDatatype.js</a>, <a href="js_vercengen_components_ComponentHierarchy_ComponentHierarchyDatatype.js.html#line50">line 50</a>
     </li></ul></dd>
     
 

@@ -219,6 +219,9 @@
     > [component="ve-button"] {
       padding: 0;
     }
+    [component="ve-button"]:has(button #name icon):not(:nth-child(-n + 2)) {
+        icon { justify-content: space-around; }
+    }
 }
 
 /* -- ve.Text -- */

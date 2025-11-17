@@ -65,6 +65,7 @@
 		
 		//Internal guard clause if the geometry is already a Maptalks geometry
 		if (Geospatiale.getCoordsType(geometry) === "maptalks_geometry") return geometry;
+		if (geometry === null) return null;
 		
 		// Handle Turf Feature or raw geometry
 		let feature = geometry;

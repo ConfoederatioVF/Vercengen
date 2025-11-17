@@ -124,7 +124,8 @@ ve.Class = class {
 		let interval = (arg1_interval) ? parseInt(arg1_interval) : 0;
 		
 		//Set draw loop
-		this.draw_loop = setInterval(() => { local_function(this); }, interval);
+		if (local_function)
+			this.draw_loop = setInterval(() => { local_function(this); }, interval);
 	}
 	
 	/**
