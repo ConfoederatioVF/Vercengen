@@ -125,7 +125,10 @@
         min-width: 1rem;
     }
     input#month {
-        padding-bottom: 0;
+        padding-bottom: 0.5px; /* -- Half pixel needed for some reason to remain in-place -- */
+    }
+    #year-type {
+        margin-right: var(--padding);
     }
 }
 
