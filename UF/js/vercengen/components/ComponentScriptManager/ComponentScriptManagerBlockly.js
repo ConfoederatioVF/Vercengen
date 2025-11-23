@@ -87,14 +87,13 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		//this.blockly_toolbox_el.style.zIndex = 2;
 		this.blockly_toolbox_mode = "canvas"; //Either 'body'/'canvas'
 		
-		this.blockly_toolbox_el.addEventListener("mouseenter", (e) => {
-			this.blockly_toolbox_mode = "body";
-		});
-		this.blockly_toolbox_el.addEventListener("mouseleave", (e) => {
-			this.blockly_toolbox_mode = "canvas";
-		});
 		this.blockly_toolbox_loop = setInterval(() => {
 			let rect = this.element.getBoundingClientRect();
+			this.blockly_toolbox_mode = (this.element.querySelector(".blocklyFlyout:hover") ||
+				this.blockly_toolbox_el.querySelector(":hover") ||
+				document.querySelector(".blocklyDraggable:hover")
+			) ? 
+				"body" : "canvas";
 			
 			if (this.blockly_toolbox_mode === "body") {
 				if (!document.querySelector("body > .blocklyToolboxDiv"))
