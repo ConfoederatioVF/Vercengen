@@ -373,7 +373,7 @@ ve.UndoRedo = class extends ve.Component {
 				
 				this.html_select = new ve.Interface({
 					select_field: new ve.Select(this.timeline_select_obj, {
-						name: "Viewing: ",
+						name: "Viewing:",
 						onchange: (v, e) => {
 							this.value = v;
 							this.draw(true);
@@ -440,10 +440,11 @@ ve.UndoRedo = class extends ve.Component {
 					if (timeline_groups[i] && timeline_groups[i][0] && timeline_groups[i][0].name)
 						local_name = timeline_groups[i][0].name;
 					
-					let is_selected = (DALS.Timeline.current_timeline === timeline_obj.id && DALS.Timeline.current_index >= local_domain[0] && DALS.Timeline.current_index <= local_domain[1]);
+					let is_selected = (DALS.Timeline.current_timeline === timeline_obj.id && DALS.Timeline.current_index >= local_domain[0] && DALS.Timeline.current_index <= local_domain[1]) 
+						|| (local_domain[0] === 0 && DALS.Timeline.current_index === 1);
 					
 					let header_el = new ve.RawInterface({
-						action_name: new ve.HTML(`${local_name} (${String.formatNumber(timeline_groups[i].length)})&nbsp;&nbsp;<br>#${local_domain[0]} - ${local_domain[1]}`, {
+						action_name: new ve.HTML(`${local_name} (${String.formatNumber(timeline_groups[i].length)})&nbsp;&nbsp;<br>#${Math.max(local_domain[0], 1)} - ${Math.max(local_domain[1], 1)}`, {
 							attributes: {
 								"data-is-selected": is_selected
 							},
@@ -454,6 +455,7 @@ ve.UndoRedo = class extends ve.Component {
 							
 						jump_to_button: new ve.Button(() => {
 							console.log(`timeline_obj.jumpToAction(${local_index} + ${timeline_groups[i].length});`, local_index + timeline_groups[i].length);
+							console.log(`- local_index:`, local_index, `+ timeline_groups[i].length:`, timeline_groups[i].length);
 							timeline_obj.jumpToAction(local_index + timeline_groups[i].length - 1);
 							this.fireToBinding();
 						}, { 

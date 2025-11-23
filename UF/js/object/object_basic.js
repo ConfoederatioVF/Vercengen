@@ -158,11 +158,14 @@
 	 *
 	 * @param {Object} arg0_object
 	 * @param {function(arg0_local_key, arg1_local_value)|function(arg0_local_value)} arg1_function
+	 * @param {Object} [arg2_options]
+	 *  @param [arg2_options.sort_mode] - Either 'ascending'/'descending'. Sorts object keys.
 	 */
-	Object.iterate = function (arg0_object, arg1_function) {
+	Object.iterate = function (arg0_object, arg1_function, arg2_options) { //[WIP] - CConsider fixing performance with Date/History
 		//Convert from parameters
 		let object = arg0_object;
 		let local_function = arg1_function;
+		let options = (arg2_options) ? arg2_options : {};
 		
 		//Internal guard clauses
 		if (typeof object !== "object")
@@ -174,7 +177,18 @@
 		
 		//Declare local instance variables
 		let all_local_keys = Object.keys(object);
+			//Sort all_local_keys by .sort_mode
+			if (options.sort_mode === "date_ascending") {
+				all_local_keys = all_local_keys.sort((a, b) => {
+					return Date.convertTimestampToInt(a) - Date.convertTimestampToInt(b);
+				});
+			} else if (options.sort_mode === "date_descending") {
+				all_local_keys = all_local_keys.sort((a, b) => {
+					return Date.convertTimestampToInt(b) - Date.convertTimestampToInt(a);
+				});
+			}
 		
+		//Call functions
 		if (local_function.length === 1) {
 			for (let i = 0; i < all_local_keys.length; i++)
 				local_function(object[all_local_keys[i]]);

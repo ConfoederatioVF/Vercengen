@@ -47,9 +47,9 @@
 
         li {
             padding-left: 0.5rem;
-            padding-right: 1.5rem;
+            padding-right: 0.5rem;
             
-            &::before {
+            &:has(ul)::after {
                 content: "";
                 width: 0;
                 height: 0;
@@ -57,10 +57,13 @@
                 border-right: 5px solid transparent;
                 border-top: 5px solid var(--body-colour);
                 position: absolute;
-                right: 8px;
+                right: 5px;
                 top: 50%;
                 transform: translateY(-50%);
             }
+        }
+        li:has(ul) {
+            padding-right: 1.5rem;
         }
         li, li a {
             opacity: .8;

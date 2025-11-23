@@ -304,7 +304,7 @@ ve.Component = class {
 		//Traverse up the .owners tree and fire onchange/onuserchange
 		if (this.owners) 
 			for (let i = this.owners.length - 1; i >= 0; i--)
-				if (this.owners[i].options) {
+				if (this.owners[i]?.options) {
 					let local_options = this.owners[i].options;
 					
 					if (typeof local_options.onchange === "function")

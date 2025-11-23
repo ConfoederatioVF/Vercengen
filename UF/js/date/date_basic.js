@@ -241,7 +241,7 @@
 		}
 		
 		//Return statement
-		return `${(minutes >= 0) ? "tz_" : "t_"}${Math.alphabetise(Math.abs(minutes))}`;
+		return Math.abs(minutes);
 	};
 	
 	Date.isLeapYear = function (arg0_year) {

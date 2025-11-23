@@ -95,6 +95,25 @@
 		};
 	};
 	
+	HTML.getInnerText = function (arg0_el) {
+		//Convert from parameters
+		let el = (typeof arg0_el === "object") ? arg0_el : document.querySelector(arg0_el);
+		
+		//Declare local instance variables
+		let child  = el.firstChild;
+		let texts = [];
+		
+		//Iterate over all children
+		while (child) {
+			if (child.nodeType === 3)
+				texts.push(child.data);
+			child = child.nextSibling;
+		}
+		
+		//Return statement
+		return texts.join("");
+	};
+	
 	HTML.listToObject = function (arg0_ol_el, arg1_function, arg2_is_nested) {
 		//Convert from parameters
 		let ol_el = arg0_ol_el;

@@ -14,6 +14,7 @@
  *   - `y=HTML.mouse_y`: {@link number}
  *   -
  *   - `do_not_wrap=false`: {@link boolean} - Whether to disable wrapping in an always open ve.Interface.
+ *   - `id`: {@link string}
  *   - `mode="window"`: {@link string} - Either 'static_ui'/'static_window'/'window'.
  *   - `name=""`: {@link string} - Auto-resolves to 'Window' instead if `.can_rename=true`.
  *   - `theme`: {@link string} - The CSS theme to apply to the Feature.
@@ -130,7 +131,7 @@ ve.Window = class extends ve.Feature {
 				}
 			});
 		
-		this.id = Class.generateRandomID(ve.Window);
+		this.id = (this.options.id) ? this.options.id : Class.generateRandomID(ve.Window);
 		this.x = options.x;
 		this.y = options.y;
 		

@@ -61,6 +61,11 @@ ve.Number = class extends ve.Component {
 		
 		let input_el = this.element.querySelector("input");
 		input_el.addEventListener("input", (e) => {
+			if (this.options.max && e.target.value > this.options.max)
+				e.target.value = this.options.max;
+			if (this.options.min && e.target.value < this.options.min)
+				e,target,value = this.options.min;
+			
 			this.from_binding_fire_silently = true;
 			this.v = global.Number(e.target.value);
 			delete this.from_binding_fire_silently;

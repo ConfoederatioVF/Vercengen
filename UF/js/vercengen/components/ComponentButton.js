@@ -39,7 +39,7 @@ ve.Button = class extends ve.Component {
 		let html_string = [];
 		html_string.push(`<button ${HTML.objectToAttributes(options.attributes)}>`);
 			if (options.icon) html_string.push(`<img src = "${options.icon}">`);
-			html_string.push(` <span id = "name"></span>`)
+			html_string.push(` <span id = "name" style = "align-items: center; display: flex;"></span>`)
 		html_string.push(`</button>`);
 		
 		//Populate element and initialise handlers
@@ -53,6 +53,10 @@ ve.Button = class extends ve.Component {
 		this.name = options.name;
 		this.v = this.value;
 		
+		//Post-value styling
+		let name_el = this.element.querySelector(`#name`);
+		if (name_el && HTML.getInnerText(name_el).length > 0 && name_el.querySelector("icon"))
+			this.name += "&nbsp;&nbsp;";
 	}
 	
 	/**

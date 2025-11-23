@@ -20,7 +20,7 @@ icon, .ve-icon {
     -moz-font-feature-settings: 'liga';
     -moz-osx-font-smoothing: grayscale;
     
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     height: 24px;

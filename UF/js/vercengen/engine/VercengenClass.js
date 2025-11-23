@@ -92,7 +92,7 @@ ve.Class = class {
 	 * 
 	 * @returns {boolean}
 	 */
-	isClosed (arg0_mode) {
+	isClosed (arg0_mode) { //[WIP] - Finish function body
 		//Return statement
 		return (!(this.class_window || this.instance_window));
 	}
@@ -105,7 +105,7 @@ ve.Class = class {
 	 *
 	 * @returns {boolean}
 	 */
-	isOpen (arg0_mode) {
+	isOpen (arg0_mode) { //[WIP] - Finish function body
 		//Return statement
 		return (this.class_window || this.instance_window);
 	}
@@ -195,7 +195,7 @@ ve.Class = class {
 		
 		Object.iterate(temp_state_obj, (local_key, local_value) => {
 			try {
-				if (local_value.is_vercengen_component)
+				if (local_value.is_vercengen_component && !local_value.options?.ignore_component)
 					state_obj[local_key] = local_value;
 			} catch (e) {}
 		});

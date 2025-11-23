@@ -227,6 +227,13 @@
     }
 }
 
+/* -- ve.Select -- */
+[component="ve-select"] {
+    #name:not(:empty) {
+        margin-right: calc(var(--padding)*0.5);
+    }
+}
+
 /* -- ve.Text -- */
 [component="ve-text"] input {
     min-width: calc(var(--default-width)/2);

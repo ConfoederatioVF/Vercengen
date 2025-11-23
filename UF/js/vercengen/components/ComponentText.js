@@ -89,7 +89,9 @@ ve.Text = class extends ve.Component {
 		if (value === undefined) return;
 		
 		//Set value and update UI
-		//console.trace(`Fired .v for`, this, arg0_value);
+		if (typeof value === "object")
+			console.warn(`ve.Text: The type of value received was not a valid string! Please check to make sure your component key is not the reserved keyword 'name'.`, value);
+		
 		this.value = value;
 		this.element.querySelector("input").value = this.value;
 		this.fireFromBinding();

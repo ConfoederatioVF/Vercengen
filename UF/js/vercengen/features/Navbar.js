@@ -73,7 +73,8 @@ ve.Navbar = class extends ve.Feature {
 	 * 
 	 * @returns {HTMLUListElement}
 	 */
-	generateHTMLRecursively (arg0_navbar_obj) { //[WIP] - Refactor at a later date
+	generateHTMLRecursively(arg0_navbar_obj) {
+		//[WIP] - Refactor at a later date
 		//Convert from parameters
 		let navbar_obj = arg0_navbar_obj;
 		
@@ -95,18 +96,28 @@ ve.Navbar = class extends ve.Feature {
 			// If the entry has nested structure, it's a dropdown group
 			if (has_dropdowns) {
 				// Set label
-				li_el.appendChild(
-					document.createTextNode(value.name || key.replace(/_/g, " "))
-				);
+				let label_el = document.createElement("div");
+				label_el.innerHTML = value.name || key.replace(/_/g, " ");
+				li_el.appendChild(label_el);
 				
 				// Recursively build its children
 				let child_ul = this.generateHTMLRecursively(value);
 				li_el.appendChild(child_ul);
+				
+				// Onclick - attach to parent but exclude child ul
+				if (typeof value.onclick === "function") {
+					li_el.addEventListener("click", (e) => {
+						if (child_ul.contains(e.target)) return;
+						
+						e.stopPropagation();
+						value.onclick(e);
+					});
+				}
 			} else {
 				// Otherwise, it's a simple link
 				li_el.classList.add("link");
 				let a_el = document.createElement("a");
-					a_el.textContent = value.name || key.replace(/_/g, " ");
+				a_el.innerHTML = value.name || key.replace(/_/g, " ");
 				li_el.appendChild(a_el);
 				
 				// Active state
@@ -123,8 +134,8 @@ ve.Navbar = class extends ve.Feature {
 				// Keybind
 				if (typeof value.keybind === "string" && typeof Mousetrap !== "undefined") {
 					let kbd_el = document.createElement("kbd");
-						kbd_el.innerText = value.keybind;
-						a_el.appendChild(kbd_el);
+					kbd_el.innerText = value.keybind;
+					a_el.appendChild(kbd_el);
 					
 					Mousetrap.bind(value.keybind, (e) => {
 						if (typeof value.onclick === "function") value.onclick(a_el);
