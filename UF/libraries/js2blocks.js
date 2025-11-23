@@ -1,40 +1,6 @@
-// Uses code from walk.js script of acorn.js javascript code parser under MIT license
-// https://github.com/ternjs/acorn
-
-//require('acorn')
-//import acorn from 'acorn'
 import acorn from 'acorn-dynamic-import';
-//import walk, { base } from 'acorn-jsx-walk';
-//import walk from 'acorn/dist/walk.js'
-
-//var script1 = '/test/code_math1.js';
-//var script1 = '/test/code_arrays1.js';
-//var script1 = '/test/code_maps1.js';
-//var script1 = '/test/code_loops1.js';
-//var script1 = '/test/code_switch1.js';
-//var script1 = '/test/code_paths1.js';
-//var script1 = '/test/code_functions1.js';
-//var script1 = '/test/code_class1.js';
-//var script1 = '/test/code_try1.js';
-//var script1 = '/test/code_generator1.js';
-//var script1 = '/test/code_export1.js';
-//var script1 = '/test/code_import1.js';
-
-//var script1 = '/test/code1_e.js';
-
-//var tokens = [];
-//var out1 = document.getElementById("out1");
 
 var debug = true;
-
-//var outln = function(msg){
-//  out1.innerHTML += msg+'<br>';
-//}
-//
-//var out = function(msg){
-//  out1.innerHTML += msg;
-//}
-///////////////////////////
 export function simple(node, visitors, base1, state, override) {
   if (!base1) base1 = base
   ;(function c(node, st, override) {

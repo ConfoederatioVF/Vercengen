@@ -69,5 +69,5 @@ global.Test = class Test extends ve.Class {
 }
 
 setTimeout(() => {
-	global.test = new Test();
+	//global.test = new Test();
 }, 500);
