@@ -10,15 +10,81 @@ ve.ScriptManager = class extends ve.Component {
 		if (options.name === undefined) options.name = "ScriptManager";
 		
 		//Declare local instance variables
+		this._codemirror_theme = "nord";
+		this._codemirror_themes = {
+			"3024-day": "3024-day",
+			"3024-night": "3024-night",
+			"abbott": "Abbott",
+			"abcdef": "abcdef",
+			"ambiance-mobile": "Ambiance Mobile",
+			"ambiance": "Ambiance",
+			"ayu-dark": "Ayu Dark",
+			"ayu-mirage": "Ayu Mirage",
+			"base16-dark": "base16-dark",
+			"base16-light": "base16-light",
+			"bespin": "Bespin",
+			"blackboard": "Blackboard",
+			"cobalt": "Cobalt",
+			"colorforth": "Colourforth",
+			"darcula": "Darcula",
+			"default": "Default",
+			"dracula": "Dracula",
+			"duotone-dark": "Duotone Dark",
+			"duotone-light": "Duotone Light",
+			"eclipse": "Eclipse",
+			"elegant": "Elegant",
+			"erlang-dark": "Erlang-dark",
+			"gruvbox-dark": "Gruvbox-dark",
+			"hopscotch": "Hopscotch",
+			"icecoder": "Icecoder",
+			"idea": "Idea",
+			"isotope": "Isotope",
+			"juejin": "Juejin",
+			"lesser-dark": "Lesser-dark",
+			"liquibyte": "Liquibyte",
+			"lucario": "Lucario",
+			"material-darker": "Material Darker",
+			"material-ocean": "Material Ocean",
+			"material-palenight": "Material Palenight",
+			"material": "Material",
+			"mbo": "mbo",
+			"mdn-like": "mdn-like",
+			"midnight": "Midnight",
+			"monokai": "Monokai",
+			"moxer": "Moxer",
+			"neat": "Neat",
+			"neo": "Neo",
+			"night": "Night",
+			"nord": "Nord",
+			"oceanic-next": "Oceanic Next",
+			"panda-syntax": "Panda Syntax",
+			"paraiso-dark": "Paraiso Dark",
+			"paraiso-light": "Paraiso Light",
+			"pastel-on-dark": "Pastel on Dark",
+			"railscasts": "Railscasts",
+			"rubyblue": "Rubyblue",
+			"seti": "SETI",
+			"shadowfox": "Shadowfox",
+			"solarized": "Solarised",
+			"ssms": "SSMS",
+			"the-matrix": "The Matrix",
+			"tomorrow-night-bright": "Tomorrow Night Bright",
+			"tomorrow-night-eighties": "Tomorrow Night 80s",
+			"ttcn": "TTCN",
+			"twilight": "Twilight",
+			"vibrant-ink": "Vibrant Ink",
+			"xq-dark": "XQ Dark",
+			"xq-light": "XQ Light",
+			"yeti": "Yeti",
+			"yonce": "Yonce",
+			"zenburn": "Zenburn"
+		};
+		this.options = options;
+		
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-script-manager");
 			this.element.instance = this;
-			
-			//Format html_string
-			let html_string = [];
-			
-			html_string.push(`<span id = "name"></span>`);
-			this.element.innerHTML = html_string.join("");
+			this.element.style.padding = "0";
 		
 			this.container_el = document.createElement("div");
 			this.container_el.id = "container";
@@ -27,10 +93,12 @@ ve.ScriptManager = class extends ve.Component {
 			
 			this.leftbar_el = document.createElement("div");
 			this.leftbar_el.id = "leftbar";
-				this.leftbar_file_explorer = new ve.FileExplorer(__dirname, {
-					load_function: (arg0_data) => {
+				this.leftbar_file_explorer = new ve.FileExplorer((this.options.folder_path) ? this.options.folder_path : __dirname, {
+					load_function: (arg0_data, arg1_file_path) => {
 						let local_data = arg0_data;
+						let file_path = arg1_file_path;
 						
+						this._file_path = file_path;
 						try {
 							this.v = local_data;
 							this.fireToBinding();
@@ -68,11 +136,101 @@ ve.ScriptManager = class extends ve.Component {
 				this.scene_el.append(this.scene_blockly_el, this.scene_codemirror_el, this.scene_console_el, this.scene_tabs_el);
 			this.topbar_el = document.createElement("div");
 			this.topbar_el.id = "topbar";
+				this.topbar_interface = new ve.RawInterface({
+					name_el: new ve.HTML(() => `<span id = "name">${this.name}</span>${(!options.do_not_display_file_name) ? `<span id = "file-name"> | ${(this._file_path) ? this._file_path : "None"}</span>` : ""}`,
+						{ style: { width: "20rem" } }),
+					file: new ve.Button(() => {
+						
+					}, { name: "File" }),
+					settings: new ve.Button(() => {
+						
+					}, { name: "Settings" }),
+					view: new ve.Button(() => {
+						//Populate themes_obj
+						let themes_obj = {};
+						
+						Object.iterate(this._codemirror_themes, (local_key, local_value) => {
+							themes_obj[local_key] = { name: local_value, selected: (this._codemirror_theme === local_key) }
+						});
+						
+						let local_context_menu = new ve.ContextMenu({
+							view_header: new ve.HTML(`<b>View Settings:</b><br><br>`, { x: 0, y: 0 }),
+							
+							editor_theme: new ve.Select({
+								"theme-default": {
+									name: "Default",
+									selected: (!["theme-light"].includes(this._theme))
+								},
+								"theme-light": {
+									name: "Light",
+									selected: (this._theme === "theme-light")
+								}
+							}, {
+								name: "Editor Theme",
+								onchange: (v) => {
+									console.log(v);
+									this.setTheme(v);
+								},
+								style: {
+									alignItems: "center",
+									display: "flex"
+								},
+								x: 0, y: 1
+							}),
+							codemirror_theme: new ve.Select({
+								...themes_obj
+							}, {
+								name: "Codemirror Theme",
+								onchange: (v) => {
+									console.log(v);
+									this.setCodeEditorTheme(v);
+								},
+								x: 0, y: 2
+							}),
+							
+							hide_blockly: new ve.Button(() => {
+								this.scene_blockly.hide();
+							}, { name: "Hide Blockly", limit: () => !this.scene_blockly._hidden, x: 0, y: 3 }),
+							show_blockly: new ve.Button(() => {
+								this.scene_blockly.show();
+							}, { name: "Show Blockly", limit: () => this.scene_blockly._hidden, x: 0, y: 3 }),
+							
+							clear_blockly_workspace_on_error: new ve.Toggle(false, {
+								name: "Clear Blockly on error"
+							}, { x: 0, y: 4 }),
+							display_load_errors: new ve.Toggle(true, {
+								name: "Display load errors"
+							})
+						}, {
+							id: "script_manager_view"
+						});
+					}, { name: "View", x: 0, y: 2 }),
+					run: new ve.Button(() => {
+						
+					}, { name: "Run" }),
+					console: new ve.Button(() => {
+						
+					}, { name: "Console" })
+				}, { 
+					no_name_element: true,
+					is_folder: false,
+					style: {
+						alignItems: "center",
+						display: "flex",
+						padding: 0,
+						
+						"[component='ve-button']": {
+							marginRight: "calc(var(--cell-padding)*2)"
+						}
+					}
+				});
+				this.topbar_interface.bind(this.topbar_el);
 			
-			this.container_el.append(this.topbar_el, this.leftbar_el, this.scene_el);
+			this.element.appendChild(this.topbar_el);
+			this.container_el.append(this.leftbar_el, this.scene_el);
 		this.element.appendChild(this.container_el);
-		this.options = options;
 		
+		//Initialisation loop for ScriptManager to ensure all requisite elements are loaded first
 		this.scriptmanager_initialisation_loop = setInterval(() => {
 			if (!document.body.contains(this.scene_blockly_el.querySelector("svg"))) return;
 			let svg_el = this.scene_blockly_el.querySelector("svg");
@@ -124,6 +282,29 @@ ve.ScriptManager = class extends ve.Component {
 				this.fireFromBinding();
 			}
 		});
+	}
+	
+	setCodeEditorTheme (arg0_theme_class) {
+		//Convert from parameters
+		let theme_class = arg0_theme_class;
+		
+		//Declare local instance variables
+		this._codemirror_theme = theme_class;
+		this.scene_codemirror.codemirror.setOption("theme", theme_class);
+	}
+	
+	setTheme (arg0_theme_class) {
+		//Convert from parameters
+		let theme_class = arg0_theme_class;
+		
+		//Remove previous themes
+		if (this._theme)
+			this.element.classList.remove(this._theme);
+		this._theme = theme_class;
+		
+		//Apply new theme
+		this.element.classList.add(this._theme);
+		this.scene_blockly.setTheme(this._theme);
 	}
 	
 	throwLoadError (arg0_error) {

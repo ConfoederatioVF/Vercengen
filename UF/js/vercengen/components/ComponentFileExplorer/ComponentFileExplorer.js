@@ -16,7 +16,7 @@
  *   - `.name`: {@link string}
  *   - `.navigation_only=false`: {@link boolean}
  *   - 
- *   - `.load_function`: {@link function}(arg0_data:{@link string}) - Automatically loads the text content of a valid extension into this function.
+ *   - `.load_function`: {@link function}(arg0_data:{@link string}, arg1_file_path:{@link string}) - Automatically loads the text content of a valid extension into this function.
  *   - `.save_extension`: {@link string} - The save dot extension that files can be loaded from.
  *   - `.save_function`: {@link function} - Returns the value of the current savedata state.
  *   
@@ -507,7 +507,7 @@ ve.FileExplorer = class extends ve.Component {
 											}
 											if (this.options.load_function)
 												try {
-													this.options.load_function(data);
+													this.options.load_function(data, local_full_path);
 													veToast(`Loaded savefile ${local_full_path}`);
 												} catch (e) {
 													veWindow(`Error loading savefile: ${e}`, { name: `Error loading savefile` });

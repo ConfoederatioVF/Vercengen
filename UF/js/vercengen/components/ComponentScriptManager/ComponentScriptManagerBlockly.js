@@ -138,6 +138,7 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		
 		//Handle blockly_toolbox_el
 		this.blockly_toolbox_loop = setInterval(() => {
+			if (this._hidden) return;
 			if (this._disabled) { //Internal guard clause if this._disabled
 				if (this.blockly_toolbox_el.parentElement)
 					this.blockly_toolbox_el.parentElement.removeChild(this.blockly_toolbox_el);
@@ -178,6 +179,17 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		});
 	}
 	
+	hide () {
+		if (this._hidden) return; //Internal guard clause if already hidden
+		
+		//Declare local instance variables
+		this._hidden = true;
+		this._preserved_height = this.svg_el.style.maxHeight;
+		this._preserved_width = this.svg_el.style.maxWidth;
+		
+		this.element.style.display = "none";
+	}
+	
 	interceptBlocklyTransforms () {
 		//Declare local instance variables
 		let targets = [
@@ -201,5 +213,31 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 				};
 			}
 		});
+	}
+	
+	setTheme (arg0_theme_class) {
+		//Convert from parameters
+		let theme_class = arg0_theme_class;
+		
+		//Remove previous themes
+		if (this._theme)
+			this.blockly_toolbox_el.classList.remove(this._theme);
+		this._theme = theme_class;
+		
+		//Add theme to this.blockly_toolbox_el
+		this.blockly_toolbox_el.classList.add(this._theme);
+	}
+	
+	show () {
+		if (!this._hidden) return; //Internal guard clause if already shown
+		
+		//Declare local instance variables
+		delete this._hidden;
+		this.element.style.display = "block";
+		this.svg_el.style.maxHeight = `${this._preserved_height}px`;
+		this.svg_el.style.maxWidth = `${this._preserved_width}px`;
+		
+		delete this._preserved_height;
+		delete this._preserved_width;
 	}
 };

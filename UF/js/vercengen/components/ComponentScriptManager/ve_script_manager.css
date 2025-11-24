@@ -1,3 +1,18 @@
+/* -- ve.ScriptManager -- */
+.ve.window:has([component="ve-script-manager"].theme-light), .blocklyToolboxDiv.theme-light {
+    border: 1px solid black;
+    border-radius: var(--cell-padding);
+    --bg-primary-colour: rgba(255, 255, 255, 0.7);
+    --bg-secondary-colour: rgb(235, 235, 235);
+    --body-colour: rgba(0, 0, 0, 0.83);
+    --header-colour: rgba(0, 0, 0, 0.83);
+    
+    .resize-handle:hover {
+        background-color: var(--body-colour);
+    }
+}
+
+/* -- ve.ScriptManagerBlockly -- */
 .blocklyFlyout .blocklyWorkspace {
     transform: scaleY(0.95);
 }
