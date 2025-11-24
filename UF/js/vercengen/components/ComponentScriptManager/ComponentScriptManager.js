@@ -131,6 +131,6 @@ ve.ScriptManager = class extends ve.Component {
 		let error = arg0_error;
 		
 		//Instantiate load message popup
-		veWindow(`Are you sure this file is compatible? Blockly has been disabled, and the file is only editable via CodeMirror.<br><br><div style = "align-items: center; display: flex;"><icon>warning</icon>&nbsp;${error}</div><br><b>Stack Trace:</b><br><div style = "margin-left: 1rem;">${error.stack}</div>`, { name: `Error Reading File`, width: "24rem" });
+		veWindow(`Are you sure this file is ${(this.options.compatibility_message) ? this.options.compatibility_message : "ES6"} compatible? Blockly has been disabled, and the file is only editable via CodeMirror.<br><br><div style = "align-items: center; display: flex;"><icon>warning</icon>&nbsp;${error}</div><br><b>Stack Trace:</b><br><div style = "margin-left: 1rem;">${error.stack}</div>`, { name: `Error Reading File`, width: "24rem" });
 	}
 };
