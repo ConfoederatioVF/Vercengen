@@ -12,6 +12,7 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		let toolbox = ve.ScriptManager.toolbox;
 		
 		this.element = document.createElement("div");
+		this.element.instance = this;
 		this.element.setAttribute("component", "ve-script-manager-blockly");
 		this.element.style.width = "35%";
 		this.element.style.position = "relative"; 
@@ -43,17 +44,17 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		this.workspace.addChangeListener((e) => {
 			let blockly_value = Blockly.JavaScript.workspaceToCode(Blockly.mainWorkspace);
 			
-			try {
-				let codemirror_obj = this.element.parentElement.querySelector(`[component="ve-script-manager-codemirror"]`).instance;
-				
-				codemirror_obj.to_binding_fire_silently = true;
-				codemirror_obj.codemirror.setValue(blockly_value);
-				delete codemirror_obj.to_binding_fire_silently;
-			} catch (e) { console.error(e); }
+			if (!this.to_binding_fire_silently)
+				try {
+					let codemirror_obj = this.element.parentElement.querySelector(`[component="ve-script-manager-codemirror"]`).instance;
+					
+					codemirror_obj.to_binding_fire_silently = true;
+					codemirror_obj.v = blockly_value;
+					delete codemirror_obj.to_binding_fire_silently;
+					
+					this.fireToBinding();
+				} catch (e) { console.error(e); }
 		});
-		/*try {
-			console.log(window.main.updateWorkspace);
-		} catch (e) { console.warn(e); }*/ //[WIP] - Fix when this is a valid method
 		
 		//Initialise onresize, flyout scaling fixes
 		this.element.style.left = '0px' // x + 'px';
@@ -62,6 +63,21 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		
 		this.fixBlocklyScaling();
 		this.handleCSS();
+	}
+	
+	get v () {
+		//Return statement
+		return Blockly.Javascript.workspaceToCode(Blockly.mainWorkspace);
+	}
+	
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
+		
+		this.to_binding_fire_silently = true;
+		js2blocks.parseCode(value);
+		setTimeout(() => delete this.to_binding_fire_silently, 100);
+		this.fireFromBinding();
 	}
 	
 	fixBlocklyScaling () {

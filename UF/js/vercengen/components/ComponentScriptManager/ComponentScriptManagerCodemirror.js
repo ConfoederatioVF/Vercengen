@@ -31,13 +31,31 @@ ve.ScriptManagerCodemirror = class extends ve.Component {
 			this.codemirror.setSize(null, "100%");
 			
 			this.codemirror.on("change", (e) => {
-				
 				try {
-					if (!this.to_binding_fire_silently)
-						js2blocks.parseCode(e.doc.getValue());
-				} catch (e) { /*console.warn(e);*/ }
+					if (!this.to_binding_fire_silently) {
+						let blockly_obj = this.element.parentElement.querySelector(`[component="ve-script-manager-blockly"]`).instance;
+						
+						blockly_obj.to_binding_fire_silently = true;
+						blockly_obj.v = e.doc.getValue();
+						this.fireToBinding();
+					}
+				} catch (e) { console.warn(e); }
 			});
 			clearInterval(this.codemirror_initialisation_loop);
 		}, 100);
+	}
+	
+	get v () {
+		//Return statement
+		return this.codemirror.doc.getValue();
+	}
+	
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
+		
+		//Set codemirror value
+		this.codemirror.setValue(value);
+		this.fireFromBinding();
 	}
 };

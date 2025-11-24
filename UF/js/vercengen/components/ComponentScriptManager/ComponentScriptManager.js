@@ -27,7 +27,26 @@ ve.ScriptManager = class extends ve.Component {
 			
 			this.leftbar_el = document.createElement("div");
 			this.leftbar_el.id = "leftbar";
-				this.leftbar_file_explorer = new ve.FileExplorer();
+				this.leftbar_file_explorer = new ve.FileExplorer(__dirname, {
+					load_function: (arg0_data) => {
+						let local_data = arg0_data;
+						
+						try {
+							this.v = local_data;
+							this.fireToBinding();
+						} catch (e) {
+							veWindow(`Are you sure this file is compatible?<br><br><div style = "align-items: center; display: flex;"><icon>warning</icon>&nbsp;${e}</div><br><b>Stack Trace:</b><br><div style = "margin-left: 1rem;">${e.stack}</div>`, { name: `Error Reading File`, width: "24rem" });
+						}
+					},
+					save_extension: ".js",
+					save_function: () => {
+						//Return statement
+						return this.scene_codemirror.v;
+					},
+					style: { 
+						overflow: "auto", width: "20rem"
+					}
+				});
 				this.leftbar_file_explorer.bind(this.leftbar_el);
 			this.scene_el = document.createElement("div");
 			this.scene_el.style.display = "flex";
@@ -53,7 +72,6 @@ ve.ScriptManager = class extends ve.Component {
 			this.container_el.append(this.topbar_el, this.leftbar_el, this.scene_el);
 		this.element.appendChild(this.container_el);
 		this.options = options;
-		this.value = value;
 		
 		this.scriptmanager_initialisation_loop = setInterval(() => {
 			if (!document.body.contains(this.scene_blockly_el.querySelector("svg"))) return;
@@ -61,18 +79,39 @@ ve.ScriptManager = class extends ve.Component {
 			let svg_rect = svg_el.getBoundingClientRect();
 			
 			this.scene_codemirror_el.style.maxHeight = `${svg_rect.height}px`;
+			this.leftbar_file_explorer.element.style.maxHeight = `${svg_rect.height}px`;
+			
 			clearInterval(this.scriptmanager_initialisation_loop);
 		}, 100);
 		
 		//Populate element and initialise handlers
 		this.name = options.name;
+		
+		this.from_binding_fire_silently = true;
+		this.v = value;
+		delete this.from_binding_fire_silently;
 	}
 	
 	get v () {
-		
+		//Return statement
+		return this.scene_codemirror.v;
 	}
 	
 	set v (arg0_value) {
+		//Convert from parameters
+		let local_value = (arg0_value) ? arg0_value : "";
 		
+		//Declare local instance variables
+		let set_value_loop = setInterval(() => {
+			if (this.scene_codemirror?.codemirror) {
+				//Set new code value
+				js2blocks.parseCode(local_value);
+				this.scene_codemirror.to_binding_fire_silently = true;
+				this.scene_codemirror.v = local_value;
+				delete this.scene_codemirror.to_binding_fire_silently;
+				this.fireFromBinding();
+				clearInterval(set_value_loop);
+			}
+		});
 	}
 };

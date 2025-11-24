@@ -16,9 +16,9 @@
  *   - `.name`: {@link string}
  *   - `.navigation_only=false`: {@link boolean}
  *   - 
- *   - `.load_function`: {@link function} - Automatically loads the text content of a valid extension into this function.
+ *   - `.load_function`: {@link function}(arg0_data:{@link string}) - Automatically loads the text content of a valid extension into this function.
  *   - `.save_extension`: {@link string} - The save dot extension that files can be loaded from.
- *   - `.save_function`: {@link function}
+ *   - `.save_function`: {@link function} - Returns the value of the current savedata state.
  *   
  * ##### Instance:
  * - `.clipboard`: {@link Array}<{@link string}> - The list of full file paths currently stored in the clipboard.
@@ -309,7 +309,24 @@ ve.FileExplorer = class extends ve.Component {
 								}
 							})
 						}, { name: "Create New Folder" })
-					}, { name: "<icon>create_new_folder</icon>", tooltip: "Create New Folder" })
+					}, { name: "<icon>create_new_folder</icon>", tooltip: "Create New Folder" }),
+					new_file_button: new ve.Button((e) => {
+						let local_modal = new ve.Window({
+							html: new ve.HTML(`Create a new file:`),
+							new_file_name: new ve.Text("", { name: " " }),
+							confirm_button: new ve.Button((e) => {
+								let new_file_path = path.join(this.v, local_modal.components_obj.new_file_name.v);
+								
+								if (!fs.existsSync()) {
+									fs.closeSync(fs.openSync(new_file_path, "w"));
+									this.refresh();
+									new ve.Toast(`Created empty text file at: ${new_file_path}`);
+								} else {
+									new ve.Toast(`The specified path already exists as a file! Delete it first before creating a new file with the same name.`);
+								}
+							})
+						}, { name: "Create New File" });
+					}, { name: "<icon>note_add</icon>", tooltip: "Create New File" } )
 				}, {
 					style: { marginLeft: "auto", order: 99, padding: 0 }
 				}),
@@ -411,7 +428,9 @@ ve.FileExplorer = class extends ve.Component {
 			if (all_files_in_directory[i].isDirectory()) {
 				hierarchy_obj[local_full_path] = new ve.HierarchyDatatype(
 					{
-						folder_icon: new ve.HTML(this.options.folder_icon),
+						folder_icon: new ve.HTML(this.options.folder_icon, {
+							tooltip: `/${all_files_in_directory[i].name}/`
+						}),
 						actions_menu: new ve.RawInterface({
 							rename: new ve.Button((e) => {
 								ve.FileExplorer.rename(local_full_path, () => this.refresh());
@@ -466,7 +485,8 @@ ve.FileExplorer = class extends ve.Component {
 				hierarchy_obj[local_full_path] = new ve.HierarchyDatatype(
 					{
 						file_icon: new ve.HTML(this.options.file_icon, {
-							style: { opacity: 0.6 }
+							style: { opacity: 0.6 },
+							tooltip: all_files_in_directory[i].name
 						}),
 						actions_menu: new ve.RawInterface({
 							rename: new ve.Button((e) => {
