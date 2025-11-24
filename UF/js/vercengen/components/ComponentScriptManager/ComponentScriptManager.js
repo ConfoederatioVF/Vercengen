@@ -106,7 +106,7 @@ ve.ScriptManager = class extends ve.Component {
 							this.throwLoadError(e);
 						}
 					},
-					save_extension: ".js",
+					save_extension: [".bat", ".css", ".html", ".md", ".mjs", ".js", ".json", ".txt"],
 					save_function: () => {
 						//Return statement
 						return this.scene_codemirror.v;

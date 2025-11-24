@@ -17,7 +17,7 @@
  *   - `.navigation_only=false`: {@link boolean}
  *   - 
  *   - `.load_function`: {@link function}(arg0_data:{@link string}, arg1_file_path:{@link string}) - Automatically loads the text content of a valid extension into this function.
- *   - `.save_extension`: {@link string} - The save dot extension that files can be loaded from.
+ *   - `.save_extension`: {@link Array}<{@link string}>|{@link string} - The save dot extension that files can be loaded from.
  *   - `.save_function`: {@link function} - Returns the value of the current savedata state.
  *   
  * ##### Instance:
@@ -76,6 +76,8 @@ ve.FileExplorer = class extends ve.Component {
 		options.folder_icon = (options.folder_icon) ? options.folder_icon : "<icon>folder</icon>";
 		options.folder_options = (options.folder_options) ? options.folder_options : {};
 		options.name = (options.name) ? options.name : "";
+		if (options.save_extension) 
+			options.save_extension = Array.toArray(options.save_extension);
 		
 		//options.navigation_only override
 		if (options.navigation_only)
@@ -344,7 +346,7 @@ ve.FileExplorer = class extends ve.Component {
 			hierarchy_obj.save_button.element.onclick = () => {
 				let local_modal = new ve.Window({
 					html: new ve.HTML(`Save file as:`),
-					new_file_name: new ve.Text(`autosave${(this.options.save_extension) ? this.options.save_extension : ""}`, { name: " " }),
+					new_file_name: new ve.Text(`autosave${(this.options.save_extension[0]) ? this.options.save_extension[0] : ""}`, { name: " " }),
 					confirm_button: new ve.Button((e) => {
 						let save_file_name = path.join(this.v, local_modal.new_file_name.v);
 						
@@ -493,7 +495,7 @@ ve.FileExplorer = class extends ve.Component {
 								ve.FileExplorer.rename(local_full_path, () => this.refresh());
 							}, {
 								name: `<icon>drive_file_rename_outline</icon>`,
-								limit: () => (this.options.navigation_only && path.extname(local_full_path) === this.options.save_extension) || !this.options.navigation_only,
+								limit: () => (this.options.navigation_only && this.options.save_extension.includes(path.extname(local_full_path))) || !this.options.navigation_only,
 								tooltip: "Rename",
 								style: { padding: `var(--cell-padding)` }
 							}),
@@ -519,7 +521,7 @@ ve.FileExplorer = class extends ve.Component {
 							}, {
 								name: `<icon>sync_arrow_down</icon>`,
 								tooltip: "Load Savefile",
-								limit: () => this.options.load_function && (this.options.save_extension === undefined || path.extname(local_full_path) === this.options.save_extension),
+								limit: () => this.options.load_function && (this.options.save_extension === undefined || this.options.save_extension.includes(path.extname(local_full_path))),
 								style: { padding: `var(--cell-padding)` }
 							}),
 							...Object.fromEntries(
