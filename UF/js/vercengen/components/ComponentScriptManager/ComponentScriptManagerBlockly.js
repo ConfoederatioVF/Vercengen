@@ -67,17 +67,50 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 	
 	get v () {
 		//Return statement
-		return Blockly.Javascript.workspaceToCode(Blockly.mainWorkspace);
+		try {
+			return Blockly.Javascript.workspaceToCode(Blockly.mainWorkspace);
+		} catch (e) {}
 	}
 	
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
 		
+		if (this._disabled) return; //Internal guard clause if element is disabled
+		
+		//Instantiate new blocks
 		this.to_binding_fire_silently = true;
 		js2blocks.parseCode(value);
 		setTimeout(() => delete this.to_binding_fire_silently, 100);
 		this.fireFromBinding();
+	}
+	
+	disable () {
+		if (this._disabled) return; //Internal guard clause to ensure file can't be disabled twice
+		
+		//Declare local instance variables
+		this._disabled = true;
+		delete window.workspace;
+		this.element.classList.add("disabled");
+		
+		this.blockly_tooltip_parent_el = this.blockly_tooltip_el.parentElement;
+		this.blockly_tooltip_el.parentElement.removeChild(this.blockly_tooltip_el);
+		this.blockly_widget_parent_el = this.blockly_widget_el.parentElement;
+		this.blockly_widget_el.parentElement.removeChild(this.blockly_widget_el);
+	}
+	
+	enable () {
+		if (!this._disabled) return; //Internal guard clause to ensure file can't be enabled twice
+		
+		//Declare local instance variables
+		delete this._disabled;
+		window.workspace = this.workspace;
+		this.element.classList.remove("disabled");
+		
+		this.blockly_tooltip_parent_el.appendChild(this.blockly_tooltip_el);
+		delete this.blockly_tooltip_parent_el;
+		this.blockly_widget_parent_el.appendChild(this.blockly_widget_el);
+		delete this.blockly_widget_parent_el;
 	}
 	
 	fixBlocklyScaling () {
@@ -105,6 +138,11 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		
 		//Handle blockly_toolbox_el
 		this.blockly_toolbox_loop = setInterval(() => {
+			if (this._disabled) { //Internal guard clause if this._disabled
+				if (this.blockly_toolbox_el.parentElement)
+					this.blockly_toolbox_el.parentElement.removeChild(this.blockly_toolbox_el);
+				return;
+			}
 			this.svg_el = this.element.querySelector("svg");
 			this.svg_rect = this.svg_el.getBoundingClientRect();
 			

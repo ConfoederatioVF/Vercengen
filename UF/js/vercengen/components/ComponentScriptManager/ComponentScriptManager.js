@@ -35,7 +35,7 @@ ve.ScriptManager = class extends ve.Component {
 							this.v = local_data;
 							this.fireToBinding();
 						} catch (e) {
-							veWindow(`Are you sure this file is compatible?<br><br><div style = "align-items: center; display: flex;"><icon>warning</icon>&nbsp;${e}</div><br><b>Stack Trace:</b><br><div style = "margin-left: 1rem;">${e.stack}</div>`, { name: `Error Reading File`, width: "24rem" });
+							this.throwLoadError(e);
 						}
 					},
 					save_extension: ".js",
@@ -103,15 +103,34 @@ ve.ScriptManager = class extends ve.Component {
 		
 		//Declare local instance variables
 		let set_value_loop = setInterval(() => {
-			if (this.scene_codemirror?.codemirror) {
+			if (this.scene_codemirror?.codemirror) try {
 				//Set new code value
+				this.scene_blockly.enable();
 				js2blocks.parseCode(local_value);
 				this.scene_codemirror.to_binding_fire_silently = true;
 				this.scene_codemirror.v = local_value;
 				delete this.scene_codemirror.to_binding_fire_silently;
 				this.fireFromBinding();
 				clearInterval(set_value_loop);
+			} catch (e) {
+				clearInterval(set_value_loop);
+				this.throwLoadError(e);
+				
+				//Load the file anyway
+				this.scene_blockly.disable();
+				this.scene_codemirror.to_binding_fire_silently = true;
+				this.scene_codemirror.v = local_value;
+				delete this.scene_codemirror.to_binding_fire_silently;
+				this.fireFromBinding();
 			}
 		});
+	}
+	
+	throwLoadError (arg0_error) {
+		//Convert from parameters
+		let error = arg0_error;
+		
+		//Instantiate load message popup
+		veWindow(`Are you sure this file is compatible? Blockly has been disabled, and the file is only editable via CodeMirror.<br><br><div style = "align-items: center; display: flex;"><icon>warning</icon>&nbsp;${error}</div><br><b>Stack Trace:</b><br><div style = "margin-left: 1rem;">${error.stack}</div>`, { name: `Error Reading File`, width: "24rem" });
 	}
 };
