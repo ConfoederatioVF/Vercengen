@@ -213,7 +213,7 @@ global.path = require("path");
 			"UF/libraries",
 			"UF/libraries/blockly.js",
 			"UF/libraries/bi_blockly/",
-			"!UF/libraries/js2blocks.js",
+			"!UF/libraries/js2blocks.mjs",
 			"UF/libraries/maptalks.min.js",
 			"UF/libraries/mapbox-gl.js",
 			"UF/libraries/mapbox-gl.css",

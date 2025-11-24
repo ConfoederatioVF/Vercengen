@@ -10,6 +10,7 @@ ve.ScriptManagerCodemirror = class extends ve.Component {
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");
+		this.element.instance = this;
 		this.element.setAttribute("component", "ve-script-manager-codemirror");
 		this.element.style.width = "100%";
 			this.codemirror_el = document.createElement("textarea");
@@ -28,6 +29,14 @@ ve.ScriptManagerCodemirror = class extends ve.Component {
 				theme: "nord"
 			});
 			this.codemirror.setSize(null, "100%");
+			
+			this.codemirror.on("change", (e) => {
+				
+				try {
+					if (!this.to_binding_fire_silently)
+						js2blocks.parseCode(e.doc.getValue());
+				} catch (e) { /*console.warn(e);*/ }
+			});
 			clearInterval(this.codemirror_initialisation_loop);
 		}, 100);
 	}

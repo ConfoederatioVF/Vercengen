@@ -13,6 +13,8 @@ blocklyJS(Blockly);
 const biBlocksJS = require('./UF/libraries/bi_blockly/generators/javascript/bi_blockly.js')
 biBlocksJS(Blockly);
 
+const js2blocks = require("./UF/libraries/js2blocks.mjs");
+
 console.log("Blockly")
 
 module.exports = Blockly;

@@ -282,6 +282,7 @@
 			if (document.querySelectorAll(`
 				input:focus, 
 				[contenteditable]:not(#window-name):focus,
+				#scene:hover,
 				.wysiwyg-editor-container:hover,
 				.ve-drag-disabled:hover
 			`).length) return;

@@ -1,4 +1,5 @@
-import acorn from 'acorn-dynamic-import';
+const acorn = require('acorn');
+require('acorn-dynamic-import/lib/inject').default(acorn);
 
 var debug = true;
 export function simple(node, visitors, base1, state, override) {
@@ -336,7 +337,7 @@ export function walk1(ast, comments, block_loc, options){
   var last_comment = 0
   options.joinTopBlocks = options.joinTopBlocks || false
   
-  var goog = window.Blockly.goog;
+  var goog = Blockly.goog;
 
   //var xml = ['xml'];
   var xml1 = goog.dom.createDom('xml');
@@ -1496,7 +1497,7 @@ export function walk1(ast, comments, block_loc, options){
 
 export function parseCode(code){
   let Blockly = window.Blockly;
-  let workspace = Blockly.mainWorkspace;
+  let workspace = Blockly.getMainWorkspace();
   let ast1, xml1;
   let options;
   let comments = [];

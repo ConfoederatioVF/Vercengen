@@ -26,6 +26,7 @@ ve.ScriptManager = class extends ve.Component {
 			this.container_el.style.flexDirection = "row";
 			
 			this.leftbar_el = document.createElement("div");
+			this.leftbar_el.id = "leftbar";
 				this.leftbar_file_explorer = new ve.FileExplorer();
 				this.leftbar_file_explorer.bind(this.leftbar_el);
 			this.scene_el = document.createElement("div");
@@ -47,8 +48,9 @@ ve.ScriptManager = class extends ve.Component {
 				
 				this.scene_el.append(this.scene_blockly_el, this.scene_codemirror_el, this.scene_console_el, this.scene_tabs_el);
 			this.topbar_el = document.createElement("div");
+			this.topbar_el.id = "topbar";
 			
-			this.container_el.append(this.leftbar_el, this.scene_el, this.topbar_el);
+			this.container_el.append(this.topbar_el, this.leftbar_el, this.scene_el);
 		this.element.appendChild(this.container_el);
 		this.options = options;
 		this.value = value;

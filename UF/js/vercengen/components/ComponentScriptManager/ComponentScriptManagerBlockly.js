@@ -30,8 +30,9 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 				minScale: 0.2,
 				scaleSpeed: 1.2
 			},
-			//trashcan: true
+			trashcan: true
 		});
+		window.workspace = this.workspace;
 		document.body.removeChild(this.element);
 		this.blockly_widget_el = document.querySelector("body > .blocklyWidgetDiv");
 		this.blockly_tooltip_el = document.querySelector("body > .blocklyTooltipDiv");
@@ -39,9 +40,19 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		
 		//Call after Blockly initialization
 		this.interceptBlocklyTransforms();
+		this.workspace.addChangeListener((e) => {
+			let blockly_value = Blockly.JavaScript.workspaceToCode(Blockly.mainWorkspace);
+			
+			try {
+				let codemirror_obj = this.element.parentElement.querySelector(`[component="ve-script-manager-codemirror"]`).instance;
+				
+				codemirror_obj.to_binding_fire_silently = true;
+				codemirror_obj.codemirror.setValue(blockly_value);
+				delete codemirror_obj.to_binding_fire_silently;
+			} catch (e) { console.error(e); }
+		});
 		/*try {
 			console.log(window.main.updateWorkspace);
-			this.workspace.addChangeListener(window.main.updateWorkspace);
 		} catch (e) { console.warn(e); }*/ //[WIP] - Fix when this is a valid method
 		
 		//Initialise onresize, flyout scaling fixes
@@ -72,8 +83,12 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 	}
 	
 	handleCSS () {
+		//Declare local instance variables
+		this.blockly_toolbox_mode = "canvas"; //Either 'body'/'canvas'
 		this.element.style.width = "auto";
-		this.update_css_loop = setInterval(() => {
+		
+		//Handle blockly_toolbox_el
+		this.blockly_toolbox_loop = setInterval(() => {
 			this.svg_el = this.element.querySelector("svg");
 			this.svg_rect = this.svg_el.getBoundingClientRect();
 			
@@ -81,13 +96,8 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 			this.max_width = this.svg_rect.width;
 			this.svg_el.style.maxHeight = `${this.max_height}px`;
 			this.svg_el.style.maxWidth = `${this.max_width}px`;
-		});
-		
-		//Handle blockly_toolbox_el
-		//this.blockly_toolbox_el.style.zIndex = 2;
-		this.blockly_toolbox_mode = "canvas"; //Either 'body'/'canvas'
-		
-		this.blockly_toolbox_loop = setInterval(() => {
+			
+			//Change anchor for this.blockly_toolbox_el
 			let rect = this.element.getBoundingClientRect();
 			this.blockly_toolbox_mode = (this.element.querySelector(".blocklyFlyout:hover") ||
 				this.blockly_toolbox_el.querySelector(":hover") ||
@@ -106,7 +116,6 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 			if (this.blockly_toolbox_mode === "canvas") {
 				if (!this.element.contains(this.blockly_toolbox_el))
 					this.element.appendChild(this.blockly_toolbox_el);
-				this.blockly_toolbox_el.style.color = "black";
 				this.blockly_toolbox_el.style.height = `${this.svg_rect.height}px`;
 				this.blockly_toolbox_el.style.left = "0px";
 				this.blockly_toolbox_el.style.top = `calc(var(--cell-padding))`;

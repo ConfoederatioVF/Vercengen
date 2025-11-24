@@ -1,0 +1,33 @@
+.blocklyFlyout .blocklyWorkspace {
+    transform: scaleY(0.95);
+}
+.blocklyFlyoutBackground {
+    fill: var(--bg-primary-colour) !important;
+}
+.blocklyToolboxDiv {
+    background-color: var(--bg-primary-colour);
+    color: var(--body-colour);
+    
+    .blocklyTreeLabel {
+        font-family: var(--body-font-family);
+    }
+    .blocklyTreeRow {
+        transition: all 0.5s ease;
+    }
+}
+.blocklyTreeRow:not(.blocklyTreeSelected):hover {
+    background-color: var(--accent-primary-colour);
+}
+[component="ve-script-manager-blockly"] {
+    svg {
+        .blocklyTrash, .blocklyZoom {
+            filter: brightness(100);
+        }
+        .blocklyWorkspace rect.blocklyMainBackground {
+            fill: var(--bg-secondary-colour) !important;
+        }
+    }
+}
+text.blocklyText {
+    font-family: var(--body-font-family);
+}
