@@ -11,6 +11,18 @@
         background-color: var(--body-colour);
     }
 }
+    /* -- ve.ScriptManager.console_el -- */
+    .ve-script-manager-console {
+        font-family: var(--monospace-font-family), monospace;
+        
+        .error:before {
+            content: "[ERROR] ";
+            color: var(--accent-secondary-colour);
+        }
+        .message:before {
+            content: "[INFO] "
+        }
+    }
 
 /* -- ve.ScriptManagerBlockly -- */
 .blocklyFlyout .blocklyWorkspace {

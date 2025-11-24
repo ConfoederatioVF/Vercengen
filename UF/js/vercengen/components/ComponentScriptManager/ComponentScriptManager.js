@@ -10,7 +10,6 @@ ve.ScriptManager = class extends ve.Component {
 		if (options.name === undefined) options.name = "ScriptManager";
 		
 		//Declare local instance variables
-		this._codemirror_theme = "nord";
 		this._codemirror_themes = {
 			"3024-day": "3024-day",
 			"3024-night": "3024-night",
@@ -82,9 +81,23 @@ ve.ScriptManager = class extends ve.Component {
 		this.options = options;
 		this._settings = {
 			clear_blockly_workspace_on_error: true,
-			display_load_errors: false
+			codemirror_theme: "nord",
+			display_load_errors: false,
+			theme: "theme-default"
 		};
 		
+		this.console_el = document.createElement("div");
+			this.console_el.print = (arg0_message, arg1_type) => {
+				//Convert from parameters
+				let message = (arg0_message) ? arg0_message : "";
+				let type = (arg1_type) ? arg1_type : "message";
+				
+				//Declare local instance variables
+				let local_msg_el = document.createElement("div");
+					local_msg_el.classList.add(type);
+					local_msg_el.innerText = message;
+					this.console_el.appendChild(local_msg_el);
+ 			};
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-script-manager");
 			this.element.instance = this;
@@ -130,12 +143,10 @@ ve.ScriptManager = class extends ve.Component {
 				this.scene_codemirror = new ve.ScriptManagerCodemirror();
 					this.scene_codemirror_el = this.scene_codemirror.element;
 					this.scene_codemirror_el.id = "scene-codemirror";
-				this.scene_console_el = document.createElement("div");
-					this.scene_console_el.id = "scene-console";
 				this.scene_tabs_el = document.createElement("div");
 					this.scene_tabs_el.id = "scene-tabs";
 				
-				this.scene_el.append(this.scene_blockly_el, this.scene_codemirror_el, this.scene_console_el, this.scene_tabs_el);
+				this.scene_el.append(this.scene_blockly_el, this.scene_codemirror_el, this.scene_tabs_el);
 			this.topbar_el = document.createElement("div");
 			this.topbar_el.id = "topbar";
 				this.topbar_interface = new ve.RawInterface({
@@ -152,7 +163,7 @@ ve.ScriptManager = class extends ve.Component {
 						let themes_obj = {};
 						
 						Object.iterate(this._codemirror_themes, (local_key, local_value) => {
-							themes_obj[local_key] = { name: local_value, selected: (this._codemirror_theme === local_key) }
+							themes_obj[local_key] = { name: local_value, selected: (this._settings.codemirror_theme === local_key) }
 						});
 						
 						let local_context_menu = new ve.ContextMenu({
@@ -161,11 +172,11 @@ ve.ScriptManager = class extends ve.Component {
 							editor_theme: new ve.Select({
 								"theme-default": {
 									name: "Default",
-									selected: (!["theme-light"].includes(this._theme))
+									selected: (!["theme-light"].includes(this._settings.theme))
 								},
 								"theme-light": {
 									name: "Light",
-									selected: (this._theme === "theme-light")
+									selected: (this._settings.theme === "theme-light")
 								}
 							}, {
 								name: "Editor Theme",
@@ -210,10 +221,52 @@ ve.ScriptManager = class extends ve.Component {
 						});
 					}, { name: "View", x: 0, y: 2 }),
 					run: new ve.Button(() => {
-						
+						let local_context_menu = new ve.ContextMenu({
+							run_header: new ve.HTML(`<b>Run Settings:</b><br><br>`, { x: 0, y: 0 }),
+							
+							run_this_file_button: new ve.Button(() => {
+								try {
+									eval(this.v);
+								} catch (e) {
+									this.console_el.print(e, "error");
+								}
+							}, { name: "Run Current File" })
+						}, { id: "script_manager_run" });
 					}, { name: "Run" }),
 					console: new ve.Button(() => {
-						
+						if (this.local_console) this.local_console.close();
+						this.local_console = new ve.Window({
+							console_el: new ve.HTML(() => this.console_el, {
+								attributes: { "class": "ve-script-manager-console" },
+								x: 0, y: 0 
+							}),
+							actions_bar: new ve.RawInterface({
+								console_command: new ve.Text("", { 
+									attributes: { placeholder: "Enter console command ..." }, 
+									name: " ",
+									style: { display: "inline" }
+								}),
+								send_command: new ve.Button(() => {
+									//Declare local instance variables
+									let command_value = this.local_console.actions_bar.console_command.v;
+									
+									if (command_value.length > 0) try {
+										eval(command_value);
+									} catch (e) {
+										this.console_el.print(e, "error");
+									}
+								}, { name: "Send" }),
+								clear_console: new ve.Button(() => {
+									let local_confirm_modal = new ve.Confirm(`Are you sure you want to clear the current console?`, {
+										special_function: () => this.console_el.innerHTML = ""
+									});
+								}, { name: "Clear Console" })
+							}, {
+								alignItems: "center",
+								display: "flex",
+								name: " "
+							})
+						}, { can_rename: false, name: "Console", width: "40rem" });
 					}, { name: "Console" })
 				}, { 
 					no_name_element: true,
@@ -300,7 +353,7 @@ ve.ScriptManager = class extends ve.Component {
 		let theme_class = arg0_theme_class;
 		
 		//Declare local instance variables
-		this._codemirror_theme = theme_class;
+		this._settings.codemirror_theme = theme_class;
 		this.scene_codemirror.codemirror.setOption("theme", theme_class);
 	}
 	
@@ -309,13 +362,13 @@ ve.ScriptManager = class extends ve.Component {
 		let theme_class = arg0_theme_class;
 		
 		//Remove previous themes
-		if (this._theme)
-			this.element.classList.remove(this._theme);
-		this._theme = theme_class;
+		if (this._settings.theme)
+			this.element.classList.remove(this._settings.theme);
+		this._settings.theme = theme_class;
 		
 		//Apply new theme
-		this.element.classList.add(this._theme);
-		this.scene_blockly.setTheme(this._theme);
+		this.element.classList.add(this._settings.theme);
+		this.scene_blockly.setTheme(this._settings.theme);
 	}
 	
 	throwLoadError (arg0_error) {
