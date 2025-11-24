@@ -521,7 +521,7 @@ ve.FileExplorer = class extends ve.Component {
 							}, {
 								name: `<icon>sync_arrow_down</icon>`,
 								tooltip: "Load Savefile",
-								limit: () => this.options.load_function && (this.options.save_extension === undefined || this.options.save_extension.includes(path.extname(local_full_path))),
+								limit: () => this.options.load_function && (this.options.save_extension === undefined || this.options.save_extension.includes(path.extname(local_full_path)) || this.options.save_extension.includes(".*")),
 								style: { padding: `var(--cell-padding)` }
 							}),
 							...Object.fromEntries(

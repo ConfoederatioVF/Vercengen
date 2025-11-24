@@ -80,6 +80,10 @@ ve.ScriptManager = class extends ve.Component {
 			"zenburn": "Zenburn"
 		};
 		this.options = options;
+		this._settings = {
+			clear_blockly_workspace_on_error: true,
+			display_load_errors: false
+		};
 		
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-script-manager");
@@ -102,11 +106,9 @@ ve.ScriptManager = class extends ve.Component {
 						try {
 							this.v = local_data;
 							this.fireToBinding();
-						} catch (e) {
-							this.throwLoadError(e);
-						}
+						} catch (e) {}
 					},
-					save_extension: [".bat", ".css", ".html", ".md", ".mjs", ".js", ".json", ".txt"],
+					save_extension: [".*"],
 					save_function: () => {
 						//Return statement
 						return this.scene_codemirror.v;
@@ -195,11 +197,13 @@ ve.ScriptManager = class extends ve.Component {
 								this.scene_blockly.show();
 							}, { name: "Show Blockly", limit: () => this.scene_blockly._hidden, x: 0, y: 3 }),
 							
-							clear_blockly_workspace_on_error: new ve.Toggle(false, {
-								name: "Clear Blockly on error"
+							clear_blockly_workspace_on_error: new ve.Toggle(this._settings.clear_blockly_workspace_on_error, {
+								name: "Clear Blockly on error",
+								onuserchange: (v) => this._settings.clear_blockly_workspace_on_error = v
 							}, { x: 0, y: 4 }),
-							display_load_errors: new ve.Toggle(true, {
-								name: "Display load errors"
+							display_load_errors: new ve.Toggle(this._settings.display_load_errors, {
+								name: "Display load errors",
+								onuserchange: (v) => this._settings.display_load_errors = v
 							})
 						}, {
 							id: "script_manager_view"
@@ -272,7 +276,14 @@ ve.ScriptManager = class extends ve.Component {
 				clearInterval(set_value_loop);
 			} catch (e) {
 				clearInterval(set_value_loop);
-				this.throwLoadError(e);
+				if (this._settings.display_load_errors)
+					this.throwLoadError(e);
+				
+				if (this._settings.clear_blockly_workspace_on_error) {
+					this.scene_blockly.enable();
+					js2blocks.parseCode("");
+					this.scene_blockly.disable();
+				}
 				
 				//Load the file anyway
 				this.scene_blockly.disable();
