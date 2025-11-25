@@ -160,10 +160,11 @@ ve.Window = class extends ve.Feature {
 		this.element.style.zIndex = ve.Window.instances.length.toString();
 		
 		let window_name_el = this.element.querySelector(`#window-name`);
-		window_name_el.addEventListener("input", (e) => {
-			if (this.options.onuserchange)
-				this.options.onuserchange({ name: window_name_el.innerHTML }, e);
-		});
+		if (window_name_el)
+			window_name_el.addEventListener("input", (e) => {
+				if (this.options.onuserchange)
+					this.options.onuserchange({ name: window_name_el.innerHTML }, e);
+			});
 		
 		//Instantiate element handlers
 		if (this.options.can_close && !this.options.headless) {
