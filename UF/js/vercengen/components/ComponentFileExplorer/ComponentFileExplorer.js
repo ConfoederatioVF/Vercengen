@@ -310,7 +310,7 @@ ve.FileExplorer = class extends ve.Component {
 									new ve.Toast(`You cannot create a folder with no name.`);
 								}
 							})
-						}, { name: "Create New Folder" })
+						}, { can_rename: false, name: "Create New Folder" })
 					}, { name: "<icon>create_new_folder</icon>", tooltip: "Create New Folder" }),
 					new_file_button: new ve.Button((e) => {
 						let local_modal = new ve.Window({
@@ -327,7 +327,7 @@ ve.FileExplorer = class extends ve.Component {
 									new ve.Toast(`The specified path already exists as a file! Delete it first before creating a new file with the same name.`);
 								}
 							})
-						}, { name: "Create New File" });
+						}, { can_rename: false, name: "Create New File" });
 					}, { name: "<icon>note_add</icon>", tooltip: "Create New File" } )
 				}, {
 					style: { marginLeft: "auto", order: 99, padding: 0 }
@@ -380,7 +380,7 @@ ve.FileExplorer = class extends ve.Component {
 								console.error(e);
 							}
 					})
-				}, { name: "Save File" });
+				}, { can_rename: false, name: "Save File" });
 			};
 		}
 		
