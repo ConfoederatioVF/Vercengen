@@ -241,3 +241,13 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		delete this._preserved_width;
 	}
 };
+
+//Functional binding
+
+/**
+ * @returns {ve.ScriptManagerBlockly}
+ */
+veScriptManagerBlockly = function () {
+	//Return statement
+	return new ve.ScriptManagerBlockly(...arguments);
+}

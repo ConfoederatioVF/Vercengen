@@ -2,6 +2,11 @@
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  * 
  * Visual block-based and code-based IDE used to assemble `.js` script files. ES6 compatible; non-compatible files will degrade to code editor only.
+ * - Functional binding: <span color=00ffff>veScriptManager</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link string} - The code to load into the present ve.ScriptManager.
+ * - `arg1_options`: {@link Object}
  * 
  * @type {ve.ScriptManager}
  */
@@ -504,4 +509,14 @@ ve.ScriptManager = class extends ve.Component {
 		//Instantiate load message popup
 		veWindow(`Are you sure this file is ${(this.options.compatibility_message) ? this.options.compatibility_message : "ES6"} compatible? Blockly has been disabled, and the file is only editable via CodeMirror.<br><br><div style = "align-items: center; display: flex;"><icon>warning</icon>&nbsp;${error}</div><br><b>Stack Trace:</b><br><div style = "margin-left: 1rem;">${error.stack}</div>`, { name: `Error Reading File`, width: "24rem" });
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.ScriptManager}
+ */
+veScriptManager = function () {
+	//Return statement
+	return new ve.ScriptManager(...arguments);
 };

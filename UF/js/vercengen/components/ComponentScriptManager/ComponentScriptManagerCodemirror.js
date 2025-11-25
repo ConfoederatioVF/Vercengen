@@ -62,3 +62,13 @@ ve.ScriptManagerCodemirror = class extends ve.Component {
 		this.fireFromBinding();
 	}
 };
+
+//Functional binding
+
+/**
+ * @returns {ve.ScriptManagerCodemirror}
+ */
+veScriptManagerCodemirror = function () {
+	//Return statement
+	return new ve.ScriptManagerCodemirror(...arguments);
+};
