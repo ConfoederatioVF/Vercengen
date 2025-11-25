@@ -44,7 +44,7 @@ ve.RawInterface = class extends ve.Component {
 		this.element.innerHTML = html_string.join("");
 		
 		//KEEP AT BOTTOM!
-		this.name = options.name;
+		this.name = this.options.name;
 		this.reserved_keys = Object.keys(this).concat(["reserved_keys", "v"]);
 		this.v = components_obj;
 	}

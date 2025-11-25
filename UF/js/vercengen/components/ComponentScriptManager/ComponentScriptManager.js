@@ -87,10 +87,13 @@ ve.ScriptManager = class extends ve.Component {
 		};
 		this.options = options;
 		this._settings = {
+			is_vercengen_script_manager_settings: true,
+			
 			clear_blockly_workspace_on_error: true,
 			codemirror_theme: "nord",
 			display_load_errors: false,
 			hide_blockly_workspace_on_error: false,
+			keybinds: "sublime",
 			theme: "theme-default",
 			view_file_explorer: true
 		};
@@ -174,16 +177,70 @@ ve.ScriptManager = class extends ve.Component {
 				this.topbar_interface = new ve.RawInterface({
 					name_el: new ve.HTML(() => `<span id = "name">${this.name}</span>${(!options.do_not_display_file_name) ? `<span id = "file-name"> | ${(this._file_path) ? this._file_path : "None"}</span>` : ""}`,
 						{ style: { width: "20rem" } }),
-					file: new ve.Button(() => {
+					/*file: new ve.Button(() => {
 						
-					}, { name: "File" }),
+					}, { name: "File" }),*/
 					settings: new ve.Button(() => {
+						if (this.settings_window) this.settings_window.close();
 						this.settings_window = new ve.Window({
 							hide_blockly_workspace_on_error: new ve.Toggle(this._settings.hide_blockly_workspace_on_error, {
 								name: "Hide/show Blockly workspace on error",
 								onuserchange: (v) => this._settings.hide_blockly_workspace_on_error = v
-							})
-						}, { name: "Settings", width: "24rem" })
+							}),
+							keybinds: new ve.Select({
+								emacs: {
+									name: "Emacs",
+									selected: (this._settings.keybinds === "emacs")
+								},
+								sublime: {
+									name: "Sublime Text",
+									selected: (this._settings.keybinds === "sublime")
+								},
+								vim: {
+									name: "Vim",
+									selected: (this._settings.keybinds === "vim")
+								}
+							}, { 
+								name: "Keybinds",
+								onuserchange: (v) => {
+									this.loadSettings({ keybinds: v });
+								}
+							}),
+							actions_bar: new ve.RawInterface({
+								load_settings: new ve.File(undefined, {
+									name: "Load Settings",
+									do_not_display: true,
+									onuserchange: (v) => {
+										//Declare local instance variables
+										let display_error = false;
+										
+										//Try to load new settings
+										try {
+											let settings_obj = JSON.parse(fs.readFileSync(v[0], "utf8"));
+											
+											if (settings_obj && settings_obj.is_vercengen_script_manager_settings) {
+												this.loadSettings(settings_obj);
+											} else {
+												display_error = true;
+											}
+										} catch (e) {
+											display_error = true;
+										}
+										
+										if (display_error)
+											veWindow(`<span style = "align-items: center; display: flex"><icon>warning</icon> Could not load non-ScriptManager settings.</span>`, { can_rename: false, name: "Error loading settings", width: "20rem" });
+									},
+								}),
+								save_settings: new ve.File(undefined, {
+									name: "Save Settings",
+									do_not_display: true,
+									onuserchange: (v) => {
+										console.log(v);
+									},
+									save_function: () => this.saveSettings()
+								})
+							}, { name: " ", style: { alignItems: "center", display: "flex" } })
+						}, { can_rename: false, name: "Settings", width: "24rem" })
 					}, { name: "Settings" }),
 					view: new ve.Button(() => {
 						//Populate themes_obj
@@ -208,8 +265,7 @@ ve.ScriptManager = class extends ve.Component {
 							}, {
 								name: "Editor Theme",
 								onchange: (v) => {
-									console.log(v);
-									this.setTheme(v);
+									this.loadSettings({ theme: v });
 								},
 								style: {
 									alignItems: "center",
@@ -222,8 +278,7 @@ ve.ScriptManager = class extends ve.Component {
 							}, {
 								name: "Codemirror Theme",
 								onchange: (v) => {
-									console.log(v);
-									this.setCodeEditorTheme(v);
+									this.loadSettings({ codemirror_theme: v });
 								},
 								x: 0, y: 2
 							}),
@@ -245,7 +300,7 @@ ve.ScriptManager = class extends ve.Component {
 							}),
 							show_file_explorer: new ve.Toggle(this._settings.view_file_explorer, {
 								name: "View File Explorer",
-								onuserchange: (v) => this.leftbar_file_explorer.element.style.display = (v) ? "block" : "none"
+								onuserchange: (v) => this.loadSettings({ view_file_explorer: v })
 							})
 						}, {
 							id: "script_manager_view"
@@ -253,8 +308,9 @@ ve.ScriptManager = class extends ve.Component {
 					}, { name: "View", x: 0, y: 2 }),
 					run: new ve.Button(() => {
 						let local_context_menu = new ve.ContextMenu({
-							run_header: new ve.HTML(`<b>Run Settings:</b><br><br>`, { x: 0, y: 0 }),
+							run_header: new ve.HTML(`<b>Run Settings:</b><br>`, { x: 0, y: 0 }),
 							
+							warning: new ve.HTML(`<div style = "align-items: center; display: flex"><icon style = "width: auto;">info</icon><b style = "margin-left: calc(var(--padding)*0.5);">Note:</b></div><span>Make sure you trust the code you are about to run before executing it.</span><br><br>`),
 							run_this_file_button: new ve.Button(() => {
 								try {
 									eval(this.v);
@@ -389,6 +445,32 @@ ve.ScriptManager = class extends ve.Component {
 				this.fireFromBinding();
 			}
 		});
+	}
+	
+	loadSettings (arg0_settings) {
+		//Convert from parameters
+		let settings_obj = arg0_settings;
+		
+		//Declare local instance variables; parse settings
+		if (settings_obj.codemirror_theme)
+			this.setCodeEditorTheme(settings_obj.codemirror_theme);
+		if (settings_obj.keybinds)
+			this.scene_codemirror.codemirror.setOption("keyMap", settings_obj.keybinds);
+		if (settings_obj.theme)
+			this.setTheme(settings_obj.theme);
+		if (settings_obj.view_file_explorer !== undefined)
+			this.leftbar_file_explorer.element.style.display = (settings_obj.view_file_explorer) ? "block" : "none";
+		
+		//Set this._settings
+		this._settings = {
+			...this._settings,
+			...settings_obj
+		};
+	}
+	
+	saveSettings () {
+		//Return statement
+		return JSON.stringify(this._settings);
 	}
 	
 	setCodeEditorTheme (arg0_theme_class) {

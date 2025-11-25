@@ -327,7 +327,7 @@
 			if (el.scrollWidth > el_width) {
 				el.style.overflowX = "auto";
 			}
-		}, 50);
+		}, 150);
 		
 		//Return statement
 		return el;
