@@ -60,23 +60,33 @@
 <li><code>arg0_components_obj</code>: <a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt;</li>
 <li><code>arg1_options</code>: <a href="Object.html">Object</a>
 <ul>
-<li><code>anchor=&quot;top_left&quot;</code> - Either 'bottom_left'/'bottom_right'/'top_left'/'top_right'.</li>
-<li><code>height=&quot;auto&quot;</code>: number</li>
-<li><code>width=&quot;12rem&quot;</code>: number</li>
-<li><code>x=HTML.mouse_x</code>: number</li>
-<li><code>y=HTML.mouse_y</code>: number</li>
+<li><code>.anchor=&quot;top_left&quot;</code> - Either 'bottom_left'/'bottom_right'/'top_left'/'top_right'.</li>
+<li><code>.height=&quot;auto&quot;</code>: number</li>
+<li><code>.width=&quot;12rem&quot;</code>: number</li>
+<li><code>.x=HTML.mouse_x</code>: number</li>
+<li><code>.y=HTML.mouse_y</code>: number</li>
 <li></li>
-<li><code>do_not_wrap=false</code>: boolean - Whether to disable wrapping in an always open ve.Interface.</li>
-<li><code>id</code>: string</li>
-<li><code>mode=&quot;window&quot;</code>: string - Either 'static_ui'/'static_window'/'window'.</li>
-<li><code>name=&quot;&quot;</code>: string - Auto-resolves to 'Window' instead if <code>.can_rename=true</code>.</li>
-<li><code>theme</code>: string - The CSS theme to apply to the Feature.</li>
+<li><code>.do_not_wrap=false</code>: boolean - Whether to disable wrapping in an always open ve.Interface.</li>
+<li><code>.id</code>: string</li>
+<li><code>.mode=&quot;window&quot;</code>: string - Either 'static_ui'/'static_window'/'window'.</li>
+<li><code>.name=&quot;&quot;</code>: string - Auto-resolves to 'Window' instead if <code>.can_rename=true</code>.</li>
+<li><code>.theme</code>: string - The CSS theme to apply to the Feature.</li>
 <li></li>
-<li><code>can_close</code>: boolean</li>
-<li><code>can_rename</code>: boolean</li>
-<li><code>draggable</code>: boolean</li>
-<li><code>headless</code>: boolean</li>
-<li><code>resizeable</code>: boolean</li>
+<li><code>.can_close</code>: boolean</li>
+<li><code>.can_rename</code>: boolean</li>
+<li><code>.draggable</code>: boolean</li>
+<li><code>.headless</code>: boolean</li>
+<li><code>.resizeable</code>: boolean</li>
+<li></li>
+<li><code>.onuserchange</code>: function(arg0_v:<a href="Object.html">Object</a>, arg1_e:Event) - Fires upon user changes to the window. Changes are discrete, and the set of Object keys may vary.
+<ul>
+<li><code>arg0_v</code>: <a href="Object.html">Object</a>
+<ul>
+<li><code>.name</code>: string</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -153,7 +163,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="js_vercengen_features_Window.js.html">js/vercengen/features/Window.js</a>, <a href="js_vercengen_features_Window.js.html#line49">line 49</a>
+        <a href="js_vercengen_features_Window.js.html">js/vercengen/features/Window.js</a>, <a href="js_vercengen_features_Window.js.html#line53">line 53</a>
     </li></ul></dd>
     
 
