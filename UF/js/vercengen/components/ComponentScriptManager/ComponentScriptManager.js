@@ -332,6 +332,7 @@ ve.ScriptManager = class extends ve.Component {
 							}, { name: "Hide Blockly", limit: () => !this.scene_blockly._hidden, x: 0, y: 3 }),
 							show_blockly: new ve.Button(() => {
 								this.scene_blockly.show();
+								this.v = this.v;
 							}, { name: "Show Blockly", limit: () => this.scene_blockly._hidden, x: 0, y: 3 }),
 							
 							clear_blockly_workspace_on_error: new ve.Toggle(this._settings.clear_blockly_workspace_on_error, {
@@ -470,7 +471,7 @@ ve.ScriptManager = class extends ve.Component {
 		let set_value_loop = setInterval(() => {
 			if (this.scene_codemirror?.codemirror) try {
 				//Set new code value
-				if (!this._scene_blockly.hidden) {
+				if (!this.scene_blockly._hidden) {
 					this.scene_blockly.enable();
 					js2blocks.parseCode(local_value);
 				}
