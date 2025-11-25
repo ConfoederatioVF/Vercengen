@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>js/vercengen/components/ComponentHierarchy/Nestable/DOM.js - Documentation</title>
+    <title>libraries/bi_blockly/blocks/bi_blockly_overload.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,7 +32,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">js/vercengen/components/ComponentHierarchy/Nestable/DOM.js</h1>
+    <h1 class="page-title">libraries/bi_blockly/blocks/bi_blockly_overload.js</h1>
     
 
     
@@ -42,74 +42,47 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const DOM = {
-    select: (selector, parent = document) => {
-        return parent.querySelector(selector);
-    },
-    selectAll: (selector, parent = document) => {
-        return parent.querySelectorAll(selector);
-    },	
-    /**
-    * Get an elements children that match the selector
-    * @param  {Node} elem The base element
-    * @param  {String} selector CSS3 selector string
-    * @return {Array}
-    */	
-    children: (elem, selector) => {
-        const arr = [];
-        const children = elem.children;
-        const l = children.length;
-        for (let i = 0; i &lt; l; ++i){
-            const child = children[i];
-            if (child.matches(selector)){
-                arr.push(child);
-            }
-        }
-        return arr;
-    },
-    /**
-    * Get all DOM element up the tree that match the selector
-    * @param  {Node} elem The base element
-    * @param  {String} selector CSS3 selector string
-    * @return {Array}
-    */
-    parents: (elem, selector) => {
-        // Set up a parent array
-        var parents = [];
+            <pre class="prettyprint source linenums"><code>function init_blockly_jc(){
+  //  Blockly.Blockly.prototype.setXXX    = Blockly.Blockly.prototype.setXXX_jc
+}
 
-        // Push each parent element to the array
-        for ( ; elem &amp;&amp; elem !== document; elem = elem.parentNode ) {
-            if (selector) {
-                if (elem.matches(selector)) {
-                    parents.push(elem);
-                }
-                continue;
-            }
-            parents.push(elem);
-        }
-
-        // Return our parent array
-        return parents;
-    },	
-    /**
-    * Get an element's DOMRect relative to the document instead of the viewport.
-    * @param  {Object} el  HTMLElement
-    * @return {Object}     Formatted DOMRect copy
-    */
-    rect(el) {
-            var w = window,
-                    st = (w.pageYOffset !== undefined) ? w.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop,
-                    o = el.getBoundingClientRect(),
-                    x = w.pageXOffset,
-                    y = st;
-            return {
-                    left: o.left + x,
-                    top: o.top + y,
-                    height: o.height,
-                    width: o.width
-            };
-    }
-};</code></pre>
+Blockly.Blocks['math_arithmetic'] = {
+  /**
+   * Block for basic arithmetic operator.
+   * @this Blockly.Block
+   */
+  init: function() {
+    var OPERATORS =
+        [[Blockly.Msg.MATH_ADDITION_SYMBOL, 'ADD'],
+         [Blockly.Msg.MATH_SUBTRACTION_SYMBOL, 'MINUS'],
+         [Blockly.Msg.MATH_MULTIPLICATION_SYMBOL, 'MULTIPLY'],
+         [Blockly.Msg.MATH_DIVISION_SYMBOL, 'DIVIDE'],
+         [Blockly.Msg.MATH_POWER_SYMBOL, 'POWER']];
+    this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
+    this.setColour(Blockly.Blocks.math.HUE);
+    this.setOutput(true, null); // 'Number');
+    this.appendValueInput('A')
+        .setCheck(null); // 'Number');
+    this.appendValueInput('B')
+        .setCheck(null) // 'Number')
+        .appendField(new Blockly.FieldDropdown(OPERATORS), 'OP');
+    this.setInputsInline(true);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    this.setTooltip(function() {
+      var mode = thisBlock.getFieldValue('OP');
+      var TOOLTIPS = {
+        'ADD': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_ADD,
+        'MINUS': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_MINUS,
+        'MULTIPLY': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_MULTIPLY,
+        'DIVIDE': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_DIVIDE,
+        'POWER': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_POWER
+      };
+      return TOOLTIPS[mode];
+    });
+  }
+};
+</code></pre>
         </article>
     </section>
 
