@@ -1,3 +1,10 @@
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Visual block-based and code-based IDE used to assemble `.js` script files. ES6 compatible; non-compatible files will degrade to code editor only.
+ * 
+ * @type {ve.ScriptManager}
+ */
 ve.ScriptManager = class extends ve.Component {
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
@@ -83,8 +90,15 @@ ve.ScriptManager = class extends ve.Component {
 			clear_blockly_workspace_on_error: true,
 			codemirror_theme: "nord",
 			display_load_errors: false,
-			theme: "theme-default"
+			hide_blockly_workspace_on_error: false,
+			theme: "theme-default",
+			view_file_explorer: true
 		};
+		if (this.options.settings)
+			this._settings = {
+				...this._settings,
+				...this.options.settings
+			};
 		
 		this.console_el = document.createElement("div");
 			this.console_el.print = (arg0_message, arg1_type) => {
@@ -121,13 +135,16 @@ ve.ScriptManager = class extends ve.Component {
 							this.fireToBinding();
 						} catch (e) {}
 					},
-					save_extension: [".*"],
+					save_extension: (this.options.save_extension) ? this.options.save_extension : [".*"],
 					save_function: () => {
 						//Return statement
 						return this.scene_codemirror.v;
 					},
 					style: { 
-						overflow: "auto", width: "20rem"
+						overflow: "auto",
+						paddingBottom: 0,
+						paddingTop: 0,
+						width: "20rem"
 					}
 				});
 				this.leftbar_file_explorer.bind(this.leftbar_el);
@@ -149,6 +166,11 @@ ve.ScriptManager = class extends ve.Component {
 				this.scene_el.append(this.scene_blockly_el, this.scene_codemirror_el, this.scene_tabs_el);
 			this.topbar_el = document.createElement("div");
 			this.topbar_el.id = "topbar";
+		
+			this.console_html = new ve.HTML(() => this.console_el, {
+				attributes: { "class": "ve-script-manager-console" },
+				x: 0, y: 0
+			});
 				this.topbar_interface = new ve.RawInterface({
 					name_el: new ve.HTML(() => `<span id = "name">${this.name}</span>${(!options.do_not_display_file_name) ? `<span id = "file-name"> | ${(this._file_path) ? this._file_path : "None"}</span>` : ""}`,
 						{ style: { width: "20rem" } }),
@@ -156,7 +178,12 @@ ve.ScriptManager = class extends ve.Component {
 						
 					}, { name: "File" }),
 					settings: new ve.Button(() => {
-						
+						this.settings_window = new ve.Window({
+							hide_blockly_workspace_on_error: new ve.Toggle(this._settings.hide_blockly_workspace_on_error, {
+								name: "Hide/show Blockly workspace on error",
+								onuserchange: (v) => this._settings.hide_blockly_workspace_on_error = v
+							})
+						}, { name: "Settings", width: "24rem" })
 					}, { name: "Settings" }),
 					view: new ve.Button(() => {
 						//Populate themes_obj
@@ -215,6 +242,10 @@ ve.ScriptManager = class extends ve.Component {
 							display_load_errors: new ve.Toggle(this._settings.display_load_errors, {
 								name: "Display load errors",
 								onuserchange: (v) => this._settings.display_load_errors = v
+							}),
+							show_file_explorer: new ve.Toggle(this._settings.view_file_explorer, {
+								name: "View File Explorer",
+								onuserchange: (v) => this.leftbar_file_explorer.element.style.display = (v) ? "block" : "none"
 							})
 						}, {
 							id: "script_manager_view"
@@ -236,10 +267,7 @@ ve.ScriptManager = class extends ve.Component {
 					console: new ve.Button(() => {
 						if (this.local_console) this.local_console.close();
 						this.local_console = new ve.Window({
-							console_el: new ve.HTML(() => this.console_el, {
-								attributes: { "class": "ve-script-manager-console" },
-								x: 0, y: 0 
-							}),
+							console_el: this.console_html,
 							actions_bar: new ve.RawInterface({
 								console_command: new ve.Text("", { 
 									attributes: { placeholder: "Enter console command ..." }, 
@@ -256,14 +284,24 @@ ve.ScriptManager = class extends ve.Component {
 										this.console_el.print(e, "error");
 									}
 								}, { name: "Send" }),
+								information: new ve.Button(() => {
+									this.console_el.print(`Help Menu:`);
+									this.console_el.print(`- this.console_el.print(arg0_message:string, arg1_type:string) - Prints a message to the console.`);
+									this.console_el.print(`- - arg1_type: 'error'/'info'`);
+								}, {
+									name: "Help",
+									tooltip: `Prints help information.`
+								}),
 								clear_console: new ve.Button(() => {
 									let local_confirm_modal = new ve.Confirm(`Are you sure you want to clear the current console?`, {
 										special_function: () => this.console_el.innerHTML = ""
 									});
-								}, { name: "Clear Console" })
+								}, { name: "Clear Console" }),
 							}, {
-								alignItems: "center",
-								display: "flex",
+								style: {
+									alignItems: "center",
+									display: "flex"
+								},
 								name: " "
 							})
 						}, { can_rename: false, name: "Console", width: "40rem" });
@@ -293,8 +331,8 @@ ve.ScriptManager = class extends ve.Component {
 			let svg_el = this.scene_blockly_el.querySelector("svg");
 			let svg_rect = svg_el.getBoundingClientRect();
 			
-			this.scene_codemirror_el.style.maxHeight = `${svg_rect.height}px`;
-			this.leftbar_file_explorer.element.style.maxHeight = `${svg_rect.height}px`;
+			this.scene_codemirror_el.style.height = `${svg_rect.height}px`;
+			this.leftbar_file_explorer.element.style.height = `${svg_rect.height}px`;
 			
 			clearInterval(this.scriptmanager_initialisation_loop);
 		}, 100);
@@ -327,10 +365,15 @@ ve.ScriptManager = class extends ve.Component {
 				delete this.scene_codemirror.to_binding_fire_silently;
 				this.fireFromBinding();
 				clearInterval(set_value_loop);
+				
+				if (this._settings.hide_blockly_workspace_on_error)
+					this.scene_blockly.show();
 			} catch (e) {
 				clearInterval(set_value_loop);
 				if (this._settings.display_load_errors)
 					this.throwLoadError(e);
+				if (this._settings.hide_blockly_workspace_on_error)
+					this.scene_blockly.hide();
 				
 				if (this._settings.clear_blockly_workspace_on_error) {
 					this.scene_blockly.enable();

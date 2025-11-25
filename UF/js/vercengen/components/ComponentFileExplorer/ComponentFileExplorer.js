@@ -17,7 +17,7 @@
  *   - `.navigation_only=false`: {@link boolean}
  *   - 
  *   - `.load_function`: {@link function}(arg0_data:{@link string}, arg1_file_path:{@link string}) - Automatically loads the text content of a valid extension into this function.
- *   - `.save_extension`: {@link Array}<{@link string}>|{@link string} - The save dot extension that files can be loaded from.
+ *   - `.save_extension`: {@link Array}<{@link string}>|{@link string} - The save dot extension that files can be loaded from. `.*` refers to all file extensions.
  *   - `.save_function`: {@link function} - Returns the value of the current savedata state.
  *   
  * ##### Instance:
