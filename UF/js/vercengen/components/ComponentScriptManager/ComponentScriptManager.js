@@ -102,6 +102,7 @@ ve.ScriptManager = class extends ve.Component {
 				...this._settings,
 				...this.options.settings
 			};
+		try { Blockly.mainWorkspace.clear(); } catch (e) {}
 		
 		this.console_el = document.createElement("div");
 			this.console_el.print = (arg0_message, arg1_type) => {
@@ -176,7 +177,7 @@ ve.ScriptManager = class extends ve.Component {
 			});
 				this.topbar_interface = new ve.RawInterface({
 					name_el: new ve.HTML(() => `<span id = "name">${this.name}</span>${(!options.do_not_display_file_name) ? `<span id = "file-name"> | ${(this._file_path) ? this._file_path : "None"}</span>` : ""}`,
-						{ style: { width: "20rem" } }),
+						{ style: { marginRight: "1rem", overflow: "clip", width: "19rem" } }),
 					/*file: new ve.Button(() => {
 						
 					}, { name: "File" }),*/
