@@ -1,13 +1,47 @@
 /**
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  * 
- * Visual block-based and code-based IDE used to assemble `.js` script files. ES6 compatible; non-compatible files will degrade to code editor only.
+ * Visual block-based and code-based IDE used to assemble `.js` script files. ES6 compatible; non-compatible files will degrade to code editor only. 
+ * 
+ * **Note:** Declaring duplicate ve.ScriptManager components will reset the main Blockly workspace for each new instance.
  * - Functional binding: <span color=00ffff>veScriptManager</span>().
  * 
  * ##### Constructor:
  * - `arg0_value`: {@link string} - The code to load into the present ve.ScriptManager.
  * - `arg1_options`: {@link Object}
+ *   - `.do_not_display_file_name=false`: {@link boolean}
+ *   - `.folder_path=__dirname`: {@link string}
+ *   - `.save_extension=[".*"]`: {@link Array}<{@link string}>
+ * 	 - `.settings`: {@link Object}
+ * 	   - `.clear_blockly_workspace_on_error=true`: {@link boolean}
+ * 	   - `.codemirror_theme="nord"`: {@link string}
+ * 	   - `.display_load_errors=false`: {@link boolean}
+ * 	   - `.hide_blockly_workspace_on_error`: {@link boolean}
+ * 	   - `.keybinds="sublime"`: {@link string} - Either 'emacs'/'sublime'/'vim'
+ * 	   - `.theme="theme-default"`: {@link string} - Either 'theme-default'/'theme-light'
+ * 	   - `.view_file_explorer=true`: {@link boolean}
+ * 	   
+ * ##### Instance:
+ * - `.console_el`: {@link HTMLElement}
+ *   - `.print`: {@link function}(arg0_message:{@link string}, arg1_type:{@link string}) - arg1_type is either 'message'/'error'.
+ * - `.leftbar_file_explorer`: {@link ve.FileExplorer}
+ * - `.scene_blockly`: {@link ve.ScriptManagerBlockly}
+ * - `.scene_codemirror`: {@link ve.ScriptManagerCodemirror}
+ * - `.v`: {@link string}
  * 
+ * Private Fields:
+ * - `._codemirror_themes`: {@link Object}<{@link string}>
+ * - `._settings`: {@link Object}
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.ScriptManager.loadSettings|loadSettings}</span>(arg0_settings:{@link Object})
+ * - <span color=00ffff>{@link ve.ScriptManager.saveSettings|saveSettings}</span>() | {@link string}
+ * - <span color=00ffff>{@link ve.ScriptManager.setCodeEditorTheme|setCodeEditorTheme}</span>(arg0_theme_class:{@link string})
+ * - <span color=00ffff>{@link ve.ScriptManager.setTheme|setTheme}</span>(arg0_theme_class:{@link string})
+ * - <span color=00ffff>{@link ve.ScriptManager.throwLoadError|throwLoadError}</span>(arg0_error:{@link Error}|{@link string})
+ * 
+ * @augments ve.Component
+ * @augments {@link ve.Component}
  * @type {ve.ScriptManager}
  */
 ve.ScriptManager = class extends ve.Component {
@@ -125,6 +159,10 @@ ve.ScriptManager = class extends ve.Component {
 			this.element.setAttribute("component", "ve-script-manager");
 			this.element.instance = this;
 			this.element.style.padding = "0";
+			if (this.options.attributes)
+				Object.iterate(this.options.attributes, (local_key, local_value) => {
+					this.element.setAttribute(local_key, local_value.toString());
+				});
 		
 			this.container_el = document.createElement("div");
 			this.container_el.id = "container";
@@ -407,11 +445,23 @@ ve.ScriptManager = class extends ve.Component {
 		delete this.from_binding_fire_silently;
 	}
 	
+	/**
+	 * Returns the current output code in the present Component.
+	 * - Accessor of: {@link ve.ScriptManager}
+	 * 
+	 * @returns {string}
+	 */
 	get v () {
 		//Return statement
 		return this.scene_codemirror.v;
 	}
 	
+	/**
+	 * Sets the current output code in the present Component.
+	 * - Accessor of: {@link ve.ScriptManager}
+	 *
+	 * @param {string} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let local_value = (arg0_value) ? arg0_value : "";
@@ -453,6 +503,16 @@ ve.ScriptManager = class extends ve.Component {
 		});
 	}
 	
+	/**
+	 * Loads a new settings object and refreshes the present Component to display them, then sets {@link this._settings}.
+	 * - Method of: {@link ve.ScriptManager}
+	 * 
+	 * @param {Object} [arg0_settings]
+	 *  @param {string} [arg0_settings.codemirror_theme] - One of the default CodeMirror themes. [View CodeMirror theming list](https://codemirror.net/5/demo/theme.html)
+	 *  @param {string} [arg0_settings.keybinds] - Either 'emacs'/'sublime'/'vim'
+	 *  @param {theme} [arg0_settings.theme] - Either 'theme-default'/'theme-light'
+	 *  @param {boolean} [arg0_settings.view_file_explorer] - Whether to show the file explorer.
+	 */
 	loadSettings (arg0_settings) {
 		//Convert from parameters
 		let settings_obj = arg0_settings;
@@ -474,11 +534,23 @@ ve.ScriptManager = class extends ve.Component {
 		};
 	}
 	
+	/**
+	 * Returns the present {@link this._settings} as a string.
+	 * - Method of: {@link ve.ScriptManager}
+	 * 
+	 * @returns {string}
+	 */
 	saveSettings () {
 		//Return statement
 		return JSON.stringify(this._settings);
 	}
 	
+	/**
+	 * Sets the present code editor theme to a default CodeMirror theme. [View CodeMirror theming list](https://codemirror.net/5/demo/theme.html)
+	 * - Method of: {@link ve.ScriptManager}
+	 * 
+	 * @param {string} arg0_theme_class
+	 */
 	setCodeEditorTheme (arg0_theme_class) {
 		//Convert from parameters
 		let theme_class = arg0_theme_class;
@@ -488,6 +560,12 @@ ve.ScriptManager = class extends ve.Component {
 		this.scene_codemirror.codemirror.setOption("theme", theme_class);
 	}
 	
+	/**
+	 * Sets the theme of the overall editor.
+	 * - Method of: {@link ve.ScriptManager}
+	 * 
+	 * @param {string} arg0_theme_class - Either 'theme-default'/'theme-light'
+	 */
 	setTheme (arg0_theme_class) {
 		//Convert from parameters
 		let theme_class = arg0_theme_class;
@@ -502,6 +580,12 @@ ve.ScriptManager = class extends ve.Component {
 		this.scene_blockly.setTheme(this._settings.theme);
 	}
 	
+	/**
+	 * Displays a load error window given an error, or a variable that resolves to a {@link string}.
+	 * - Method of: {@link ve.ScriptManager}
+	 * 
+	 * @param {Error|string} arg0_error
+	 */
 	throwLoadError (arg0_error) {
 		//Convert from parameters
 		let error = arg0_error;

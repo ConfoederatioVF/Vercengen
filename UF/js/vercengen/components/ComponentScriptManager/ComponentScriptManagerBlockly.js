@@ -1,3 +1,33 @@
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Represents a {@link Blockly} sub-component used as a visual editor for {@link ve.ComponentScriptManager}.
+ * 
+ * **Note.** Declaring duplicate {@link ve.ScriptManager} components will reset the main Blockly workspace for each new instance.
+ * - Functional binding: <span color=00ffff>veScriptManagerBlockly</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link string} - The code to input into the present Blockly viewer.
+ * - `arg1_options`: {@link Object}
+ * 
+ * ##### Instance:
+ * - `.workspace`: {@link Blockly.Workspace}
+ * - `.v`: {@link string}
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.ScriptManagerBlockly.disable|disable}</span>()
+ * - <span color=00ffff>{@link ve.ScriptManagerBlockly.enable|enable}</span>()
+ * - <span color=00ffff>{@link ve.ScriptManagerBlockly.fixBlocklyScaling|fixBlocklyScaling}</span>()
+ * - <span color=00ffff>{@link ve.ScriptManagerBlockly.handleCSS|handleCSS}</span>()
+ * - <span color=00ffff>{@link ve.ScriptManagerBlockly.hide|hide}</span>()
+ * - <span color=00ffff>{@link ve.ScriptManagerBlockly.interceptBlocklyTransforms|interceptBlocklyTransforms}</span>()
+ * - <span color=00ffff>{@link ve.ScriptManagerBlockly.setTheme|setTheme}</span>(arg0_theme:{@link string}) - Either 'theme_default'/'theme_light'.
+ * - <span color=00ffff>{@link ve.ScriptManagerBlockly.show|show}</span>()
+ * 
+ * @augments ve.Component
+ * @augments {@link ve.Component}
+ * @type {ve.ScriptManagerBlockly}
+ */
 ve.ScriptManagerBlockly = class extends ve.Component {
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
@@ -12,10 +42,14 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		let toolbox = ve.ScriptManager.toolbox;
 		
 		this.element = document.createElement("div");
-		this.element.instance = this;
-		this.element.setAttribute("component", "ve-script-manager-blockly");
-		this.element.style.width = "35%";
-		this.element.style.position = "relative"; 
+			this.element.instance = this;
+			this.element.setAttribute("component", "ve-script-manager-blockly");
+			this.element.style.width = "35%";
+			this.element.style.position = "relative"; 
+			if (options.attributes)
+				Object.iterate(options.attributes, (local_key, local_value) => {
+					this.element.setAttribute(local_key, local_value.toString());
+				});
 		this.options = options;
 		this.value = value;
 		
@@ -65,6 +99,11 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		this.handleCSS();
 	}
 	
+	/**
+	 * Returns the code value of the present Component by parsing ES6 JS as an Abstract Syntax Tree.
+	 * - Accessor of: {@link ve.ScriptManagerBlockly}
+	 * @returns {string}
+	 */
 	get v () {
 		//Return statement
 		try {
@@ -72,6 +111,11 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		} catch (e) {}
 	}
 	
+	/**
+	 * Sets the code value of the present Component if possible.
+	 * - Accessor of: {@link ve.ScriptManagerBlockly}
+	 * @param {string} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -85,6 +129,10 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		this.fireFromBinding();
 	}
 	
+	/**
+	 * Disables the present workspace.
+	 * - Method of: {@link ve.ScriptManagerBlockly}
+	 */
 	disable () {
 		if (this._disabled) return; //Internal guard clause to ensure file can't be disabled twice
 		
@@ -99,6 +147,10 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		this.blockly_widget_el.parentElement.removeChild(this.blockly_widget_el);
 	}
 	
+	/**
+	 * Enables the present workspace.
+	 * - Method of: {@link ve.ScriptManagerBlockly}
+	 */
 	enable () {
 		if (!this._disabled) return; //Internal guard clause to ensure file can't be enabled twice
 		
@@ -113,6 +165,10 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		delete this.blockly_widget_parent_el;
 	}
 	
+	/**
+	 * Internal helper method. Fixes Blockly scaling issues.
+	 * - Method of: {@link ve.ScriptManagerBlockly}
+	 */
 	fixBlocklyScaling () {
 		//Declare local instance variables
 		let flyout_bg_el = this.element.querySelector('.blocklyFlyoutBackground');
@@ -131,6 +187,10 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		}
 	}
 	
+	/**
+	 * Internal helper method. Handles CSS issues so that Blockly can be mounted into a window.
+	 * - Method of: {@link ve.ScriptManagerBlockly}
+	 */
 	handleCSS () {
 		//Declare local instance variables
 		this.blockly_toolbox_mode = "canvas"; //Either 'body'/'canvas'
@@ -179,6 +239,10 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		});
 	}
 	
+	/**
+	 * Hides the present workspace entirely.
+	 * - Method of: {@link ve.ScriptManagerBlockly}
+	 */
 	hide () {
 		if (this._hidden) return; //Internal guard clause if already hidden
 		
@@ -190,6 +254,10 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		this.element.style.display = "none";
 	}
 	
+	/**
+	 * Internal helper method. Fixes Blockly transforms so that Blockly can be mounted into a window.
+	 * - Method of: {@link ve.ScriptManagerBlockly}
+	 */
 	interceptBlocklyTransforms () {
 		//Declare local instance variables
 		let targets = [
@@ -215,6 +283,12 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		});
 	}
 	
+	/**
+	 * Internal helper method. Propagates the main editor theme class down from {@link ve.ScriptManager}. Either 'theme-default'/'theme-light'.
+	 * - Method of: {@link ve.ScriptManagerBlockly}
+	 * 
+	 * @param {string} arg0_theme_class
+	 */
 	setTheme (arg0_theme_class) {
 		//Convert from parameters
 		let theme_class = arg0_theme_class;
@@ -228,6 +302,10 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		this.blockly_toolbox_el.classList.add(this._theme);
 	}
 	
+	/**
+	 * Displays the present workspace if hidden.
+	 * - Method of: {@link ve.ScriptManagerBlockly}
+	 */
 	show () {
 		if (!this._hidden) return; //Internal guard clause if already shown
 		

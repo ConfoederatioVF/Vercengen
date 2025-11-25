@@ -1,3 +1,24 @@
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ *
+ * Manages the text-based Codemirror instance for {@link ve.ScriptManager}, the main IDE component for Vercengen.
+ *
+ * Stands for Bold, Italic, Underline, Formatting.
+ * - Functional binding: <span color=00ffff>veScriptManagerCodemirror</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link string} - The code to load into the present component.
+ * - `arg1_options`: {@link Object}
+ *   - `.codemirror_options`: {@link Object} - Any codemirror options to use upon instantiation.
+ * 
+ * ##### Instance:
+ * - `.codemirror`: {@link CodeMirror}
+ * - `.v`: {@link string}
+ * 
+ * @augments ve.Component
+ * @augments {@link ve.Component}
+ * @type {ve.ScriptManagerCodemirror}
+ */
 ve.ScriptManagerCodemirror = class extends ve.Component {
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
@@ -10,9 +31,14 @@ ve.ScriptManagerCodemirror = class extends ve.Component {
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");
-		this.element.instance = this;
-		this.element.setAttribute("component", "ve-script-manager-codemirror");
-		this.element.style.width = "100%";
+			this.element.instance = this;
+			this.element.setAttribute("component", "ve-script-manager-codemirror");
+			this.element.style.width = "100%";
+			if (options.attributes)
+				Object.iterate(options.attributes, (local_key, local_value) => {
+					this.element.setAttribute(local_key, local_value.toString());
+				});
+			
 			this.codemirror_el = document.createElement("textarea");
 			this.codemirror_el.id = "codemirror";
 			this.element.appendChild(this.codemirror_el);
@@ -29,6 +55,7 @@ ve.ScriptManagerCodemirror = class extends ve.Component {
 				mode: "javascript",
 				theme: "nord",
 				gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+				...this.options.codemirror_options
 			});
 			this.codemirror.setSize(null, "100%");
 			this.codemirror.setOption("keyMap", "sublime");
@@ -48,11 +75,23 @@ ve.ScriptManagerCodemirror = class extends ve.Component {
 		}, 100);
 	}
 	
+	/**
+	 * Returns the code value for the present Component.
+	 * - Accessor of: {@link ve.ScriptManagerCodemirror}
+	 * 
+	 * @returns {string}
+	 */
 	get v () {
 		//Return statement
 		return this.codemirror.doc.getValue();
 	}
 	
+	/**
+	 * Sets the code value for the present Component.
+	 * - Accessor of: {@link ve.ScriptManagerCodemirror}
+	 * 
+	 * @param {string} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
