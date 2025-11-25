@@ -234,8 +234,8 @@ ve.FileExplorer = class extends ve.Component {
 		if (!this.options.disable_actions)
 			hierarchy_obj.selection = new ve.HierarchyDatatype({
 				information: new ve.HTML((e) => `${(this.clipboard.length > 0) ? `Clipboard (${String.formatNumber(this.clipboard.length)})` : "Clipboard is empty."} &nbsp; | &nbsp; ${(this.selected.length > 0) ? `
-				${String.formatNumber(this.selected.length)} Element(s) selected &nbsp; ` : ""}
-				`, { style: { padding: 0 }}),
+				${String.formatNumber(this.selected.length)} Element(s) selected` : ""}
+				`, { style: { marginRight: "auto", padding: 0 }}),
 				actions_menu: new ve.RawInterface({
 					copy_button: new ve.Button((e) => {
 						if (this.selected.length === 0) return; //Internal guard clause if nothing is selected
@@ -330,11 +330,19 @@ ve.FileExplorer = class extends ve.Component {
 						}, { can_rename: false, name: "Create New File" });
 					}, { name: "<icon>note_add</icon>", tooltip: "Create New File" } )
 				}, {
-					style: { marginLeft: "auto", order: 99, padding: 0 }
+					style: { marginLeft: "auto",order: 99, marginTop: "var(--cell-padding)", padding: 0 }
 				}),
 			}, {
 				attributes: { "data-ve-is-information": true },
-				disabled: true
+				disabled: true,
+				style: {
+					".nst-content": { 
+						display: "flex", 
+						flexDirection: "column",
+						paddingBottom: `var(--cell-padding)`,
+						paddingTop: `var(--cell-padding)`
+					},
+				}
 			});
 		
 		//options.save_function
