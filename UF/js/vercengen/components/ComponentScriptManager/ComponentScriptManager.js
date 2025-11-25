@@ -470,8 +470,10 @@ ve.ScriptManager = class extends ve.Component {
 		let set_value_loop = setInterval(() => {
 			if (this.scene_codemirror?.codemirror) try {
 				//Set new code value
-				this.scene_blockly.enable();
-				js2blocks.parseCode(local_value);
+				if (!this._scene_blockly.hidden) {
+					this.scene_blockly.enable();
+					js2blocks.parseCode(local_value);
+				}
 				this.scene_codemirror.to_binding_fire_silently = true;
 				this.scene_codemirror.v = local_value;
 				delete this.scene_codemirror.to_binding_fire_silently;
