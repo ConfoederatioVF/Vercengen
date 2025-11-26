@@ -26,6 +26,7 @@
  * 
  * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.ScriptManagerBlockly}
  */
 ve.ScriptManagerBlockly = class extends ve.Component {

@@ -17,6 +17,7 @@
  * 
  * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.ScriptManagerCodemirror}
  */
 ve.ScriptManagerCodemirror = class extends ve.Component {

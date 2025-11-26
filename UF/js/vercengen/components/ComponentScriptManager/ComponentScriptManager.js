@@ -5,6 +5,7 @@
  * 
  * **Note:** Declaring duplicate ve.ScriptManager components will reset the main Blockly workspace for each new instance.
  * - Functional binding: <span color=00ffff>veScriptManager</span>().
+ * - This component has special default settings located in {@link ve.registry.settings.ScriptManager}.
  * 
  * ##### Constructor:
  * - `arg0_value`: {@link string} - The code to load into the present ve.ScriptManager.
@@ -42,6 +43,7 @@
  * 
  * @augments ve.Component
  * @augments {@link ve.Component}
+ * @memberof ve.Component
  * @type {ve.ScriptManager}
  */
 ve.ScriptManager = class extends ve.Component {
