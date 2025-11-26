@@ -12,9 +12,19 @@ global.path = require("path");
 		 */
 		global.ve = {
 			registry: {
+				/**
+				 * Determines whether or not to run linters at runtime.
+				 * @type {boolean}
+				 */
 				debug_mode: true,
 				
+				/**
+				 * @type {{"<component_key>": ve.Component}}
+				 */
 				components: {},
+				/**
+				 * @type {{"<feature_key>": ve.Feature}}
+				 */
 				features: {},
 				themes: {},
 				
@@ -33,6 +43,10 @@ global.path = require("path");
 						 * @type {boolean|string} - Either false if no automatic save file is declared, or the file path to save settings in.
 						 */
 						save_file: "settings/ScriptManager_settings.json",
+						/**
+						 * Determines whether `._settings` are shared between instances of {@link ve.ScriptManager}.
+						 * @type {boolean}
+						 */
 						share_settings_across_instances: true
 					}
 				}
