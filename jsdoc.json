@@ -12,7 +12,8 @@
     "destination": "./docs",
     "readme": "./docs/autodoc/index.md",
     "recurse": true,
-    "template": "node_modules/minami"
+    "template": "node_modules/minami",
+    "tutorials": "./docs/autodoc/tutorials"
   },
   "templates": {
     "default": {

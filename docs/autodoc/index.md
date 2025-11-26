@@ -93,14 +93,32 @@ ve.CustomComponent = class extends ve.Component {
 ```
 
 ## Getting Started:
-Vercengen is currently native to **Electron**/**Node.js** with better support planned for in-browser versions via a single-file CDN. Building a Vercengen app is as simple as 1, 2, 3.
+Vercengen is currently native to **Electron**/**Node.js** with better support planned for in-browser versions via a single-file CDN. Bootstrapping a Vercengen app requires the following steps.
 
 1. [Download](<https://github.com/Confoederatio/Vercengen/>) the current UF folder and drop it into your root directory.
-2. In your `index.html`, add the following script tag:
+2. Ensure you have the following dependencies installed for the full feature set in your `package.json` file:
+   ```json
+    "devDependencies": {
+      "acorn": "^5.0.3",
+      "acorn-dynamic-import": "^2.0.2",
+      "acorn-jsx-walk": "^1.0.1",
+      "file-saver": "^1.3.3",
+      "imports-loader": "^0.7.1",
+      "better-docs": "^2.7.3",
+      "electron": "^38.1.2",
+      "jsdoc": "^4.0.5",
+      "minami": "^1.2.3",
+      "node-blockly": "https://github.com/JC-Orozco/node-blockly.git",
+      "snapsvg": "^0.5.1",
+      "taffydb": "^2.7.3"
+    }
+   ```
+3. Run `npm install` in your root directory.
+4. In your `index.html`, add the following script tag:
     ```js
    <script src = "./UF/js/vercengen/startup/vercengen_startup.js" type = "text/javascript"></script>
    ```
-3. Customise your load directories/files. Patterns accept wildcards (*), exclusions (!), and folders/file paths. Last match wins.
+5. Customise your load directories/files. Patterns accept wildcards (*), exclusions (!), and folders/file paths. Last match wins.
    ```js
    ve.start({ load_files: [
      "core/",
