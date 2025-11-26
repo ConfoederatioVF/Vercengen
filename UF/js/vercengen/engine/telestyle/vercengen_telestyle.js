@@ -36,25 +36,72 @@
 		}
 	};
 	
-	/**
-	 * [WIP] - Main function API. This is great, but needs to observe DOM mutations under `arg0_el` and recalculate the style per mutation.
-	 */
 	HTML.applyTelestyleObject = function (arg0_el, arg1_style_obj) {
-		//Convert from parameters
-		let el = (typeof arg0_el === "object") ? arg0_el : document.querySelector(arg0_el);
-		let style_obj = (arg1_style_obj) ? arg1_style_obj : {};
+		// Convert arguments
+		let el =
+			typeof arg0_el === "object" ? arg0_el : document.querySelector(arg0_el);
+		let style_obj = arg1_style_obj ? arg1_style_obj : {};
 		
-		//Internal guard clause if el is not defined
 		if (!el) return;
 		
-		//Declare local instance variables
+		// Clone and split style object
 		let mutated_style_obj = structuredClone(style_obj);
-		let { static: staticStyles, dynamic: dynamicStyles } = HTML.splitStaticDynamicTelestyle(mutated_style_obj);
+		let { static: staticStyles, dynamic: dynamicStyles } =
+			HTML.splitStaticDynamicTelestyle(mutated_style_obj);
 		let registry = HTML.ve_css_registry;
 		
-		//Apply static styles once immediately; register or update in global registry
+		// Apply existing static styles immediately to current subtree
 		HTML.applyStaticTelestyle(el, staticStyles);
 		registry.set(el, { mutated_style_obj, dynamic: dynamicStyles });
+		
+		// --- set up "silent" observer ---
+		if (el._telestyleObserver) el._telestyleObserver.disconnect();
+		
+		const observer = new MutationObserver((mutationsList) => {
+			for (const mutation of mutationsList) {
+				if (mutation.type !== "childList" || mutation.addedNodes.length === 0)
+					continue;
+				
+				// For each added node, check if it or descendants match any selectors
+				for (const addedNode of mutation.addedNodes) {
+					if (!(addedNode instanceof HTMLElement)) continue;
+					
+					const nodesToCheck = [addedNode, ...addedNode.querySelectorAll("*")];
+					
+					for (const node of nodesToCheck) {
+						// iterate top-level selector keys in your style object
+						Object.iterate(staticStyles, (selector, styleValue) => {
+							// selectors that aren't nested style groups are ignored here
+							if (
+								typeof styleValue === "object" &&
+								!Array.isArray(styleValue) &&
+								typeof selector === "string"
+							) {
+								try {
+									if (node.matches(selector)) {
+										HTML.applyStaticTelestyle(node, styleValue);
+									}
+								} catch (err) {
+									// Suppress invalid selector errors silently
+								}
+							}
+						});
+					}
+				}
+			}
+		});
+		
+		observer.observe(el, {
+			childList: true,
+			subtree: true,
+		});
+		
+		el._telestyleObserver = observer;
+		
+		// Apply dynamic styles once
+		if (Object.keys(dynamicStyles).length > 0) {
+			HTML.applyDynamicTelestyle(el, dynamicStyles);
+		}
 	};
 	
 	/**

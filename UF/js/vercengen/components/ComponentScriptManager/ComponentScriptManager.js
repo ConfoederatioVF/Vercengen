@@ -617,8 +617,19 @@ ve.ScriptManager = class extends ve.Component {
 		let theme_class = arg0_theme_class;
 		
 		//Remove previous themes
-		if (this._settings.theme)
-			this.element.classList.remove(this._settings.theme);
+		if (this._settings.theme) {
+			let all_classes = this.element.getAttribute("class");
+			
+			if (all_classes) {
+				all_classes = all_classes.split(" ");
+				
+				//Iterate over all_classes and remove all previous themes
+				for (let i = all_classes.length - 1; i >= 0; i--)
+					if (all_classes[i].startsWith("theme-"))
+						all_classes.splice(i, 1);
+				this.element.setAttribute("class", all_classes.join(" "));
+			}
+		}
 		this._settings.theme = theme_class;
 		
 		//Apply new theme
