@@ -37,7 +37,7 @@
 	};
 	
 	/**
-	 * Main function API
+	 * [WIP] - Main function API. This is great, but needs to observe DOM mutations under `arg0_el` and recalculate the style per mutation.
 	 */
 	HTML.applyTelestyleObject = function (arg0_el, arg1_style_obj) {
 		//Convert from parameters
