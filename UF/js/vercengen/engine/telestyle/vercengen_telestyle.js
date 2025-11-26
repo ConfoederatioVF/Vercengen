@@ -2,23 +2,44 @@
 //Initialise functions
 {
 	/**
+	 * Applies dynamic (function-based) styles recursively each frame.
+	 */
+	HTML.applyDynamicTelestyle = function (arg0_el, arg1_dynamic_obj) {
+		let el = arg0_el;
+		let dynamic_obj = arg1_dynamic_obj;
+		
+		Object.iterate(dynamic_obj, (local_key, local_value) => {
+			if (typeof local_value === "object" && !Array.isArray(local_value)) {
+				let targets = HTML.resolveSelector(el, local_key);
+				for (let local_target of targets)
+					HTML.applyDynamicTelestyle(local_target, local_value);
+			} else if (typeof local_value === "function") {
+				let computed_style = local_value(el);
+				if (computed_style !== undefined && computed_style !== null) {
+					if (local_key.startsWith("--"))
+						el.style.setProperty(local_key, computed_style.toString());
+					else el.style[local_key] = computed_style.toString();
+				}
+			}
+		});
+	};
+	
+	/**
 	 * Applies static (non-function) styles recursively, once.
 	 */
 	HTML.applyStaticTelestyle = function (arg0_el, arg1_style_obj) {
-		//Convert from parameters
 		let el = arg0_el;
 		let style_obj = arg1_style_obj;
 		
-		//Iterate over all entries in style_obj
 		Object.iterate(style_obj, (local_key, local_value) => {
 			if (typeof local_value === "object" && !Array.isArray(local_value)) {
 				let targets = HTML.resolveSelector(el, local_key);
-				
-				//Iterate over all targets to apply any static styles that might exist
 				for (let i = 0; i < targets.length; i++)
 					HTML.applyStaticTelestyle(targets[i], local_value);
 			} else if (typeof local_value !== "function") {
-				el.style[local_key] = local_value.toString();
+				if (local_key.startsWith("--"))
+					el.style.setProperty(local_key, local_value.toString());
+				else el.style[local_key] = local_value.toString();
 			}
 		});
 	};
@@ -55,38 +76,63 @@
 		registry.set(el, { mutated_style_obj, dynamic: dynamicStyles });
 		
 		// --- set up "silent" observer ---
+		// --- set up "smart" observer ---
 		if (el._telestyleObserver) el._telestyleObserver.disconnect();
 		
 		const observer = new MutationObserver((mutationsList) => {
 			for (const mutation of mutationsList) {
-				if (mutation.type !== "childList" || mutation.addedNodes.length === 0)
-					continue;
-				
-				// For each added node, check if it or descendants match any selectors
-				for (const addedNode of mutation.addedNodes) {
-					if (!(addedNode instanceof HTMLElement)) continue;
-					
-					const nodesToCheck = [addedNode, ...addedNode.querySelectorAll("*")];
-					
-					for (const node of nodesToCheck) {
-						// iterate top-level selector keys in your style object
-						Object.iterate(staticStyles, (selector, styleValue) => {
-							// selectors that aren't nested style groups are ignored here
-							if (
-								typeof styleValue === "object" &&
-								!Array.isArray(styleValue) &&
-								typeof selector === "string"
-							) {
-								try {
-									if (node.matches(selector)) {
-										HTML.applyStaticTelestyle(node, styleValue);
-									}
-								} catch (err) {
-									// Suppress invalid selector errors silently
+				if (mutation.type === "childList") {
+					// handle added nodes
+					for (const addedNode of mutation.addedNodes) {
+						if (!(addedNode instanceof HTMLElement)) continue;
+						
+						const nodesToCheck = [addedNode, ...addedNode.querySelectorAll("*")];
+						
+						for (const node of nodesToCheck) {
+							// reapply static and dynamic styles for any match
+							Object.iterate(staticStyles, (selector, styleValue) => {
+								if (
+									typeof styleValue === "object" &&
+									typeof selector === "string"
+								) {
+									try {
+										if (node.matches(selector)) {
+											HTML.applyStaticTelestyle(node, styleValue);
+										}
+									} catch (err) {}
 								}
-							}
-						});
+							});
+							
+							Object.iterate(dynamicStyles, (selector, dynValue) => {
+								if (
+									typeof dynValue === "object" &&
+									typeof selector === "string"
+								) {
+									try {
+										if (node.matches(selector)) {
+											HTML.applyDynamicTelestyle(node, dynValue);
+										}
+									} catch (err) {}
+								}
+							});
+						}
 					}
+					
+					// handle removed nodes if cleanup registry needed
+					for (const removedNode of mutation.removedNodes) {
+						if (HTML.ve_css_registry?.has(removedNode))
+							HTML.ve_css_registry.delete(removedNode);
+					}
+				} else if (mutation.type === "attributes") {
+					// re-trigger style application when attributes change
+					const target = mutation.target;
+					Object.iterate(staticStyles, (selector, styleValue) => {
+						try {
+							if (target.matches(selector)) {
+								HTML.applyStaticTelestyle(target, styleValue);
+							}
+						} catch (err) {}
+					});
 				}
 			}
 		});
@@ -94,6 +140,7 @@
 		observer.observe(el, {
 			childList: true,
 			subtree: true,
+			attributes: true,
 		});
 		
 		el._telestyleObserver = observer;
@@ -102,32 +149,6 @@
 		if (Object.keys(dynamicStyles).length > 0) {
 			HTML.applyDynamicTelestyle(el, dynamicStyles);
 		}
-	};
-	
-	/**
-	 * Applies dynamic (function-based) styles recursively each frame.
-	 */
-	HTML.applyDynamicTelestyle = function (arg0_el, arg1_dynamic_obj) {
-		//Convert from parameters
-		let el = arg0_el;
-		let dynamic_obj = arg1_dynamic_obj;
-		
-		//Iterate over all entries in style_obj
-		Object.iterate(dynamic_obj, (local_key, local_value) => {
-			if (typeof local_value === "object" && !Array.isArray(local_value)) {
-				//Recursively invoke applyDynamicStyles
-				let targets = HTML.resolveSelector(el, local_key);
-				
-				for (let local_target of targets) 
-					HTML.applyDynamicTelestyle(local_target, local_value);
-			} else if (typeof local_value === "function") {
-				//Resolve computed_style from function, since this is a dynamic style
-				let computed_style = local_value(el);
-				
-				if (computed_style !== undefined && computed_style !== null)
-					el.style[local_key] = computed_style.toString();
-			}
-		});
 	};
 	
 	/**
