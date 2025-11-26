@@ -11,7 +11,11 @@ global.path = require("path");
 		 * @namespace ve
 		 */
 		global.ve = {
-			registry: {
+			/**
+			 * Registry is initialised from {@link window.ve_registry} if it exists. Otherwise, default settings are used across Vercengen.
+			 * @type {Object}
+			 */
+			registry: (window.ve_registry) ? window.ve_registry :{
 				/**
 				 * Determines whether or not to run linters at runtime.
 				 * @type {boolean}
