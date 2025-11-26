@@ -30,6 +30,10 @@ global.path = require("path");
 				 * @type {{"<feature_key>": ve.Feature}}
 				 */
 				features: {},
+				/**
+				 * Theme keys hold Telestyle CSS objects.
+				 * @type {{"<theme_key>": Object}}
+				 */
 				themes: {},
 				
 				settings: {
@@ -41,7 +45,9 @@ global.path = require("path");
 					
 					//Component-wide settings
 					
-					//[WIP] - ScriptManager settings need to be implemented
+					/**
+					 * Component settings for {@link ve.ScriptManager}.
+					 */
 					ScriptManager: {
 						/**
 						 * Either false if no automatic save file is declared, or the file path to save settings in.
