@@ -144,6 +144,9 @@ ve.Window = class extends ve.Feature {
 			setTimeout(() => {
 				this.setCoords(this.x, this.y);
 				this.setSize(options.width, options.height);
+				
+				if (this.options.theme)
+					HTML.applyTelestyle(this.element, ve.registry.themes[this.options.theme]);
 			});
 		}
 		
