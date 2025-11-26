@@ -40,7 +40,8 @@ global.path = require("path");
 					//[WIP] - ScriptManager settings need to be implemented
 					ScriptManager: {
 						/**
-						 * @type {boolean|string} - Either false if no automatic save file is declared, or the file path to save settings in.
+						 * Either false if no automatic save file is declared, or the file path to save settings in.
+						 * @type {boolean|string}
 						 */
 						save_file: "settings/ScriptManager_settings.json",
 						/**
