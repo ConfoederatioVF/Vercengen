@@ -19,8 +19,21 @@ global.path = require("path");
 				themes: {},
 				
 				settings: {
+					/**
+					 * Whether names can be automatically imputed from the key name. False by default.
+					 * @type {boolean}
+					 */
+					automatic_naming: false,
+					
+					//Component-wide settings
+					
+					//[WIP] - ScriptManager settings need to be implemented
 					ScriptManager: {
-						
+						/**
+						 * @type {boolean|string} - Either false if no automatic save file is declared, or the file path to save settings in.
+						 */
+						save_file: "settings/ScriptManager_settings.json",
+						share_settings_across_instances: true
 					}
 				}
 			}
