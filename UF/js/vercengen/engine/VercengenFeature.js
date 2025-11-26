@@ -195,4 +195,39 @@ ve.Feature = class {
 						this.components_obj[local_key].setOwner(this, [this]);
 			});
 	}
+	
+	/**
+	 * Runs over all Vercengen features that extend <span color="yellow">{@link ve.Feature}</span> and lints them in addition to declaring `ve[local_key]`() as a functional binding for each.
+	 * - Static method of: {@link ve.Feature}
+	 * 
+	 * Ensures the following properties if `ve.registry.debug_mode=true`:
+	 * - Not a duplicate feature
+	 */
+	static linter () {
+		Object.iterate(global.ve, (local_key, local_value) => {
+			try {
+				if (Object.getPrototypeOf(local_value) === ve.Feature) {
+					let local_prefix = `ve.Feature: ve.${local_key}`;
+					
+					if (!global[`ve${local_key}`]) {
+						global[`ve${local_key}`] = function () {
+							return new ve[local_key](...arguments);
+						};
+					} else if (typeof global[`ve${local_key}`] !== "function") {
+						console.error(`ve.${local_key} cannot have its functional binding registered, since it is already reserved elsewhere as a non-function. Use Ctrl + F to find where it has been reserved in your codebase.`);
+					}
+					
+					//Append to ve.registry.features
+					if (!ve.registry.components[local_key] && !ve.registry.features[local_key]) {
+						ve.registry.features[local_key] = local_value;
+					} else {
+						let error_value = (ve.registry.components[local_key]) ?
+							ve.registry.components[local_key] : ve.registry.features[local_key];
+						
+						console.error(`Could not replace with duplicate component. A component/feature with the key: ${local_key} already exists as:`, error_value, "Duplicate registered as", local_value);
+					}
+				}
+			} catch (e) { console.error(e); }
+		});
+	}
 };

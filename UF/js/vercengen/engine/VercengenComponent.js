@@ -52,7 +52,7 @@
  * - <span color=00ffff>{@link ve.Component.setOwner|setOwner}</span>(arg0_value:{@link Object}, arg1_owner_array=[]:{@link Array}<{@link Object}>) - Used by the reflection engine in {@link ve.Class} to set the owner hierarchy automatically.
  * 
  * ##### Static Methods:
- * - <span color=00ffff>{@link ve.Component.linter|linter}</span>() - Run at startup if {@link ve.debug_mode} is true. Lints all Vercengen components.
+ * - <span color=00ffff>{@link ve.Component.linter|linter}</span>() - Run at startup if {@link ve.registry.debug_mode} is true. Lints all Vercengen components.
  * 
  * ##### Types:
  * Types are annotated by both their constructor function and what they return after the pipe separator (`.v`). 
@@ -500,7 +500,7 @@ ve.Component = class {
 	 * Runs over all Vercengen components that extend <span color="yellow">{@link ve.Component}</span> and lints them in addition to declaring `ve[local_key]`() as a functional binding for each.
 	 * - Static method of: {@link ve.Component}
 	 * 
-	 * Ensures the following properties if `ve.debug_mode=true`:
+	 * Ensures the following properties if `ve.registry.debug_mode=true`:
 	 * - get v()/set v()
 	 * - Not a duplicate component
 	 */
@@ -522,15 +522,28 @@ ve.Component = class {
 						console.error(`ve.${local_key} cannot have its functional binding registered, since it is already reserved elsewhere as a non-function. Use Ctrl + F to find where it has been reserved in your codebase.`);
 					}
 					
-					if (ve.debug_mode)
+					if (ve.registry.debug_mode) {
 						if (local_value.demo_value === undefined)
 							console.warn(`${local_prefix} does not have a set static .demo_value.`);
+						if (local_value.excluded_from_demo)
+							console.warn(`${local_prefix} is currently excluded from automated testing. Perhaps it is a singleton?`);
+					}
 					
 					//Check if get()/set() methods exist
 					if (!local_v || typeof local_v.get !== "function")
 						console.error(`${local_prefix} does not have a valid get v() function.`);
 					if (!local_v || typeof local_v.set !== "function")
 						console.error(`${local_prefix} does not have a valid set v() function.`);
+					
+					//Append to ve.registry.components
+					if (!ve.registry.components[local_key] && !ve.registry.features[local_key]) {
+						ve.registry.components[local_key] = local_value;
+					} else {
+						let error_value = (ve.registry.components[local_key]) ? 
+							ve.registry.components[local_key] : ve.registry.features[local_key];
+						
+						console.error(`Could not replace with duplicate component. A component/feature with the key: ${local_key} already exists as:`, error_value, "Duplicate registered as", local_value);
+					}
 				}
 			} catch (e) { console.error(e); }
 		});

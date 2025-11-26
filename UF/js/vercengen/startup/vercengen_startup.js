@@ -10,8 +10,21 @@ global.path = require("path");
 		 * 
 		 * @namespace ve
 		 */
-		global.ve = {};
-	ve.debug_mode = false;
+		global.ve = {
+			registry: {
+				debug_mode: true,
+				
+				components: {},
+				features: {},
+				themes: {},
+				
+				settings: {
+					ScriptManager: {
+						
+					}
+				}
+			}
+		};
 	
 	/**
 	 * Returns all non-evaluated files in a folder, so long as an evaluated set is provided.
@@ -182,6 +195,7 @@ global.path = require("path");
 		document.body.appendChild(ve.window_overlay_el);
 		setTimeout(() => {
 			ve.Component.linter(); //Lint ve.Component library
+			ve.Feature.linter(); //Lint ve.Feature library
 		}, 100);
 	};
 	
@@ -208,7 +222,6 @@ global.path = require("path");
 		//Declare local instance variables
 		let load_patterns = (!options.do_not_import_UF) ? [
 			"!UF/archives",
-			//"UF/js/vercengen/(vercengen_initialisation).js",
 			"UF",
 			"UF/libraries",
 			"UF/libraries/blockly.js",
