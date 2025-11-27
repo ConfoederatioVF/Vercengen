@@ -1,5 +1,5 @@
 # Vercengen
-<img src = "https://i.postimg.cc/rm9dpTq1/vercengen-logo.png" height = "64"> &nbsp; <img src = "https://i.postimg.cc/HxNQXRvc/ctd-coat-of-arms-logo.png" height = "64">
+<img src = "https://i.postimg.cc/NG4Lxfjc/vercengen-logo.png" height = "64"> &nbsp; <img src = "https://i.postimg.cc/HxNQXRvc/ctd-coat-of-arms-logo.png" height = "64">
 
 [![Join our community!](https://img.shields.io/discord/548994743925997570?label=Discord&style=for-the-badge)](https://discord.gg/89kQY2KFQz) ![](https://img.shields.io/github/languages/code-size/Confoederatio/Eoscala-Velkscala?style=for-the-badge) ![](https://img.shields.io/github/downloads/Confoederatio/Eoscala-Velkscala/total?style=for-the-badge)
 
