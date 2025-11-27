@@ -118,6 +118,8 @@ footer {
     padding-top: 2rem;
     position: static;
     right: 0;
+    
+    img { width: 100% }
 }
 nav {
     grid-row: 1/span 2;

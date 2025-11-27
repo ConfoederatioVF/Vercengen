@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>js/vercengen/components/ComponentPassword.js - Documentation</title>
+    <title>Theme - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,112 +32,138 @@
 
 <div id="main">
     
-    <h1 class="page-title">js/vercengen/components/ComponentPassword.js</h1>
+    <h1 class="page-title">Theme</h1>
     
 
     
 
 
 
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Refer to &lt;span color = "yellow">{@link ve.Component}&lt;/span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
- * 
- * Password input for the end user.
- * - Functional binding: &lt;span color=00ffff>vePassword&lt;/span>().
- * 
- * ##### Constructor:
- * - `arg0_value`: {@link string} - The password placeholder for the given input.
- * - `arg1_options`: {@link Object}
- *   - `.disabled=false`: {@link boolean}
- * 
- * ##### Instance:
- * - `.v`: {@link string}
- * 
- * @augments ve.Component
- * @augments {@link ve.Component}
- * @memberof ve.Component
- * @type {ve.Password}
- */
-ve.Password = class extends ve.Component {
-	static demo_value = "password";
-	
-	constructor (arg0_value, arg1_options) {
-		//Convert from parameters
-		let value = arg0_value;
-		let options = (arg1_options) ? arg1_options : {};
-			super(options);
-			
-		//Initialise options
-		options.attributes = (options.attributes) ? options.attributes : {};
-		
-		//Declare local instance variables
-		let attributes = {
-			readonly: options.disabled,
-			...options.attributes
-		};
-		this.element = document.createElement("div");
-			this.element.setAttribute("component", "ve-password");
-			this.element.instance = this;
-		
-		this.options = options;
-		this.value = value;
-		
-		//Format HTML string
-		let html_string = [];
-		html_string.push(`&lt;span id = "name">&lt;/span>`);
-		html_string.push(`&lt;input type = "password"${HTML.objectToAttributes(attributes)}>`);
-		
-		//Populate element and initialise handlers
-		this.element.innerHTML = html_string.join("");
-		
-		let input_el = this.element.querySelector("input");
-		input_el.addEventListener("input", (e) => {
-			this.from_binding_fire_silently = true;
-			this.v = global.String(e.target.value);
-			delete this.from_binding_fire_silently;
-			this.fireToBinding();
-		});
-		this.v = this.value;
-	}
-	
-	/**
-	 * Returns the current password.
-	 * - Accessor of: {@link ve.Password}
-	 * 
-	 * @returns {string}
-	 */
-	get v () {
-		//Return statement
-		return this.value;
-	}
-	
-	/**
-	 * Sets the new password for the present component.
-	 * - Accessor of: {@link ve.Password}
-	 * 
-	 * @param {string} arg0_value
-	 */
-	set v (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Set value and update UI
-		this.value = value;
-		this.element.querySelector("input").value = this.value;
-		this.fireFromBinding();
-	}
-};
 
-//Functional binding
-vePassword = function () {
-	//Return statement
-	return new ve.Password(...arguments);
-};</code></pre>
-        </article>
-    </section>
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="ve.html">ve</a>.</span>
+        
+        Theme
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p><span color="yellow"><a href="ve.Theme.html">ve.Theme</a></span>: Themes in Vercengen serve as <strong>Telestyle</strong> wrappers and can be used in <a href="ve.Component.html">ve.Component</a>/<a href="ve.Feature.html">ve.Feature</a> option fields with the key <code>.theme</code>: string to identify them. Unlike traditional CSS, ve.Theme is fully dynamic and features custom selectors.</p>
+<ul>
+<li>Functional binding: <span color=00ffff>veTheme</span>().</li>
+</ul>
+<h5 id="constructor%3A">Constructor:</h5>
+<ul>
+<li><code>arg0_theme_key</code>: string</li>
+<li><code>arg1_telestyle_obj</code>: <a href="Object.html">Object</a> - The Telestyle object that will be applied when this theme is used.
+<ul>
+<li>Theming variables:</li>
+<li><code>--navbar-height</code>: string - CSS property: <code>height</code></li>
+<li></li>
+<li><code>--accent-primary-colour</code>: string - CSS property:<code>background-color</code></li>
+<li><code>--accent-secondary-colour</code>: string - CSS property:<code>background-color</code></li>
+<li><code>--bg-primary-colour</code>: string - CSS property:<code>background-color</code></li>
+<li><code>--bg-secondary-colour</code>: string - CSS property:<code>background-color</code></li>
+<li><code>--hover-colour</code>: string - CSS property:<code>background-color</code></li>
+<li></li>
+<li><code>--header-colour</code>: string - CSS property:<code>color</code></li>
+<li><code>--header-font-family</code>: string - CSS property:<code>font-family</code></li>
+<li><code>--header-font-size</code>: string - CSS property:<code>font-size</code></li>
+<li><code>--header-font-weight</code>: number - CSS property:<code>font-weight</code></li>
+<li><code>--image-filter</code>: string - CSS property:<code>filter</code></li>
+<li><code>--monospace-font-family</code>: string - CSS property:<code>font-family</code></li>
+<li></li>
+<li><code>--body-colour</code>: string - CSS property:<code>color</code></li>
+<li><code>--body-font-family</code>: string - CSS property:<code>font-family</code></li>
+<li><code>--body-font-size</code>: string - CSS property:<code>font-size</code></li>
+<li><code>--body-font-weight</code>: number - CSS property:<code>font-weight</code></li>
+<li></li>
+<li><code>--cell-padding</code>: string - CSS property:<code>padding</code></li>
+<li><code>--default-width</code>: string - CSS property:<code>width</code></li>
+<li><code>--padding</code>: string - CSS property:<code>padding</code></li>
+</ul>
+</li>
+</ul>
+<p>Wrapper for instantiating an object at ve.registry.themes[<code>arg0_theme_key</code>].</p></div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="js_vercengen_engine_telestyle_VercengenTheme.js.html">js/vercengen/engine/telestyle/VercengenTheme.js</a>, <a href="js_vercengen_engine_telestyle_VercengenTheme.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
