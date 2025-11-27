@@ -25,7 +25,7 @@ veWindow(veBIUF("test", { theme: "theme-test" }));
 By definition, all Vercengen Themes are stored in `ve.registry.themes`: Object.
 
 ### Data Structure (Telestyle Object):
-- `<css_property>`: number|string
+- `<css_property>`: function|number|string - Functions must return either number/string.
 - `"<css_variable>"`: string
 - `"<css_selector>"`: Object
   - ... (Same as above)
