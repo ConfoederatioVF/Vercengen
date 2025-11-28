@@ -1,11 +1,25 @@
 /**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Generic horizontal list input for non-nested lists with reorderable elements, i.e. arrays.
+ * - Functional binding: <span color=00ffff>veList</span>().
+ * 
  * ##### Constructor:
  * - `arg0_value`: {@link Array}<{@link ve.Component}>
  * - `arg1_options`: {@link Object}
+ *   - `.do_not_display_info_button=false`: {@link boolean}
+ *   - `.max`: {@link number} - The maximum number of elements in the array.
+ *   - `.min=0`: {@link number} - The minimum number of elements in the array.
+ *   
+ * ##### Instance:
+ * - `.v`: {@link Array}<{@link ve.Component}>
  * 
- * @type {ve.HorizontalList}
+ * @augments ve.Component
+ * @augments {@link ve.Component}
+ * @memberof ve.Component
+ * @type {ve.List}
  */
-ve.HorizontalList = class extends ve.Component {
+ve.List = class extends ve.Component {
 	static instances = [];
 	
 	constructor (arg0_value, arg1_options) {
@@ -25,6 +39,11 @@ ve.HorizontalList = class extends ve.Component {
 		this.element.style.alignItems = "center";
 			this.element.style.display = "flex";
 			
+			//Format html_string
+			let html_string = [];
+			html_string.push(`<span id = "name"></span> `);
+			this.element.innerHTML = html_string.join("");
+			
 			this.components_el = document.createElement("div");
 				this.components_el.id = "component-body";
 				this.element.appendChild(this.components_el);
@@ -40,38 +59,84 @@ ve.HorizontalList = class extends ve.Component {
 		this.placeholder = structuredClone(this.value[0].v);
 		this.overlay_window = undefined;
 		
+		if (!this.options.do_not_display_info_button) {
+			this.info_button = new ve.Button(() => {}, { 
+				name: "<icon>info</icon>", tooltip: "<kbd>RMB</kbd>: Edit Item" });
+			this.info_button.bind(this.element);
+		}
+		
 		//Set this.v to be the inputted ve.Component[]
+		if (options.name) this.name = options.name;
 		this.v = value;
 	}
 	
+	/**
+	 * Returns the current array value.
+	 * - Accessor of: {@link ve.List}
+	 * 
+	 * @returns {ve.Component[]}
+	 */
 	get v () {
 		//Return statement
-		return this.components;
+		return this.value;
 	}
 	
+	/**
+	 * Sets the current array value.
+	 * - Accessor of: {@link ve.List}
+	 * 
+	 * @param {ve.Component[]} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = arg0_value;
 		
+		//Set value, redraw and fire from binding
+		this.value = value;
 		this.draw();
-	} 
+		this.fireFromBinding();
+	}
 	
+	/**
+	 * Adds an item to the end of the array.
+	 * - Method of: {@link ve.List}
+	 */
 	addItem () {
+		if (this.options.max && this.value.length >= this.options.max) { //Internal guard clause for this.options.max
+			veToast(`<icon>warning</icon> The length of the current list cannot exceed ${String.formatNumber(this.options.max)} element(s).`);
+			return;
+		}
+		
 		//Push item to end of stack
 		this.value.push(global[`ve${this.class_name}`](this.placeholder));
 		this.draw();
 	}
 	
+	/**
+	 * Deletes an item from the array given its index.
+	 * - Method of: {@link ve.List}
+	 * 
+	 * @param {number} arg0_index
+	 */
 	deleteItem (arg0_index) {
 		//Convert from parameters
 		let index = (arg0_index) ? arg0_index : this.value.length - 1;
 		if (this.value.length === 0) return; //Internal guard clause if there are already no elements in the array
+		
+		if (this.options.min && this.value.length - 1 < this.options.min) { //Internal guard clause for this.options.min
+			veToast(`<icon>warning</icon> The length of the current list cannot go below ${String.formatNumber(this.options.min)} element(s).`);
+			return;
+		}
 		
 		//Delete item at index
 		this.value.splice(index, 1);
 		this.draw();
 	}
 	
+	/**
+	 * Redraws the present array.
+	 * - Method of: {@link ve.List}
+	 */
 	draw () {
 		//Draw .components_el from this.value
 		this.components_el.innerHTML = "";
@@ -128,10 +193,20 @@ ve.HorizontalList = class extends ve.Component {
 				}, { style: { alignItems: "center", display: "flex", justifyContent: "center" } }),
 				actions_bar: new ve.RawInterface({
 					insert_before_button: new ve.Button(() => {
+						if (this.options.max && this.value.length >= this.options.max) {
+							veToast(`<icon>warning</icon> The length of the current list cannot exceed ${String.formatNumber(this.options.max)} element(s)!`);
+							return;
+						}
+						
 						this.value.splice(i, 0, global[`ve${this.class_name}`](this.placeholder));
 						this.draw();
 					}, { name: "<icon>first_page</icon>", tooltip: "Insert Item Before" }),
 					insert_after_button: new ve.Button(() => {
+						if (this.options.max && this.value.length >= this.options.max) {
+							veToast(`<icon>warning</icon> The length of the current list cannot exceed ${String.formatNumber(this.options.max)} element(s)!`);
+							return;
+						}
+						
 						this.value.splice(i + 1, 0, global[`ve${this.class_name}`](this.placeholder));
 						this.draw();
 					}, { name: "<icon>last_page</icon>", tooltip: "Insert Item After" }),
@@ -154,4 +229,14 @@ ve.HorizontalList = class extends ve.Component {
 			});
 		}
 	}
-}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.List}
+ */
+veList  = function () {
+	//Return statement
+	return new ve.List(...arguments);
+};
