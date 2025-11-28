@@ -68,7 +68,7 @@ Editing Vercengen inside Vercengen with functional bindings (1 line):
 ```js
 veWindow(veScriptManager())
 ```
-Nested bindings with delay (15 lines):
+Nested bindings with delay (16 lines):
 ```js
 ColourPicker = class extends ve.Class { constructor () {
 	super();
@@ -78,6 +78,7 @@ ColourPicker = class extends ve.Class { constructor () {
 		opacity: veRange(1, {
 			binding: "this.opacity" })
 	});
+	super.open("instance");
 	
 	//Wait 1 second
 	setTimeout(() => {
