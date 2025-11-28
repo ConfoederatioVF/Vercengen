@@ -61,6 +61,7 @@ ve.Feature = class {
 		//Declare local instance variables
 		this.child_class = this.constructor;
 		this.child_class_obj = ve[this.child_class.prototype.constructor.name];
+		this.class_name = this.constructor.class_name;
 		this.id = Class.generateRandomID(ve.Feature);
 		this.is_vercengen_feature = true;
 		if (typeof components_obj === "function" || typeof components_obj === "string") {
@@ -219,6 +220,7 @@ ve.Feature = class {
 					
 					//Append to ve.registry.features
 					if (!ve.registry.components[local_key] && !ve.registry.features[local_key]) {
+						local_value.class_name = local_key;
 						ve.registry.features[local_key] = local_value;
 					} else {
 						let error_value = (ve.registry.components[local_key]) ?

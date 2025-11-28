@@ -101,6 +101,7 @@ ve.Component = class {
 		
 		//Declare local instance variables
 		this.child_class = this.constructor;
+		this.class_name = this.constructor.class_name;
 		this.do_not_fire_to_binding = false;
 		this.is_vercengen_component = true;
 		if (this.options === undefined)
@@ -539,6 +540,7 @@ ve.Component = class {
 					
 					//Append to ve.registry.components
 					if (!ve.registry.components[local_key] && !ve.registry.features[local_key]) {
+						local_value.class_name = local_key;
 						ve.registry.components[local_key] = local_value;
 					} else {
 						let error_value = (ve.registry.components[local_key]) ? 

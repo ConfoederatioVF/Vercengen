@@ -64,7 +64,7 @@ ve.Number = class extends ve.Component {
 			if (this.options.max && e.target.value > this.options.max)
 				e.target.value = this.options.max;
 			if (this.options.min && e.target.value < this.options.min)
-				e,target,value = this.options.min;
+				e.target.value = this.options.min;
 			
 			this.from_binding_fire_silently = true;
 			this.v = global.Number(e.target.value);

@@ -9,5 +9,5 @@ global.ScriptManager = class extends ve.Class {
 
 setTimeout(() => {
 	//global.script_manager = new ScriptManager();
-	veWindow(veNumber([0]));
+	veWindow(new ve.HorizontalList([veNumber(0)]));
 }, 500);
