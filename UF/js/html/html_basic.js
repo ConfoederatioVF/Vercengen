@@ -157,7 +157,7 @@
 	/**
 	 * Converts an object into an HTML attributes string.
 	 * 
-	 * @param {{"<attribute_key>": string}} arg0_object
+	 * @param {Object|{"<attribute_key>": string}} arg0_object
 	 * 
 	 * @returns {string}
 	 */

@@ -26,5 +26,5 @@ ve.Demo = class veDemo extends ve.Class { //[WIP] - Make sure .name is always po
 };
 
 setTimeout(() => {
-	if (ve.registry.debug_mode) new ve.Demo();
+	//if (ve.registry.debug_mode) new ve.Demo();
 }, 100);

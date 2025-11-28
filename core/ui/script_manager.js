@@ -8,5 +8,6 @@ global.ScriptManager = class extends ve.Class {
 }
 
 setTimeout(() => {
-	global.script_manager = new ScriptManager();
+	//global.script_manager = new ScriptManager();
+	veWindow(veNumber([0]));
 }, 500);
