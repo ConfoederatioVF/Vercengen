@@ -261,6 +261,8 @@ global.path = require("path");
 		let load_patterns = (!options.do_not_import_UF) ? [
 			"!UF/archives",
 			"UF",
+			
+			//Blockly/Maptalks
 			"UF/libraries",
 			"UF/libraries/blockly.js",
 			"UF/libraries/bi_blockly/",
@@ -269,6 +271,16 @@ global.path = require("path");
 			"UF/libraries/mapbox-gl.js",
 			"UF/libraries/mapbox-gl.css",
 			"UF/libraries/maptalks.mapboxgl.min.js",
+			
+			//Univer
+			"UF/libraries/univer/react.production.min.js",
+			"UF/libraries/univer/react-dom.production.min.js",
+			"UF/libraries/univer/rxjs.umd.min.js",
+			"UF/libraries/univer/univerjs.index.js",
+			"UF/libraries/univer/univerjs.umd.index.js",
+			"UF/libraries/univer/univer.en-US.js",
+			
+			//DALS, Vercengen Components
 			"UF/js/dals/Timeline.js",
 			"UF/js/dals/Timeline_state.js",
 			"UF/js/vercengen/engine",
