@@ -103,7 +103,7 @@ ve.Table = class extends ve.Component {
 	 * Converts the present value to a 3D array.
 	 * - Method of: {@link ve.Table}
 	 * 
-	 * @returns {any[][][]}
+	 * @returns {Array}
 	 */
 	convertToArray () {
 		//Return statement
@@ -114,7 +114,7 @@ ve.Table = class extends ve.Component {
 	 * Sets the present component value from an exported 3D array.
 	 * - Method of: {@link ve.Table}
 	 * 
-	 * @param {any[][][]} arg0_array
+	 * @param {Array} arg0_array
 	 * @param {boolean} [arg1_do_not_display=false]
 	 * 
 	 * @returns {Object}

@@ -2,6 +2,7 @@
   "source": {
     "include": ["UF"],
     "includePattern": ".+\\.(js|jsx|mjs)$",
+    "exclude": ["UF/libraries/"],
     "excludePattern": "(^|\\/|\\\\)_"
   },
   "plugins": [
