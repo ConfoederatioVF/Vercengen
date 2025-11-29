@@ -15,7 +15,7 @@
 
 Vercengen is an immediate mode frontend software engine developed for Confoederatio wth a focus on rapid application development (RAD), in which UI/UX is simply part of your state. It is used as the main frontend for most Confoederatio applications and provides simple adjustable CSS themes by tinkering with variables.
 
-Vercengen supports file explorers, nested hierarchies, delta action undo/redo trees, searchable lists, sortable lists, WYSIWYG editors, recursive context menus and tooltips, window management, and much more. For a list of all available components, please reference the documentation [here](https://confoederatio.org/Vercengen).
+Vercengen supports file explorers, nested hierarchies, delta action undo/redo trees, searchable lists, sortable lists, word processors, spreadsheet editors, recursive context menus and tooltips, window management, and much more. For a list of all available components, please reference the documentation [here](https://confoederatio.org/Vercengen).
 
 <br>
 <table>
