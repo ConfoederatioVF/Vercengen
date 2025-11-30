@@ -1,3 +1,28 @@
+/**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Represents a multi tag input with unique metadata attributes for keywording.
+ * - Functional binding: <span color=00ffff>veMultiTag</span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link Array}<{@link string}>
+ * - `arg1_options`: {@link Object}
+ *   - `.tags_key="global"`: {@link string} - The namespace to assign to the current MultiTag component to be shared between instances.
+ * 
+ * ##### Instance:
+ * - `.registry_array`: {@link Array}<{@link string}> - Read-only. Global registry array shared between instances.
+ * - `.v`: {@link Array}<{@link string}>
+ *   
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.MultiTag.notifyAllInstances|notifyAllInstances}</span>()
+ * - <span color=00ffff>{@link ve.MultiTag.refresh|refresh}</span>()
+ * - <span color=00ffff>{@link ve.MultiTag.updateLocalTags|updateLocalTags}</span>()
+ * 
+ * @augments ve.Component
+ * @augments {@link ve.Component}
+ * @memberof ve.Component
+ * @type {ve.MultiTag}
+ */
 ve.MultiTag = class extends ve.Component {
 	static instances = {};
 	
@@ -5,7 +30,7 @@ ve.MultiTag = class extends ve.Component {
 		//Convert from parameters
 		let value = Array.toArray(arg0_value);
 		let options = (arg1_options) ? arg1_options : {};
-		super(options);
+			super(options);
 		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
@@ -20,6 +45,9 @@ ve.MultiTag = class extends ve.Component {
 		this.options = options;
 		
 		this.components_obj = {};
+		/**
+		 * @type {string[]}
+		 */
 		this.local_tags = value.filter(v => v != null && v !== "");
 		
 		//Register the current instance for synchronisation
@@ -36,21 +64,46 @@ ve.MultiTag = class extends ve.Component {
 		this.v = this.value;
 	}
 	
+	/**
+	 * Returns the global registry array shared by all {@link ve.MultiTag} components with this namespace.
+	 * - Accessor of: {@link ve.MultiTag}
+	 * 
+	 * @returns {string[]}
+	 */
 	get registry_array () {
 		//Declare local instance variables
 		let key = this.options.tags_key || "global";
 		
+		//Initialise registry array first if not defined
 		if (!ve.registry.settings.MultiTag[key])
 			ve.registry.settings.MultiTag[key] = [];
+		
+		//Return statement
 		return ve.registry.settings.MultiTag[key];
 	}
 	
+	/**
+	 * Returns the string array stored by the component.
+	 * - Accessor of: {@link ve.MultiTag}
+	 * 
+	 * @returns {string[]}
+	 */
 	get v () {
+		//Return statement
 		return this.local_tags;
 	}
 	
+	/**
+	 * Sets the string array stored by the component.
+	 * - Accessor of: {@link ve.MultiTag}
+	 * 
+	 * @param {string[]} arg0_value
+	 */
 	set v (arg0_value) {
+		//Declare local instance variables
 		let value = (arg0_value) ? Array.toArray(arg0_value) : arg0_value;
+		
+		//Refresh, set value, then fire from binding
 		this.local_tags = value;
 		this.refresh();
 		this.fireFromBinding();
@@ -58,6 +111,7 @@ ve.MultiTag = class extends ve.Component {
 	
 	/**
 	 * Notifies all instances sharing the same `.options.tags_key` and updates their tag suggestions.
+	 * - Method of: {@link ve.MultiTag}
 	 */
 	notifyAllInstances () {
 		//Declare local instance variables
@@ -68,6 +122,10 @@ ve.MultiTag = class extends ve.Component {
 			instances.forEach(instance => instance.refresh());
 	}
 	
+	/**
+	 * Refreshes the current {@link ve.List} display as well as any {@link ve.Datalist} components attached to it.
+	 * - Method of: {@link ve.MultiTag}
+	 */
 	refresh () {
 		//Declare local instance variables
 		this.datalist_options = {};
@@ -130,6 +188,10 @@ ve.MultiTag = class extends ve.Component {
 		}
 	}
 	
+	/**
+	 * Updates tags locally and ensures that {@link this.registry_array} is synchronised correctly to account for them.
+	 * - Method of: {@link ve.MultiTag}
+	 */
 	updateLocalTags () {
 		//Declare local instance variables
 		let new_array = [];
@@ -141,6 +203,7 @@ ve.MultiTag = class extends ve.Component {
 				if (local_value && local_value.length > 0)
 					new_array.push(local_value);
 			}
+		
 		//Refresh this.local_tags
 		this.local_tags = new_array;
 		
@@ -149,4 +212,14 @@ ve.MultiTag = class extends ve.Component {
 			if (!this.registry_array.includes(tag))
 				this.registry_array.push(tag);
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.MultiTag}
+ */
+veMultiTag = function () {
+	//Return statement
+	return new ve.MultiTag(...arguments);
 };
