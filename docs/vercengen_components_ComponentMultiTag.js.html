@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>vercengen/engine/VercengenClass.js - Documentation</title>
+    <title>vercengen/components/ComponentMultiTag.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,7 +32,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">vercengen/engine/VercengenClass.js</h1>
+    <h1 class="page-title">vercengen/components/ComponentMultiTag.js</h1>
     
 
     
@@ -42,241 +42,230 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>if (!global.ve) global.ve = {};
-
-/**
- * &lt;span color = "yellow">{@link ve.Class}&lt;/span>: Classes that extend this are parsed by the reflection engine, with UIs treated as being a subset of state via &lt;span color = "yellow">{@link ve.Component}&lt;/span> type declarations.
- *
- * UIs can be opened via super.&lt;span color=00ffff>open&lt;/span>(arg0_mode:"class"/"instance", arg1_options:{@link Object}), and closed using &lt;span color=00ffff>close&lt;/span>(arg0_mode:"class"/"instance").
+            <pre class="prettyprint source linenums"><code>/**
+ * Refer to &lt;span color = "yellow">{@link ve.Component}&lt;/span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Represents a multi tag input with unique metadata attributes for keywording.
+ * - Functional binding: &lt;span color=00ffff>veMultiTag&lt;/span>().
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link Array}&lt;{@link string}>
+ * - `arg1_options`: {@link Object}
+ *   - `.tags_key="global"`: {@link string} - The namespace to assign to the current MultiTag component to be shared between instances.
  * 
  * ##### Instance:
- * - `.id=Class.generateRandomID(ve.Class)`
- * - 
- * - `.class_window`: {@link ve.Window} - The class window any static components are bound to.
- * - `.instance_window`: {@link ve.Window} - The instance window non-static components is bound to.
- * 
+ * - `.registry_array`: {@link Array}&lt;{@link string}> - Read-only. Global registry array shared between instances.
+ * - `.v`: {@link Array}&lt;{@link string}>
+ *   
  * ##### Methods:
- * - &lt;span color=00ffff>{@link ve.Class.close|close}&lt;/span>(arg0_mode:"class"/"instance")
- * - &lt;span color=00ffff>{@link ve.Class.draw|draw}&lt;/span>(arg0_function:{@link function}(this:{@link ve.Class}), arg1_interval=0:{@link number}) - The draw function intended to make non-UI related draw calls to browser/process.
- * - &lt;span color=00ffff>{@link ve.Class.getState|getState}&lt;/span>() | {@link Object}
- * - &lt;span color=00ffff>{@link ve.Class.isClosed|isClosed}&lt;/span>(arg0_mode:"class"/"instance") | {@link boolean} - Whether the selected window is closed.
- * - &lt;span color=00ffff>{@link ve.Class.isOpen|isOpen}&lt;/span>(arg0_mode:"class"/"instance") | {@link boolean} - Whether the selected window is open.
- * - &lt;span color=00ffff>{@link ve.Class.open|open}&lt;/span>(arg0_mode:"class"/"instance") - Opens the UI bound to the current ve.Class.
- * - &lt;span color=00ffff>{@link ve.Class.updateOwner|updateOwner}()&lt;/span> - Updates the `.owner`/`.owners` field attached to {@link ve.Component}s.
+ * - &lt;span color=00ffff>{@link ve.MultiTag.notifyAllInstances|notifyAllInstances}&lt;/span>()
+ * - &lt;span color=00ffff>{@link ve.MultiTag.refresh|refresh}&lt;/span>()
+ * - &lt;span color=00ffff>{@link ve.MultiTag.updateLocalTags|updateLocalTags}&lt;/span>()
  * 
- * ##### Static Fields:
- * - `.instances`: {@link Array}&lt;this:{@link ve.Class}>
- * 
- * @memberof ve
- * @namespace ve.Class
- * @type {ve.Class}
+ * @augments ve.Component
+ * @augments {@link ve.Component}
+ * @memberof ve.Component
+ * @type {ve.MultiTag}
  */
-ve.Class = class {
-	//Declare local static variables
+ve.MultiTag = class extends ve.Component {
+	static instances = {};
 	
-	/**
-	 * @type ve.Class[]
-	 */
-	static instances = [];
-	
-	//Constructor/getter/setter
-	constructor () {
-		//Declare local instance variables
-		this.id = Class.generateRandomID(ve.Class); //Non-Vercengen objects can be used freely
-		
-		this.class_window = undefined;
-		this.instance_window = undefined;
-		
-		//Call updateOwner() upon initialisation
-		this.updateOwner();
-	}
-	
-	//Class methods
-	
-	/**
-	 * Closes any open UI currently associated with ve.Class, either its class (static) or instance.
-	 * - Method of: {@link ve.Class}
-	 * 
-	 * @param {string} arg0_mode - Either 'class'/'instance'.
-	 */
-	close (arg0_mode) {
+	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
-		let mode = arg0_mode;
-		
-		//Close class_window/instance_window
-		clearInterval(this.draw_loop);
-		delete this.draw_loop;
-		this[`${mode}_window`].remove();
-		delete this[`${mode}_window`];
-	}
-	
-	/**
-	 * Draws the current element on the screen based on a constant loop that can be cleared by the process.
-	 * - Method of: {@link ve.Class}
-	 * 
-	 * @param {function|undefined} arg0_function
-	 * @param {number} [arg1_interval=0]
-	 */
-	draw (arg0_function, arg1_interval) {
-		//Convert from parameters
-		let local_function = arg0_function;
-		let interval = (arg1_interval) ? parseInt(arg1_interval) : 0;
-		
-		//Set draw loop
-		if (local_function)
-			this.draw_loop = setInterval(() => { local_function(this); }, interval);
-	}
-	
-	/**
-	 * Whether the bound UI for the current mode is closed.
-	 * - Method of: {@link ve.Class}
-	 * 
-	 * @param {string} arg0_mode - Either 'class'/'instance'.
-	 * 
-	 * @returns {boolean}
-	 */
-	isClosed (arg0_mode) { //[WIP] - Finish function body
-		//Return statement
-		return (!(this.class_window || this.instance_window));
-	}
-	
-	/**
-	 * Whether the bound UI for the current mode is open.
-	 * - Method of: {@link ve.Class}
-	 *
-	 * @param {string} arg0_mode - Either 'class'/'instance'.
-	 *
-	 * @returns {boolean}
-	 */
-	isOpen (arg0_mode) { //[WIP] - Finish function body
-		//Return statement
-		return (this.class_window || this.instance_window);
-	}
-	
-	/**
-	 * Opens the relevant {@link ve.Window} or other Feature responsible for containing either class or instance variables.
-	 * - Method of: {@link ve.Class}
-	 *
-	 * @param {string} [arg0_mode="instance"] - Whether the UI is bound to 'class'/'instance'. If 'class', it displays all static Vercengen fields.
-	 * @param {Object} [arg1_options]
-	 *  @param {boolean} [arg1_options.do_not_close_if_open=false] - Whether to close the Window already bound to class_window or instance_window
-	 *  @param {string} [arg1_options.name]
-	 *  @param {string} [arg1_options.type="window"] - Either 'static'/'window'. 'static' by default if `.anchor`/`.x`/`.y` are specified.
-	 *
-	 *  @param {string} [arg1_options.anchor="top_left"] - Either 'bottom_left'/'bottom_right'/'top_left'/'top_right'. If neither this nor .x/.y are defined, the UI is spawned at the cursor position.
-	 *  @param {number|string} [arg1_options.height]
-	 *  @param {number|string} [arg1_options.width]
-	 *  @param {number|string} [arg1_options.x=HTML.mouse_x] - Mouse coordinates if undefined.
-	 *  @param {number|string} [arg1_options.y=HTML.mouse_y] - Mouse coordinates if undefined.
-	 */
-	open (arg0_mode, arg1_options) {
-		//Convert from parameters
-		let mode = (arg0_mode) ? arg0_mode : "instance";
+		let value = Array.toArray(arg0_value);
 		let options = (arg1_options) ? arg1_options : {};
+			super(options);
 		
 		//Initialise options
-		if (options.type === undefined &amp;&amp;
-			(options.anchor !== undefined || options.x !== undefined || options.y !== undefined)
-		) options.type = "static";
+		options.attributes = (options.attributes) ? options.attributes : {};
 		
 		//Declare local instance variables
-		let state_obj = this.updateOwner();
-		
-		let class_components_obj = state_obj.class_components_obj;
-		let instance_components_obj = state_obj.instance_components_obj;
-		
-		//Close window if open first
-		if (this.isOpen(mode) &amp;&amp; !options.do_not_close_if_open) this.close(mode);
-		
-		//Open ve.Window if either 'static'/'window'
-		let components_obj = (mode === "class") ? class_components_obj : instance_components_obj;
-		
-		if (options.type === "static") {
-			this[`${mode}_window`] = new ve.Window(components_obj, { is_static: true, ...options });
-		} else {
-			this[`${mode}_window`] = new ve.Window(components_obj, {
-				draggable: true,
-				is_static: false,
-				resizeable: true,
-				...options
+		this.element = document.createElement("div");
+			this.element.setAttribute("component", "ve-multi-tag");
+			Object.iterate(options.attributes, (local_key, local_value) => {
+				this.element.setAttribute(local_key, local_value.toString());
 			});
+			this.element.instance = this;
+		this.options = options;
+		
+		this.components_obj = {};
+		/**
+		 * @type {string[]}
+		 */
+		this.local_tags = value.filter(v => v != null &amp;&amp; v !== "");
+		
+		//Register the current instance for synchronisation
+		let key = this.options.tags_key || "global";
+		if (!ve.MultiTag.instances[key])
+			ve.MultiTag.instances[key] = [];
+		ve.MultiTag.instances[key].push(this);
+		
+		//Populate registry with initial local_tags; call this.refresh()
+		for (let tag of this.local_tags)
+			if (!this.registry_array.includes(tag))
+				this.registry_array.push(tag);
+		this.refresh();
+		this.v = this.value;
+	}
+	
+	/**
+	 * Returns the global registry array shared by all {@link ve.MultiTag} components with this namespace.
+	 * - Accessor of: {@link ve.MultiTag}
+	 * 
+	 * @returns {string[]}
+	 */
+	get registry_array () {
+		//Declare local instance variables
+		let key = this.options.tags_key || "global";
+		
+		//Initialise registry array first if not defined
+		if (!ve.registry.settings.MultiTag[key])
+			ve.registry.settings.MultiTag[key] = [];
+		
+		//Return statement
+		return ve.registry.settings.MultiTag[key];
+	}
+	
+	/**
+	 * Returns the string array stored by the component.
+	 * - Accessor of: {@link ve.MultiTag}
+	 * 
+	 * @returns {string[]}
+	 */
+	get v () {
+		//Return statement
+		return this.local_tags;
+	}
+	
+	/**
+	 * Sets the string array stored by the component.
+	 * - Accessor of: {@link ve.MultiTag}
+	 * 
+	 * @param {string[]} arg0_value
+	 */
+	set v (arg0_value) {
+		//Declare local instance variables
+		let value = (arg0_value) ? Array.toArray(arg0_value) : arg0_value;
+		
+		//Refresh, set value, then fire from binding
+		this.local_tags = value;
+		this.refresh();
+		this.fireFromBinding();
+	}
+	
+	/**
+	 * Notifies all instances sharing the same `.options.tags_key` and updates their tag suggestions.
+	 * - Method of: {@link ve.MultiTag}
+	 */
+	notifyAllInstances () {
+		//Declare local instance variables
+		let key = this.options.tags_key || "global";
+		
+		//Refresh all instances with this key
+		let instances = ve.MultiTag.instances[key] || [];
+			instances.forEach(instance => instance.refresh());
+	}
+	
+	/**
+	 * Refreshes the current {@link ve.List} display as well as any {@link ve.Datalist} components attached to it.
+	 * - Method of: {@link ve.MultiTag}
+	 */
+	refresh () {
+		//Declare local instance variables
+		this.datalist_options = {};
+		
+		//Iterate over this.registry_array; build suggestions from registry_array
+		for (let i = 0; i &lt; this.registry_array.length; i++)
+			this.datalist_options[this.registry_array[i]] = this.registry_array[i];
+		
+		//Create this.components_obj.datalist if ill-defined
+		if (!this.components_obj.datalist) {
+			this.components_obj.datalist = new ve.Datalist(this.datalist_options);
+		} else {
+			this.components_obj.datalist.v = this.datalist_options;
+		}
+		
+		//Create this.components_obj.list if ill-defined
+		if (!this.components_obj.list) {
+			let element_options = {
+				onuserchange: (v, e) => {
+					if (!this.local_tags.includes(v)) {
+						this.local_tags.push(v);
+						if (!this.registry_array.includes(v))
+							this.registry_array.push(v);
+						this.notifyAllInstances();
+						this.fireToBinding();
+					} else {
+						veToast(`&lt;icon>warning&lt;/icon> This tag is a duplicate of a previous tag, and will not be registered.`);
+						e.v = "";
+					}
+				}
+			};
+			this.components_obj.datalist.options = element_options;
+			this.components_obj.list = new ve.List([this.components_obj.datalist], {
+				onuserchange: (v, e) => {
+					this.updateLocalTags();
+					this.notifyAllInstances();
+					this.fireToBinding();
+				},
+				style: {
+					padding: 0
+				},
+				options: element_options,
+			});
+			this.components_obj.list.bind(this.element);
+			
+			//Iterate over all this.local_tags; initialise list items from local_tags
+			for (let i = 0; i &lt; this.local_tags.length; i++)
+				this.components_obj.list.addItem();
+			for (let i = 0; i &lt; this.local_tags.length; i++)
+				this.components_obj.list.v[i + 1].v = this.local_tags[i];
+		} else {
+			//Update suggestions on all datalist items in the list
+			this.components_obj.datalist.v = this.datalist_options;
+			this.components_obj.list.placeholder = this.datalist_options;
+			
+			//Iterate over all items in the current list
+			for (let i = 0; i &lt; this.components_obj.list.v.length; i++) {
+				this.components_obj.list.v[i].v = this.datalist_options;
+			}
 		}
 	}
 	
-	//State methods
-	
 	/**
-	 * Returns the values of all bound {@link ve.Component}s as a destructured object.
-	 * 
-	 * @returns {{"&lt;variable_key>": ve.Component}}
+	 * Updates tags locally and ensures that {@link this.registry_array} is synchronised correctly to account for them.
+	 * - Method of: {@link ve.MultiTag}
 	 */
-	getState () {
+	updateLocalTags () {
 		//Declare local instance variables
-		let child_class = this.constructor;
-		let parent_class = Object.getPrototypeOf(child_class);
-		let state_obj = {};
+		let new_array = [];
 		
-		//Fetch instance fields in child class
-		let instance_fields = {};
-			Object.iterate(this, (local_key, local_value) => {
-				instance_fields[local_key] = local_value
-			});
-		
-		//Fetch static fields unique to child class, mutate their keys to have 'static-' prepended to them.
-		let static_fields = Object.getOwnPropertyNames(child_class).filter((key) => (
-			!["length", "prototype", "name"].includes(key) &amp;&amp; //Filter out any default keys
-			!Object.getOwnPropertyNames(parent_class).includes(key) //Filter out any parent keys
-		)).reduce((local_obj, key) => {
-			local_obj[`static-${key}`] = child_class[key];
-			
-			//Return statement
-			return local_obj;
-		}, {});
-		
-		//Filter both static_fields and instance_fields for .vercengen_component and append them to state_obj
-		let temp_state_obj = { ...static_fields, ...instance_fields };
-		
-		Object.iterate(temp_state_obj, (local_key, local_value) => {
-			try {
-				if (local_value.is_vercengen_component &amp;&amp; !local_value.options?.ignore_component)
-					state_obj[local_key] = local_value;
-			} catch (e) {}
-		});
-		
-		//Return statement
-		return state_obj;
-	}
-	
-	/**
-	 * Updates the `.owner`/`.owners` field(s) for any attached {@link ve.Component}s to the current ve.Class.
-	 * - Method of: {@link ve.Class}
-	 * 
-	 * @returns {{class_components_obj: {"variable_key": ve.Component}, instance_components_obj: {"variable_key": ve.Component}}}
-	 */
-	updateOwner () {
-		//Declare local instance variables
-		let state_obj = this.getState();
-		
-		let class_components_obj = {};
-		let instance_components_obj = {};
-		
-		//Iterate over all components in state_obj to update their owners
-		Object.iterate(state_obj, (local_key, local_value) => {
-			if (local_key.startsWith("static-")) {
-				class_components_obj[local_key] = local_value;
-				class_components_obj[local_key].setOwner(this, [this]);
-			} else {
-				instance_components_obj[local_key] = local_value;
-				instance_components_obj[local_key].setOwner(this, [this]);
+		//Iterate over all entries in the current list
+		if (this.components_obj.list)
+			for (let i = 0; i &lt; this.components_obj.list.v.length; i++) {
+				let local_value = this.components_obj.list.v[i].v;
+				if (local_value &amp;&amp; local_value.length > 0)
+					new_array.push(local_value);
 			}
-		});
 		
-		//Return statement
-		return {
-			class_components_obj: class_components_obj,
-			instance_components_obj: instance_components_obj
-		};
+		//Refresh this.local_tags
+		this.local_tags = new_array;
+		
+		//Add new tags to registry
+		for (let tag of new_array)
+			if (!this.registry_array.includes(tag))
+				this.registry_array.push(tag);
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.MultiTag}
+ */
+veMultiTag = function () {
+	//Return statement
+	return new ve.MultiTag(...arguments);
 };</code></pre>
         </article>
     </section>

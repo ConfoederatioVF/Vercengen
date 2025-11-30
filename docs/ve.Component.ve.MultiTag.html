@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>vercengen/engine/VercengenClass.js - Documentation</title>
+    <title>ve.MultiTag - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,254 +32,1224 @@
 
 <div id="main">
     
-    <h1 class="page-title">vercengen/engine/VercengenClass.js</h1>
+    <h1 class="page-title">ve.MultiTag</h1>
     
 
     
 
 
 
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>if (!global.ve) global.ve = {};
 
-/**
- * &lt;span color = "yellow">{@link ve.Class}&lt;/span>: Classes that extend this are parsed by the reflection engine, with UIs treated as being a subset of state via &lt;span color = "yellow">{@link ve.Component}&lt;/span> type declarations.
- *
- * UIs can be opened via super.&lt;span color=00ffff>open&lt;/span>(arg0_mode:"class"/"instance", arg1_options:{@link Object}), and closed using &lt;span color=00ffff>close&lt;/span>(arg0_mode:"class"/"instance").
- * 
- * ##### Instance:
- * - `.id=Class.generateRandomID(ve.Class)`
- * - 
- * - `.class_window`: {@link ve.Window} - The class window any static components are bound to.
- * - `.instance_window`: {@link ve.Window} - The instance window non-static components is bound to.
- * 
- * ##### Methods:
- * - &lt;span color=00ffff>{@link ve.Class.close|close}&lt;/span>(arg0_mode:"class"/"instance")
- * - &lt;span color=00ffff>{@link ve.Class.draw|draw}&lt;/span>(arg0_function:{@link function}(this:{@link ve.Class}), arg1_interval=0:{@link number}) - The draw function intended to make non-UI related draw calls to browser/process.
- * - &lt;span color=00ffff>{@link ve.Class.getState|getState}&lt;/span>() | {@link Object}
- * - &lt;span color=00ffff>{@link ve.Class.isClosed|isClosed}&lt;/span>(arg0_mode:"class"/"instance") | {@link boolean} - Whether the selected window is closed.
- * - &lt;span color=00ffff>{@link ve.Class.isOpen|isOpen}&lt;/span>(arg0_mode:"class"/"instance") | {@link boolean} - Whether the selected window is open.
- * - &lt;span color=00ffff>{@link ve.Class.open|open}&lt;/span>(arg0_mode:"class"/"instance") - Opens the UI bound to the current ve.Class.
- * - &lt;span color=00ffff>{@link ve.Class.updateOwner|updateOwner}()&lt;/span> - Updates the `.owner`/`.owners` field attached to {@link ve.Component}s.
- * 
- * ##### Static Fields:
- * - `.instances`: {@link Array}&lt;this:{@link ve.Class}>
- * 
- * @memberof ve
- * @namespace ve.Class
- * @type {ve.Class}
- */
-ve.Class = class {
-	//Declare local static variables
-	
-	/**
-	 * @type ve.Class[]
-	 */
-	static instances = [];
-	
-	//Constructor/getter/setter
-	constructor () {
-		//Declare local instance variables
-		this.id = Class.generateRandomID(ve.Class); //Non-Vercengen objects can be used freely
-		
-		this.class_window = undefined;
-		this.instance_window = undefined;
-		
-		//Call updateOwner() upon initialisation
-		this.updateOwner();
-	}
-	
-	//Class methods
-	
-	/**
-	 * Closes any open UI currently associated with ve.Class, either its class (static) or instance.
-	 * - Method of: {@link ve.Class}
-	 * 
-	 * @param {string} arg0_mode - Either 'class'/'instance'.
-	 */
-	close (arg0_mode) {
-		//Convert from parameters
-		let mode = arg0_mode;
-		
-		//Close class_window/instance_window
-		clearInterval(this.draw_loop);
-		delete this.draw_loop;
-		this[`${mode}_window`].remove();
-		delete this[`${mode}_window`];
-	}
-	
-	/**
-	 * Draws the current element on the screen based on a constant loop that can be cleared by the process.
-	 * - Method of: {@link ve.Class}
-	 * 
-	 * @param {function|undefined} arg0_function
-	 * @param {number} [arg1_interval=0]
-	 */
-	draw (arg0_function, arg1_interval) {
-		//Convert from parameters
-		let local_function = arg0_function;
-		let interval = (arg1_interval) ? parseInt(arg1_interval) : 0;
-		
-		//Set draw loop
-		if (local_function)
-			this.draw_loop = setInterval(() => { local_function(this); }, interval);
-	}
-	
-	/**
-	 * Whether the bound UI for the current mode is closed.
-	 * - Method of: {@link ve.Class}
-	 * 
-	 * @param {string} arg0_mode - Either 'class'/'instance'.
-	 * 
-	 * @returns {boolean}
-	 */
-	isClosed (arg0_mode) { //[WIP] - Finish function body
-		//Return statement
-		return (!(this.class_window || this.instance_window));
-	}
-	
-	/**
-	 * Whether the bound UI for the current mode is open.
-	 * - Method of: {@link ve.Class}
-	 *
-	 * @param {string} arg0_mode - Either 'class'/'instance'.
-	 *
-	 * @returns {boolean}
-	 */
-	isOpen (arg0_mode) { //[WIP] - Finish function body
-		//Return statement
-		return (this.class_window || this.instance_window);
-	}
-	
-	/**
-	 * Opens the relevant {@link ve.Window} or other Feature responsible for containing either class or instance variables.
-	 * - Method of: {@link ve.Class}
-	 *
-	 * @param {string} [arg0_mode="instance"] - Whether the UI is bound to 'class'/'instance'. If 'class', it displays all static Vercengen fields.
-	 * @param {Object} [arg1_options]
-	 *  @param {boolean} [arg1_options.do_not_close_if_open=false] - Whether to close the Window already bound to class_window or instance_window
-	 *  @param {string} [arg1_options.name]
-	 *  @param {string} [arg1_options.type="window"] - Either 'static'/'window'. 'static' by default if `.anchor`/`.x`/`.y` are specified.
-	 *
-	 *  @param {string} [arg1_options.anchor="top_left"] - Either 'bottom_left'/'bottom_right'/'top_left'/'top_right'. If neither this nor .x/.y are defined, the UI is spawned at the cursor position.
-	 *  @param {number|string} [arg1_options.height]
-	 *  @param {number|string} [arg1_options.width]
-	 *  @param {number|string} [arg1_options.x=HTML.mouse_x] - Mouse coordinates if undefined.
-	 *  @param {number|string} [arg1_options.y=HTML.mouse_y] - Mouse coordinates if undefined.
-	 */
-	open (arg0_mode, arg1_options) {
-		//Convert from parameters
-		let mode = (arg0_mode) ? arg0_mode : "instance";
-		let options = (arg1_options) ? arg1_options : {};
-		
-		//Initialise options
-		if (options.type === undefined &amp;&amp;
-			(options.anchor !== undefined || options.x !== undefined || options.y !== undefined)
-		) options.type = "static";
-		
-		//Declare local instance variables
-		let state_obj = this.updateOwner();
-		
-		let class_components_obj = state_obj.class_components_obj;
-		let instance_components_obj = state_obj.instance_components_obj;
-		
-		//Close window if open first
-		if (this.isOpen(mode) &amp;&amp; !options.do_not_close_if_open) this.close(mode);
-		
-		//Open ve.Window if either 'static'/'window'
-		let components_obj = (mode === "class") ? class_components_obj : instance_components_obj;
-		
-		if (options.type === "static") {
-			this[`${mode}_window`] = new ve.Window(components_obj, { is_static: true, ...options });
-		} else {
-			this[`${mode}_window`] = new ve.Window(components_obj, {
-				draggable: true,
-				is_static: false,
-				resizeable: true,
-				...options
-			});
-		}
-	}
-	
-	//State methods
-	
-	/**
-	 * Returns the values of all bound {@link ve.Component}s as a destructured object.
-	 * 
-	 * @returns {{"&lt;variable_key>": ve.Component}}
-	 */
-	getState () {
-		//Declare local instance variables
-		let child_class = this.constructor;
-		let parent_class = Object.getPrototypeOf(child_class);
-		let state_obj = {};
-		
-		//Fetch instance fields in child class
-		let instance_fields = {};
-			Object.iterate(this, (local_key, local_value) => {
-				instance_fields[local_key] = local_value
-			});
-		
-		//Fetch static fields unique to child class, mutate their keys to have 'static-' prepended to them.
-		let static_fields = Object.getOwnPropertyNames(child_class).filter((key) => (
-			!["length", "prototype", "name"].includes(key) &amp;&amp; //Filter out any default keys
-			!Object.getOwnPropertyNames(parent_class).includes(key) //Filter out any parent keys
-		)).reduce((local_obj, key) => {
-			local_obj[`static-${key}`] = child_class[key];
-			
-			//Return statement
-			return local_obj;
-		}, {});
-		
-		//Filter both static_fields and instance_fields for .vercengen_component and append them to state_obj
-		let temp_state_obj = { ...static_fields, ...instance_fields };
-		
-		Object.iterate(temp_state_obj, (local_key, local_value) => {
-			try {
-				if (local_value.is_vercengen_component &amp;&amp; !local_value.options?.ignore_component)
-					state_obj[local_key] = local_value;
-			} catch (e) {}
-		});
-		
-		//Return statement
-		return state_obj;
-	}
-	
-	/**
-	 * Updates the `.owner`/`.owners` field(s) for any attached {@link ve.Component}s to the current ve.Class.
-	 * - Method of: {@link ve.Class}
-	 * 
-	 * @returns {{class_components_obj: {"variable_key": ve.Component}, instance_components_obj: {"variable_key": ve.Component}}}
-	 */
-	updateOwner () {
-		//Declare local instance variables
-		let state_obj = this.getState();
-		
-		let class_components_obj = {};
-		let instance_components_obj = {};
-		
-		//Iterate over all components in state_obj to update their owners
-		Object.iterate(state_obj, (local_key, local_value) => {
-			if (local_key.startsWith("static-")) {
-				class_components_obj[local_key] = local_value;
-				class_components_obj[local_key].setOwner(this, [this]);
-			} else {
-				instance_components_obj[local_key] = local_value;
-				instance_components_obj[local_key].setOwner(this, [this]);
-			}
-		});
-		
-		//Return statement
-		return {
-			class_components_obj: class_components_obj,
-			instance_components_obj: instance_components_obj
-		};
-	}
-};</code></pre>
-        </article>
-    </section>
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="ve.html">ve</a><a href="ve.Component.html">.Component</a>.</span>
+        
+        ve.MultiTag
+        </h2>
+        
+            <div class="class-description"><p>Refer to <span color = "yellow"><a href="ve.Component.html">ve.Component</a></span> for methods or fields inherited from this Component's parent such as <code>.options.attributes</code> or <code>.element</code>.</p>
+<p>Represents a multi tag input with unique metadata attributes for keywording.</p>
+<ul>
+<li>Functional binding: <span color=00ffff>veMultiTag</span>().</li>
+</ul>
+<h5 id="constructor%3A">Constructor:</h5>
+<ul>
+<li><code>arg0_value</code>: Array&lt;string&gt;</li>
+<li><code>arg1_options</code>: <a href="Object.html">Object</a>
+<ul>
+<li><code>.tags_key=&quot;global&quot;</code>: string - The namespace to assign to the current MultiTag component to be shared between instances.</li>
+</ul>
+</li>
+</ul>
+<h5 id="instance%3A">Instance:</h5>
+<ul>
+<li><code>.registry_array</code>: Array&lt;string&gt; - Read-only. Global registry array shared between instances.</li>
+<li><code>.v</code>: Array&lt;string&gt;</li>
+</ul>
+<h5 id="methods%3A">Methods:</h5>
+<ul>
+<li><span color=00ffff>notifyAllInstances</span>()</li>
+<li><span color=00ffff>refresh</span>()</li>
+<li><span color=00ffff>updateLocalTags</span>()</li>
+</ul></div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+<div class="section-method">
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="ve.MultiTag"><span class="type-signature"></span>new ve.MultiTag<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_components_ComponentMultiTag.js.html">vercengen/components/ComponentMultiTag.js</a>, <a href="vercengen_components_ComponentMultiTag.js.html#line26">line 26</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="ve.Component.html">ve.Component</a></li>
+    
+        <li>{@link</li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="from_binding"><span class="type-signature"></span>from_binding<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Internal <code>.from_binding</code> setter for handling .options.from_binding. Accepts a string literal that is then parsed to a variable reference.</p>
+<p><code>.to_binding</code> counterparts are manually handled child-side.</p>
+<ul>
+<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#from_binding">ve.Component#from_binding</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line342">line 342</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="limit"><span class="type-signature"></span>limit<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Tests the current this.limit by calling this.limit_function(this.v, <a href="this.html">this</a>). Otherwise resolves to true if no <code>.options.limit</code> is set.</p>
+<ul>
+<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#limit">ve.Component#limit</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line165">line 165</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="local_tags"><span class="type-signature"></span>local_tags<span class="type-signature"> :Array.&lt;string></span></h4>
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_components_ComponentMultiTag.js.html">vercengen/components/ComponentMultiTag.js</a>, <a href="vercengen_components_ComponentMultiTag.js.html#line51">line 51</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><code>Array.&lt;string></code></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</div>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="name"><span class="type-signature"></span>name<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Returns the visual name of the present <a href="ve.Component.html">ve.Component</a>,</p>
+<ul>
+<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#name">ve.Component#name</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line201">line 201</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="addComponent"><span class="type-signature"></span>addComponent<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Adds the current component to this.parent_el should it exist.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#addComponent">ve.Component#addComponent</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line450">line 450</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="bind"><span class="type-signature"></span>bind<span class="signature">(arg0_container_el)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Manually binds/mounts the present <span color="yellow"><a href="ve.Component.html">ve.Component</a></span> into the visual DOM.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#bind">ve.Component#bind</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line463">line 463</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arg0_container_el</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>HTMLElement</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="fireFromBinding"><span class="type-signature"></span>fireFromBinding<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Pseudo-setter from binding. Fires only upon program-driven changes to .v directly, which means that this has to be monitored manually component-side in set v(). This should always come last in set v().</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#fireFromBinding">ve.Component#fireFromBinding</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line244">line 244</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="fireToBinding"><span class="type-signature"></span>fireToBinding<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Pseudo-setter to binding. Fires only upon user-driven changes, which means that this has to be monitored manually component-side.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#fireToBinding">ve.Component#fireToBinding</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line281">line 281</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="remove"><span class="type-signature"></span>remove<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Removes the component/element from the DOM.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#remove">ve.Component#remove</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line475">line 475</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="removeComponent"><span class="type-signature"></span>removeComponent<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Removes the current component from this.parent_el should it exist.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#removeComponent">ve.Component#removeComponent</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line496">line 496</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="setOwner"><span class="type-signature"></span>setOwner<span class="signature">(arg0_value, arg1_owner_array)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Sets the root parent and ownership tree. Influences this.parent_el, this.owner, this.owners.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#setOwner">ve.Component#setOwner</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line425">line 425</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arg0_value</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>arg1_owner_array</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
