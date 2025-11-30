@@ -191,6 +191,7 @@ ve.Window = class extends ve.Feature {
 			});
 		}
 		
+		//Improved window ergonomics by only listening to headers, allowing for casual body editing
 		this.element.addEventListener("mousedown", (e) => {
 			let feature_header_el = this.element.querySelector(`#feature-header`);
 			
@@ -201,6 +202,7 @@ ve.Window = class extends ve.Feature {
 				this.select();
 			}
 		});
+		this.element.addEventListener("dblclick", () => this.select());
 		
 		//Push Window instance to ve.Window.instances
 		this.refresh(this.components_obj);
