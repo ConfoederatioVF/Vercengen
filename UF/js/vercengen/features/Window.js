@@ -191,13 +191,14 @@ ve.Window = class extends ve.Feature {
 			});
 		}
 		
-		this.element.addEventListener("click", (e) => {
-			console.log(e);
+		this.element.addEventListener("mousedown", (e) => {
+			//console.log(e);
 			this.select();
 		});
 		
 		//Push Window instance to ve.Window.instances
 		this.refresh(this.components_obj);
+		this.select();
 		ve.window_overlay_el.appendChild(this.element);
 		ve.Window.instances.push(this);
 	}
