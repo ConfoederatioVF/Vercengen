@@ -1,75 +1,121 @@
 //Initialise functions
 {
-	Date.convertTimestampToDate = function (arg0_timestamp) {
+	Date.convertStringToDate = function (arg0_date_string, arg1_delimiter) {
 		//Convert from parameters
-		let timestamp = arg0_timestamp;
+		let date_string = arg0_date_string;
+		let delimiter = (arg1_delimiter) ? arg1_delimiter : ".";
 		
-		//Internal guard clause if timestamp is already a date object
-		if (typeof timestamp === "object") return timestamp;
-		
-		//1. Decode if string
-		if (typeof timestamp === "string") {
-			timestamp = timestamp.toString().replace("t_", "").replace("tz_", "");
-			timestamp = parseInt(Math.numerise(timestamp));
-			
-			if (arg0_timestamp.startsWith("t_")) 
-				timestamp = -timestamp;
-		}
-		
-		//2. Declare local instance variables
+		//Declare local instance variables
+		let date_array = date_string.split(delimiter);
 		let date_obj = Date.getBlankDate();
-		let minutes = parseInt(timestamp);
+		let date_properties = ["year", "month", "day", "hour", "minute"];
 		
-		//4. Calculate years
-		if (minutes >= 0) {
-			while (true) {
-				let year_minutes = (Date.isLeapYear(date_obj.year) ? 366 : 365)*24*60;
-				if (minutes < year_minutes) break;
-				minutes -= year_minutes;
-				
-				date_obj.year++;
-			}
-		} else {
-			while (true) {
-				let year_minutes = (Date.isLeapYear(date_obj.year - 1) ? 366 : 365)*24*60;
-				if (minutes*-1 < year_minutes) break;
-				minutes += year_minutes;
-				
-				date_obj.year--;
-			}
-		}
+		//Check to make sure that the inputted date_string is valid
+		for (let i = 0; i < date_array.length; i++)
+			if (isNaN(parseInt(date_array[i])))
+				return;
 		
-		//5. Calculate months; iterate over all_months
-		let all_months = Object.keys(Date.months);
-		
-		for (let i = 0; i < all_months.length; i++) {
-			let local_month = Date.months[all_months[i]];
-			let days_in_month = local_month.days;
-			
-			if (Date.isLeapYear(date_obj.year) && local_month.leap_year_days)
-				days_in_month = local_month.leap_year_days;
-			
-			let month_minutes = days_in_month*24*60;
-			if (minutes < month_minutes) {
-				date_obj.month = i; //0 = January
-				break;
-			}
-			
-			minutes -= month_minutes;
-		}
-		
-		//6. Calculate days
-		date_obj.day = Math.floor(minutes/(24*60));
-		minutes -= date_obj.day*24*60;
-		
-		//7. Calculate hours
-		date_obj.hour = Math.floor(minutes/60);
-		minutes -= date_obj.hour*60;
-		
-		//8. Calculate minutes
-		date_obj.minute = minutes;
+		//Iterate over all elements in date_array and cast them to a date object
+		for (let i = 0; i < date_array.length; i++)
+			if (date_properties[i])
+				date_obj[date_properties[i]] = parseInt(date_array[i]);
 		
 		//Return statement
+		return date_obj;
+	};
+	
+	Date.convertTimestampToDate = function (arg0_timestamp) {
+		// Convert from parameters
+		let timestamp = arg0_timestamp;
+		
+		// Guard: if already a date object, return it
+		if (typeof timestamp === "object") return timestamp;
+		
+		// Force numeric
+		timestamp = parseInt(timestamp);
+		if (isNaN(timestamp)) return Date.getBlankDate();
+		
+		// Epoch: Year 1, Month 1, Day 1 => timestamp 0
+		let date_obj = Date.getBlankDate();
+		let minutes = timestamp;
+		
+		// --- Handle BCE (negative timestamps) ---
+		// If minutes < 0, we will reduce year instead of increasing it.
+		// We count *backwards* in complete years before year 1.
+		if (minutes < 0) {
+			while (true) {
+				const prev_year = date_obj.year - 1;
+				const year_minutes =
+					(Date.isLeapYear(prev_year) ? 366 : 365) * 24 * 60;
+				
+				// See if remaining negative minutes fit within this previous year
+				if (minutes + year_minutes >= 0) break;
+				minutes += year_minutes;
+				date_obj.year--;
+			}
+			
+			// Now minutes is within that previous year: move month/day from start
+			date_obj.year--; // Adjust because loop stops one step early
+			
+			let all_months = Object.keys(Date.months);
+			for (let i = 0; i < all_months.length; i++) {
+				const m = Date.months[all_months[i]];
+				const dim = Date.isLeapYear(date_obj.year)
+					? m.leap_year_days || m.days
+					: m.days;
+				const m_minutes = dim * 24 * 60;
+				
+				if (Math.abs(minutes) < m_minutes) {
+					date_obj.month = i + 1;
+					break;
+				}
+				minutes += m_minutes;
+			}
+			
+			date_obj.day = Math.floor(Math.abs(minutes) / (24 * 60)) + 1;
+			minutes += (date_obj.day - 1) * 24 * 60;
+			date_obj.hour = Math.floor(Math.abs(minutes) / 60);
+			date_obj.minute = Math.abs(minutes) % 60;
+			
+			if (date_obj.year < 0) date_obj.year++; //Fix 1AD offset
+			
+			return date_obj;
+		}
+		
+		// --- CE (positive timestamp) ---
+		// Step 1: Increase years
+		while (true) {
+			const y_minutes = (Date.isLeapYear(date_obj.year)
+				? 366
+				: 365) * 24 * 60;
+			if (minutes < y_minutes) break;
+			minutes -= y_minutes;
+			date_obj.year++;
+		}
+		
+		// Step 2: Increase months
+		const all_months = Object.keys(Date.months);
+		for (let i = 0; i < all_months.length; i++) {
+			const m = Date.months[all_months[i]];
+			const dim = Date.isLeapYear(date_obj.year)
+				? m.leap_year_days || m.days
+				: m.days;
+			const m_minutes = dim * 24 * 60;
+			if (minutes < m_minutes) {
+				date_obj.month = i + 1;
+				break;
+			}
+			minutes -= m_minutes;
+		}
+		
+		// Step 3: Days
+		date_obj.day = Math.floor(minutes / (24 * 60)) + 1;
+		minutes -= (date_obj.day - 1) * 24 * 60;
+		
+		// Step 4: Hours + Minutes
+		date_obj.hour = Math.floor(minutes / 60);
+		date_obj.minute = minutes % 60;
+		
 		return date_obj;
 	};
 	

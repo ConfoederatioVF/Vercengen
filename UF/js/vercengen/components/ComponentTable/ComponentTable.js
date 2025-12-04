@@ -19,6 +19,12 @@
  * - <span color=00ffff>{@link ve.Table.fromArray|fromArray}</span>(arg0_array:{@link Array}<{@link Array}<{@link Array}<{@link any}>>>, arg1_do_not_display=false:{@link boolean}) | {@link Object}
  * - <span color=00ffff>{@link ve.Table.setDarkMode|setDarkMode}</span>(arg0_value=false:{@link boolean})
  * 
+ * ##### Static Fields:
+ * - `.instances`: {@link Array}<this:{@link ve.Table}>
+ *
+ * ##### Static Methods:
+ * - <span color=00ffff>{@link ve.Table.fireToBinding|fireToBinding}</span>(arg0_table_id:{@link string})
+ * 
  * @augments ve.Component
  * @augments {@link ve.Component}
  * @memberof ve.Component
@@ -26,6 +32,7 @@
  */
 ve.Table = class extends ve.Component {
 	static demo_value = [[["Test","hello",1,7,"Row 1"],["","world",2,8,"Row 2"],["","this",3,9,"Row 3"],["","is",4,10,"Row 4"],["","a",5,11,"Row 5"],["","test",6,12,"Row 6"],["","",7,"",""]]];
+	static instances = [];
 	
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
@@ -52,6 +59,7 @@ ve.Table = class extends ve.Component {
 				Object.keys(options.attributes, (local_key, local_value) => {
 					this.element.setAttribute(local_key, local_value.toString());
 				});
+		this.id = Class.generateRandomID(ve.Table);
 		this.options = options;
 		this.value = value;
 		
@@ -62,10 +70,12 @@ ve.Table = class extends ve.Component {
 				//Parse options
 				if (this.options.dark_mode)
 					this.setDarkMode(this.options.dark_mode);
+				this.iframe_el.contentWindow.setID(this.id);
 				
 				clearInterval(this.initialisation_loop);
 			} catch (e) {}
 		});
+		ve.Table.instances.push(this);
 		
 		if (options.name) this.name = options.name;
 	}
@@ -97,6 +107,7 @@ ve.Table = class extends ve.Component {
 		
 		//Set data in iframe_el if object
 		this.iframe_el.contentWindow.setData(value);
+		this.fireFromBinding();
 	}
 	
 	/**
@@ -134,8 +145,20 @@ ve.Table = class extends ve.Component {
 			for (let x = 0; x < array[i].length; x++) {
 				let local_row_obj = {};
 				
-				for (let y = 0; y < array[i][x].length; y++)
-					local_row_obj[y] = { v: array[i][x][y] };
+				for (let y = 0; y < array[i][x].length; y++) {
+					let local_value = array[i][x][y];
+					
+					//Coerce types based on local_value
+					if (local_value.startsWith("=")) {
+						local_row_obj[y] = { f: local_value };
+					} else {
+						if (isNaN(parseFloat(local_value))) {
+							local_row_obj[y] = { v: local_value, t: 1 };
+						} else {
+							local_row_obj[y] = { v: local_value, t: 2 };
+						}
+					}
+				}
 				
 				local_data_obj[x] = local_row_obj;
 			}
@@ -167,6 +190,23 @@ ve.Table = class extends ve.Component {
 		let value = arg0_value;
 		
 		this.iframe_el.contentWindow.toggleDarkMode(value);
+	}
+	
+	/**
+	 * Fires to_binding statically, used by the embedded iframe since it has no `this` context.
+	 * - Static method of: {@link ve.Table}
+	 * 
+	 * @param {string} arg0_table_id
+	 */
+	static fireToBinding (arg0_table_id) {
+		//Convert from parameters
+		let table_id = arg0_table_id;
+		
+		//Declare local instance variables
+		let table_obj = ve.Table.instances.filter((v) => v.id === table_id)[0];
+		
+		if (table_obj)
+			table_obj.fireToBinding();
 	}
 };
 

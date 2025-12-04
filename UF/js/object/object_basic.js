@@ -161,7 +161,7 @@
 	 * @param {Object} [arg2_options]
 	 *  @param [arg2_options.sort_mode] - Either 'ascending'/'descending'. Sorts object keys.
 	 */
-	Object.iterate = function (arg0_object, arg1_function, arg2_options) { //[WIP] - CConsider fixing performance with Date/History
+	Object.iterate = function (arg0_object, arg1_function, arg2_options) {
 		//Convert from parameters
 		let object = arg0_object;
 		let local_function = arg1_function;
@@ -180,11 +180,11 @@
 			//Sort all_local_keys by .sort_mode
 			if (options.sort_mode === "date_ascending") {
 				all_local_keys = all_local_keys.sort((a, b) => {
-					return Date.convertTimestampToInt(a) - Date.convertTimestampToInt(b);
+					return parseInt(a) - parseInt(b);
 				});
 			} else if (options.sort_mode === "date_descending") {
 				all_local_keys = all_local_keys.sort((a, b) => {
-					return Date.convertTimestampToInt(b) - Date.convertTimestampToInt(a);
+					return parseInt(b) - parseInt(a);
 				});
 			}
 		

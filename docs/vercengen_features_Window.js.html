@@ -71,6 +71,7 @@
  *   - 
  *   - `.onuserchange`: {@link function}(arg0_v:{@link Object}, arg1_e:{@link Event}) - Fires upon user changes to the window. Changes are discrete, and the set of Object keys may vary.
  *     - `arg0_v`: {@link Object}
+ *       - `.close`: {@link boolean} - Whether the change is a close event.
  *       - `.name`: {@link string}
  *   
  * ##### Instance:
@@ -80,6 +81,7 @@
  * - &lt;span color=00ffff>{@link ve.Window.getZIndex|getZIndex}&lt;/span>() | {@link number}
  * - &lt;span color=00ffff>{@link ve.Window.select|select}&lt;/span>()
  * - &lt;span color=00ffff>{@link ve.Window.setCoords|setCoords}&lt;/span>(arg0_x:{@link number}, arg1_y:{@link number})
+ * - &lt;span color=00ffff>{@link ve.Window.setName|setName}&lt;/span>(arg0_name:{@link string})
  * - &lt;span color=00ffff>{@link ve.Window.setSize|setSize}&lt;/span>(arg0_width:{@link number}|{@link string}, arg1_height:{@link number}|{@link string})
  * - &lt;span color=00ffff>{@link ve.Window.refresh|refresh}&lt;/span>(arg0_components_obj:{@link Object}&lt;{@link ve.Component}>)
  * 
@@ -208,7 +210,7 @@ ve.Window = class extends ve.Feature {
 		
 		let window_name_el = this.element.querySelector(`#window-name`);
 		if (window_name_el)
-			window_name_el.addEventListener("input", (e) => {
+			window_name_el.addEventListener("focusout", (e) => {
 				if (this.options.onuserchange)
 					this.options.onuserchange({ name: window_name_el.innerHTML }, e);
 			});
@@ -220,7 +222,9 @@ ve.Window = class extends ve.Feature {
 				close_button.src = `./UF/gfx/close_icon_dark.png`;
 			this.element.querySelector(`#feature-header`).appendChild(close_button);
 			
-			close_button.onclick = () => {
+			close_button.onclick = (e) => {
+				if (this.options.onuserchange)
+					this.options.onuserchange({ close: true }, e);
 				this.remove();
 			};
 		}
@@ -235,16 +239,24 @@ ve.Window = class extends ve.Feature {
 			});
 		}
 		
+		//Improved window ergonomics by only listening to headers, allowing for casual body editing
 		this.element.addEventListener("mousedown", (e) => {
-			//console.log(e);
-			this.select();
+			let feature_header_el = this.element.querySelector(`#feature-header`);
+			
+			if (feature_header_el)
+				if (this.element.querySelector(`#feature-header`).contains(e.target))
+					this.select();
+		});
+		this.element.addEventListener("dblclick", () => {
+			if (this.element.querySelector(`#feature-header`))
+				this.select();
 		});
 		
 		//Push Window instance to ve.Window.instances
 		this.refresh(this.components_obj);
-		this.select();
 		ve.window_overlay_el.appendChild(this.element);
 		ve.Window.instances.push(this);
+		this.select();
 	}
 	
 	/**
@@ -289,7 +301,7 @@ ve.Window = class extends ve.Feature {
 	 * 
 	 * @param {{"&lt;component_key>": ve.Component}} arg0_components_obj
 	 */
-	refresh (arg0_components_obj) { //[WIP] - Finish ve.Interface wrapping
+	refresh (arg0_components_obj) {
 		//Convert from parameters
 		this.components_obj = arg0_components_obj;
 		
@@ -362,6 +374,23 @@ ve.Window = class extends ve.Feature {
 	}
 	
 	/**
+	 * Sets the current name of the window.
+	 * - Method of: {@link ve.Window}
+	 * 
+	 * @param {string} arg0_name
+	 */
+	setName (arg0_name) {
+		//Convert from parameters
+		let name = (arg0_name) ? arg0_name : "";
+		
+		//Set name
+		this.name = name;
+		try {
+			this.element.querySelector(`#feature-header #window-name`).innerText = this.name;
+		} catch (e) {}
+	}
+	
+	/**
 	 * Sets the given size of the current window using either numbers or CSS calculated strings in Telestyle. Any functions must return either a number/string.
 	 * - Method of: {@link ve.Window}
 	 * 
@@ -399,8 +428,9 @@ ve.Window = class extends ve.Feature {
 		for (let i = 0; i &lt; ve.Window.instances.length; i++) {
 			let local_instance = ve.Window.instances[i];
 			
-			if (local_instance.getZIndex() > highest_z_index[0])
-				highest_z_index = [local_instance.getZIndex(), local_instance];
+			if (!local_instance.element.classList.contains("ve-context-menu"))
+				if (local_instance.getZIndex() > highest_z_index[0])
+					highest_z_index = [local_instance.getZIndex(), local_instance];
 		}
 		
 		//Return statement
@@ -412,13 +442,13 @@ ve.Window = class extends ve.Feature {
 	 * */
 	static normaliseZIndexes () {
 		//Declare local instance variables
-		var overlay_el = ve.window_overlay_el;
+		let overlay_el = ve.window_overlay_el;
 		
 		//Get all elements with [data-window-id] and their z-index values
-		var all_windows = Array.from(overlay_el.querySelectorAll('[data-window-id]'));
+		let all_windows = Array.from(overlay_el.querySelectorAll(`.ve.window`));
 		
 		// Extract z-index values and sort them numerically
-		var z_indexes = all_windows
+		let z_indexes = all_windows
 		.map((window) => ({
 			element: window,
 			z_index: parseInt(window.style.zIndex || 0, 10),
@@ -428,6 +458,7 @@ ve.Window = class extends ve.Feature {
 		// Assign normalized z-index values (1, 2, 3, ...)
 		z_indexes.forEach((item, index) => {
 			item.element.style.zIndex = (index + 1).toString();
+			item.element.style.setProperty("--local-z-index", (index + 1).toString());
 		});
 	}
 };
