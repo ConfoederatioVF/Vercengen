@@ -16,8 +16,6 @@
  * - `.v`: {@link Array}<{@link ve.Component}>
  * 
  * @augments ve.Component
- * @augments {@link ve.Component}
- * @class
  * @memberof ve.Component
  * @type {ve.List}
  */
@@ -80,8 +78,6 @@ ve.List = class extends ve.Component {
 	 * @alias v
 	 * @memberof ve.Component.ve.List
 	 * @type {ve.Component[]}
-	 * 
-	 * @returns {ve.Component[]}
 	 */
 	get v () {
 		//Return statement
@@ -94,7 +90,6 @@ ve.List = class extends ve.Component {
 	 *
 	 * @alias v
 	 * @memberof ve.Component.ve.List
-	 * @type {ve.Component[]}
 	 * 
 	 * @param {ve.Component[]} arg0_value
 	 */
