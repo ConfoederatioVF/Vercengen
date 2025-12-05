@@ -132,7 +132,7 @@ ve.List = class extends ve.Component {
 	 */
 	deleteItem (arg0_index) {
 		//Convert from parameters
-		let index = (arg0_index) ? arg0_index : this.value.length - 1;
+		let index = (arg0_index >= 0) ? arg0_index : this.value.length - 1;
 		if (this.value.length === 0) return; //Internal guard clause if there are already no elements in the array
 		
 		if (this.options.min && this.value.length - 1 < this.options.min) { //Internal guard clause for this.options.min
