@@ -1,4 +1,4 @@
-<img src = "https://i.postimg.cc/NG4Lxfjc/vercengen-logo.png">
+<img src = "https://raw.githubusercontent.com/Confoederatio/Vercengen/refs/heads/main/gfx/vercengen_logo.png">
 
 <span style = "display: flex;">
     <span>UI ⊆ State.</span>
