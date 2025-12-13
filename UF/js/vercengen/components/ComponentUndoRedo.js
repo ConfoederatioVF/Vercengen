@@ -57,18 +57,23 @@ ve.UndoRedo = class extends ve.Component {
 		
 		this.page_menu = new ve.PageMenu({
 			current_timeline: {
-				name: "Timeline View",
+				name: loc("ve.registry.localisation.UndoRedo_timeline_view"),
 				components_obj: {
 					actions_bar: actions_bar(),
 					html: new ve.HTML(this.html_list_el)
 				}
 			},
 			timeline_map: {
-				name: "Actions Map",
+				name: loc("ve.registry.localisation.UndoRedo_actions_map"),
 				components_obj: {
 					actions_bar: actions_bar(),
 					html: new ve.HTML(this.canvas_container_el),
-					coords_display: new ve.HTML(() => `X: ${String.formatNumber(this.translate_x, 2)}, Y: ${String.formatNumber(this.translate_y, 2)} | Scale: ${String.formatNumber(this.scale, 2)}`)
+					coords_display: new ve.HTML(() => 
+						loc("ve.registry.localisation.UndoRedo_coords_display", 
+							String.formatNumber(this.translate_x, 2), 
+							String.formatNumber(this.translate_y, 2), 
+							String.formatNumber(this.scale, 2))
+					)
 				}
 			}
 		}, { 
@@ -201,11 +206,11 @@ ve.UndoRedo = class extends ve.Component {
 				let node_text;
 				if (local_value.value.options && local_value.value.options.name)
 					node_text = `${local_value.value.options.name} (${String.formatNumber(local_value.value.options.length)})`;
-				if (node_text === undefined) node_text = "Unlisted";
+				if (node_text === undefined) node_text = loc("ve.registry.localisation.UndoRedo_unlisted");
 				if (local_value.child_timelines && local_value.x === 1)
-					node_text = "S. Init";
+					node_text = loc("ve.registry.localisation.UndoRedo_initialisation");
 				if (local_value.parent_timeline)
-					node_text = "Split From Timeline";
+					node_text = loc("ve.registry.localisation.UndoRedo_split_from_timeline");
 				let text_height = node_text.split("\n").length*node_height;
 				let text_width = ctx.measureText(node_text).width;
 				
@@ -391,34 +396,40 @@ ve.UndoRedo = class extends ve.Component {
 					filter_button: new ve.Button(() => {
 						let local_context_menu = new ve.ContextMenu({
 							radio_select: new ve.Radio({
-								"Alphabetical (A-Z)": (this.options.sort_mode === "alphabetical_ascending"),
-								"Alphabetical (Z-A)": (this.options.sort_mode === "alphabetical_descending"),
-								"Chronological (Ascending)": (this.options.sort_mode === "chronological_ascending"),
-								"Chronological (Descending)": (this.options.sort_mode === "chronological_descending"),
-								"Last Modified": (this.options.sort_mode === "last_modified"),
-								"Least Actions": (this.options.sort_mode === "least_actions"),
-								"Most Actions": (this.options.sort_mode === "most_actions")
+								alphabetical_ascending: {
+									name: loc("ve.registry.localisation.UndoRedo_alphabetical_ascending")
+								},
+								alphabetical_descending: {
+									name: loc("ve.registry.localisation.UndoRedo_alphabetical_descending")
+								},
+								chronological_ascending: {
+									name: loc("ve.registry.localisation.UndoRedo_chronological_ascending")
+								},
+								chronological_descending: {
+									name: loc("ve.registry.localisation.UndoRedo_chronological_descending")
+								},
+								last_modified: {
+									name: loc("ve.registry.localisation.UndoRedo_last_modified")
+								},
+								least_actions: {
+									name: loc("ve.registry.localisation.UndoRedo_least_actions")
+								},
+								most_actions: {
+									name: loc("ve.registry.localisation.UndoRedo_most_actions")
+								}
 							}, {
-								name: "<b>Sort Timelines:</b><br><br>",
+								name: `<b>${loc("ve.registry.localisation.UndoRedo_sort_timelines")}</b><br><br>`,
+								selected: this.options.sort_mode,
+								
 								onchange: (v, e) => {
-									let local_dictionary = {
-										"Alphabetical (A-Z)": "alphabetical_ascending",
-										"Alphabetical (Z-A)": "alphabetical_descending",
-										"Chronological (Ascending)": "chronological_ascending",
-										"Chronological (Descending)": "chronological_descending",
-										"Last Modified": "last_modified",
-										"Least Actions": "least_actions",
-										"Most Actions": "most_actions"
-									};
-									
-									this.options.sort_mode = local_dictionary[v];
+									this.options.sort_mode = v;
 									this.draw(true);
 								}
 							})
 						}, { id: "ve_undo_redo_html_select_filter" });
-					}, { name: "<icon>filter_alt</icon>", tooltip: "Sorting Filter", x: 1, y: 0 }),
+					}, { name: "<icon>filter_alt</icon>", tooltip: loc("ve.registry.localisation.UndoRedo_sorting_filter"), x: 1, y: 0 }),
 					timeline_name: new ve.Text(timeline_obj.name, { 
-						name: "Name: ",
+						name: `${loc("ve.registry.localisation.UndoRedo_name")} `,
 						onchange: (v, e) => {
 							timeline_obj.name = v;
 							this.draw(true);
@@ -466,7 +477,8 @@ ve.UndoRedo = class extends ve.Component {
 							timeline_obj.jumpToAction(local_index + timeline_groups[i].length - 1);
 							this.fireToBinding();
 						}, { 
-							name: `<icon>arrow_right_alt</icon>`, tooltip: `Jump To`,
+							name: `<icon>arrow_right_alt</icon>`, 
+							tooltip: loc("ve.registry.localisation.UndoRedo_jump_to"),
 							style: { 
 								"button": {
 									marginLeft: "var(--padding)"
@@ -482,7 +494,8 @@ ve.UndoRedo = class extends ve.Component {
 								new_timeline.jumpToStart();
 							this.fireToBinding();
 						}, { 
-							name: `<icon>alt_route</icon>`, tooltip: `Branch At Node`,
+							name: `<icon>alt_route</icon>`, 
+							tooltip: loc("ve.registry.localisation.UndoRedo_branch_at_node"),
 							style: { order: 100 }
 						})
 					}, {
