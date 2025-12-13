@@ -57,6 +57,8 @@ Vercengen supports built-in file explorers, nested hierarchies, delta action und
 
 The framework is batteries included and supports a range of Features (which encapsulate Components), and Components. UIs are built by simply including Vercengen variable types in your data structures - the reflection engine is in charge of parsing everything.
 
+Currently supported locales: DE, EN-GB (Default), FR.
+
 Default **Features** include:
 - Confirm, ContextMenu, Modal, Navbar, PageMenuWindow, Scene, Toast, Tooltip, Window
 
