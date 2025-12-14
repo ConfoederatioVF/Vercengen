@@ -134,7 +134,7 @@ ve.SearchSelect = class extends ve.Component {
 				}, {
 					id: "search_select_filter"
 				})
-			}, { name: "<icon>filter</icon>" })
+			}, { name: "<icon>filter_alt</icon>" })
 		}, {
 			name: " ",
 			style: {
