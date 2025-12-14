@@ -1,11 +1,6 @@
 //Initialise functions
 {
 	/**
-	 * @namespace global
-	 */
-	if (!global) global = {};
-	
-	/**
 	 * Performs a localisation replacement for the text in question.
 	 * 
 	 * @memberof global
