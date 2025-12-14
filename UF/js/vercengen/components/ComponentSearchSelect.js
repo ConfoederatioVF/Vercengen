@@ -7,6 +7,7 @@
  * ##### Constructor:
  * - `arg0_components_obj`: {@link Object}<{@link ve.Component}> - The individual items to append to the current search select field.
  * - `arg1_options`: {@link Object}
+ *   - `.display="inline"`: {@link string}
  *   - `.filter_names`: {@link Object}
  *     - `<attribute_key>`: {@link string}
  *     
@@ -35,6 +36,10 @@ ve.SearchSelect = class extends ve.Component {
 			
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
+		options.style = {
+			padding: 0,
+			...options.style
+		};
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");
@@ -110,10 +115,14 @@ ve.SearchSelect = class extends ve.Component {
 				//Iterate over all_unique_attributes, add to filter context menu
 				let checkbox_components_obj = {};
 				
-				for (let i = 0; i < all_unique_attributes.length; i++)
+				for (let i = 0; i < all_unique_attributes.length; i++) {
+					let local_name = all_unique_attributes[i];
+						if (this.options?.filter_names)
+							if (this.options.filter_names[all_unique_attributes[i]])
+								local_name = this.options.filter_names[all_unique_attributes[i]];
+					
 					checkbox_components_obj[all_unique_attributes[i]] = new ve.Checkbox(this.filters[all_unique_attributes[i]], {
-						name: (this.options?.filter_names[all_unique_attributes[i]]) ? 
-							this.options?.filter_names[all_unique_attributes[i]] : all_unique_attributes[i],
+						name: local_name,
 						onuserchange: (v) => {
 							if (v === true) {
 								this.filters[all_unique_attributes[i]] = true;
@@ -124,6 +133,8 @@ ve.SearchSelect = class extends ve.Component {
 							this.fireToBinding();
 						}
 					});
+				}
+					
 				if (all_unique_attributes.length === 0)
 					checkbox_components_obj.no_elements_found = new ve.HTML("No elements available to search for."); //[WIP] - Localisation
 				
@@ -134,11 +145,16 @@ ve.SearchSelect = class extends ve.Component {
 				}, {
 					id: "search_select_filter"
 				})
-			}, { name: "<icon>filter_alt</icon>" })
+			}, { 
+				name: "<icon>filter_alt</icon>",
+				style: {
+					marginLeft: "auto"
+				}
+			})
 		}, {
 			name: " ",
 			style: {
-				...ve.theme["ve-searchbar"],
+				...ve.registry.themes["ve-searchbar"],
 				...this.options.searchbar_style
 			}
 		});
@@ -165,7 +181,7 @@ ve.SearchSelect = class extends ve.Component {
 		//If name and filters are nothing, restore visibility to all hidden results
 		if (this.search_value.length === 0 && Object.keys(this.filters).length === 0) {
 			for (let i = 0; i < all_search_select_els.length; i++)
-				all_search_select_els[i].style.display = "block";
+				all_search_select_els[i].style.display = (this.options.display) ? this.options.display : "inline";
 		} else {
 			
 			for (let i = 0; i < all_search_select_els.length; i++) {
@@ -178,8 +194,8 @@ ve.SearchSelect = class extends ve.Component {
 					if (Object.keys(this.filters).length === 0) {
 						has_valid_attribute = true;
 					} else {
-						Object.iterate(this.filters, (local_key) => {
-							if (this.element.getAttribute(local_key))
+						Object.iterate(this.filters, (local_key, local_value) => {
+							if (all_search_select_els[i].getAttribute(local_key))
 								has_valid_attribute = true;
 						});
 					}
@@ -188,8 +204,11 @@ ve.SearchSelect = class extends ve.Component {
 						show_element = true;
 				}
 				
-				if (show_element)
-					all_search_select_els[i].style.display = "block";
+				if (show_element) {
+					all_search_select_els[i].style.display = (this.options.display) ? this.options.display : "inline";
+				} else {
+					all_search_select_els[i].style.display = "none";
+				}
 			}
 		}
 	}
