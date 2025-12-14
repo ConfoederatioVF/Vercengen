@@ -52,6 +52,7 @@
  * - `arg0_components_obj`: {@link Object}&lt;{@link ve.Component}> - The individual items to append to the current search select field.
  * - `arg1_options`: {@link Object}
  *   - `.display="inline"`: {@link string}
+ *   - `.header_components_obj`: {@link Object}>{@link ve.Component}
  *   - `.filter_names`: {@link Object}
  *     - `&lt;attribute_key>`: {@link string}
  *     
@@ -180,21 +181,23 @@ ve.SearchSelect = class extends ve.Component {
 				}
 					
 				if (all_unique_attributes.length === 0)
-					checkbox_components_obj.no_elements_found = new ve.HTML("No elements available to search for."); //[WIP] - Localisation
+					checkbox_components_obj.no_elements_found = new ve.HTML(loc("ve.registry.localisation.SearchSelect_no_elements_found"));
 				
 				//Open new context menu
 				let local_context_menu = new ve.ContextMenu({
-					filter_header: new ve.HTML(`&lt;b>Search Filter:&lt;/b>&lt;br>&lt;br>`, { x: 0, y: 0 }), //[WIP] - Localisation
+					filter_header: new ve.HTML(`&lt;b>${loc("ve.registry.localisation.SearchSelect_search_filter")}&lt;/b>&lt;br>&lt;br>`, { x: 0, y: 0 }),
 					...checkbox_components_obj
 				}, {
 					id: "search_select_filter"
 				})
 			}, { 
 				name: "&lt;icon>filter_alt&lt;/icon>",
+				tooltip: loc("ve.registry.localisation.SearchSelect_search_filter"),
 				style: {
 					marginLeft: "auto"
 				}
-			})
+			}),
+			...this.options.header_components_obj
 		}, {
 			name: " ",
 			style: {
@@ -248,7 +251,7 @@ ve.SearchSelect = class extends ve.Component {
 						show_element = true;
 				}
 				
-				if (show_element) {
+				if (show_element || all_search_select_els[i]?.instance?.options?.disabled === true) {
 					all_search_select_els[i].style.display = (this.options.display) ? this.options.display : "inline";
 				} else {
 					all_search_select_els[i].style.display = "none";
