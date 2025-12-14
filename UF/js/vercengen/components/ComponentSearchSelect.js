@@ -136,11 +136,11 @@ ve.SearchSelect = class extends ve.Component {
 				}
 					
 				if (all_unique_attributes.length === 0)
-					checkbox_components_obj.no_elements_found = new ve.HTML("No elements available to search for."); //[WIP] - Localisation
+					checkbox_components_obj.no_elements_found = new ve.HTML(loc("ve.registry.localisation.SearchSelect_no_elements_found"));
 				
 				//Open new context menu
 				let local_context_menu = new ve.ContextMenu({
-					filter_header: new ve.HTML(`<b>Search Filter:</b><br><br>`, { x: 0, y: 0 }), //[WIP] - Localisation
+					filter_header: new ve.HTML(`<b>${loc("ve.registry.localisation.SearchSelect_search_filter")}</b><br><br>`, { x: 0, y: 0 }),
 					...checkbox_components_obj
 				}, {
 					id: "search_select_filter"
