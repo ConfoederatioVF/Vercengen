@@ -29,26 +29,47 @@ ve.NodeEditor = class extends ve.Component {
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
 		options.polling = Math.returnSafeNumber(options.polling, 100);
+		options.style = {
+			height: "80vh",
+			width: "80vw",
+			
+			".maptalks-all-layers, .maptalks-canvas-layer, .maptalks-wrapper": {
+				position: "static"
+			},
+			...options.style
+		};
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-node-editor");
 			HTML.setAttributesObject(this.element, options.attributes);
 			this.element.instance = this;
-		this.map = new maptalks.Map(this.element);
-			this.node_layer = new maptalks.VectorLayer("nodes", [], { hitDetect: true });
-		this.node_layer.addTo(this.map);
-		this.node_types = {};
-		this.options = options;
-		this._settings = { //[WIP] - Implement settings in subtypes
-			display_expressions_with_numbers: true,
-			display_filters_as_alluvial: true,
-			display_filters_with_numbers: true
-		};
-		this.value = value;
+		setTimeout(() => {
+			this.map = new maptalks.Map(this.element, {
+				center: [0, 0],
+				zoom: 1,
+				baseLayer: this.getDefaultBaseLayer(),
+			});
+				this.node_layer = new maptalks.VectorLayer("nodes", [], { hitDetect: true });
+			this.node_layer.addTo(this.map);
+			this.node_types = {};
+			this.options = options;
+			this._settings = { //[WIP] - Implement settings in subtypes
+				display_expressions_with_numbers: true,
+				display_filters_as_alluvial: true,
+				display_filters_with_numbers: true
+			};
+			this.value = value;
+			
+			//Set map bindings
+			this.map.addEventListener("click", (e) => {
+				console.log(e);
+			});
+			
+			//Set .v
+			//this.v = this.value;
+		}, 1000);
 		
-		//Set .v
-		this.v = this.value;
 	}
 	
 	get v () {
@@ -74,6 +95,15 @@ ve.NodeEditor = class extends ve.Component {
 	
 	clear () { //[WIP] - Finish function body
 		
+	}
+	
+	getDefaultBaseLayer () {
+		//Return statement
+		return new maptalks.TileLayer("base", {
+			urlTemplate: "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
+			subdomains: ["a", "b", "c"],
+			repeatWorld: false
+		});
 	}
 	
 	loadSettings (arg0_settings) {
