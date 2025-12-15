@@ -55,6 +55,9 @@ ve.NodeEditor = class extends ve.Component {
 		});
 			this.node_layer = new maptalks.VectorLayer("nodes", [], { hitDetect: true });
 		this.node_layer.addTo(this.map);
+		/**
+		 * @type {{"<category_key>": {name: string, "<component_key>": ve.Component} }}
+		 */
 		this.node_types = {};
 		this.options = options;
 		this._main = {}; //Used to store variables during a single run-cycle
@@ -97,6 +100,12 @@ ve.NodeEditor = class extends ve.Component {
 	
 	clear () { //[WIP] - Finish function body
 		
+	}
+	
+	drawToolbox () {
+		//Declare local instance variables
+		
+		//Return statement
 	}
 	
 	getCanvas () {
