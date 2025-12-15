@@ -5,8 +5,9 @@
  * 
  * ##### Constructor:
  * - `arg0_value`: {@link Object}
- *   - `.input_type="any"`: {@link string} - What the input type is regarded as being.
- *   - `.input_value`: {@link function}(arg0_input_value:{@link Array}<{@link any}>) | {@link function}(arg0_output_value:{@link Array}<{@link any}>)
+ *   - `.input_type="any"`: {@link string} - What the input type is regarded as being. If set to 'none', the Node will take in no other input type.
+ *   - `.input_parameters=[]`: {@link Array}<{@link string}> - The types of input parameters that will be accepted for evaluation.
+ *   - `.input_value`: {@link function}(arg0_input_value:{@link Array}<{@link any}>, arg1_options:{@link Object}) | {@link function}(arg0_output_value:{@link Array}<{@link any}>)
  *   - `.output_type="any"`: {@link string} - What the output type is regarded as being.
  *
  * @augments ve.Component
@@ -22,6 +23,7 @@ ve.NodeEditorFilter = class extends ve.Component {
 		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
+		options.input_parameters = [];
 		options.input_type = (options.input_type) ? options.input_type : "any";
 		options.output_type = (options.output_type) ? options.output_type : "any";
 		
