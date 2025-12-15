@@ -8,12 +8,15 @@
  * ##### Constructor:
  * - `arg0_value`: {@link Object} - The JSON object for the Maptalks instance attached to the current NodeEditor, including properties data.
  * - `arg1_options`: {@link Object}
+ *   - `.polling=100`: {@link number} - How often the current setup should be polled to evaluate alluvials and number of items affected. 100ms by default. -1 = never.
  * 
  * ##### Instance:
  * - `.v`: {@link HTMLElement}
  * 
  * ##### Methods:
  * 
+ * @augments ve.Component
+ * @memberof ve.Component
  * @type {ve.NodeEditor}
  */
 ve.NodeEditor = class extends ve.Component {
@@ -25,6 +28,7 @@ ve.NodeEditor = class extends ve.Component {
 		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
+		options.polling = Math.returnSafeNumber(options.polling, 100);
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");
