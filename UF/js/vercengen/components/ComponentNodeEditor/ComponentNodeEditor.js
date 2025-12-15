@@ -8,6 +8,7 @@
  * ##### Constructor:
  * - `arg0_value`: {@link Object} - The JSON object for the Maptalks instance attached to the current NodeEditor, including properties data.
  * - `arg1_options`: {@link Object}
+ *   - `.bg_ctx`: {@link function} | {@link Object} - Returns the context of a Canvas.
  *   - `.polling=100`: {@link number} - How often the current setup should be polled to evaluate alluvials and number of items affected. 100ms by default. -1 = never.
  * 
  * ##### Instance:
@@ -30,8 +31,8 @@ ve.NodeEditor = class extends ve.Component {
 		options.attributes = (options.attributes) ? options.attributes : {};
 		options.polling = Math.returnSafeNumber(options.polling, 100);
 		options.style = {
-			height: "80vh",
-			width: "80vw",
+			height: "50vh",
+			width: "50vw",
 			
 			".maptalks-all-layers, .maptalks-canvas-layer, .maptalks-wrapper": {
 				position: "static"
@@ -56,6 +57,7 @@ ve.NodeEditor = class extends ve.Component {
 		this.node_layer.addTo(this.map);
 		this.node_types = {};
 		this.options = options;
+		this._main = {}; //Used to store variables during a single run-cycle
 		this._settings = { //[WIP] - Implement settings in subtypes
 			display_expressions_with_numbers: true,
 			display_filters_as_alluvial: true,
@@ -111,7 +113,7 @@ ve.NodeEditor = class extends ve.Component {
 		let base_layer = new maptalks.TileLayer("base", {
 			urlTemplate: "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
 			subdomains: ["a", "b", "c"],
-			repeatWorld: false
+			repeatWorld: true
 		});
 		
 		//Set base_layer functions
@@ -126,22 +128,49 @@ ve.NodeEditor = class extends ve.Component {
 			let ctx = canvas.getContext('2d');
 			
 			//Draw scene for rect
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			ctx.drawImage(img, 0, 0);
-			
-			ctx.save();
-			ctx.filter = 'sepia(100%) invert(90%)';
-			ctx.drawImage(img, 0, 0);
-			ctx.restore();
-			ctx.fillStyle = 'white';
-			ctx.font = '20px Karla';
-			ctx.textAlign = 'center';
-			ctx.fillText(`It's a cool effect, no?`, canvas.width / 2, canvas.height / 2);
-			
-			ctx.strokeStyle = 'white';
-			ctx.lineWidth = 0.1;
-			ctx.rect(0, 0, canvas.width, canvas.height);
-			ctx.stroke();
+			if (this.options.bg_ctx) {
+				ctx = this.options.bg_ctx(ctx);
+			} else {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				ctx.drawImage(img, 0, 0);
+				
+				//Draw background
+				ctx.fillStyle = `rgba(25, 25, 25, 1)`;
+				ctx.fillRect(0, 0, canvas.width, canvas.height);
+				
+				ctx.save();
+				ctx.strokeStyle = `rgba(255, 255, 255, 0.5)`;
+				ctx.lineWidth = 1;
+
+				//Draw 8x8 grid
+				let columns = 8;
+				let rows = 8;
+				
+				let cell_height = canvas.height/rows;
+				let cell_width = canvas.width/columns;
+
+				//Draw vertical lines
+				for (let i = 0; i <= columns; i++) {
+					let local_x = i*cell_width;
+					
+					ctx.beginPath();
+					ctx.moveTo(local_x, 0);
+					ctx.lineTo(local_x, canvas.height);
+					ctx.stroke();
+				}
+
+				//Draw horizontal lines
+				for (let i = 0; i <= rows; i++) {
+					let local_y = i*cell_height;
+					
+					ctx.beginPath();
+					ctx.moveTo(0, local_y);
+					ctx.lineTo(canvas.width, local_y);
+					ctx.stroke();
+				}
+				
+				ctx.restore();
+			}
 			
 			//Return statement
 			return canvas.toDataURL('image/jpg', 0.7);
