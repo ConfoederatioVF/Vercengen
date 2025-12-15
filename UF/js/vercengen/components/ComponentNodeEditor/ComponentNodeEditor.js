@@ -36,6 +36,9 @@ ve.NodeEditor = class extends ve.Component {
 			".maptalks-all-layers, .maptalks-canvas-layer, .maptalks-wrapper": {
 				position: "static"
 			},
+			".maptalks-attribution": {
+				display: "none"
+			},
 			...options.style
 		};
 		
@@ -94,13 +97,76 @@ ve.NodeEditor = class extends ve.Component {
 		
 	}
 	
-	getDefaultBaseLayer () {
+	getCanvas () {
+		//Declare local instance variables
+		if (!this._canvas)
+			this._canvas = document.createElement("canvas");
+		
 		//Return statement
-		return new maptalks.TileLayer("base", {
+		return this._canvas;
+	};
+	
+	getDefaultBaseLayer () {
+		//Declare local instance variables
+		let base_layer = new maptalks.TileLayer("base", {
 			urlTemplate: "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
 			subdomains: ["a", "b", "c"],
 			repeatWorld: false
 		});
+		
+		//Set base_layer functions
+		base_layer.getBase64Image = (arg0_image) => {
+			//Convert from parameters
+			let img = arg0_image;
+			
+			//Declare local instance variables
+			let canvas = this.getCanvas();
+				canvas.height = img.height;
+				canvas.width = img.width;
+			let ctx = canvas.getContext('2d');
+			
+			//Draw scene for rect
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.drawImage(img, 0, 0);
+			
+			ctx.save();
+			ctx.filter = 'sepia(100%) invert(90%)';
+			ctx.drawImage(img, 0, 0);
+			ctx.restore();
+			ctx.fillStyle = 'white';
+			ctx.font = '20px Karla';
+			ctx.textAlign = 'center';
+			ctx.fillText(`It's a cool effect, no?`, canvas.width / 2, canvas.height / 2);
+			
+			ctx.strokeStyle = 'white';
+			ctx.lineWidth = 0.1;
+			ctx.rect(0, 0, canvas.width, canvas.height);
+			ctx.stroke();
+			
+			//Return statement
+			return canvas.toDataURL('image/jpg', 0.7);
+		};
+		base_layer.getTileUrl = function (x, y, z) {
+			//Return statement
+			return maptalks.TileLayer.prototype.getTileUrl.call(this, x, y, z);
+		}
+		base_layer.on("renderercreate", (e) => {
+			e.renderer.loadTileImage = (arg0_image, arg1_url) => {
+				//Convert from parameters
+				let img = arg0_image;
+				let url = arg1_url;
+				
+				//Declare local instance variables
+				let remote_image = new Image();
+					remote_image.crossOrigin = "anonymous";
+					remote_image.onload = () =>
+						img.src = base_layer.getBase64Image(remote_image);
+					remote_image.src = url;
+			};
+		});
+		
+		//Return statement
+		return base_layer;
 	}
 	
 	loadSettings (arg0_settings) {
