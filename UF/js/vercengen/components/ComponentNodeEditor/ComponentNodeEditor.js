@@ -44,32 +44,29 @@ ve.NodeEditor = class extends ve.Component {
 			this.element.setAttribute("component", "ve-node-editor");
 			HTML.setAttributesObject(this.element, options.attributes);
 			this.element.instance = this;
-		setTimeout(() => {
-			this.map = new maptalks.Map(this.element, {
-				center: [0, 0],
-				zoom: 1,
-				baseLayer: this.getDefaultBaseLayer(),
-			});
-				this.node_layer = new maptalks.VectorLayer("nodes", [], { hitDetect: true });
-			this.node_layer.addTo(this.map);
-			this.node_types = {};
-			this.options = options;
-			this._settings = { //[WIP] - Implement settings in subtypes
-				display_expressions_with_numbers: true,
-				display_filters_as_alluvial: true,
-				display_filters_with_numbers: true
-			};
-			this.value = value;
-			
-			//Set map bindings
-			this.map.addEventListener("click", (e) => {
-				console.log(e);
-			});
-			
-			//Set .v
-			//this.v = this.value;
-		}, 1000);
+		this.map = new maptalks.Map(this.element, {
+			center: [0, 0],
+			zoom: 1,
+			baseLayer: this.getDefaultBaseLayer(),
+		});
+			this.node_layer = new maptalks.VectorLayer("nodes", [], { hitDetect: true });
+		this.node_layer.addTo(this.map);
+		this.node_types = {};
+		this.options = options;
+		this._settings = { //[WIP] - Implement settings in subtypes
+			display_expressions_with_numbers: true,
+			display_filters_as_alluvial: true,
+			display_filters_with_numbers: true
+		};
+		this.value = value;
 		
+		//Set map bindings
+		this.map.addEventListener("click", (e) => {
+			console.log(e);
+		});
+		
+		//Set .v
+		this.v = this.value;
 	}
 	
 	get v () {
