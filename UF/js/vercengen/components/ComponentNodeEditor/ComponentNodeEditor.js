@@ -3,7 +3,7 @@
  * 
  * Creates a drag-and-drop Node Editor using Maptalks. Note that the entire state is stored in Maptalks, with scripts and metadata in the properties portion of Geometry symbols.
  * 
- * All nodes are implemented as a {@link maptalks.GeometryCollection}, with [0] containing node data and [n] containing other visual geometries. The ID of the GeometryCollection is the same as that of the Node.
+ * All nodes are implemented as a {@link maptalks.GeometryCollection}, with [0] containing node data and [n] containing other visual geometries. The ID of the GeometryCollection is the same as that of the Node. Their class type is implemented as a {@link ve.NodeEditorDatatype}.
  * 
  * ##### Constructor:
  * - `arg0_value`: {@link Object} - The JSON object for the Maptalks instance attached to the current NodeEditor, including properties data.
@@ -70,7 +70,10 @@ ve.NodeEditor = class extends ve.Component {
 		
 		//Set map bindings
 		this.map.addEventListener("click", (e) => {
-			console.log(e);
+			//console.log(e);
+		});
+		this.map.addEventListener("contextmenu", (e) => {
+			this.drawToolbox();
 		});
 		
 		//Set .v
@@ -90,22 +93,47 @@ ve.NodeEditor = class extends ve.Component {
 		maptalks.Map.fromJSON(this.element, value);
 	}
 	
-	addNode (arg0_component_obj, arg1_options) {
+	addNode (arg0_component_obj) {
+		//Convert from parameters
+		let component_obj = arg0_component_obj;
 		
-	}
-	
-	addNodeType (arg0_options) {
-		
+		//Declare local instance variables
+		this.node_types[component_obj.id] = component_obj;
 	}
 	
 	clear () { //[WIP] - Finish function body
 		
 	}
 	
-	drawToolbox () {
-		//Declare local instance variables
+	drawToolbox () { //[WIP] - Finish function body
+		//Declare local instance 
+		let page_menu_obj = {};
+		let unique_categories = [];
 		
-		//Return statement
+		//Populate unique_categories
+		Object.iterate(this.node_types, (local_key, local_value) => {
+			if (!unique_categories.includes(local_value.options.category))
+				unique_categories.push(local_value.options.category);
+		});
+		unique_categories.sort();
+		if (unique_categories.length === 0)
+			unique_categories = ["Expressions", "Filters"];
+		
+		//Populate page_menu_obj
+		for (let i = 0; i < unique_categories.length; i++) {
+			let local_search_select_obj = {};
+			
+			page_menu_obj[unique_categories[i]] = {
+				name: unique_categories[i],
+				components_obj: {}
+			};
+		}
+		
+		//Draw ve.PageMenuWindow
+		if (this.toolbox_window) this.toolbox_window.close();
+		this.toolbox_window = new ve.PageMenuWindow(page_menu_obj, {
+			name: "Toolbox"
+		});
 	}
 	
 	getCanvas () {
@@ -223,10 +251,6 @@ ve.NodeEditor = class extends ve.Component {
 	}
 	
 	removeNode (arg0_component_obj) {
-		
-	}
-	
-	removeNodeType (arg0_options) {
 		
 	}
 };
