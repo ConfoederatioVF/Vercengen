@@ -9,6 +9,8 @@
  * - `arg0_value`: {@link Object} - The JSON object for the Maptalks instance attached to the current NodeEditor, including properties data.
  * - `arg1_options`: {@link Object}
  *   - `.bg_ctx`: {@link function} | {@link Object} - Returns the context of a Canvas.
+ *   - `.node_types`: {@link Object}
+ *     - `<node_key>`: {@link ve.NodeEditorDatatype}
  *   - `.polling=100`: {@link number} - How often the current setup should be polled to evaluate alluvials and number of items affected. 100ms by default. -1 = never.
  * 
  * ##### Instance:
@@ -68,12 +70,23 @@ ve.NodeEditor = class extends ve.Component {
 		};
 		this.value = value;
 		
+		//Parse options.node_types
+		if (options.node_types)
+			Object.iterate(options.node_types, (local_key, local_value) => {
+				this.node_types[local_key] = new ve.NodeEditorDatatype(local_value.value, local_value.options);
+					this.node_types[local_key].id = local_key;
+			});
+		
 		//Set map bindings
 		this.map.addEventListener("click", (e) => {
-			//console.log(e);
+			this._mouse_coords = e.coordinate;
 		});
 		this.map.addEventListener("contextmenu", (e) => {
+			this._mouse_coords = e.coordinate;
 			this.drawToolbox();
+		});
+		this.map.addEventListener("mousemove", (e) => {
+			this._mouse_coords = e.coordinate;
 		});
 		
 		//Set .v
@@ -112,8 +125,9 @@ ve.NodeEditor = class extends ve.Component {
 		
 		//Populate unique_categories
 		Object.iterate(this.node_types, (local_key, local_value) => {
-			if (!unique_categories.includes(local_value.options.category))
-				unique_categories.push(local_value.options.category);
+			if (!unique_categories.includes(local_value.value.category))
+				unique_categories.push(local_value.value.category);
+			local_value.setNodeEditorInstance(this);
 		});
 		unique_categories.sort();
 		if (unique_categories.length === 0)
@@ -123,16 +137,24 @@ ve.NodeEditor = class extends ve.Component {
 		for (let i = 0; i < unique_categories.length; i++) {
 			let local_search_select_obj = {};
 			
+			Object.iterate(this.node_types, (local_key, local_value) => {
+				if (local_value.value.category === unique_categories[i])
+					local_search_select_obj[local_key] = local_value.drawNodeEditorDatatype();
+			});
+			
 			page_menu_obj[unique_categories[i]] = {
 				name: unique_categories[i],
-				components_obj: {}
+				components_obj: {
+					search_select: new ve.SearchSelect(local_search_select_obj)
+				}
 			};
 		}
 		
 		//Draw ve.PageMenuWindow
 		if (this.toolbox_window) this.toolbox_window.close();
 		this.toolbox_window = new ve.PageMenuWindow(page_menu_obj, {
-			name: "Toolbox"
+			name: "Toolbox",
+			width: "22rem"
 		});
 	}
 	

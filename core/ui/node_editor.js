@@ -13,5 +13,11 @@ setTimeout(() => {
 		number: veNumber([6, 8, 0]),
 		text: veText(["hello", "world"])
 	});*/
-	global.node_window = veWindow(new ve.NodeEditor());
+	global.node_window = veWindow(new ve.NodeEditor(undefined, {
+		node_types: {
+			set_number: new ve.NodeEditorDatatype({
+				input_parameters: ["number", "number"]
+			})
+		}
+	}));
 }, 500);

@@ -26,17 +26,18 @@ ve.NodeEditorDatatype = class extends ve.Component { //[WIP] - Refactor to gener
 	
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
-		let value = arg0_value;
+		let value = (arg0_value) ? arg0_value : {};
 		let options = (arg1_options) ? arg1_options : {};
 			super(options);
 		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
-		options.alluvial_scaling = Matyh.returnSafeNumber(options.alluvial_scaling, 1);
+		options.alluvial_scaling = Math.returnSafeNumber(options.alluvial_scaling, 1);
 		
 		//Initialise value
+		console.log(value.input_parameters);
 		value.category = (value.category) ? value.category : "Expression";
-		value.input_parameters = [];
+		value.input_parameters = (value.input_parameters) ? value.input_parameters : [];
 		value.input_type = (value.input_type) ? value.input_type : "any";
 		value.output_type = (value.output_type) ? value.output_type : "any";
 		
@@ -47,6 +48,8 @@ ve.NodeEditorDatatype = class extends ve.Component { //[WIP] - Refactor to gener
 			this.element.instance = this;
 		this.id = (options.id) ? options.id : Class.generateRandomID(ve.NodeEditorDatatype);
 		this.options = options;
+		this.value = value;
+		console.log(this.value.input_parameters);
 		
 		//Push to NodeEditorFilter.instances
 		ve.NodeEditorDatatype.instances.push(this);
@@ -57,18 +60,69 @@ ve.NodeEditorDatatype = class extends ve.Component { //[WIP] - Refactor to gener
 	 */
 	draw (arg0_coords) {
 		//Convert from parameters
-		let coords = (arg0_coords) ? arg0_coords : [0, 0];
+		let coords = (arg0_coords) ? arg0_coords : new maptalks.Coordinate(0, 0);
 		
 		//Declare local instance variables
-		let geometry = new maptalks.GeometryCollection([]);
+		let geometry = new maptalks.GeometryCollection([], {
+			draggable: true
+		});
+		let parameter_geometries = [];
 		
 		//Render primary geometry as a draggable maptalks.ui.UIMarker followed by arc connectors
-		let primary_geometry = new maptalks.ui.UIMarker(coords, {
-			content: `Placeholder`,
-			draggable: true,
-			single: false
+		let primary_geometry = new maptalks.TextBox("Node Type", coords, 200, 40, {
+			'textStyle' : {
+				'wrap' : true,          // auto wrap text
+				'padding' : [12, 12],    // padding of textbox
+				'verticalAlignment' : 'top',
+				'horizontalAlignment' : 'center',
+				'symbol' : {
+					'textFaceName' : 'monospace',
+					'textFill' : '#34495e',
+					'textHaloFill' : '#fff',
+					'textHaloRadius' : 4,
+					'textSize' : 18,
+					'textWeight' : 'bold'
+				}
+			},
+			'boxSymbol': {
+				// box's symbol
+				'markerType' : 'square',
+				'markerFill' : 'rgb(135,196,240)',
+				'markerFillOpacity' : 0.9,
+				'markerLineColor' : '#34495e',
+				'markerLineWidth' : 1
+			}
 		});
-		geometry.setGeometries([primary_geometry]);
+		
+		//Iterate over all this.value.input_parameters
+		for (let i = 0; i < this.value.input_parameters.length; i++) {
+			let local_marker = new maptalks.TextBox(`Input ${i + 1} (${this.value.input_parameters[i]})`, coords, 200, 40, {
+				'textStyle' : {
+					'wrap' : true,          // auto wrap text
+					'padding' : [12, 12 + 40*(i + 1)],    // padding of textbox
+					'verticalAlignment' : 'top',
+					'horizontalAlignment' : 'center',
+					'symbol' : {
+						'textFaceName' : 'monospace',
+						'textFill' : 'white',
+						textFillOpacity: 0.9,
+						'textSize' : 18,
+						'textWeight' : 'bold',
+					}
+				},
+				'boxSymbol': {
+					// box's symbol
+					'markerDy': 40*(i + 1),
+					'markerType' : 'square',
+					'markerFill' : 'rgb(135,196,240)',
+					'markerFillOpacity' : 0.5,
+					'markerLineColor' : '#34495e',
+					'markerLineWidth' : 1
+				}
+			})
+				parameter_geometries.push(local_marker);
+		}
+		geometry.setGeometries([primary_geometry, ...parameter_geometries]);
 		
 		//Return statement
 		return geometry;
@@ -76,9 +130,29 @@ ve.NodeEditorDatatype = class extends ve.Component { //[WIP] - Refactor to gener
 	
 	drawNodeEditorDatatype () {
 		//Return statement
+		return new ve.Button(() => {
+			let new_geometry = this.draw(this._node_editor_instance._mouse_coords);
+				new_geometry.addTo(this._node_editor_instance.node_layer);
+		}, { 
+			name: `${(this.options.name) ? this.options.name : "Node Type"}`
+		});
+	}
+	
+	setNodeEditorInstance (arg0_node_editor) {
+		//Convert from parameters
+		let node_editor = arg0_node_editor;
+		
+		//Declare local instance variables
+		this._node_editor_instance = node_editor;
 	}
 	
 	static connect (arg0_geometry_collection, arg1_geometry_collection, arg2_index) {
+		//Convert from parameters
+		let geometry_collection = arg0_geometry_collection;
+		let ot_geometry_collection = arg1_geometry_collection;
+		let index = Math.returnSafeNumber(arg2_index);
+		
+		//Declare local instance variables
 		
 	}
 	
