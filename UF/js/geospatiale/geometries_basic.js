@@ -82,4 +82,37 @@
 		//Return statement
 		return feature_pieces;
 	};
+	
+	Geospatiale.translatePoint = function (arg0_coords, arg1_x, arg2_y) { //[WIP] - Refactor later
+		//Convert from parameters
+		let coords = arg0_coords;
+			if (!Array.isArray(coords) && typeof coords === "object")
+				coords = [coords.x, coords.y];
+		let x_offset = arg1_x; //arg1_x;
+		let y_offset = arg2_y; //arg2_y;
+		
+		//Declare local instance variables
+		let point = turf.point(coords);
+		let translated = point;
+		
+		//Y translation (N/S)
+		if (y_offset !== 0) {
+			const directionY = y_offset > 0 ? 0 : 180; // north or south
+			translated = turf.transformTranslate(translated, Math.abs(y_offset), directionY, {
+				units: "meters",
+			});
+		}
+		
+		//X translation (E/W)
+		if (x_offset !== 0) {
+			const directionX = x_offset > 0 ? 90 : 270; // east or west
+			translated = turf.transformTranslate(translated, Math.abs(x_offset), directionX, {
+				units: "meters",
+			});
+		}
+		
+		translated = translated.geometry.coordinates;
+		
+		return { x: translated[0], y: translated[1] };
+	};
 }

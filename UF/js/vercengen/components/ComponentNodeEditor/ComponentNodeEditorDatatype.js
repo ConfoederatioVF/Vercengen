@@ -69,60 +69,87 @@ ve.NodeEditorDatatype = class extends ve.Component { //[WIP] - Refactor to gener
 		let parameter_geometries = [];
 		
 		//Render primary geometry as a draggable maptalks.ui.UIMarker followed by arc connectors
-		let primary_geometry = new maptalks.TextBox("Node Type", coords, 200, 40, {
-			'textStyle' : {
-				'wrap' : true,          // auto wrap text
-				'padding' : [12, 12],    // padding of textbox
-				'verticalAlignment' : 'top',
-				'horizontalAlignment' : 'center',
-				'symbol' : {
-					'textFaceName' : 'monospace',
-					'textFill' : '#34495e',
-					'textHaloFill' : '#fff',
-					'textHaloRadius' : 4,
-					'textSize' : 18,
-					'textWeight' : 'bold'
-				}
-			},
-			'boxSymbol': {
-				// box's symbol
-				'markerType' : 'square',
-				'markerFill' : 'rgb(135,196,240)',
-				'markerFillOpacity' : 0.9,
-				'markerLineColor' : '#34495e',
-				'markerLineWidth' : 1
+		let primary_geometry = new maptalks.Rectangle(coords, 2000, 400, {
+			symbol: {
+				polygonFill: "rgb(135,196,240)",
+				polygonOpacity: 0.8,
+				textName: "Node Name",
+				'textFaceName' : 'monospace',
+				'textFill' : '#34495e',
+				'textHaloFill' : '#fff',
+				'textHaloRadius' : 4,
+				'textSize' : 18,
+				'textWeight' : 'bold'
 			}
 		});
 		
 		//Iterate over all this.value.input_parameters
 		for (let i = 0; i < this.value.input_parameters.length; i++) {
-			let local_marker = new maptalks.TextBox(`Input ${i + 1} (${this.value.input_parameters[i]})`, coords, 200, 40, {
-				'textStyle' : {
-					'wrap' : true,          // auto wrap text
-					'padding' : [12, 12 + 40*(i + 1)],    // padding of textbox
-					'verticalAlignment' : 'top',
-					'horizontalAlignment' : 'center',
-					'symbol' : {
+			console.log(coords);
+			let local_marker = new maptalks.Rectangle(
+				Geospatiale.translatePoint(coords, 0, -400*(i + 1)), 
+				2000, 400, 
+				{
+					symbol: {
+						polygonFill: "rgb(135,196,240)",
+						polygonOpacity: 0.5,
+						textName: `Input ${i + 1} (${this.value.input_parameters[i]})`,
 						'textFaceName' : 'monospace',
-						'textFill' : 'white',
-						textFillOpacity: 0.9,
+						'textFill' : '#34495e',
+						'textHaloFill' : '#fff',
+						'textHaloRadius' : 4,
 						'textSize' : 18,
-						'textWeight' : 'bold',
+						'textWeight' : 'bold'
 					}
-				},
-				'boxSymbol': {
-					// box's symbol
-					'markerDy': 40*(i + 1),
-					'markerType' : 'square',
-					'markerFill' : 'rgb(135,196,240)',
-					'markerFillOpacity' : 0.5,
-					'markerLineColor' : '#34495e',
-					'markerLineWidth' : 1
 				}
-			})
+			);
 				parameter_geometries.push(local_marker);
 		}
 		geometry.setGeometries([primary_geometry, ...parameter_geometries]);
+		geometry.on("click", (e) => {
+			let selected_nodes = ve.NodeEditorDatatype._getSelectedNodes(this._node_editor_instance);
+				if (selected_nodes.length === 0)
+					if (e.pickGeometryIndex !== 0) return;
+				if (selected_nodes.length === 1)
+					if (!(e.pickGeometryIndex > 0 && e.pickGeometryIndex < this.value.input_parameters.length + 1)) return;
+			let geometries = geometry.getGeometries();
+			
+			//Adjust properties
+			{
+				let current_marker = geometries[e.pickGeometryIndex];
+				let current_properties = current_marker.getProperties();
+				
+				//Iterate over all geometries and refresh their state; rest marker handling
+				for (let i = 0; i < geometries.length; i++) {
+					let local_properties = geometries[i].getProperties();
+						if (local_properties)
+							delete local_properties.is_selected;
+					
+					geometries[i].setProperties(local_properties);
+				}
+				
+				//Current marker handling
+				current_marker.setProperties({
+					...current_marker.getProperties(),
+					is_selected: (!current_properties?.is_selected)
+				});
+				
+				//Event handling
+				//Connection
+				{
+					selected_nodes = ve.NodeEditorDatatype._getSelectedNodes(this._node_editor_instance);
+					
+					if (selected_nodes.length >= 2) {
+						ve.NodeEditorDatatype._deselectAll(this._node_editor_instance);
+						ve.NodeEditorDatatype.connect(selected_nodes[0][0], selected_nodes[1][0], selected_nodes[1][1]);
+						console.log(`ve.NodeEditorDatatype.connect:`, selected_nodes[0][0], selected_nodes[1][0], selected_nodes[1][1]);
+					}
+				}
+			}
+			
+			ve.NodeEditorDatatype._draw(this._node_editor_instance);
+		});
+		geometry.on("dragend", (e) => ve.NodeEditorDatatype._draw(this._node_editor_instance));
 		
 		//Return statement
 		return geometry;
@@ -146,6 +173,85 @@ ve.NodeEditorDatatype = class extends ve.Component { //[WIP] - Refactor to gener
 		this._node_editor_instance = node_editor;
 	}
 	
+	static _deselectAll (arg0_node_editor) {
+		//Convert from parameters
+		let node_editor = arg0_node_editor;
+		
+		//Declare local instance variables
+		let node_geometries = node_editor.node_layer.getGeometries();
+		
+		//Iterate over all node_geometries and remove their selection, then rerender
+		for (let i = 0; i < node_geometries.length; i++)
+			if (node_geometries[i] instanceof maptalks.GeometryCollection) {
+				let local_geometries = node_geometries[i].getGeometries();
+				
+				for (let x = 0; x < local_geometries.length; x++) {
+					let local_properties = local_geometries[x].getProperties();
+					let local_symbol = local_geometries[x].getSymbol();
+					
+					if (local_properties)
+						delete local_properties.is_selected;
+					local_symbol.markerLineColor = "#34495e";
+					
+					local_geometries[x].setProperties(local_properties);
+					local_geometries[x].setSymbol(local_symbol);
+				}
+			}
+	}
+	
+	static _draw (arg0_node_editor) {
+		//Convert from parameters
+		let node_editor = arg0_node_editor;
+		
+		//Declare local instance variables
+		let node_geometries = node_editor.node_layer.getGeometries();
+		
+		for (let i = 0; i < node_geometries.length; i++)
+			if (node_geometries[i] instanceof maptalks.GeometryCollection) {
+				let local_geometries = node_geometries[i].getGeometries();
+				
+				for (let x = 0; x < local_geometries.length; x++)
+					if (local_geometries[x] instanceof maptalks.ArcConnectorLine) {
+						local_geometries[x]._showConnect();
+					} else if (local_geometries[x] instanceof maptalks.Rectangle) {
+						let local_properties = local_geometries[x].getProperties();
+							if (!local_properties) continue;
+						let local_symbol = local_geometries[x].getSymbol();
+						
+						if (local_properties.is_selected) {
+							local_symbol.lineColor = "yellow";
+						} else {
+							local_symbol.lineColor = "#34495e";
+						}
+						local_geometries[x].setSymbol(local_symbol);
+					}
+			}
+	}
+	
+	static _getSelectedNodes (arg0_node_editor) {
+		//Convert from parameters
+		let node_editor = arg0_node_editor;
+		
+		//Iterate over node_editor.node_layer
+		let node_geometries = node_editor.node_layer.getGeometries();
+		let selected_indexes = []; //[[maptalks.GeometryCollection, index], ...];
+		
+		for (let i = 0; i < node_geometries.length; i++)
+			if (node_geometries[i] instanceof maptalks.GeometryCollection) {
+				let local_geometries = node_geometries[i].getGeometries();
+				
+				for (let x = 0; x < local_geometries.length; x++) {
+					let local_properties = local_geometries[x].getProperties();
+					
+					if (local_properties?.is_selected)
+						selected_indexes.push([node_geometries[i], x]);
+				}
+			}
+		
+		//Return statement
+		return selected_indexes;
+	}
+	
 	static connect (arg0_geometry_collection, arg1_geometry_collection, arg2_index) {
 		//Convert from parameters
 		let geometry_collection = arg0_geometry_collection;
@@ -153,7 +259,23 @@ ve.NodeEditorDatatype = class extends ve.Component { //[WIP] - Refactor to gener
 		let index = Math.returnSafeNumber(arg2_index);
 		
 		//Declare local instance variables
+		let geometries = geometry_collection.getGeometries();
 		
+		let arc_connector = new maptalks.ArcConnectorLine(
+			geometries[0],
+			ot_geometry_collection.getGeometries()[index],
+			{
+				arcDegree: 90,
+				showOn: "always",
+				symbol: {
+					lineColor: 'white',
+					lineWidth: 2
+				}
+			}
+		);
+		
+		//Set new geometries
+		geometry_collection.setGeometries([...geometries, arc_connector]);
 	}
 	
 	static disconnect (arg0_geometry_collection, arg1_geometry_collection) {
