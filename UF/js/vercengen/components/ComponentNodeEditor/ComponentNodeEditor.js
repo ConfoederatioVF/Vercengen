@@ -52,7 +52,7 @@ ve.NodeEditor = class extends ve.Component {
 			this.element.instance = this;
 		this.map = new maptalks.Map(this.element, {
 			center: [0, 0],
-			zoom: 1,
+			zoom: 14,
 			baseLayer: this.getDefaultBaseLayer(),
 		});
 			this.node_layer = new maptalks.VectorLayer("nodes", [], { hitDetect: true });

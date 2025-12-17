@@ -95,21 +95,17 @@
 		let point = turf.point(coords);
 		let translated = point;
 		
-		//Y translation (N/S)
-		if (y_offset !== 0) {
-			const directionY = y_offset > 0 ? 0 : 180; // north or south
-			translated = turf.transformTranslate(translated, Math.abs(y_offset), directionY, {
-				units: "meters",
-			});
-		}
-		
 		//X translation (E/W)
-		if (x_offset !== 0) {
-			const directionX = x_offset > 0 ? 90 : 270; // east or west
-			translated = turf.transformTranslate(translated, Math.abs(x_offset), directionX, {
+		if (x_offset !== 0)
+			translated = turf.transformTranslate(translated, Math.abs(x_offset), (x_offset > 0) ? 90 : 270, {
 				units: "meters",
 			});
-		}
+		
+		//Y translation (N/S)
+		if (y_offset !== 0)
+			translated = turf.transformTranslate(translated, Math.abs(y_offset), (y_offset > 0) ? 0 : 180, {
+				units: "meters",
+			});
 		
 		translated = translated.geometry.coordinates;
 		
