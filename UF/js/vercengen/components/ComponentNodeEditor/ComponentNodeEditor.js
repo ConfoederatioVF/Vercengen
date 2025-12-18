@@ -10,7 +10,20 @@
  * - `arg1_options`: {@link Object}
  *   - `.bg_ctx`: {@link function} | {@link Object} - Returns the context of a Canvas.
  *   - `.node_types`: {@link Object}
- *     - `<node_key>`: {@link ve.NodeEditorDatatype}
+ *     - `<node_key>`: {@link Object}
+ *       - `.category="Expression"` - The category that any {@link ve.NodeEditorDatatype} instances should belong to. Typically should either be 'Filter'/'Expression'.
+ *       - `.input_parameters=[]`: {@link Array}<{@link Object}> - The types of input parameters that will be accepted for evaluation.
+ *         - `[n]`: {@link Object}
+ *           - `.name`: {@link string}
+ *           - `.type`: {@link string}
+ *     - `.name`: {@link string}
+ *     - `.output_type="any"`: {@link string} - What the output (return) type is regarded as being. There can only be a single return type per Node, similar to functions in most programming languages.
+ *     - `.special_function`: {@link function}(argn_arguments:{@link any}) ¦ {@link any} - If a filter, it should return an {@link Array}<{@link any}>.
+ *     - 
+ *     - `.options`: {@link Object}
+ *       - `.alluvial_scaling=1`: {@link number} - How much to scale alluvial widths by when displayed compared to their actual number.
+ *   	   - `.id=Class.generateRandomID(ve.NodeEditorDatatype)`: {@link string} - The ID to assign to the present datatype at a class level.
+ *       - `.show_alluvial=false`: {@link boolean}
  *   - `.polling=100`: {@link number} - How often the current setup should be polled to evaluate alluvials and number of items affected. 100ms by default. -1 = never.
  * 
  * ##### Instance:
@@ -31,6 +44,7 @@ ve.NodeEditor = class extends ve.Component {
 		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
+		options.node_types = (options.node_types) ? options.node_types : {};
 		options.polling = Math.returnSafeNumber(options.polling, 100);
 		options.style = {
 			height: "50vh",
@@ -57,25 +71,20 @@ ve.NodeEditor = class extends ve.Component {
 		});
 			this.node_layer = new maptalks.VectorLayer("nodes", [], { hitDetect: true });
 		this.node_layer.addTo(this.map);
-		/**
-		 * @type {{"<category_key>": {name: string, "<component_key>": ve.Component} }}
-		 */
-		this.node_types = {};
 		this.options = options;
-		this._main = {}; //Used to store variables during a single run-cycle
-		this._settings = { //[WIP] - Implement settings in subtypes
-			display_expressions_with_numbers: true,
-			display_filters_as_alluvial: true,
-			display_filters_with_numbers: true
-		};
+		this.main = {
+			nodes: [],
+			settings: { //[WIP] - Implement settings
+				display_expressions_with_numbers: true,
+				display_filters_as_alluvial: true,
+				display_filters_with_numbers: true
+			},
+			user: {
+				selected_nodes: []
+			},
+			variables: {} //Used to store variables during a single run-cycle
+		}; 
 		this.value = value;
-		
-		//Parse options.node_types
-		if (options.node_types)
-			Object.iterate(options.node_types, (local_key, local_value) => {
-				this.node_types[local_key] = new ve.NodeEditorDatatype(local_value.value, local_value.options);
-					this.node_types[local_key].id = local_key;
-			});
 		
 		//Set map bindings
 		this.map.addEventListener("click", (e) => {
@@ -106,30 +115,20 @@ ve.NodeEditor = class extends ve.Component {
 		maptalks.Map.fromJSON(this.element, value);
 	}
 	
-	addNode (arg0_component_obj) {
-		//Convert from parameters
-		let component_obj = arg0_component_obj;
-		
-		//Declare local instance variables
-		this.node_types[component_obj.id] = component_obj;
-	}
-	
 	clear () { //[WIP] - Finish function body
 		
 	}
 	
-	drawToolbox () { //[WIP] - Finish function body
+	drawToolbox () { //[WIP] - Finish function body; rework unique_categories
 		//Declare local instance 
 		let page_menu_obj = {};
 		let unique_categories = [];
 		
 		//Populate unique_categories
-		Object.iterate(this.node_types, (local_key, local_value) => {
-			if (!unique_categories.includes(local_value.value.category))
-				unique_categories.push(local_value.value.category);
-			local_value.setNodeEditorInstance(this);
+		Object.iterate(this.options.node_types, (local_key, local_value) => {
+			if (local_value.category && !unique_categories.includes(local_value.category))
+				unique_categories.push(local_value.category);
 		});
-		unique_categories.sort();
 		if (unique_categories.length === 0)
 			unique_categories = ["Expressions", "Filters"];
 		
@@ -137,9 +136,13 @@ ve.NodeEditor = class extends ve.Component {
 		for (let i = 0; i < unique_categories.length; i++) {
 			let local_search_select_obj = {};
 			
-			Object.iterate(this.node_types, (local_key, local_value) => {
-				if (local_value.value.category === unique_categories[i])
-					local_search_select_obj[local_key] = local_value.drawNodeEditorDatatype();
+			Object.iterate(this.options.node_types, (local_key, local_value) => {
+				if (local_value.category === unique_categories[i])
+					local_search_select_obj[local_key] = new ve.Button(() => {
+						
+					}, { 
+						name: (local_value.name) ? local_value.name : local_key
+					});
 			});
 			
 			page_menu_obj[unique_categories[i]] = {

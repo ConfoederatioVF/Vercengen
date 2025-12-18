@@ -15,9 +15,27 @@ setTimeout(() => {
 	});*/
 	global.node_window = veWindow(new ve.NodeEditor(undefined, {
 		node_types: {
-			set_number: new ve.NodeEditorDatatype({
-				input_parameters: ["number", "number"]
-			})
+			add_numbers: {
+				name: "Add Numbers",
+				
+				category: "Expressions",
+				input_parameters: [{
+					name: "arg0_number",
+					type: "number"
+				}, {
+					name: "arg1_number",
+					type: "number"
+				}]
+			},
+			set_number: {
+				name: "Set Number",
+				
+				category: "Expressions",
+				input_parameters: [{
+					name: "arg0_number",
+					type: "number"
+				}]
+			}
 		}
 	}));
 }, 500);
