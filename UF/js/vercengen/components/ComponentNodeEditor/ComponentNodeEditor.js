@@ -139,7 +139,14 @@ ve.NodeEditor = class extends ve.Component {
 			Object.iterate(this.options.node_types, (local_key, local_value) => {
 				if (local_value.category === unique_categories[i])
 					local_search_select_obj[local_key] = new ve.Button(() => {
-						
+						this.main.nodes.push(new ve.NodeEditorDatatype({
+							coords: this._mouse_coords,
+							key: local_key,
+							...local_value
+						}, {
+							node_editor: this,
+							...local_value.options
+						}));
 					}, { 
 						name: (local_value.name) ? local_value.name : local_key
 					});
