@@ -136,6 +136,8 @@ ve.NodeEditor = class extends ve.Component {
 		
 		//Attempt to connect the two nodes
 		node.connections.push([ot_node, index]);
+		if (index > 0)
+			ot_node.dynamic_values[index - 1] = true;
 		ve.NodeEditorDatatype.draw();
 	}
 
@@ -150,6 +152,8 @@ ve.NodeEditor = class extends ve.Component {
 		
 		if (node_connection_index !== -1) {
 			node.connections.splice(node_connection_index, 1);
+			if (index > 0)
+				ot_node.dynamic_values[index - 1] = undefined;
 			ve.NodeEditorDatatype.draw();
 		}
 	}

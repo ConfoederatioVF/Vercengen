@@ -35,6 +35,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		//Declare local instance variables
 		this.connections = []; //[[ve.NodeEditorDatatype, index], ...];
 		this.constant_values = [];
+		this.dynamic_values = [];
 		this.geometries = [];
 		this.id = Class.generateRandomID(ve.NodeEditorDatatype);
 		this.options = options;
@@ -118,6 +119,9 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		
 		//Iterate over all this.value.input_parameters and insert them from 1-n
 		for (let i = 0; i < this.value.input_parameters.length; i++) {
+			let local_value_name = (this.constant_values[i]) ? ` | ${this.constant_values[i]}` : "";
+				if (this.dynamic_values[i]) local_value_name = "";
+			
 			let local_rect = new maptalks.Rectangle(
 				Geospatiale.translatePoint(coords, 0, -400*(i + 1)),
 				2000, 400,
@@ -127,7 +131,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 						lineColor: (this.isSelected(i + 1)) ? "yellow" : "black",
 						polygonOpacity: 0.5,
 						
-						textName: `${this.value.input_parameters[i].name} (${this.value.input_parameters[i].type})${(this.constant_values[i]) ? ` | ${this.constant_values[i]}` : ""}`
+						textName: `${this.value.input_parameters[i].name} (${this.value.input_parameters[i].type})${local_value_name}`
 					}
 				}
 			);
@@ -215,7 +219,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		
 		//Iterate over all this.input_parameters and append them as fields to menu
 		for (let i = 0; i < this.value.input_parameters.length; i++) {
-			let is_actually_disabled = this.hasConnection(i + 1); //Whether the parameter field should show up as being disabled because of a connection
+			let is_actually_disabled = (this.dynamic_values[i] !== undefined); //Whether the parameter field should show up as being disabled because of a connection
 			let local_parameter = this.value.input_parameters[i];
 			let local_parameter_options = {
 				name: local_parameter.name ,
@@ -229,18 +233,28 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			};
 			
 			if (local_parameter.type === "number[]") {
-				parameter_fields[local_parameter.name] = new ve.Number([], local_parameter_options);
+				parameter_fields[local_parameter.name] = new ve.Number(
+					(this.constant_values[i] !== undefined) ? this.constant_values[i] : [], 
+					local_parameter_options);
 			} else if (local_parameter.type === "string[]") {
-				parameter_fields[local_parameter.name] = new ve.Text([], local_parameter_options);
+				parameter_fields[local_parameter.name] = new ve.Text(
+					(this.constant_values[i] !== undefined) ? this.constant_values[i] : [], 
+					local_parameter_options);
 			} else if (local_parameter.type === "boolean") {
-				parameter_fields[local_parameter.name] = new ve.Toggle(false, local_parameter_options);
+				parameter_fields[local_parameter.name] = new ve.Toggle(
+					(this.constant_values[i] !== undefined) ? this.constant_values[i] : false, local_parameter_options);
 			} else if (local_parameter.type === "number") {
-				parameter_fields[local_parameter.name] = new ve.Number(0, local_parameter_options);
+				parameter_fields[local_parameter.name] = new ve.Number(
+					(this.constant_values[i] !== undefined) ? this.constant_values[i] : 0, 
+					local_parameter_options);
 			} else {
-				parameter_fields[local_parameter.name] = new ve.Text("", local_parameter_options);
+				parameter_fields[local_parameter.name] = new ve.Text(
+					(this.constant_values[i] !== undefined) ? this.constant_values[i] : "", 
+					local_parameter_options);
 			}
 			
-			parameter_fields[`${local_parameter.name}_toggle`] = new ve.Toggle(this.constant_values[i], { 
+			parameter_fields[`${local_parameter.name}_toggle`] = new ve.Toggle(
+				(this.constant_values[i] && !is_actually_disabled), { 
 				off_name: `<icon class = "toggle-icon off">toggle_off</icon> &nbsp; ${(is_actually_disabled) ? "Is Connected" : "Disabled"}`,
 				on_name: `<icon class = "toggle-icon on">toggle_on</icon> &nbsp; Enabled`,
 				x: 1, y: i,
