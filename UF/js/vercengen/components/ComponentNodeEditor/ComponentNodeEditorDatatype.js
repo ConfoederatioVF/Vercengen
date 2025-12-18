@@ -33,22 +33,11 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			super(options);
 			
 		//Declare local instance variables
+		this.connections = []; //[[ve.NodeEditorDatatype, index], ...];
 		this.geometries = [];
 		this.id = Class.generateRandomID(ve.NodeEditorDatatype);
 		this.options = options;
-		this.primary_geometry = new maptalks.GeometryCollection([], {
-			draggable: true
-		});
 		this.value = value;
-		
-		//Populate this.geometries
-		this.geometries.push(this.primary_geometry);
-		
-		if (this.options.node_editor) {
-			let node_editor = this.options.node_editor;
-			
-			this.primary_geometry.addTo(node_editor.node_layer);
-		}
 		
 		//Draw call
 		this.draw();
@@ -59,53 +48,61 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		//Declare local instance variables
 		let coords = this.value.coords;
 		
+		//Remove all this.geometries first
+		for (let i = 0; i < this.geometries.length; i++)
+			this.geometries[i].remove();
+		this.geometries = [];
+		
 		//Set this.primary_geometry based on .coords
-		let primary_geometry = new maptalks.Rectangle(coords, 2000, 400, {
-			properties: {
-				id: this.id,
-				connections: []
-			},
-			symbol: {
-				polygonFill: "rgb(135,196,240)",
-				polygonOpacity: 0.8,
-				textName: (this.value.name) ? this.value.name : this.value.key,
-				'textFaceName' : 'monospace',
-				'textFill' : '#34495e',
-				'textHaloFill' : '#fff',
-				'textHaloRadius' : 4,
-				'textSize'  : { stops: [[7, 2], [14, 18]] },
-				'textWeight' : 'bold'
-			}
-		});
-			let primary_left_marker = new maptalks.Marker(
-				Geospatiale.translatePoint(coords, 0, -400*0.5),
-				{
-					properties: {
-						index: 0,
-						type: "output"
-					},
-					symbol: {
-						'textFill' : 'white',
-						textName: "•",
-						textSize: { stops: [[7, 2], [14, 36]] }
-					}
+		{
+			let primary_geometry = new maptalks.Rectangle(coords, 2000, 400, {
+				properties: { id: this.id },
+				symbol: {
+					polygonFill: "rgb(135,196,240)",
+					polygonOpacity: 0.8,
+					textName: (this.value.name) ? this.value.name : this.value.key,
+					'textFaceName' : 'monospace',
+					'textFill' : '#34495e',
+					'textHaloFill' : '#fff',
+					'textHaloRadius' : 4,
+					'textSize'  : { stops: [[7, 2], [14, 18]] },
+					'textWeight' : 'bold'
 				}
-			);
-			let primary_right_marker = new maptalks.Marker(
-				Geospatiale.translatePoint(coords, 2000, -400*0.5),
-				{
-					properties: {
-						index: 0,
-						type: "output"
-					},
-					symbol: {
-						'textFill' : 'white',
-						textName: "•",
-						textSize: { stops: [[7, 2], [14, 36]] }
+			});
+				let primary_left_marker = new maptalks.Marker(
+					Geospatiale.translatePoint(coords, 0, -400*0.5),
+					{
+						properties: {
+							index: 0,
+							type: "output"
+						},
+						symbol: {
+							'textFill' : 'white',
+							textName: "•",
+							textSize: { stops: [[7, 2], [14, 36]] }
+						}
 					}
-				}
+				);
+				let primary_right_marker = new maptalks.Marker(
+					Geospatiale.translatePoint(coords, 2000, -400*0.5),
+					{
+						properties: {
+							index: 0,
+							type: "output"
+						},
+						symbol: {
+							'textFill' : 'white',
+							textName: "•",
+							textSize: { stops: [[7, 2], [14, 36]] }
+						}
+					}
+				);
+			this.geometries.push(
+				new maptalks.GeometryCollection([primary_geometry, primary_left_marker, primary_right_marker], {
+					draggable: true
+				})
 			);
-		this.primary_geometry.setGeometries([primary_geometry, primary_left_marker, primary_right_marker]);
+		}
 		
 		//Iterate over all this.value.input_parameters and insert them from 1-n
 		for (let i = 0; i < this.value.input_parameters.length; i++) {
@@ -142,20 +139,32 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				);
 			
 			//Refresh this.geometries[i + 1]
-			if (this.geometries[i + 1]) this.geometries[i + 1].remove();
-			this.geometries[i + 1] = new maptalks.GeometryCollection([local_rect, local_left_marker]);
-			if (this.options.node_editor)
-				this.geometries[i + 1].addTo(this.options.node_editor.node_layer);
+			this.geometries.push(new maptalks.GeometryCollection([local_rect, local_left_marker]));
 		}
+		
+		//Draw connections
+		//for (let i = 0; i < this.connections.length; i++)
+			
+		//Add all geometries to layer
+		for (let i = 0; i < this.geometries.length; i++)
+			this.geometries[i].addTo(this.options.node_editor.node_layer);
 		
 		//Call this.handleEvents()
 		this.handleEvents();
 	}
 	
+	fromJSON () {
+		
+	}
+	
 	handleEvents () {
-		this.primary_geometry.addEventListener("dragend", (e) => {
-			this.value.coords = this.primary_geometry.getFirstCoordinate();
+		this.geometries[0].addEventListener("dragend", (e) => {
+			this.value.coords = this.geometries[0].getFirstCoordinate();
 			this.draw();
 		});
+	}
+	
+	toJSON (arg0_json) {
+		
 	}
 }

@@ -115,6 +115,22 @@ ve.NodeEditor = class extends ve.Component {
 		maptalks.Map.fromJSON(this.element, value);
 	}
 	
+	_connect (arg0_node, arg1_node, arg2_index) {
+		
+	}
+
+	_disconnect (arg0_node, arg1_node, arg2_index) {
+		
+	}
+	
+	_select (arg0_node, arg1_index) {
+		//Convert from parameters
+		let node = arg0_node;
+		let index = arg1_index;
+		
+		//Declare local instance variables
+	}
+	
 	clear () { //[WIP] - Finish function body
 		
 	}
