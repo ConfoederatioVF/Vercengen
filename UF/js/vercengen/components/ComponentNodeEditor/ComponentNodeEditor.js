@@ -121,7 +121,7 @@ ve.NodeEditor = class extends ve.Component {
 		let ot_node = arg1_node;
 		let index = arg2_index;
 		
-		if (node.hasConnection(ot_node, index)) return; //Internal guard clause if connection already exists
+		if (node.getConnection(ot_node, index) !== -1) return; //Internal guard clause if connection already exists
 		
 		//Attempt to connect the two nodes
 		node.connections.push([ot_node, index]);

@@ -182,14 +182,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		
 	}
 	
-	handleEvents () {
-		this.geometries[0].addEventListener("dragend", (e) => {
-			this.value.coords = this.geometries[0].getFirstCoordinate();
-			this.draw();
-		});
-	}
-	
-	hasConnection (arg0_node, arg1_index) {
+	getConnection (arg0_node, arg1_index) {
 		//Convert from parameters
 		let node = arg0_node;
 		let index = Math.returnSafeNumber(arg1_index);
@@ -198,7 +191,14 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		for (let i = 0; i < this.connections.length; i++)
 			if (this.connections[i][0].id === node.id && this.connections[i][1] === index)
 				//Return statement
-				return true;
+				return i;
+	}
+	
+	handleEvents () {
+		this.geometries[0].addEventListener("dragend", (e) => {
+			this.value.coords = this.geometries[0].getFirstCoordinate();
+			this.draw();
+		});
 	}
 	
 	toJSON (arg0_json) {
