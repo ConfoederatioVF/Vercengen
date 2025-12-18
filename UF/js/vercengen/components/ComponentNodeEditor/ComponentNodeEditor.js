@@ -54,6 +54,10 @@ ve.NodeEditor = class extends ve.Component {
 			height: "50vh",
 			width: "50vw",
 			
+			"#map-container": {
+				height: "100%",
+				width: "100%"
+			},
 			".maptalks-all-layers, .maptalks-canvas-layer, .maptalks-wrapper": {
 				position: "static"
 			},
@@ -68,7 +72,11 @@ ve.NodeEditor = class extends ve.Component {
 			this.element.setAttribute("component", "ve-node-editor");
 			HTML.setAttributesObject(this.element, options.attributes);
 			this.element.instance = this;
-		this.map = new maptalks.Map(this.element, {
+			
+			this.map_el = document.createElement("div");
+			this.map_el.id = "map-container";
+			this.element.appendChild(this.map_el);
+		this.map = new maptalks.Map(this.map_el, {
 			center: [0, 0],
 			zoom: 14,
 			baseLayer: this.getDefaultBaseLayer(),
