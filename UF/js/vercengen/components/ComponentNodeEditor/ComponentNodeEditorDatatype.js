@@ -97,15 +97,11 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			});
 				let primary_left_marker = new maptalks.Marker(
 					Geospatiale.translatePoint(coords, 0, -400*0.5),
-					{
-						symbol: marker_symbol
-					}
+					{ symbol: marker_symbol }
 				);
 				let primary_right_marker = new maptalks.Marker(
 					Geospatiale.translatePoint(coords, 2000, -400*0.5),
-					{
-						symbol: marker_symbol
-					}
+					{ symbol: marker_symbol }
 				);
 			let primary_geometry_collection = new maptalks.GeometryCollection([primary_geometry, primary_left_marker, primary_right_marker], {
 				draggable: true
@@ -127,10 +123,10 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				2000, 400,
 				{
 					symbol: {
-						lineColor: (this.isSelected(i + 1)) ? "yellow" : "black",
-						
 						...polygon_symbol,
+						lineColor: (this.isSelected(i + 1)) ? "yellow" : "black",
 						polygonOpacity: 0.5,
+						
 						textName: `${this.value.input_parameters[i].name} (${this.value.input_parameters[i].type})`
 					}
 				}
@@ -138,10 +134,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				let local_left_marker = new maptalks.Marker(
 					Geospatiale.translatePoint(coords, 0, -400*(i + 1) - 400*0.5),
 					{
-						symbol: {
-							...marker_symbol,
-							textFill: "rgba(255, 255, 255, 0.5)"
-						}
+						symbol: { ...marker_symbol, textFill: "rgba(255, 255, 255, 0.5)" }
 					}
 				);
 			
