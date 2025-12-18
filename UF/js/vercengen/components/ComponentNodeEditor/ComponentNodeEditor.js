@@ -9,6 +9,9 @@
  * - `arg0_value`: {@link Object} - The JSON object for the Maptalks instance attached to the current NodeEditor, including properties data.
  * - `arg1_options`: {@link Object}
  *   - `.bg_ctx`: {@link function} | {@link Object} - Returns the context of a Canvas.
+ *   - `.category_types`: {@link Object}
+ *     - `<category_key>`: {@link Object}
+ *       - `.colour`: {@link Array}<{@link number}, {@link number}, {@link number}>|{@link string} - Either a hex/RGB value.
  *   - `.node_types`: {@link Object}
  *     - `<node_key>`: {@link Object}
  *       - `.category="Expression"` - The category that any {@link ve.NodeEditorDatatype} instances should belong to. Typically should either be 'Filter'/'Expression'.
@@ -44,6 +47,7 @@ ve.NodeEditor = class extends ve.Component {
 		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
+		options.category_types = (options.category_types) ? options.category_types : {};
 		options.node_types = (options.node_types) ? options.node_types : {};
 		options.polling = Math.returnSafeNumber(options.polling, 100);
 		options.style = {
@@ -115,21 +119,39 @@ ve.NodeEditor = class extends ve.Component {
 		maptalks.Map.fromJSON(this.element, value);
 	}
 	
-	_connect (arg0_node, arg1_node, arg2_index) {
+	_connect (arg0_node, arg1_node, arg2_index, arg3_options) {
+		//Convert from parameters
+		let node = arg0_node;
+		let ot_node = arg1_node;
+		let index = arg2_index;
+		let options = (arg3_options) ? arg3_options : {};
+		
+		if (node.getConnection(ot_node, index) !== -1) //Internal guard clause if connection already exists
+			if (options.toggle_connection) {
+				this._disconnect(node, ot_node, index);
+				return;
+			} else {
+				return;
+			}
+		
+		//Attempt to connect the two nodes
+		node.connections.push([ot_node, index]);
+		ve.NodeEditorDatatype.draw();
+	}
+
+	_disconnect (arg0_node, arg1_node, arg2_index) {
 		//Convert from parameters
 		let node = arg0_node;
 		let ot_node = arg1_node;
 		let index = arg2_index;
 		
-		if (node.getConnection(ot_node, index) !== -1) return; //Internal guard clause if connection already exists
+		//Check to make sure that node_connection isn't 1
+		let node_connection_index = node.getConnection(ot_node, index);
 		
-		//Attempt to connect the two nodes
-		node.connections.push([ot_node, index]);
-		node.draw();
-	}
-
-	_disconnect (arg0_node, arg1_node, arg2_index) {
-		
+		if (node_connection_index !== -1) {
+			node.connections.splice(node_connection_index, 1);
+			ve.NodeEditorDatatype.draw();
+		}
 	}
 	
 	_select (arg0_node, arg1_index) {
@@ -138,6 +160,40 @@ ve.NodeEditor = class extends ve.Component {
 		let index = arg1_index;
 		
 		//Declare local instance variables
+		let selected_nodes = this.main.user.selected_nodes;
+		
+		//Internal guard clauses
+		{
+			//0. If selection already exists, clear it instead
+			for (let i = selected_nodes.length - 1; i >= 0; i--) {
+				
+				if (selected_nodes[i][0].id === node.id && selected_nodes[i][1] === index) {
+					this.main.user.selected_nodes.splice(i, 1);
+					ve.NodeEditorDatatype.draw();
+					return;
+				} else if (selected_nodes[i][0].id === node.id) {
+					this.main.user.selected_nodes.splice(i, 1);
+					continue;
+				}
+			}
+				
+			//1. Check if selection is valid first
+			if (selected_nodes.length >= 1)
+				if (selected_nodes[0][1] > 0 && index > 0) return; //Input > Input isn't valid
+		}
+		
+		//Manage selected_nodes
+		selected_nodes.push([node, index]);
+		
+		if (selected_nodes.length >= 2) {
+			//Attempt to connect the two nodes
+			this._connect(selected_nodes[0][0], selected_nodes[1][0], selected_nodes[1][1], {
+				toggle_connection: true
+			});
+			selected_nodes = [];
+		}
+		this.main.user.selected_nodes = selected_nodes;
+		ve.NodeEditorDatatype.draw();
 	}
 	
 	clear () { //[WIP] - Finish function body

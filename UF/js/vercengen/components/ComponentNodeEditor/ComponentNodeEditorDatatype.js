@@ -37,7 +37,10 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		this.geometries = [];
 		this.id = Class.generateRandomID(ve.NodeEditorDatatype);
 		this.options = options;
-		this.value = value;
+		this.value = (value) ? value : {};
+		
+		//Initialise value
+		if (!this.value.name) this.value.name = this.value.key;
 		
 		//Draw call
 		this.draw();
@@ -48,8 +51,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		//Add all geometries to layer
 		for (let i = 0; i < this.geometries.length; i++) try {
 			this.geometries[i].addTo(this.options.node_editor.node_layer);
-			if (this.geometries[i] instanceof maptalks.ArcConnectorLine)
-				this.geometries[i]._showConnect();
 		} catch (e) { console.warn(e); }
 	}
 	
@@ -67,9 +68,11 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			let primary_geometry = new maptalks.Rectangle(coords, 2000, 400, {
 				properties: { id: this.id },
 				symbol: {
+					lineColor: (this.isSelected(0)) ? "yellow" : "black",
+					
 					polygonFill: "rgb(135,196,240)",
 					polygonOpacity: 0.8,
-					textName: (this.value.name) ? this.value.name : this.value.key,
+					textName: this.value.name,
 					'textFaceName' : 'monospace',
 					'textFill' : '#34495e',
 					'textHaloFill' : '#fff',
@@ -81,10 +84,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				let primary_left_marker = new maptalks.Marker(
 					Geospatiale.translatePoint(coords, 0, -400*0.5),
 					{
-						properties: {
-							index: 0,
-							type: "output"
-						},
 						symbol: {
 							'textFill' : 'white',
 							textName: "•",
@@ -95,10 +94,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				let primary_right_marker = new maptalks.Marker(
 					Geospatiale.translatePoint(coords, 2000, -400*0.5),
 					{
-						properties: {
-							index: 0,
-							type: "output"
-						},
 						symbol: {
 							'textFill' : 'white',
 							textName: "•",
@@ -106,11 +101,17 @@ ve.NodeEditorDatatype = class extends ve.Component {
 						}
 					}
 				);
-			this.geometries.push(
-				new maptalks.GeometryCollection([primary_geometry, primary_left_marker, primary_right_marker], {
-					draggable: true
-				})
-			);
+			let primary_geometry_collection = new maptalks.GeometryCollection([primary_geometry, primary_left_marker, primary_right_marker], {
+				draggable: true
+			});
+				primary_geometry_collection.addEventListener("click", (e) => {
+					this.options.node_editor._select(this, 0);
+				});
+				primary_geometry_collection.addEventListener("contextmenu", (e) => {
+					this.openContextMenu();
+				});
+			
+			this.geometries.push(primary_geometry_collection);
 		}
 		
 		//Iterate over all this.value.input_parameters and insert them from 1-n
@@ -120,6 +121,8 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				2000, 400,
 				{
 					symbol: {
+						lineColor: (this.isSelected(i + 1)) ? "yellow" : "black",
+						
 						polygonFill: "rgb(135,196,240)",
 						polygonOpacity: 0.5,
 						textName: `${this.value.input_parameters[i].name} (${this.value.input_parameters[i].type})`,
@@ -135,10 +138,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				let local_left_marker = new maptalks.Marker(
 					Geospatiale.translatePoint(coords, 0, -400*(i + 1) - 400*0.5),
 					{
-						properties: {
-							index: i + 1,
-							type: "input"
-						},
 						symbol: {
 							'textFill' : `rgba(255, 255, 255, 0.5)`,
 							textName: "•",
@@ -148,33 +147,19 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				);
 			
 			//Refresh this.geometries[i + 1]
-			this.geometries.push(new maptalks.GeometryCollection([local_rect, local_left_marker]));
+			let local_geometry_collection = new maptalks.GeometryCollection([local_rect, local_left_marker]);
+				local_geometry_collection.addEventListener("click", (e) => {
+					this.options.node_editor._select(this, i + 1);
+				});
+				local_geometry_collection.addEventListener("contextmenu", (e) => {
+					this.openContextMenu();
+				});
+			
+			this.geometries.push(local_geometry_collection);
 		}
 		
-		//Draw connections; must be drawn after other nodes have finished rendering
-		setTimeout(() => {
-			for (let i = 0; i < this.connections.length; i++) {
-				let arc_connector_line = new maptalks.ArcConnectorLine(
-					this.geometries[0].getGeometries()[2],
-					ve.NodeEditorDatatype.getNode(this.connections[i][0]).geometries[this.connections[i][1]][1],
-					{
-						arcDegree: 90,
-						arrowStyle : 'classic',
-						arrowPlacement : 'vertex-last',
-						showOn: "always",
-						symbol: {
-							lineColor: 'white',
-							lineWidth: 2
-						}
-					}
-				);
-				this.geometries.push(arc_connector_line);
-			}
-			this._render();
-		}, 100);
+		//Call local this._render(), then this.handleEvents()
 		this._render();
-		
-		//Call this.handleEvents()
 		this.handleEvents();
 	}
 	
@@ -192,13 +177,49 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			if (this.connections[i][0].id === node.id && this.connections[i][1] === index)
 				//Return statement
 				return i;
+		return -1;
+	}
+	
+	isSelected (arg0_index) {
+		//Convert from parameters
+		let index = Math.returnSafeNumber(arg0_index);
+		
+		//Look over this.options.node_editor.main.user.selected_nodes
+		let selected_nodes = this.options.node_editor.main.user.selected_nodes;
+		
+		//Iterate over all selected_nodes
+		for (let i = 0; i < selected_nodes.length; i++)
+			if (selected_nodes[i][0].id === this.id && selected_nodes[i][1] === index)
+				//Return statement
+				return true;
 	}
 	
 	handleEvents () {
 		this.geometries[0].addEventListener("dragend", (e) => {
 			this.value.coords = this.geometries[0].getFirstCoordinate();
-			this.draw();
+			ve.NodeEditorDatatype.draw();
 		});
+	}
+	
+	openContextMenu () {
+		if (this.context_menu) this.context_menu.close();
+		this.context_menu = new ve.Window({
+			delete_button: veButton(() => {
+				this.remove();
+			}, { name: `<icon>delete</icon> Delete` })
+		}, { name: this.value.name, can_rename: false });
+	}
+	
+	remove () {
+		//Iterate over ve.NodeEditorDatatype.instances
+		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++)
+			if (ve.NodeEditorDatatype.instances[i].id === this.id)
+				ve.NodeEditorDatatype.instances.splice(i, 1);
+		
+		//Iterate over all this.geometries and remove them
+		for (let i = 0; i < this.geometries.length; i++)
+			this.geometries[i].remove();
+		this.geometries = [];
 	}
 	
 	toJSON (arg0_json) {
@@ -215,5 +236,38 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			if (ve.NodeEditorDatatype.instances[i].id === node_id)
 				//Return statement; first exact match
 				return ve.NodeEditorDatatype.instances[i];
+	}
+	
+	static draw () {
+		//1. Iterate over all ve.NodeEditorDatatypes and call their draw functions
+		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++)
+			ve.NodeEditorDatatype.instances[i].draw();
+		
+		//2. Iterate over all ve.NodeEditorDatatypes and draw connections
+		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++) {
+			let local_node = ve.NodeEditorDatatype.instances[i];
+			
+			//Iterate over all local_node.connections
+			for (let x = 0; x < local_node.connections.length; x++) {
+				//console.log(`Rendering arc connector for`, local_node, local_node.connections);
+				let arc_connector_line = new maptalks.ArcConnectorLine(
+					local_node.geometries[0].getGeometries()[2],
+					ve.NodeEditorDatatype.getNode(local_node.connections[x][0]).geometries[local_node.connections[x][1]].getGeometries()[1],
+					{
+						arcDegree: 90,
+						arrowStyle : 'classic',
+						arrowPlacement : 'vertex-last',
+						showOn: "always",
+						symbol: {
+							lineColor: 'white',
+							lineWidth: 2
+						}
+					}
+				);
+				arc_connector_line.addTo(local_node.options.node_editor.node_layer);
+				arc_connector_line._showConnect();
+				local_node.geometries.push(arc_connector_line);
+			}
+		}
 	}
 }

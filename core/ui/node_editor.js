@@ -32,7 +32,10 @@ setTimeout(() => {
 				
 				category: "Expressions",
 				input_parameters: [{
-					name: "arg0_number",
+					name: "arg0_key",
+					type: "string"
+				}, {
+					name: "arg1_value",
 					type: "number"
 				}]
 			}
