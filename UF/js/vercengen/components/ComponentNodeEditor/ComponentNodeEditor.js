@@ -218,6 +218,17 @@ ve.NodeEditor = class extends ve.Component {
 			let local_search_select_obj = {};
 			
 			Object.iterate(this.options.node_types, (local_key, local_value) => {
+				let local_category_options = this.options.category_types[local_value.category];
+					local_category_options = (local_category_options) ? local_category_options : {};
+				
+				let local_category_colour = (local_category_options.colour) ? 
+					local_category_options.colour : [255, 255, 255];
+					local_category_colour = Colour.convertRGBAToHex(local_category_colour);
+					
+				let local_category_text_colour = (local_category_options.text_colour) ?
+					local_category_options.text_colour : [0, 0, 0];
+					local_category_text_colour = Colour.convertRGBAToHex(local_category_text_colour);
+				
 				if (local_value.category === unique_categories[i])
 					local_search_select_obj[local_key] = new ve.Button(() => {
 						this.main.nodes.push(new ve.NodeEditorDatatype({
@@ -225,11 +236,18 @@ ve.NodeEditor = class extends ve.Component {
 							key: local_key,
 							...local_value
 						}, {
+							category_options: local_category_options,
 							node_editor: this,
 							...local_value.options
 						}));
 					}, { 
-						name: (local_value.name) ? local_value.name : local_key
+						name: (local_value.name) ? local_value.name : local_key,
+						style: {
+							"button": { 
+								backgroundColor: local_category_colour,
+								color: local_category_text_colour
+							}
+						}
 					});
 			});
 			
@@ -245,7 +263,9 @@ ve.NodeEditor = class extends ve.Component {
 		if (this.toolbox_window) this.toolbox_window.close();
 		this.toolbox_window = new ve.PageMenuWindow(page_menu_obj, {
 			name: "Toolbox",
-			width: "22rem"
+			width: "22rem",
+			
+			can_rename: false
 		});
 	}
 	

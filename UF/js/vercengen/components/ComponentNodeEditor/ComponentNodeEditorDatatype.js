@@ -56,7 +56,11 @@ ve.NodeEditorDatatype = class extends ve.Component {
 	
 	draw () {
 		//Declare local instance variables
+		let category_options = this.options.category_options;
 		let coords = this.value.coords;
+		
+		let fill_colour = (category_options.colour) ? category_options.colour : "white";
+			fill_colour = Colour.convertRGBAToHex(fill_colour);
 		
 		//Remove all this.geometries first
 		for (let i = 0; i < this.geometries.length; i++)
@@ -70,24 +74,25 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				symbol: {
 					lineColor: (this.isSelected(0)) ? "yellow" : "black",
 					
-					polygonFill: "rgb(135,196,240)",
+					polygonFill: fill_colour,
 					polygonOpacity: 0.8,
 					textName: this.value.name,
-					'textFaceName' : 'monospace',
-					'textFill' : '#34495e',
-					'textHaloFill' : '#fff',
-					'textHaloRadius' : 4,
-					'textSize'  : { stops: [[7, 2], [14, 18]] },
-					'textWeight' : 'bold'
+					textFaceName: "Karla",
+					textFill: "white",
+					textHaloFill: "black",
+					textHaloRadius: 2,
+					textSize: { stops: [[12, 2], [14, 14]] }
 				}
 			});
 				let primary_left_marker = new maptalks.Marker(
 					Geospatiale.translatePoint(coords, 0, -400*0.5),
 					{
 						symbol: {
-							'textFill' : 'white',
+							textFill: "white",
+							textHaloFill: "black",
+							textHaloRadius: 1,
 							textName: "•",
-							textSize: { stops: [[7, 2], [14, 36]] }
+							textSize: { stops: [[12, 2], [14, 36]] }
 						}
 					}
 				);
@@ -95,9 +100,11 @@ ve.NodeEditorDatatype = class extends ve.Component {
 					Geospatiale.translatePoint(coords, 2000, -400*0.5),
 					{
 						symbol: {
-							'textFill' : 'white',
+							textFill: "white",
+							textHaloFill: "black",
+							textHaloRadius: 1,
 							textName: "•",
-							textSize: { stops: [[7, 2], [14, 36]] }
+							textSize: { stops: [[12, 2], [14, 36]] }
 						}
 					}
 				);
@@ -123,15 +130,14 @@ ve.NodeEditorDatatype = class extends ve.Component {
 					symbol: {
 						lineColor: (this.isSelected(i + 1)) ? "yellow" : "black",
 						
-						polygonFill: "rgb(135,196,240)",
+						polygonFill: fill_colour,
 						polygonOpacity: 0.5,
 						textName: `${this.value.input_parameters[i].name} (${this.value.input_parameters[i].type})`,
-						'textFaceName' : 'monospace',
-						'textFill' : '#34495e',
-						'textHaloFill' : '#fff',
-						'textHaloRadius' : 4,
-						'textSize'  : { stops: [[7, 2], [14, 18]] },
-						'textWeight' : 'bold'
+						textFaceName: "Karla",
+						textFill: "white",
+						textHaloFill: "black",
+						textHaloRadius: 2,
+						textSize: { stops: [[12, 2], [14, 14]] }
 					}
 				}
 			);
@@ -139,9 +145,11 @@ ve.NodeEditorDatatype = class extends ve.Component {
 					Geospatiale.translatePoint(coords, 0, -400*(i + 1) - 400*0.5),
 					{
 						symbol: {
-							'textFill' : `rgba(255, 255, 255, 0.5)`,
+							textFill: "rgba(255, 255, 255, 0.5)",
+							textHaloFill: "black",
+							textHaloRadius: 1,
 							textName: "•",
-							textSize: { stops: [[7, 2], [14, 36]] }
+							textSize: { stops: [[12, 2], [14, 36]] }
 						}
 					}
 				);
