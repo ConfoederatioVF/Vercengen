@@ -44,6 +44,15 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		ve.NodeEditorDatatype.instances.push(this);
 	}
 	
+	_render () {
+		//Add all geometries to layer
+		for (let i = 0; i < this.geometries.length; i++) try {
+			this.geometries[i].addTo(this.options.node_editor.node_layer);
+			if (this.geometries[i] instanceof maptalks.ArcConnectorLine)
+				this.geometries[i]._showConnect();
+		} catch (e) { console.warn(e); }
+	}
+	
 	draw () {
 		//Declare local instance variables
 		let coords = this.value.coords;
@@ -142,12 +151,28 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			this.geometries.push(new maptalks.GeometryCollection([local_rect, local_left_marker]));
 		}
 		
-		//Draw connections
-		//for (let i = 0; i < this.connections.length; i++)
-			
-		//Add all geometries to layer
-		for (let i = 0; i < this.geometries.length; i++)
-			this.geometries[i].addTo(this.options.node_editor.node_layer);
+		//Draw connections; must be drawn after other nodes have finished rendering
+		setTimeout(() => {
+			for (let i = 0; i < this.connections.length; i++) {
+				let arc_connector_line = new maptalks.ArcConnectorLine(
+					this.geometries[0].getGeometries()[2],
+					ve.NodeEditorDatatype.getNode(this.connections[i][0]).geometries[this.connections[i][1]][1],
+					{
+						arcDegree: 90,
+						arrowStyle : 'classic',
+						arrowPlacement : 'vertex-last',
+						showOn: "always",
+						symbol: {
+							lineColor: 'white',
+							lineWidth: 2
+						}
+					}
+				);
+				this.geometries.push(arc_connector_line);
+			}
+			this._render();
+		}, 100);
+		this._render();
 		
 		//Call this.handleEvents()
 		this.handleEvents();
@@ -164,7 +189,31 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		});
 	}
 	
+	hasConnection (arg0_node, arg1_index) {
+		//Convert from parameters
+		let node = arg0_node;
+		let index = Math.returnSafeNumber(arg1_index);
+		
+		//Iterate over all this.connections for an exact match
+		for (let i = 0; i < this.connections.length; i++)
+			if (this.connections[i][0].id === node.id && this.connections[i][1] === index)
+				//Return statement
+				return true;
+	}
+	
 	toJSON (arg0_json) {
 		
+	}
+	
+	static getNode (arg0_node_id) {
+		//Convert from parameters
+		let node_id = arg0_node_id;
+			if (node_id instanceof ve.NodeEditorDatatype) return node_id; //Internal guard clause for ve.NodeEditorDatatype
+		
+		//Iterate over all ve.NodeEditorDatatype instances
+		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++)
+			if (ve.NodeEditorDatatype.instances[i].id === node_id)
+				//Return statement; first exact match
+				return ve.NodeEditorDatatype.instances[i];
 	}
 }

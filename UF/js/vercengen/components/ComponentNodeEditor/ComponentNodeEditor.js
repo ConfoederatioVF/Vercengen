@@ -116,7 +116,16 @@ ve.NodeEditor = class extends ve.Component {
 	}
 	
 	_connect (arg0_node, arg1_node, arg2_index) {
+		//Convert from parameters
+		let node = arg0_node;
+		let ot_node = arg1_node;
+		let index = arg2_index;
 		
+		if (node.hasConnection(ot_node, index)) return; //Internal guard clause if connection already exists
+		
+		//Attempt to connect the two nodes
+		node.connections.push([ot_node, index]);
+		node.draw();
 	}
 
 	_disconnect (arg0_node, arg1_node, arg2_index) {
