@@ -18,6 +18,10 @@ setTimeout(() => {
 			"Expressions": {
 				colour: "#9ecd9e",
 				text_colour: [0, 0, 0]
+			},
+			"Variables": {
+				colour: "#a82020",
+				text_colour: [255, 255, 255]
 			}
 		},
 		node_types: {
@@ -43,6 +47,16 @@ setTimeout(() => {
 				}, {
 					name: "arg1_value",
 					type: "number"
+				}]
+			},
+			
+			get_object_key: {
+				name: "Get Object Key",
+				category: "Variables",
+				
+				input_parameters: [{
+					name: "arg0_key",
+					type: "string"
 				}]
 			}
 		}
