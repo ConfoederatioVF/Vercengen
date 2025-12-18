@@ -34,6 +34,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			
 		//Declare local instance variables
 		this.connections = []; //[[ve.NodeEditorDatatype, index], ...];
+		this.constant_values = [];
 		this.geometries = [];
 		this.id = Class.generateRandomID(ve.NodeEditorDatatype);
 		this.options = options;
@@ -61,7 +62,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		
 		let fill_colour = (category_options.colour) ? category_options.colour : "white";
 			fill_colour = Colour.convertRGBAToHex(fill_colour);
-			
 		let marker_symbol = {
 			textFill: "white",
 			textHaloFill: "black",
@@ -127,7 +127,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 						lineColor: (this.isSelected(i + 1)) ? "yellow" : "black",
 						polygonOpacity: 0.5,
 						
-						textName: `${this.value.input_parameters[i].name} (${this.value.input_parameters[i].type})`
+						textName: `${this.value.input_parameters[i].name} (${this.value.input_parameters[i].type})${(this.constant_values[i]) ? ` | ${this.constant_values[i]}` : ""}`
 					}
 				}
 			);
@@ -172,6 +172,22 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		return -1;
 	}
 	
+	hasConnection (arg0_index) {
+		//Convert from parameters
+		let index = Math.returnSafeNumber(arg0_index);
+		
+		//Iterate over all ve.NodeEditorDatatype.instances
+		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++) {
+			let local_node = ve.NodeEditorDatatype.instances[i];
+			
+			//Iterate over all local_node.connections
+			for (let x = 0; x < local_node.connections.length; x++)
+				if (local_node.connections[x][0].id === this.id && local_node.connections[x][1] === index)
+					//Return statement
+					return true;
+		}
+	}
+	
 	isSelected (arg0_index) {
 		//Convert from parameters
 		let index = Math.returnSafeNumber(arg0_index);
@@ -194,12 +210,74 @@ ve.NodeEditorDatatype = class extends ve.Component {
 	}
 	
 	openContextMenu () {
+		//Declare local instance variables
+		let parameter_fields = {};
+		
+		//Iterate over all this.input_parameters and append them as fields to menu
+		for (let i = 0; i < this.value.input_parameters.length; i++) {
+			let is_actually_disabled = this.hasConnection(i + 1); //Whether the parameter field should show up as being disabled because of a connection
+			let local_parameter = this.value.input_parameters[i];
+			let local_parameter_options = {
+				name: local_parameter.name ,
+				x: 0, y: i,
+				
+				onuserchange: (v) => {
+					if (!parameter_fields[`${local_parameter.name}_toggle`].v) return;
+					this.constant_values[i] = v;
+					ve.NodeEditorDatatype.draw();
+				}
+			};
+			
+			if (local_parameter.type === "number[]") {
+				parameter_fields[local_parameter.name] = new ve.Number([], local_parameter_options);
+			} else if (local_parameter.type === "string[]") {
+				parameter_fields[local_parameter.name] = new ve.Text([], local_parameter_options);
+			} else if (local_parameter.type === "boolean") {
+				parameter_fields[local_parameter.name] = new ve.Toggle(false, local_parameter_options);
+			} else if (local_parameter.type === "number") {
+				parameter_fields[local_parameter.name] = new ve.Number(0, local_parameter_options);
+			} else {
+				parameter_fields[local_parameter.name] = new ve.Text("", local_parameter_options);
+			}
+			
+			parameter_fields[`${local_parameter.name}_toggle`] = new ve.Toggle(this.constant_values[i], { 
+				off_name: `<icon class = "toggle-icon off">toggle_off</icon> &nbsp; ${(is_actually_disabled) ? "Is Connected" : "Disabled"}`,
+				on_name: `<icon class = "toggle-icon on">toggle_on</icon> &nbsp; Enabled`,
+				x: 1, y: i,
+				
+				onuserchange: (v) => {
+					if (v === false) {
+						this.constant_values[i] = undefined;
+					} else if (v === true) {
+						if (is_actually_disabled) {
+							this.constant_values[i] = undefined;
+							parameter_fields[`${local_parameter.name}_toggle`].v = false;
+							
+							veToast(`<icon>warning</icon> Constants will not apply here, since the given node is already connected.`);
+						} else {
+							this.constant_values[i] = parameter_fields[local_parameter.name].v;
+						}
+					}
+					ve.NodeEditorDatatype.draw();
+				}
+			});
+		}
+		
+		//Redraw context menu
 		if (this.context_menu) this.context_menu.close();
 		this.context_menu = new ve.Window({
+			...parameter_fields,
 			delete_button: veButton(() => {
 				this.remove();
-			}, { name: `<icon>delete</icon> Delete` })
-		}, { name: this.value.name, can_rename: false });
+			}, { 
+				name: `<icon>delete</icon> Delete`
+			})
+		}, { 
+			name: this.value.name, 
+			width: "20rem", 
+			
+			can_rename: false
+		});
 	}
 	
 	remove () {
