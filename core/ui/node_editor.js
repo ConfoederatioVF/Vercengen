@@ -71,7 +71,10 @@ setTimeout(() => {
 				special_function: function (arg0_key, arg1_value) {
 					this.main.variables[arg0_key] = arg1_value;
 					
-					return { value: arg1_value };
+					return {
+						display_value: `${arg0_key}: ${arg1_value}`,
+						value: arg1_value 
+					};
 				}
 			},
 			

@@ -25,6 +25,7 @@
  *     - `.special_function`: {@link function}(argn_arguments:{@link any}) ¦ {@link Object}
  *       - Returns:
  *       - `.alluvial_width=1`: {@link number}
+ *       - `.display_value`: {@link string} - The actual display_value to show.
  *       - `.run`: {@link function} - The actual expression to execute upon running it in non-preview mode.
  *       - `.value`: {@link any} - If a filter, it should return an {@link Array}<{@link any}>.
  *     - 
@@ -568,7 +569,8 @@ ve.NodeEditor = class extends ve.Component {
 				}
 				
 				this.main.variables[local_node.id] = value;
-				local_node.ui.information.value = value;
+				local_node.ui.information.value = (descriptor.display_value) ? 
+					descriptor.display_value : value;
 				
 				//Return statement
 				return value;
