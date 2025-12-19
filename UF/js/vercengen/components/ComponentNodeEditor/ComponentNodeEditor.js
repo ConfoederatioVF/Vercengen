@@ -22,7 +22,11 @@
  *       - `.output_type="any"`: {@link string}
  *     - `.name`: {@link string}
  *     - `.output_type="any"`: {@link string} - What the output (return) type is regarded as being. There can only be a single return type per Node, similar to functions in most programming languages.
- *     - `.special_function`: {@link function}(argn_arguments:{@link any}) ¦ {@link any} - If a filter, it should return an {@link Array}<{@link any}>.
+ *     - `.special_function`: {@link function}(argn_arguments:{@link any}) ¦ {@link Object}
+ *       - Returns:
+ *       - `.alluvial_width=1`: {@link number}
+ *       - `.run`: {@link function} - The actual expression to execute upon running it in non-preview mode.
+ *       - `.value`: {@link any} - If a filter, it should return an {@link Array}<{@link any}>.
  *     - 
  *     - `.options`: {@link Object}
  *       - `.alluvial_scaling=1`: {@link number} - How much to scale alluvial widths by when displayed compared to their actual number.
@@ -81,6 +85,10 @@ ve.NodeEditor = class extends ve.Component {
 				console.log(this.getDAGSequence());
 			}, { name: "Debug" });
 			debug_button.bind(this.element);
+			let run_button = veButton(() => {
+				this.run().then(() => ve.NodeEditorDatatype.draw());
+			}, { name: "Run" });
+			run_button.bind(this.element);
 		this.map = new maptalks.Map(this.map_el, {
 			center: [0, 0],
 			zoom: 14,
@@ -161,7 +169,8 @@ ve.NodeEditor = class extends ve.Component {
 		if (index > 0)
 			ot_node.dynamic_values[index - 1] = true;
 		ve.NodeEditorDatatype.draw({
-			dag_sequence: dag_sequence
+			dag_sequence: dag_sequence,
+			node_editor: this
 		});
 	}
 
@@ -179,7 +188,8 @@ ve.NodeEditor = class extends ve.Component {
 			if (index > 0)
 				ot_node.dynamic_values[index - 1] = undefined;
 			ve.NodeEditorDatatype.draw({
-				dag_sequence: this.getDAGSequence()
+				dag_sequence: this.getDAGSequence(),
+				node_editor: this
 			});
 		}
 	}
@@ -312,7 +322,7 @@ ve.NodeEditor = class extends ve.Component {
 		return this._canvas;
 	};
 	
-	getDAGSequence () { //[WIP] - Refactor later
+	getDAGSequence () {
 		//Declare local instance variables
 		let adjacency = new Map(); //node.id -> Set<node.id>
 		let in_degree = new Map(); //node.id -> number
@@ -476,14 +486,97 @@ ve.NodeEditor = class extends ve.Component {
 		
 	}
 	
-	/**
-	 * Refreshes the nodes available in the toolbox.
-	 * - Method of: {@link ve.NodeEditor}
-	 * 
-	 * @alias refresh
-	 * @memberof ve.Component.ve.NodeEditor
-	 */
-	refresh () {
+	async run (arg0_preview_mode) {
+		//Convert from parameters
+		let preview_mode = !!arg0_preview_mode;
 		
+		//Declare local instance variables
+		let dag_sequence = this.getDAGSequence();
+		let resolve_arguments = (arg0_node) => {
+			//Convert from parameters
+			let node = arg0_node;
+			
+			//Declare local instance variables
+			let args = [];
+			
+			//Iterate over input parameters
+			for (let i = 0; i < node.value.input_parameters.length; i++) {
+				if (node.dynamic_values[i]) {
+					let resolved;
+					
+					//Find source node connected to this input
+					for (let x = 0; x < ve.NodeEditorDatatype.instances.length; x++) {
+						let source = ve.NodeEditorDatatype.instances[x];
+						
+						for (let c = 0; c < source.connections.length; c++) {
+							let target_data = source.connections[c];
+							let target_node = target_data[0];
+							let target_index = target_data[1];
+							
+							if (target_node.id === node.id && target_index === (i + 1)) {
+								resolved = this.main.variables[source.id];
+								break;
+							}
+						}
+						if (resolved !== undefined) break;
+					}
+					
+					args.push(resolved);
+				} else if (node.constant_values[i] !== undefined) {
+					args.push(node.constant_values[i]);
+				} else {
+					args.push(undefined);
+				}
+			}
+			
+			//Return statement
+			return args;
+		};
+		
+		//Reset execution context
+		this.main.variables = {};
+		
+		//Iterate over DAG layers (execute)
+		for (let i = 0; i < dag_sequence.length; i++) {
+			let layer = dag_sequence[i];
+			
+			await Promise.all(layer.map(async (local_node) => {
+				//Declare local instance variables
+				let args = resolve_arguments(local_node);
+				let sf = local_node.value.special_function;
+				let descriptor;
+				let value;
+				
+				try {
+					//1. Obtain execution descriptor
+					if (typeof sf === "function") {
+						descriptor = sf.call(this, ...args);
+					} else {
+						descriptor = sf;
+					}
+					
+					//2. Propagate value
+					if (descriptor && typeof descriptor === "object")
+						value = descriptor.value;
+					
+					//3. Execute side effects (Non-preview only)
+					if (!preview_mode && descriptor && typeof descriptor.run === "function")
+						await descriptor.run();
+				} catch (e) {
+					console.error(`Node execution failed (${local_node.id})`, e);
+					value = undefined;
+				}
+				
+				this.main.variables[local_node.id] = value;
+				local_node.ui.information.value = value;
+				
+				//Return statement
+				return value;
+			}));
+		}
+		
+		//Return statement
+		console.log(`Run finished.`);
+		return this.main.variables;
 	}
 };

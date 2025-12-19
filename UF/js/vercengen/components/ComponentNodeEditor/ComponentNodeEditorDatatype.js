@@ -277,7 +277,12 @@ ve.NodeEditorDatatype = class extends ve.Component {
 					(this.constant_values[i] !== undefined) ? this.constant_values[i] : 0, 
 					local_parameter_options);
 			} else if (local_parameter.type === "script") { //[WIP] - Implement ve.ScriptManager window; read ve.ScriptManager's ._file_path upon closing and set the file path to that. If unavailable, ask for ._file_path using ve.File instead
-				
+				parameter_fields[local_parameter.name] = new ve.Button(() => {
+					
+				}, {
+					name: (this.constant_values[i]) ? "Edit Script" : "Create Script",
+					tooltip: (this.constant_values[i]) ? this.constant_values[i] : undefined
+				})
 			} else {
 				parameter_fields[local_parameter.name] = new ve.Text(
 					(this.constant_values[i] !== undefined) ? this.constant_values[i] : "", 
@@ -335,6 +340,9 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		for (let i = 0; i < this.geometries.length; i++)
 			this.geometries[i].remove();
 		this.geometries = [];
+		
+		//Close any open menus
+		if (this.context_menu) this.context_menu.close();
 	}
 	
 	toJSON (arg0_json) {
@@ -362,7 +370,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			for (let i = 0; i < options.dag_sequence.length; i++)
 				for (let x = 0; x < options.dag_sequence[i].length; x++) {
 					let local_node = options.dag_sequence[i][x];
-						local_node.ui.information.dag_layer = i;
+					local_node.ui.information.dag_layer = i;
 				}
 		
 		//2. Iterate over all ve.NodeEditorDatatypes and call their draw functions
@@ -375,6 +383,18 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			
 			//Iterate over all local_node.connections
 			for (let x = 0; x < local_node.connections.length; x++) {
+				let arc_connector_name = (local_node.ui.information.value) ? 
+					local_node.ui.information.value : undefined;
+				let arc_connector_text_symbol = (arc_connector_name) ? {
+					'textName'  : `${arc_connector_name.toString()}`,
+					textFaceName: "Karla",
+					textFill: "white",
+					textHaloFill: "black",
+					textHaloRadius: 2,
+					'textPlacement' : 'line',
+					textSize: { stops: [[12, 2], [14, 14]] }
+				} : undefined;
+				
 				let arc_connector_line = new maptalks.ArcConnectorLine(
 					local_node.geometries[0].getGeometries()[2],
 					ve.NodeEditorDatatype.getNode(local_node.connections[x][0]).geometries[local_node.connections[x][1]].getGeometries()[1],
@@ -385,7 +405,8 @@ ve.NodeEditorDatatype = class extends ve.Component {
 						showOn: "always",
 						symbol: {
 							lineColor: 'white',
-							lineWidth: 2
+							lineWidth: 1,
+							...arc_connector_text_symbol
 						}
 					}
 				);

@@ -35,7 +35,27 @@ setTimeout(() => {
 				}, {
 					name: "arg1_number",
 					type: "number"
-				}]
+				}],
+				special_function: (arg0_number, arg1_number) => {
+					return {
+						value: arg0_number + arg1_number
+					};
+				}
+			},
+			log_number: {
+				name: "Log Number",
+				
+				category: "Expressions",
+				input_parameters: [{
+					name: "arg0_number",
+					type: "number"
+				}],
+				special_function: (arg0_number) => {
+					return {
+						run: () => console.log(arg0_number),
+						value: arg0_number
+					};
+				}
 			},
 			set_number: {
 				name: "Set Number",
@@ -47,7 +67,12 @@ setTimeout(() => {
 				}, {
 					name: "arg1_value",
 					type: "number"
-				}]
+				}],
+				special_function: function (arg0_key, arg1_value) {
+					this.main.variables[arg0_key] = arg1_value;
+					
+					return { value: arg1_value };
+				}
 			},
 			
 			get_object_key: {
