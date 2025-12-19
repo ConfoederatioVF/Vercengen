@@ -76,6 +76,11 @@ ve.NodeEditor = class extends ve.Component {
 			this.map_el = document.createElement("div");
 			this.map_el.id = "map-container";
 			this.element.appendChild(this.map_el);
+			
+			let debug_button = veButton(() => {
+				console.log(this.getDAGSequence());
+			}, { name: "Debug" });
+			debug_button.bind(this.element);
 		this.map = new maptalks.Map(this.map_el, {
 			center: [0, 0],
 			zoom: 14,
@@ -144,9 +149,20 @@ ve.NodeEditor = class extends ve.Component {
 		
 		//Attempt to connect the two nodes
 		node.connections.push([ot_node, index]);
+		let dag_sequence = this.getDAGSequence();
+		
+		//Check if connection causes cycle, if so pop, break, and return
+		if (dag_sequence === undefined) {
+			node.connections.pop();
+			veToast(`<icon>warning</icon> Circular dependencies are not allowed.`);
+			
+			return;
+		}
 		if (index > 0)
 			ot_node.dynamic_values[index - 1] = true;
-		ve.NodeEditorDatatype.draw();
+		ve.NodeEditorDatatype.draw({
+			dag_sequence: dag_sequence
+		});
 	}
 
 	_disconnect (arg0_node, arg1_node, arg2_index) {
@@ -162,7 +178,9 @@ ve.NodeEditor = class extends ve.Component {
 			node.connections.splice(node_connection_index, 1);
 			if (index > 0)
 				ot_node.dynamic_values[index - 1] = undefined;
-			ve.NodeEditorDatatype.draw();
+			ve.NodeEditorDatatype.draw({
+				dag_sequence: this.getDAGSequence()
+			});
 		}
 	}
 	
@@ -208,11 +226,15 @@ ve.NodeEditor = class extends ve.Component {
 		ve.NodeEditorDatatype.draw();
 	}
 	
-	clear () { //[WIP] - Finish function body
-		
+	clear () {
+		//Iterate over all this.main.nodes and remove them
+		for (let i = 0; i < this.main.nodes.length; i++)
+			this.main.nodes[i].remove();
+		this.main.variables = {};
+		this.node_layer.setGeometries([]);
 	}
 	
-	drawToolbox () { //[WIP] - Finish function body; rework unique_categories
+	drawToolbox () {
 		//Declare local instance 
 		let page_menu_obj = {};
 		let unique_categories = [];
@@ -288,6 +310,76 @@ ve.NodeEditor = class extends ve.Component {
 		
 		//Return statement
 		return this._canvas;
+	};
+	
+	getDAGSequence () { //[WIP] - Refactor later
+		//Declare local instance variables
+		let adjacency = new Map(); //node.id -> Set<node.id>
+		let in_degree = new Map(); //node.id -> number
+		let nodes = ve.NodeEditorDatatype.instances.filter(
+			(local_node) => local_node.options.node_editor === this);
+		
+		//Iterate over all nodes; initialise maps
+		for (let i = 0; i < nodes.length; i++) {
+			in_degree.set(nodes[i].id, 0);
+			adjacency.set(nodes[i].id, new Set());
+		}
+		
+		//Iterate over all nodes; build graph
+		for (let i = 0; i < nodes.length; i++)
+			for (let x = 0; x < nodes[i].connections.length; x++) {
+				let local_target_node = nodes[i].connections[x][0];
+				
+				//Only consider nodes in this editor
+				if (!in_degree.has(local_target_node.id)) continue;
+				
+				//node -> local_target_node
+				if (!adjacency.get(nodes[i].id).has(local_target_node.id)) {
+					adjacency.get(nodes[i].id).add(local_target_node.id);
+					in_degree.set(local_target_node.id, in_degree.get(local_target_node.id) + 1);
+				}
+			}
+		
+		//Kahn's algorithm (layered/parallelised)
+		let layers = [];
+		let processed_count = 0;
+		let queue = [];
+		
+		//Iterate over all nodes; initial zero‑in‑degree (root) nodes
+		for (let i = 0; i < nodes.length; i++)
+			if (in_degree.get(nodes[i].id) === 0)
+				queue.push(nodes[i]);
+		
+		//Populate each queue
+		while (queue.length > 0) {
+			let layer = [];
+			let next_queue = [];
+			
+			// All nodes currently in queue form one parallel layer
+			for (let i = 0; i < queue.length; i++) {
+				layer.push(queue[i]);
+				processed_count++;
+				
+				let edges = adjacency.get(queue[i].id);
+					if (!edges) continue;
+				
+				edges.forEach((to_id) => {
+					in_degree.set(to_id, in_degree.get(to_id) - 1);
+					
+					if (in_degree.get(to_id) === 0)
+						next_queue.push(ve.NodeEditorDatatype.getNode(to_id));
+				});
+			}
+			
+			//Push layer and move onto next queue
+			layers.push(layer);
+			queue = next_queue;
+		}
+		
+		//Return statement; cycle detection guard clause
+		if (processed_count !== nodes.length)
+			return undefined;
+		return layers;
 	};
 	
 	getDefaultBaseLayer () {
@@ -392,10 +484,6 @@ ve.NodeEditor = class extends ve.Component {
 	 * @memberof ve.Component.ve.NodeEditor
 	 */
 	refresh () {
-		
-	}
-	
-	removeNode (arg0_component_obj) {
 		
 	}
 };

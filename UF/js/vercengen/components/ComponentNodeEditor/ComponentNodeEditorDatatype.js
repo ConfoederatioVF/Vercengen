@@ -39,6 +39,9 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		this.geometries = [];
 		this.id = Class.generateRandomID(ve.NodeEditorDatatype);
 		this.options = options;
+		this.ui = {
+			information: {}
+		};
 		this.value = (value) ? value : {};
 		
 		//Initialise value
@@ -86,6 +89,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		
 		//Set this.primary_geometry based on .coords
 		{
+			let extra_geometries = [];
 			let primary_geometry = new maptalks.Rectangle(coords, 2000, 400, {
 				properties: { id: this.id },
 				symbol: {
@@ -104,7 +108,32 @@ ve.NodeEditorDatatype = class extends ve.Component {
 					Geospatiale.translatePoint(coords, 2000, -400*0.5),
 					{ symbol: marker_symbol }
 				);
-			let primary_geometry_collection = new maptalks.GeometryCollection([primary_geometry, primary_left_marker, primary_right_marker], {
+				if (this.ui.information.dag_layer !== undefined) {
+					let primary_sequence_circle = new maptalks.Marker(
+						Geospatiale.translatePoint(coords, 2000, 0),
+						{
+							symbol: {
+								...marker_symbol,
+								textFill: `rgb(25, 25, 25)`,
+								textSize: { stops: [[12, 4], [14, 96]] }
+							}
+						}
+					);
+					let primary_sequence_text_marker = new maptalks.Marker(
+						Geospatiale.translatePoint(coords, 2000, 14/2),
+						{
+							symbol: {
+								...marker_symbol,
+								textFaceName: "Karla",
+								textName: `${this.ui.information.dag_layer}`,
+								textSize: { stops: [[12, 2], [14, 14]] }
+							}
+						}
+					);
+					extra_geometries.push(primary_sequence_circle);
+					extra_geometries.push(primary_sequence_text_marker);
+				}
+			let primary_geometry_collection = new maptalks.GeometryCollection([primary_geometry, primary_left_marker, primary_right_marker, ...extra_geometries], {
 				draggable: true
 			});
 				primary_geometry_collection.addEventListener("click", (e) => {
@@ -322,18 +351,28 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				return ve.NodeEditorDatatype.instances[i];
 	}
 	
-	static draw () {
-		//1. Iterate over all ve.NodeEditorDatatypes and call their draw functions
+	static draw (arg0_options) {
+		//Convert from parameters
+		let options = (arg0_options) ? arg0_options : {};
+		
+		//Update all ve.NodeEditorDatatype.instances with their position in the dag_sequence
+		if (options.dag_sequence)
+			for (let i = 0; i < options.dag_sequence.length; i++)
+				for (let x = 0; x < options.dag_sequence[i].length; x++) {
+					let local_node = options.dag_sequence[i][x];
+						local_node.ui.information.dag_layer = i;
+				}
+		
+		//2. Iterate over all ve.NodeEditorDatatypes and call their draw functions
 		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++)
 			ve.NodeEditorDatatype.instances[i].draw();
 		
-		//2. Iterate over all ve.NodeEditorDatatypes and draw connections
+		//3. Iterate over all ve.NodeEditorDatatypes and draw connections
 		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++) {
 			let local_node = ve.NodeEditorDatatype.instances[i];
 			
 			//Iterate over all local_node.connections
 			for (let x = 0; x < local_node.connections.length; x++) {
-				//console.log(`Rendering arc connector for`, local_node, local_node.connections);
 				let arc_connector_line = new maptalks.ArcConnectorLine(
 					local_node.geometries[0].getGeometries()[2],
 					ve.NodeEditorDatatype.getNode(local_node.connections[x][0]).geometries[local_node.connections[x][1]].getGeometries()[1],
