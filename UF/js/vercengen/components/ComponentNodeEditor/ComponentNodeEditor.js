@@ -19,6 +19,7 @@
  *         - `[n]`: {@link Object}
  *           - `.name`: {@link string}
  *           - `.type`: {@link string}
+ *       - `.output_type="any"`: {@link string}
  *     - `.name`: {@link string}
  *     - `.output_type="any"`: {@link string} - What the output (return) type is regarded as being. There can only be a single return type per Node, similar to functions in most programming languages.
  *     - `.special_function`: {@link function}(argn_arguments:{@link any}) ¦ {@link any} - If a filter, it should return an {@link Array}<{@link any}>.
@@ -27,7 +28,6 @@
  *       - `.alluvial_scaling=1`: {@link number} - How much to scale alluvial widths by when displayed compared to their actual number.
  *   	   - `.id=Class.generateRandomID(ve.NodeEditorDatatype)`: {@link string} - The ID to assign to the present datatype at a class level.
  *       - `.show_alluvial=false`: {@link boolean}
- *   - `.polling=100`: {@link number} - How often the current setup should be polled to evaluate alluvials and number of items affected. 100ms by default. -1 = never.
  * 
  * ##### Instance:
  * - `.v`: {@link HTMLElement}
@@ -92,7 +92,7 @@ ve.NodeEditor = class extends ve.Component {
 		this.main = {
 			nodes: [],
 			settings: { //[WIP] - Implement settings
-				display_expressions_with_numbers: true,
+				display_expressions_with_values: true,
 				display_filters_as_alluvial: true,
 				display_filters_with_numbers: true
 			},

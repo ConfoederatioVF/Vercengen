@@ -276,6 +276,8 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				parameter_fields[local_parameter.name] = new ve.Number(
 					(this.constant_values[i] !== undefined) ? this.constant_values[i] : 0, 
 					local_parameter_options);
+			} else if (local_parameter.type === "script") { //[WIP] - Implement ve.ScriptManager window; read ve.ScriptManager's ._file_path upon closing and set the file path to that. If unavailable, ask for ._file_path using ve.File instead
+				
 			} else {
 				parameter_fields[local_parameter.name] = new ve.Text(
 					(this.constant_values[i] !== undefined) ? this.constant_values[i] : "", 
