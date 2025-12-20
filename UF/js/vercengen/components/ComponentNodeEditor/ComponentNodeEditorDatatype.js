@@ -24,6 +24,13 @@
  *   - `.show_alluvial=false`: {@link boolean}
  *   
  * ##### Instance:
+ * - `.connections`: {@link Array}<{@link Array}<{@link ve.NodeEditorDatatype}, {@link number}>>
+ * - `.constant_values`: {@link Array}
+ * - `.dynamic_values`: {@link Array}
+ * - `.geometries`: {@link Array}
+ * - `.id`: {@link string}
+ * - `.ui`: {@link Object}
+ *   - `.information`: {@link Object}
  * - `.v`: {@link Object}
  * 
  * ##### Methods:
