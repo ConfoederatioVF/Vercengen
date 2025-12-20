@@ -2,6 +2,7 @@
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  * 
  * Represents a single node instance within a {@link ve.NodeEditor} that can have acyclic connections to other nodes within the same editor for DAG execution.
+ * - Functional binding: <span color=00ffff>veNodeEditorDatatype</span>().
  * 
  * [WIP] - 'script' type remains to be concretely implemented.
  * 
@@ -614,3 +615,13 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				return ve.NodeEditorDatatype.instances[i];
 	}
 }
+
+//Functional binding
+
+/**
+ * @returns {ve.NodeEditorDatatype}
+ */
+veNodeEditorDatatype = function () {
+	//Return statement
+	return new ve.NodeEditorDatatype(...arguments);
+};
