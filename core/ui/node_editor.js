@@ -88,5 +88,5 @@ setTimeout(() => {
 				}]
 			}
 		}
-	}));
+	}), { can_rename: false, name: "Node Editor" });
 }, 500);

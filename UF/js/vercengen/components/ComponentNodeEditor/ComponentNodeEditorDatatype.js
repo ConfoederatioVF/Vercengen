@@ -50,6 +50,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		//Draw call
 		this.draw();
 		ve.NodeEditorDatatype.instances.push(this);
+		ve.NodeEditorDatatype.draw();
 	}
 	
 	_render () {
@@ -375,13 +376,19 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		//Convert from parameters
 		let options = (arg0_options) ? arg0_options : {};
 		
-		//Update all ve.NodeEditorDatatype.instances with their position in the dag_sequence
-		if (options.dag_sequence)
-			for (let i = 0; i < options.dag_sequence.length; i++)
-				for (let x = 0; x < options.dag_sequence[i].length; x++) {
-					let local_node = options.dag_sequence[i][x];
-					local_node.ui.information.dag_layer = i;
+		//1. Iterate over all ve.NodeEditor.instances; update all ve.NodeEditorDatatype.instances with their position in the dag_sequence
+		for (let i = 0; i < ve.NodeEditor.instances.length; i++) {
+			let local_node_editor = ve.NodeEditor.instances[i];
+			
+			let local_dag_sequence = local_node_editor.getDAGSequence();
+			
+			for (let x = 0; x < local_dag_sequence.length; x++)
+				for (let y = 0; y < local_dag_sequence[x].length; y++) {
+					let local_node = local_dag_sequence[x][y];
+					local_node.ui.information.dag_layer = x;
 				}
+			local_node_editor.run(true);
+		}
 		
 		//2. Iterate over all ve.NodeEditorDatatypes and call their draw functions
 		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++)

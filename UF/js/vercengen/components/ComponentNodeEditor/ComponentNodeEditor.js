@@ -44,6 +44,8 @@
  * @type {ve.NodeEditor}
  */
 ve.NodeEditor = class extends ve.Component {
+	static instances = [];
+	
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
 		let value = arg0_value;
@@ -90,6 +92,7 @@ ve.NodeEditor = class extends ve.Component {
 				this.run().then(() => ve.NodeEditorDatatype.draw());
 			}, { name: "Run" });
 			run_button.bind(this.element);
+		this.id = Class.generateRandomID(ve.NodeEditor);
 		this.map = new maptalks.Map(this.map_el, {
 			center: [0, 0],
 			zoom: 14,
@@ -126,6 +129,7 @@ ve.NodeEditor = class extends ve.Component {
 		
 		//Set .v
 		this.v = this.value;
+		ve.NodeEditor.instances.push(this);
 	}
 	
 	get v () {
@@ -308,7 +312,7 @@ ve.NodeEditor = class extends ve.Component {
 		if (this.toolbox_window) this.toolbox_window.close();
 		this.toolbox_window = new ve.PageMenuWindow(page_menu_obj, {
 			name: "Toolbox",
-			width: "22rem",
+			width: "23rem",
 			
 			can_rename: false
 		});
@@ -489,7 +493,7 @@ ve.NodeEditor = class extends ve.Component {
 	
 	async run (arg0_preview_mode) {
 		//Convert from parameters
-		let preview_mode = !!arg0_preview_mode;
+		let preview_mode = arg0_preview_mode;
 		
 		//Declare local instance variables
 		let dag_sequence = this.getDAGSequence();
@@ -569,7 +573,7 @@ ve.NodeEditor = class extends ve.Component {
 				}
 				
 				this.main.variables[local_node.id] = value;
-				local_node.ui.information.value = (descriptor.display_value) ? 
+				local_node.ui.information.value = (descriptor?.display_value) ? 
 					descriptor.display_value : value;
 				
 				//Return statement
