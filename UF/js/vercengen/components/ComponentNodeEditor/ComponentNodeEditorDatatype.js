@@ -260,8 +260,11 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		
 		//Iterate over all this.value.input_parameters and insert them from 1-n
 		for (let i = 0; i < this.value.input_parameters.length; i++) {
+			let local_parameter = this.value.input_parameters[i];
 			let local_value_name = (this.constant_values[i]) ? ` | ${this.constant_values[i]}` : "";
 				if (this.dynamic_values[i]) local_value_name = "";
+				if (local_parameter.type === "script")
+					local_value_name = ` | ${path.basename(local_value_name)}`;
 			
 			let local_rect = new maptalks.Rectangle(
 				Geospatiale.translatePoint(coords, 0, -400*(i + 1)),
@@ -405,6 +408,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			let is_actually_disabled = (this.dynamic_values[i] !== undefined); //Whether the parameter field should show up as being disabled because of a connection
 			let local_parameter = this.value.input_parameters[i];
 			let local_parameter_type = JSON.parse(JSON.stringify(local_parameter.type));
+			let local_script_file_path = "";
 			
 			let local_parameter_options = {
 				name: local_parameter.name ,
@@ -432,10 +436,50 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				parameter_fields[local_parameter.name] = new ve.Number(local_default_value, local_parameter_options);
 			} else if (local_parameter_type === "script") { //[WIP] - Implement ve.ScriptManager window; read ve.ScriptManager's ._file_path upon closing and set the file path to that. If unavailable, ask for ._file_path using ve.File instead
 				parameter_fields[local_parameter.name] = new ve.Button(() => {
+					let local_script_value = "";
+						if (fs.existsSync(local_default_value))
+							local_script_value = fs.readFileSync(local_default_value, "utf8");
+					let node_editor_registry = ve.registry.settings.NodeEditor;
 					
+					if (node_editor_registry.script_window) node_editor_registry.script_window.close();
+					node_editor_registry.script_window = new ve.Window(new ve.ScriptManager(local_script_value), {
+						name: "ScriptManager",
+						
+						can_rename: false,
+						height: "40rem",
+						width: "50rem",
+						
+						onuserchange: (v) => {
+							if (v.close) {
+								let script_manager = node_editor_registry.script_window.component;
+								
+								if (script_manager._file_path) {
+									this.constant_values[i] = script_manager._file_path;
+									ve.NodeEditorDatatype.draw();
+								} else {
+									let file_prompt = new ve.File(undefined, {
+										onuserchange: (v) => {
+											console.log(v);
+											
+											if (v.length > 0) {
+												this.constant_values[i] = v[0];
+											} else {
+												this.constant_values[i] = "";
+											}
+										},
+										save_function: () => script_manager.v
+									});
+										file_prompt.openModal();
+								}
+							}
+						}
+					});
+					if (fs.existsSync(local_default_value))
+						node_editor_registry.script_window.component._file_path = local_default_value;
 				}, {
 					name: (this.constant_values[i]) ? "Edit Script" : "Create Script",
-					tooltip: (this.constant_values[i]) ? this.constant_values[i] : undefined
+					tooltip: (this.constant_values[i]) ? this.constant_values[i] : undefined,
+					x: 0, y: i
 				});
 			} else {
 				parameter_fields[local_parameter.name] = new ve.Text(local_default_value, local_parameter_options);
@@ -457,7 +501,11 @@ ve.NodeEditorDatatype = class extends ve.Component {
 							
 							veToast(`<icon>warning</icon> Constants will not apply here, since the given node is already connected.`);
 						} else {
-							this.constant_values[i] = parameter_fields[local_parameter.name].v;
+							if (local_parameter_type !== "script") {
+								this.constant_values[i] = parameter_fields[local_parameter.name].v;
+							} else {
+								this.constant_values[i] = local_script_file_path;
+							}
 						}
 					}
 					ve.NodeEditorDatatype.draw();

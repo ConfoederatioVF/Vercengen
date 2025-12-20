@@ -198,7 +198,9 @@ ve.ScriptManager = class extends ve.Component {
 						} catch (e) {}
 					},
 					save_extension: (this.options.save_extension) ? this.options.save_extension : [".*"],
-					save_function: () => {
+					save_function: (arg0_save_name) => {
+						this._file_path = arg0_save_name;
+						
 						//Return statement
 						return this.scene_codemirror.v;
 					},

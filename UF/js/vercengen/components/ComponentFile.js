@@ -208,7 +208,7 @@ ve.File = class extends ve.Component {
 							let save_data = this.options.save_function();
 							
 							if (typeof save_data === "object") {
-								save_data = JSON.styringify(save_data);
+								save_data = JSON.stringify(save_data);
 							} else {
 								save_data = save_data.toString();
 							}

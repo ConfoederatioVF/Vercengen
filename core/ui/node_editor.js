@@ -79,6 +79,33 @@ setTimeout(() => {
 					};
 				}
 			},
+			run_script: {
+				name: "Run Script",
+				
+				category: "Expressions",
+				input_parameters: [{
+					name: "arg0_script",
+					type: "script"
+				}],
+				special_function: function (arg0_script) {
+					return {
+						display_value: `Run: ${arg0_script}`,
+						run: () => {
+							try {
+								if (fs.existsSync(arg0_script)) {
+									let script_value = fs.readFileSync(arg0_script, "utf8");
+									
+									//Return statement
+									return eval(script_value);
+								}
+							} catch (e) {
+								console.error(e);
+								veToast(`<icon>warning</icon> Error running script file; logged to console.`);
+							}
+						}
+					};
+				}
+			},
 			
 			get_object_key: {
 				name: "Get Object Key",
