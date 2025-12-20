@@ -133,7 +133,7 @@ ve.NodeEditor = class extends ve.Component {
 	}
 	
 	get v () {
-		// Return the serialised state of the editor and all its nodes
+		//Return statement
 		return {
 			settings: this.main.settings,
 			nodes: this.main.nodes.map(node => node.toJSON())
@@ -141,23 +141,23 @@ ve.NodeEditor = class extends ve.Component {
 	}
 	
 	set v (arg0_value) {
-		// Convert from parameters
+		//Convert from parameters
 		let data = (typeof arg0_value === "string") ? JSON.parse(arg0_value) : arg0_value;
-		if (!data) return;
+			if (!data) return; //Internal guard clause if data is not defined
 		
-		// 1. Clear current state
+		//Clear current state
 		this.clear();
 		
-		// 2. Pass One: Instantiate all nodes
-		// We create the instances first so that IDs are registered in ve.NodeEditorDatatype.instances
+		//1. 1st-pass: Instantiate all nodes
+		//We create the instances first so that IDs are registered in ve.NodeEditorDatatype.instances
 		if (data.nodes && Array.isArray(data.nodes)) {
 			data.nodes.forEach(node_data => {
-				// Find the original definition based on the key
+				//Find the original definition based on the key
 				let definition = this.options.node_types[node_data.key];
 				if (definition) {
 					let category_options = this.options.category_types[definition.category] || {};
 					
-					// Create instance with definition logic
+					//Create instance with definition logic
 					let new_node = new ve.NodeEditorDatatype({
 						coords: node_data.coords,
 						key: node_data.key,
@@ -168,14 +168,14 @@ ve.NodeEditor = class extends ve.Component {
 						...definition.options
 					});
 					
-					// Use fromJSON to restore instance-specific data (ID, constant_values, etc.)
+					//Use fromJSON to restore instance-specific data (ID, constant_values, etc.)
 					new_node.fromJSON(node_data);
 					this.main.nodes.push(new_node);
 				}
 			});
 			
-			// 3. Pass Two: Resolve Connections
-			// Now that all nodes exist, we can map ID strings back to object references
+			//3. 2nd-pass: Resolve Connections
+			//Now that all nodes exist, we can map ID strings back to object references
 			this.main.nodes.forEach(node => {
 				if (node._serialised_connections) {
 					node.connections = [];
@@ -195,11 +195,11 @@ ve.NodeEditor = class extends ve.Component {
 			});
 		}
 		
-		// 4. Restore Editor Settings
+		//4. Restore Editor Settings
 		if (data.settings)
 			this.main.settings = { ...this.main.settings, ...data.settings };
 		
-		// 5. Finalize UI
+		//5. Finalise UI
 		ve.NodeEditorDatatype.draw();
 	}
 	
