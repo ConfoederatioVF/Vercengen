@@ -229,6 +229,20 @@ ve.NodeEditor = class extends ve.Component {
 			
 			return;
 		}
+		//Check if connection are between same types (.output_type to .input_parameters[index - 1].type)
+		if (index > 0) {
+			let input_type = (ot_node.value.input_parameters[index - 1].type) ?
+				ot_node.value.input_parameters[index - 1].type : "any";
+			let output_type = (node.value.output_type) ? node.value.output_type : "any";
+			
+			if (input_type !== output_type && input_type !== "any") {
+				node.connections.pop();
+				veToast(`<icon>warning</icon> ${output_type} to ${input_type} are not of the same types.`);
+				
+				return;
+			}
+		}
+				
 		if (index > 0)
 			ot_node.dynamic_values[index - 1] = true;
 		ve.NodeEditorDatatype.draw();
@@ -640,7 +654,7 @@ ve.NodeEditor = class extends ve.Component {
 				}
 				
 				this.main.variables[local_node.id] = value;
-				local_node.ui.information.alluvial_width = Math.returnSafeNumber(descriptor.alluvial_width, 1);
+				local_node.ui.information.alluvial_width = Math.returnSafeNumber(descriptor?.alluvial_width, 1);
 				local_node.ui.information.value = (descriptor?.display_value !== undefined) ? 
 					descriptor.display_value : value;
 				
