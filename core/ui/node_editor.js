@@ -14,6 +14,7 @@ setTimeout(() => {
 		text: veText(["hello", "world"])
 	});*/
 	global.node_window = veWindow(new ve.NodeEditor(undefined, {
+		autosave_folder: "./scripts/",
 		category_types: {
 			"Expressions": {
 				colour: "#9ecd9e",
@@ -40,6 +41,24 @@ setTimeout(() => {
 				special_function: (arg0_number, arg1_number) => {
 					return {
 						value: arg0_number + arg1_number
+					};
+				}
+			},
+			convert_to_number: {
+				name: "Convert to Number",
+				
+				category: "Expressions",
+				input_parameters: [{
+					name: "arg0_value",
+					type: "any"
+				}],
+				output_type: "number",
+				special_function: (arg0_number) => {
+					let casted_number = Math.returnSafeNumber(arg0_number);
+					
+					return {
+						display_value: casted_number,
+						value: casted_number
 					};
 				}
 			},
@@ -70,6 +89,7 @@ setTimeout(() => {
 					name: "arg1_value",
 					type: "number"
 				}],
+				output_type: "number",
 				special_function: function (arg0_key, arg1_value) {
 					this.main.variables[arg0_key] = arg1_value;
 					
@@ -79,8 +99,8 @@ setTimeout(() => {
 					};
 				}
 			},
-			run_script: {
-				name: "Run Script",
+			run_return_script: {
+				name: "Run Return Script",
 				
 				category: "Expressions",
 				input_parameters: [{
@@ -88,21 +108,21 @@ setTimeout(() => {
 					type: "script"
 				}],
 				special_function: function (arg0_script) {
+					let return_value;
+					
+					try {
+						if (fs.existsSync(arg0_script)) {
+							let script_value = fs.readFileSync(arg0_script, "utf8");
+							return_value = eval(script_value);
+						}
+					} catch (e) {
+						console.error(e);
+					}
+					
 					return {
 						display_value: `Run: ${arg0_script}`,
-						run: () => {
-							try {
-								if (fs.existsSync(arg0_script)) {
-									let script_value = fs.readFileSync(arg0_script, "utf8");
-									
-									//Return statement
-									return eval(script_value);
-								}
-							} catch (e) {
-								console.error(e);
-								veToast(`<icon>warning</icon> Error running script file; logged to console.`);
-							}
-						}
+						run: () => return_value,
+						value: return_value
 					};
 				}
 			},

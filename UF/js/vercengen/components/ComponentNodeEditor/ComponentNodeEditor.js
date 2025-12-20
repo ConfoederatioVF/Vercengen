@@ -11,6 +11,7 @@
  * ##### Constructor:
  * - `arg0_value`: {@link Object} - The JSON object for the Maptalks instance attached to the current NodeEditor, including properties data.
  * - `arg1_options`: {@link Object}
+ *   - `.autosave_folder`: {@link string}
  *   - `.bg_ctx`: {@link function} | {@link Object} - Returns the context of a Canvas.
  *   - `.category_types`: {@link Object}
  *     - `<category_key>`: {@link Object}

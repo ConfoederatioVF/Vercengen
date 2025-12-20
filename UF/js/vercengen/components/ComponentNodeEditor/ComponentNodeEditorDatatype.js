@@ -440,9 +440,15 @@ ve.NodeEditorDatatype = class extends ve.Component {
 						if (fs.existsSync(local_default_value))
 							local_script_value = fs.readFileSync(local_default_value, "utf8");
 					let node_editor_registry = ve.registry.settings.NodeEditor;
+					let settings_obj = {};
+						let autosave_folder = this.options.node_editor.options.autosave_folder;
+						console.log("autosave_folder", autosave_folder)
+							if (autosave_folder) settings_obj.autosave_folder = autosave_folder;
 					
 					if (node_editor_registry.script_window) node_editor_registry.script_window.close();
-					node_editor_registry.script_window = new ve.Window(new ve.ScriptManager(local_script_value), {
+					node_editor_registry.script_window = new ve.Window(new ve.ScriptManager(local_script_value, {
+						settings: settings_obj
+					}), {
 						name: "ScriptManager",
 						
 						can_rename: false,

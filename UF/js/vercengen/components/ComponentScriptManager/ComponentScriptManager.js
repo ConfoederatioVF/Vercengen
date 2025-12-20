@@ -14,6 +14,7 @@
  *   - `.folder_path=process.cwd()`: {@link string}
  *   - `.save_extension=[".*"]`: {@link Array}<{@link string}>
  * 	 - `.settings`: {@link Object}
+ * 	   - `.autosave_folder="none"`: {@link string}
  * 	   - `.clear_blockly_workspace_on_error=true`: {@link boolean}
  * 	   - `.codemirror_theme="nord"`: {@link string}
  * 	   - `.display_load_errors=false`: {@link boolean}
@@ -133,6 +134,7 @@ ve.ScriptManager = class extends ve.Component {
 		this._settings = {
 			is_vercengen_script_manager_settings: true,
 			
+			autosave_folder: "none",
 			clear_blockly_workspace_on_error: true,
 			codemirror_theme: "nord",
 			display_load_errors: false,
@@ -224,7 +226,9 @@ ve.ScriptManager = class extends ve.Component {
 				this.scene_blockly_el = this.scene_blockly.element;
 					this.scene_blockly_el.id = "scene-blockly";
 					this.scene_blockly_el.style.display = "block";
-				this.scene_codemirror = new ve.ScriptManagerCodemirror();
+				this.scene_codemirror = new ve.ScriptManagerCodemirror(undefined, { 
+					script_manager: this 
+				});
 					this.scene_codemirror_el = this.scene_codemirror.element;
 					this.scene_codemirror_el.id = "scene-codemirror";
 				this.scene_tabs_el = document.createElement("div");
@@ -557,6 +561,13 @@ ve.ScriptManager = class extends ve.Component {
 	}
 	
 	/**
+	 * Attempts to save the current {@link this._file_path} if it is in `this._settings.autosave_folder`.
+	 */
+	autosave () {
+		
+	}
+	
+	/**
 	 * Loads a new settings object and refreshes the present Component to display them, then sets {@link this._settings}.
 	 * - Method of: {@link ve.ScriptManager}
 	 *
@@ -564,6 +575,7 @@ ve.ScriptManager = class extends ve.Component {
 	 * @memberof ve.Component.ve.ScriptManager
 	 * 
 	 * @param {Object} [arg0_settings]
+	 *  @param {string} [arg0_settings.autosave_folder]
 	 *  @param {string} [arg0_settings.codemirror_theme] - One of the default CodeMirror themes. [View CodeMirror theming list](https://codemirror.net/5/demo/theme.html)
 	 *  @param {string} [arg0_settings.keybinds] - Either 'emacs'/'sublime'/'vim'
 	 *  @param {boolean} [arg0_settings.hide_blockly]
@@ -581,6 +593,9 @@ ve.ScriptManager = class extends ve.Component {
 		let scriptmanager_settings = ve.registry.settings.ScriptManager;
 		let settings_apply_loop = setInterval(() => {
 			try {
+				if (settings_obj.autosave_folder)
+					settings_obj.autosave_folder = (fs.existsSync(settings_obj.autosave_folder) && fs.statSync(settings_obj.autosave_folder).isDirectory()) ?
+						settings_obj.autosave_folder : "none";
 				if (settings_obj.codemirror_theme)
 					this.setCodeEditorTheme(settings_obj.codemirror_theme);
 				if (settings_obj.keybinds)
