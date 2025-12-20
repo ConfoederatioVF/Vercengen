@@ -36,6 +36,7 @@ setTimeout(() => {
 					name: "arg1_number",
 					type: "number"
 				}],
+				output_type: "number",
 				special_function: (arg0_number, arg1_number) => {
 					return {
 						value: arg0_number + arg1_number
@@ -50,6 +51,7 @@ setTimeout(() => {
 					name: "arg0_number",
 					type: "number"
 				}],
+				output_type: "number",
 				special_function: (arg0_number) => {
 					return {
 						run: () => console.log(arg0_number),

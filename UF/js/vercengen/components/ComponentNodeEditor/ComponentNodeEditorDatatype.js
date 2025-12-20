@@ -25,6 +25,20 @@
  */
 ve.NodeEditorDatatype = class extends ve.Component {
 	static instances = [];
+	/**
+	 * Defines default type values for ve.NodeEditorDatatype parameters. 'any' is a fallback type if undefined.
+	 * @type {{"<type_key>": any}}
+	 */
+	static types = {
+		"number[]": [],
+		"string[]": [],
+		"boolean": false,
+		"number": 0,
+		"script": "",
+		"string": "",
+		
+		"any": ""
+	};
 	
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
@@ -51,6 +65,39 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		this.draw();
 		ve.NodeEditorDatatype.instances.push(this);
 		ve.NodeEditorDatatype.draw();
+	}
+	
+	get v () {
+		return {
+			id: this.id,
+			key: this.value.key,
+			// Strip Maptalks class methods, keep raw data
+			coords: { x: this.value.coords.x, y: this.value.coords.y },
+			constant_values: JSON.parse(JSON.stringify(this.constant_values)),
+			// Map object references to IDs
+			connections: this.connections.map(conn => [conn[0].id, conn[1]]),
+			ui: {
+				information: {
+					alluvial_width: this.ui.information.alluvial_width,
+					value: this.ui.information.value,
+					dag_layer: this.ui.information.dag_layer
+				}
+			}
+		};
+	}
+	
+	set v (arg0_value) {
+		let json = (typeof arg0_value === "string") ? JSON.parse(arg0_value) : arg0_value;
+		if (!json) return;
+		
+		this.id = json.id || this.id;
+		this.constant_values = Array.isArray(json.constant_values) ? json.constant_values : [];
+		
+		// Store connections temporarily; ve.NodeEditor.v will resolve these in Pass 2
+		this._serialised_connections = json.connections || [];
+		
+		if (json.ui && json.ui.information)
+			this.ui.information = { ...this.ui.information, ...json.ui.information };
 	}
 	
 	_render () {
@@ -98,7 +145,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 					lineColor: (this.isSelected(0)) ? "yellow" : "black",
 					polygonOpacity: 0.8,
 					
-					textName: this.value.name
+					textName: `${this.value.name} | ${(this.value.output_type) ? this.value.output_type : "any"}`
 				}
 			});
 				let primary_left_marker = new maptalks.Marker(
@@ -189,10 +236,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		this.handleEvents();
 	}
 	
-	fromJSON () {
-		
-	}
-	
 	getConnection (arg0_node, arg1_index) {
 		//Convert from parameters
 		let node = arg0_node;
@@ -251,6 +294,8 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		for (let i = 0; i < this.value.input_parameters.length; i++) {
 			let is_actually_disabled = (this.dynamic_values[i] !== undefined); //Whether the parameter field should show up as being disabled because of a connection
 			let local_parameter = this.value.input_parameters[i];
+			let local_parameter_type = JSON.parse(JSON.stringify(local_parameter.type));
+			
 			let local_parameter_options = {
 				name: local_parameter.name ,
 				x: 0, y: i,
@@ -262,32 +307,28 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				}
 			};
 			
-			if (local_parameter.type === "number[]") {
-				parameter_fields[local_parameter.name] = new ve.Number(
-					(this.constant_values[i] !== undefined) ? this.constant_values[i] : [], 
-					local_parameter_options);
-			} else if (local_parameter.type === "string[]") {
-				parameter_fields[local_parameter.name] = new ve.Text(
-					(this.constant_values[i] !== undefined) ? this.constant_values[i] : [], 
-					local_parameter_options);
-			} else if (local_parameter.type === "boolean") {
-				parameter_fields[local_parameter.name] = new ve.Toggle(
-					(this.constant_values[i] !== undefined) ? this.constant_values[i] : false, local_parameter_options);
-			} else if (local_parameter.type === "number") {
-				parameter_fields[local_parameter.name] = new ve.Number(
-					(this.constant_values[i] !== undefined) ? this.constant_values[i] : 0, 
-					local_parameter_options);
-			} else if (local_parameter.type === "script") { //[WIP] - Implement ve.ScriptManager window; read ve.ScriptManager's ._file_path upon closing and set the file path to that. If unavailable, ask for ._file_path using ve.File instead
+			if (ve.NodeEditorDatatype.types[local_parameter_type] === undefined)
+				local_parameter_type = "any";
+			let local_default_value = (this.constant_values[i] !== undefined) ? 
+				this.constant_values[i] : ve.NodeEditorDatatype.types[local_parameter_type];
+			
+			if (local_parameter_type === "number[]") {
+				parameter_fields[local_parameter.name] = new ve.Number(local_default_value, local_parameter_options);
+			} else if (local_parameter_type === "string[]") {
+				parameter_fields[local_parameter.name] = new ve.Text(local_default_value, local_parameter_options);
+			} else if (local_parameter_type === "boolean") {
+				parameter_fields[local_parameter.name] = new ve.Toggle(local_default_value, local_parameter_options);
+			} else if (local_parameter_type === "number") {
+				parameter_fields[local_parameter.name] = new ve.Number(local_default_value, local_parameter_options);
+			} else if (local_parameter_type === "script") { //[WIP] - Implement ve.ScriptManager window; read ve.ScriptManager's ._file_path upon closing and set the file path to that. If unavailable, ask for ._file_path using ve.File instead
 				parameter_fields[local_parameter.name] = new ve.Button(() => {
 					
 				}, {
 					name: (this.constant_values[i]) ? "Edit Script" : "Create Script",
 					tooltip: (this.constant_values[i]) ? this.constant_values[i] : undefined
-				})
+				});
 			} else {
-				parameter_fields[local_parameter.name] = new ve.Text(
-					(this.constant_values[i] !== undefined) ? this.constant_values[i] : "", 
-					local_parameter_options);
+				parameter_fields[local_parameter.name] = new ve.Text(local_default_value, local_parameter_options);
 			}
 			
 			parameter_fields[`${local_parameter.name}_toggle`] = new ve.Toggle(
@@ -332,32 +373,34 @@ ve.NodeEditorDatatype = class extends ve.Component {
 	}
 	
 	remove () {
-		//Iterate over ve.NodeEditorDatatype.instances
+		// 1. Remove from the parent Editor's local node list
+		const editor = this.options.node_editor;
+		if (editor && editor.main.nodes.includes(this)) {
+			const local_index = editor.main.nodes.indexOf(this);
+			editor.main.nodes.splice(local_index, 1);
+		}
+		
+		// 2. Remove from static global instances and prune connections
 		for (let i = ve.NodeEditorDatatype.instances.length - 1; i >= 0; i--) {
 			let local_node = ve.NodeEditorDatatype.instances[i];
 			
 			if (local_node.id === this.id) {
 				ve.NodeEditorDatatype.instances.splice(i, 1);
 			} else {
-				//Iterate over local_node.connections and prune them if they connect to the removed node
 				for (let x = local_node.connections.length - 1; x >= 0; x--)
 					if (local_node.connections[x][0].id === this.id)
 						local_node.connections.splice(x, 1);
 			}
 		}
 		
-		//Iterate over all this.geometries and remove them
+		// 3. Remove all Maptalks geometries from the map
 		for (let i = 0; i < this.geometries.length; i++)
 			this.geometries[i].remove();
 		this.geometries = [];
 		
-		//Close any open menus
+		// 4. UI cleanup
 		if (this.context_menu) this.context_menu.close();
 		ve.NodeEditorDatatype.draw();
-	}
-	
-	toJSON (arg0_json) {
-		
 	}
 	
 	static getNode (arg0_node_id) {
@@ -381,6 +424,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			let local_node_editor = ve.NodeEditor.instances[i];
 			
 			let local_dag_sequence = local_node_editor.getDAGSequence();
+			if (local_dag_sequence === undefined) continue;
 			
 			for (let x = 0; x < local_dag_sequence.length; x++)
 				for (let y = 0; y < local_dag_sequence[x].length; y++) {
@@ -400,15 +444,15 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			
 			//Iterate over all local_node.connections
 			for (let x = 0; x < local_node.connections.length; x++) {
-				let arc_connector_name = (local_node.ui.information.value) ? 
+				let arc_connector_name = (local_node.ui.information.value !== undefined) ? 
 					local_node.ui.information.value : undefined;
-				let arc_connector_text_symbol = (arc_connector_name) ? {
-					'textName'  : `${arc_connector_name.toString()}`,
+				let arc_connector_text_symbol = (arc_connector_name !== undefined) ? {
+					textName  : arc_connector_name.toString(),
 					textFaceName: "Karla",
 					textFill: "white",
 					textHaloFill: "black",
 					textHaloRadius: 2,
-					'textPlacement' : 'line',
+					textPlacement: "line",
 					textSize: { stops: [[12, 2], [14, 14]] }
 				} : undefined;
 				let local_ot_node = ve.NodeEditorDatatype.getNode(local_node.connections[x][0]);
@@ -427,7 +471,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 						},
 						symbol: {
 							lineColor: 'white',
-							lineWidth: 1,
+							lineWidth: Math.returnSafeNumber(local_node?.ui?.information?.alluvial_width, 1),
 							...arc_connector_text_symbol
 						}
 					}

@@ -133,16 +133,74 @@ ve.NodeEditor = class extends ve.Component {
 	}
 	
 	get v () {
-		//Return statement
-		return this.map.toJSON();
+		// Return the serialised state of the editor and all its nodes
+		return {
+			settings: this.main.settings,
+			nodes: this.main.nodes.map(node => node.toJSON())
+		};
 	}
 	
 	set v (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
+		// Convert from parameters
+		let data = (typeof arg0_value === "string") ? JSON.parse(arg0_value) : arg0_value;
+		if (!data) return;
 		
-		//Set Map to maptalks JSON value
-		maptalks.Map.fromJSON(this.element, value);
+		// 1. Clear current state
+		this.clear();
+		
+		// 2. Pass One: Instantiate all nodes
+		// We create the instances first so that IDs are registered in ve.NodeEditorDatatype.instances
+		if (data.nodes && Array.isArray(data.nodes)) {
+			data.nodes.forEach(node_data => {
+				// Find the original definition based on the key
+				let definition = this.options.node_types[node_data.key];
+				if (definition) {
+					let category_options = this.options.category_types[definition.category] || {};
+					
+					// Create instance with definition logic
+					let new_node = new ve.NodeEditorDatatype({
+						coords: node_data.coords,
+						key: node_data.key,
+						...definition
+					}, {
+						category_options: category_options,
+						node_editor: this,
+						...definition.options
+					});
+					
+					// Use fromJSON to restore instance-specific data (ID, constant_values, etc.)
+					new_node.fromJSON(node_data);
+					this.main.nodes.push(new_node);
+				}
+			});
+			
+			// 3. Pass Two: Resolve Connections
+			// Now that all nodes exist, we can map ID strings back to object references
+			this.main.nodes.forEach(node => {
+				if (node._serialised_connections) {
+					node.connections = [];
+					node._serialised_connections.forEach(([target_id, target_index]) => {
+						let target_node = ve.NodeEditorDatatype.getNode(target_id);
+						if (target_node) {
+							node.connections.push([target_node, target_index]);
+							
+							// Re-flag dynamic inputs so the UI knows not to show constant fields
+							if (target_index > 0)
+								target_node.dynamic_values[target_index - 1] = true;
+						}
+					});
+					// Clean up temporary property
+					delete node._serialised_connections;
+				}
+			});
+		}
+		
+		// 4. Restore Editor Settings
+		if (data.settings)
+			this.main.settings = { ...this.main.settings, ...data.settings };
+		
+		// 5. Finalize UI
+		ve.NodeEditorDatatype.draw();
 	}
 	
 	_connect (arg0_node, arg1_node, arg2_index, arg3_options) {
@@ -173,10 +231,7 @@ ve.NodeEditor = class extends ve.Component {
 		}
 		if (index > 0)
 			ot_node.dynamic_values[index - 1] = true;
-		ve.NodeEditorDatatype.draw({
-			dag_sequence: dag_sequence,
-			node_editor: this
-		});
+		ve.NodeEditorDatatype.draw();
 	}
 
 	_disconnect (arg0_node, arg1_node, arg2_index) {
@@ -192,10 +247,7 @@ ve.NodeEditor = class extends ve.Component {
 			node.connections.splice(node_connection_index, 1);
 			if (index > 0)
 				ot_node.dynamic_values[index - 1] = undefined;
-			ve.NodeEditorDatatype.draw({
-				dag_sequence: this.getDAGSequence(),
-				node_editor: this
-			});
+			ve.NodeEditorDatatype.draw();
 		}
 	}
 	
@@ -242,11 +294,20 @@ ve.NodeEditor = class extends ve.Component {
 	}
 	
 	clear () {
-		//Iterate over all this.main.nodes and remove them
-		for (let i = 0; i < this.main.nodes.length; i++)
+		// 1. Iterate backwards to safely call remove() on all nodes
+		// This cleans up the global static instances and Maptalks geometries
+		for (let i = this.main.nodes.length - 1; i >= 0; i--)
 			this.main.nodes[i].remove();
+		
+		// 2. Explicitly wipe the local tracking arrays
+		this.main.nodes = [];
+		this.main.user.selected_nodes = [];
+		
+		// 3. Clear transient execution data
 		this.main.variables = {};
-		this.node_layer.setGeometries([]);
+		
+		// 4. Ensure the map layer is empty
+		if (this.node_layer) this.node_layer.clear();
 	}
 	
 	drawToolbox () {
@@ -303,7 +364,7 @@ ve.NodeEditor = class extends ve.Component {
 			page_menu_obj[unique_categories[i]] = {
 				name: unique_categories[i],
 				components_obj: {
-					search_select: new ve.SearchSelect(local_search_select_obj)
+					search_select: new ve.SearchSelect(local_search_select_obj, { hide_filter: true })
 				}
 			};
 		}
@@ -506,6 +567,8 @@ ve.NodeEditor = class extends ve.Component {
 			
 			//Iterate over input parameters
 			for (let i = 0; i < node.value.input_parameters.length; i++) {
+				let local_parameter = node.value.input_parameters[i];
+				
 				if (node.dynamic_values[i]) {
 					let resolved;
 					
@@ -530,7 +593,11 @@ ve.NodeEditor = class extends ve.Component {
 				} else if (node.constant_values[i] !== undefined) {
 					args.push(node.constant_values[i]);
 				} else {
-					args.push(undefined);
+					//Fetch the default for this type
+					let local_parameter_type = JSON.parse(JSON.stringify(local_parameter.type));
+						if (ve.NodeEditorDatatype.types[local_parameter_type] === undefined)
+							local_parameter_type = "any";
+					args.push(ve.NodeEditorDatatype.types[local_parameter_type]);
 				}
 			}
 			
@@ -573,7 +640,8 @@ ve.NodeEditor = class extends ve.Component {
 				}
 				
 				this.main.variables[local_node.id] = value;
-				local_node.ui.information.value = (descriptor?.display_value) ? 
+				local_node.ui.information.alluvial_width = Math.returnSafeNumber(descriptor.alluvial_width, 1);
+				local_node.ui.information.value = (descriptor?.display_value !== undefined) ? 
 					descriptor.display_value : value;
 				
 				//Return statement
