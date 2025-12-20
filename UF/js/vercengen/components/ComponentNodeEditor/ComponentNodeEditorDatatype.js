@@ -44,6 +44,9 @@
  * @type {ve.NodeEditorDatatype}
  */
 ve.NodeEditorDatatype = class extends ve.Component {
+	/**
+	 * @type {ve.NodeEditorDatatype[]}
+	 */
 	static instances = [];
 	/**
 	 * Defines default type values for ve.NodeEditorDatatype parameters. 'any' is a fallback type if undefined.
@@ -87,6 +90,14 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		ve.NodeEditorDatatype.draw();
 	}
 	
+	/**
+	 * Returns the current JSON object from the component.
+	 * - Accessor of: {@link ve.NodeEditorDatatype}
+	 * 
+	 * @alias v
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * @type {Object}
+	 */
 	get v () {
 		return {
 			id: this.id,
@@ -106,6 +117,15 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		};
 	}
 	
+	/**
+	 * Sets the current value of the ve.NodeEditorDatatype from available JSON.
+	 * - Accessor of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias v
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * 
+	 * @param {Object} arg0_value
+	 */
 	set v (arg0_value) {
 		let json = (typeof arg0_value === "string") ? JSON.parse(arg0_value) : arg0_value;
 		if (!json) return;
@@ -120,6 +140,15 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			this.ui.information = { ...this.ui.information, ...json.ui.information };
 	}
 	
+	/**
+	 * Renders the current component's geometries as part of a partial draw() refresh.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias _render
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * 
+	 * @private
+	 */
 	_render () {
 		//Add all geometries to layer
 		for (let i = 0; i < this.geometries.length; i++) try {
@@ -127,6 +156,13 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		} catch (e) { console.warn(e); }
 	}
 	
+	/**
+	 * Draws the current component and refreshes it on the {@link ve.NodeEditor} scene.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias draw
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 */
 	draw () {
 		//Declare local instance variables
 		let category_options = this.options.category_options;
@@ -256,6 +292,18 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		this.handleEvents();
 	}
 	
+	/**
+	 * Returns the index of a connection to another node.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias getConnection
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * 
+	 * @param {ve.NodeEditorDatatype} arg0_node
+	 * @param {number} arg1_index
+	 * 
+	 * @returns {number}
+	 */
 	getConnection (arg0_node, arg1_index) {
 		//Convert from parameters
 		let node = arg0_node;
@@ -269,6 +317,13 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		return -1;
 	}
 	
+	/**
+	 * Handles events for the current component, especially for on-map click events.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias handleEvents
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 */
 	handleEvents () {
 		this.geometries[0].addEventListener("dragend", (e) => {
 			this.value.coords = this.geometries[0].getFirstCoordinate();
@@ -276,6 +331,16 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		});
 	}
 	
+	/**
+	 * Whether the current component has a connection with another node.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias hasConnection
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * 
+	 * @param {number} arg0_index
+	 * @returns {boolean}
+	 */
 	hasConnection (arg0_index) {
 		//Convert from parameters
 		let index = Math.returnSafeNumber(arg0_index);
@@ -292,6 +357,16 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		}
 	}
 	
+	/**
+	 * Returns a boolean depending on whether the current index is selected.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias isSelected
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * 
+	 * @param {number} arg0_index
+	 * @returns {boolean}
+	 */
 	isSelected (arg0_index) {
 		//Convert from parameters
 		let index = Math.returnSafeNumber(arg0_index);
@@ -306,6 +381,13 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				return true;
 	}
 	
+	/**
+	 * Opens the context menu UI for the given component.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias openContextMenu
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 */
 	openContextMenu () {
 		//Declare local instance variables
 		let parameter_fields = {};
@@ -392,6 +474,13 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		});
 	}
 	
+	/**
+	 * Removes the component from the scene and memory.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias remove
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 */
 	remove () {
 		// 1. Remove from the parent Editor's local node list
 		const editor = this.options.node_editor;
@@ -423,10 +512,14 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		ve.NodeEditorDatatype.draw();
 	}
 	
-	static draw (arg0_options) {
-		//Convert from parameters
-		let options = (arg0_options) ? arg0_options : {};
-		
+	/**
+	 * Draws all node instances for all {@link ve.NodeEditor}s.
+	 * - Static method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias #draw
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 */
+	static draw () {
 		//1. Iterate over all ve.NodeEditor.instances; update all ve.NodeEditorDatatype.instances with their position in the dag_sequence
 		for (let i = 0; i < ve.NodeEditor.instances.length; i++) {
 			let local_node_editor = ve.NodeEditor.instances[i];
@@ -491,6 +584,17 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		}
 	}
 	
+	/**
+	 * Returns a NodeEditorDatatype instance depending on its id.
+	 * - Static method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias #getNode
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * 
+	 * @param {string|ve.NodeEditorDatatype} arg0_node_id
+	 * 
+	 * @returns {ve.NodeEditorDatatype}
+	 */
 	static getNode (arg0_node_id) {
 		//Convert from parameters
 		let node_id = arg0_node_id;

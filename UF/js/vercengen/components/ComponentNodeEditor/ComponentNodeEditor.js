@@ -57,6 +57,9 @@
  * @type {ve.NodeEditor}
  */
 ve.NodeEditor = class extends ve.Component {
+	/**
+	 * @type {ve.NodeEditor[]}
+	 */
 	static instances = [];
 	
 	constructor (arg0_value, arg1_options) {
