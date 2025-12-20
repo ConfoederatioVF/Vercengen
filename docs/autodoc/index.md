@@ -95,6 +95,8 @@ ve.CustomComponent = class extends ve.Component {
 ## Getting Started:
 Vercengen is currently native to **Electron**/**Node.js** with better support planned for in-browser versions via a single-file CDN. Bootstrapping a Vercengen app requires the following steps.
 
+Running Vercengen in the browser means that certain components (i.e. FileExplorer, ScriptManager) will not be presently operable, and you may have to make manual adjustments as such.
+
 1. [Download](<https://github.com/Confoederatio/Vercengen/>) the current UF folder and drop it into your root directory.
 2. Ensure you have the following dependencies installed for the full feature set in your `package.json` file:
    ```json
