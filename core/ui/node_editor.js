@@ -120,7 +120,7 @@ setTimeout(() => {
 					}
 					
 					return {
-						display_value: `Run: ${arg0_script}`,
+						display_value: `Run: ${path.basename(arg0_script)}`,
 						run: () => return_value,
 						value: return_value
 					};

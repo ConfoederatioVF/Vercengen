@@ -6,7 +6,7 @@
  * All nodes are implemented as a {@link maptalks.GeometryCollection}, with [0] containing node data and [n] containing other visual geometries. The ID of the GeometryCollection is the same as that of the Node. Their class type is implemented as a {@link ve.NodeEditorDatatype}.
  * - Functional binding: <span color=00ffff>veNodeEditor</span>().
  * 
- * [WIP] - Settings remain to be concretely implemented, alongside 'script' types.
+ * [WIP] - Settings remain to be concretely implemented.
  * 
  * ##### Constructor:
  * - `arg0_value`: {@link Object} - The JSON object for the Maptalks instance attached to the current NodeEditor, including properties data.

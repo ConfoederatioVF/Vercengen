@@ -4,8 +4,6 @@
  * Represents a single node instance within a {@link ve.NodeEditor} that can have acyclic connections to other nodes within the same editor for DAG execution.
  * - Functional binding: <span color=00ffff>veNodeEditorDatatype</span>().
  * 
- * [WIP] - 'script' type remains to be concretely implemented.
- * 
  * ##### Constructor:
  * - `arg0_value`: {@link Object}
  *   - `.category="Expression"` - The category that any {@link ve.NodeEditorDatatype} instances should belong to. Typically should either be 'Filter'/'Expression'.
@@ -442,7 +440,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 					let node_editor_registry = ve.registry.settings.NodeEditor;
 					let settings_obj = {};
 						let autosave_folder = this.options.node_editor.options.autosave_folder;
-						console.log("autosave_folder", autosave_folder)
 							if (autosave_folder) settings_obj.autosave_folder = autosave_folder;
 					
 					if (node_editor_registry.script_window) node_editor_registry.script_window.close();
@@ -465,8 +462,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 								} else {
 									let file_prompt = new ve.File(undefined, {
 										onuserchange: (v) => {
-											console.log(v);
-											
 											if (v.length > 0) {
 												this.constant_values[i] = v[0];
 											} else {

@@ -1,1 +1,5 @@
-utf8
+function testNumber(int){
+  return int
+}
+
+testNumber(5)
