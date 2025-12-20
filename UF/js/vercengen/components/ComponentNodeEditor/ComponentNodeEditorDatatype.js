@@ -332,9 +332,18 @@ ve.NodeEditorDatatype = class extends ve.Component {
 	
 	remove () {
 		//Iterate over ve.NodeEditorDatatype.instances
-		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++)
-			if (ve.NodeEditorDatatype.instances[i].id === this.id)
+		for (let i = ve.NodeEditorDatatype.instances.length - 1; i >= 0; i--) {
+			let local_node = ve.NodeEditorDatatype.instances[i];
+			
+			if (local_node.id === this.id) {
 				ve.NodeEditorDatatype.instances.splice(i, 1);
+			} else {
+				//Iterate over local_node.connections and prune them if they connect to the removed node
+				for (let x = local_node.connections.length - 1; x >= 0; x--)
+					if (local_node.connections[x][0].id === this.id)
+						local_node.connections.splice(x, 1);
+			}
+		}
 		
 		//Iterate over all this.geometries and remove them
 		for (let i = 0; i < this.geometries.length; i++)
@@ -343,6 +352,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		
 		//Close any open menus
 		if (this.context_menu) this.context_menu.close();
+		ve.NodeEditorDatatype.draw();
 	}
 	
 	toJSON (arg0_json) {
@@ -394,15 +404,20 @@ ve.NodeEditorDatatype = class extends ve.Component {
 					'textPlacement' : 'line',
 					textSize: { stops: [[12, 2], [14, 14]] }
 				} : undefined;
+				let local_ot_node = ve.NodeEditorDatatype.getNode(local_node.connections[x][0]);
 				
 				let arc_connector_line = new maptalks.ArcConnectorLine(
 					local_node.geometries[0].getGeometries()[2],
-					ve.NodeEditorDatatype.getNode(local_node.connections[x][0]).geometries[local_node.connections[x][1]].getGeometries()[1],
+					local_ot_node.geometries[local_node.connections[x][1]].getGeometries()[1],
 					{
 						arcDegree: 90,
 						arrowStyle : 'classic',
 						arrowPlacement : 'vertex-last',
 						showOn: "always",
+						properties: {
+							from_geometry_id: local_node.id,
+							to_geometry_id: local_ot_node.id
+						},
 						symbol: {
 							lineColor: 'white',
 							lineWidth: 1,
