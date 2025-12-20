@@ -1,6 +1,10 @@
 /**
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  * 
+ * Represents a single node instance within a {@link ve.NodeEditor} that can have acyclic connections to other nodes within the same editor for DAG execution.
+ * 
+ * [WIP] - 'script' type remains to be concretely implemented.
+ * 
  * ##### Constructor:
  * - `arg0_value`: {@link Object}
  *   - `.category="Expression"` - The category that any {@link ve.NodeEditorDatatype} instances should belong to. Typically should either be 'Filter'/'Expression'.
@@ -18,6 +22,22 @@
  *   - `.id=Class.generateRandomID(ve.NodeEditorDatatype)`: {@link string} - The ID to assign to the present datatype at a class level.
  *   - `.node_editor`: {@link ve.NodeEditor} - The node editor that this ve.NodeEditorDatatype is attached to.
  *   - `.show_alluvial=false`: {@link boolean}
+ *   
+ * ##### Instance:
+ * - `.v`: {@link Object}
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.Component.NodeEditorDatatype.draw|draw}</span>()
+ * - <span color=00ffff>{@link ve.Component.NodeEditorDatatype.getConnection|getConnection}</span>(arg0_node:{@link ve.NodeEditorDatatype}, arg1_index:{@link number}) | {@link number}
+ * - <span color=00ffff>{@link ve.Component.NodeEditorDatatype.handleEvents|handleEvents}</span>()
+ * - <span color=00ffff>{@link ve.Component.NodeEditorDatatype.hasConnection|hasConnection}</span>(arg0_index:{@link number}) | {@link boolean}
+ * - <span color=00ffff>{@link ve.Component.NodeEditorDatatype.isSelected|isSelected}</span>(arg0_index:{@link number})
+ * - <span color=00ffff>{@link ve.Component.NodeEditorDatatype.openContextMenu|openContextMenu}</span>()
+ * - <span color=00ffff>{@link ve.Component.NodeEditorDatatype.remove|remove}</span>()
+ * 
+ * ##### Static Methods:
+ * - <span color=00ffff>{@link ve.NodeEditorDatatype.draw|draw}</span>(arg0_options:{@link Object})
+ * - <span color=00ffff>{@link ve.NodeEditorDatatype.getNode|getNode}</span>(arg0_node_id:{@link string}) | {@link ve.NodeEditorDatatype}
  *
  * @augments ve.Component
  * @memberof ve.Component
@@ -249,6 +269,13 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		return -1;
 	}
 	
+	handleEvents () {
+		this.geometries[0].addEventListener("dragend", (e) => {
+			this.value.coords = this.geometries[0].getFirstCoordinate();
+			ve.NodeEditorDatatype.draw();
+		});
+	}
+	
 	hasConnection (arg0_index) {
 		//Convert from parameters
 		let index = Math.returnSafeNumber(arg0_index);
@@ -277,13 +304,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			if (selected_nodes[i][0].id === this.id && selected_nodes[i][1] === index)
 				//Return statement
 				return true;
-	}
-	
-	handleEvents () {
-		this.geometries[0].addEventListener("dragend", (e) => {
-			this.value.coords = this.geometries[0].getFirstCoordinate();
-			ve.NodeEditorDatatype.draw();
-		});
 	}
 	
 	openContextMenu () {
@@ -403,18 +423,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		ve.NodeEditorDatatype.draw();
 	}
 	
-	static getNode (arg0_node_id) {
-		//Convert from parameters
-		let node_id = arg0_node_id;
-			if (node_id instanceof ve.NodeEditorDatatype) return node_id; //Internal guard clause for ve.NodeEditorDatatype
-		
-		//Iterate over all ve.NodeEditorDatatype instances
-		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++)
-			if (ve.NodeEditorDatatype.instances[i].id === node_id)
-				//Return statement; first exact match
-				return ve.NodeEditorDatatype.instances[i];
-	}
-	
 	static draw (arg0_options) {
 		//Convert from parameters
 		let options = (arg0_options) ? arg0_options : {};
@@ -481,5 +489,17 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				local_node.geometries.push(arc_connector_line);
 			}
 		}
+	}
+	
+	static getNode (arg0_node_id) {
+		//Convert from parameters
+		let node_id = arg0_node_id;
+		if (node_id instanceof ve.NodeEditorDatatype) return node_id; //Internal guard clause for ve.NodeEditorDatatype
+		
+		//Iterate over all ve.NodeEditorDatatype instances
+		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++)
+			if (ve.NodeEditorDatatype.instances[i].id === node_id)
+				//Return statement; first exact match
+				return ve.NodeEditorDatatype.instances[i];
 	}
 }

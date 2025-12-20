@@ -5,6 +5,8 @@
  * 
  * All nodes are implemented as a {@link maptalks.GeometryCollection}, with [0] containing node data and [n] containing other visual geometries. The ID of the GeometryCollection is the same as that of the Node. Their class type is implemented as a {@link ve.NodeEditorDatatype}.
  * 
+ * [WIP] - Settings remain to be concretely implemented, alongside 'script' types.
+ * 
  * ##### Constructor:
  * - `arg0_value`: {@link Object} - The JSON object for the Maptalks instance attached to the current NodeEditor, including properties data.
  * - `arg1_options`: {@link Object}
@@ -35,9 +37,20 @@
  *       - `.show_alluvial=false`: {@link boolean}
  * 
  * ##### Instance:
- * - `.v`: {@link HTMLElement}
+ * - `.v`: {@link Object}
  * 
  * ##### Methods:
+ * - <span color=00ffff>{@link ve.NodeEditor._connect|_connect}</span>(arg0_node:{@link ve.NodeEditorDatatype}, arg1_node:{@link ve.NodeEditorDatatype}, arg2_index:{@link number}, arg3_options:{@link Object})
+ * - <span color=00ffff>{@link ve.NodeEditor._disconnect|_disconnect}</span>(arg0_node:{@link ve.NodeEditorDatatype}, arg1_node:{@link ve.NodeEditorDatatype}, arg2_index:{@link number})
+ * - <span color=00ffff>{@link ve.NodeEditor._select|_select}</span>(arg0_node:{@link ve.NodeEditorDatatype}, arg1_index:{@link number})
+ * 
+ * - <span color=00ffff>{@link ve.NodeEditor.clear|clear}</span>()
+ * - <span color=00ffff>{@link ve.NodeEditor.drawToolbox|drawToolbox}</span>()
+ * - <span color=00ffff>{@link ve.NodeEditor.getCanvas|getCanvas}</span>() | {@link HTMLCanvasElement}
+ * - <span color=00ffff>{@link ve.NodeEditor.getDAGSequence|getDAGSequence}</span>() | {@link Array}<{@link Array}<{@link ve.NodeEditorDatatype}>>
+ * - <span color=00ffff>{@link ve.NodeEditor.getDefaultBaseLayer|getDefaultBaseLayer}</span>() | {@link Object}
+ * - <span color=00ffff>{@link ve.NodeEditor.loadSettings|loadSettings}</span>(arg0_settings:{@link Object})
+ * - async <span color=00ffff>{@link ve.NodeEditor.run|run}</span>(arg0_preview_mode:{@link boolean}) | {@link Object}
  * 
  * @augments ve.Component
  * @memberof ve.Component
@@ -132,6 +145,13 @@ ve.NodeEditor = class extends ve.Component {
 		ve.NodeEditor.instances.push(this);
 	}
 	
+	/**
+	 * Returns the current JSON object from the component.
+	 * 
+	 * @alias v
+	 * @memberof ve.Component.ve.NodeEditor
+	 * @type {{nodes: ve.NodeEditorDatatype[], settings: {}}}
+	 */
 	get v () {
 		//Return statement
 		return {
@@ -140,6 +160,15 @@ ve.NodeEditor = class extends ve.Component {
 		};
 	}
 	
+	/**
+	 * Sets the current value of the ve.NodeEditor from available JSON.
+	 * - Accessor of: {@link ve.NodeEditor}
+	 * 
+	 * @alias v
+	 * @memberof ve.Component.ve.NodeEditor
+	 * 
+	 * @param {{nodes: ve.NodeEditorDatatype[], settings: {}}} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let data = (typeof arg0_value === "string") ? JSON.parse(arg0_value) : arg0_value;
@@ -203,6 +232,21 @@ ve.NodeEditor = class extends ve.Component {
 		ve.NodeEditorDatatype.draw();
 	}
 	
+	/**
+	 * Draws a connection between two nodes as a user interaction.
+	 * - Method of: {@link ve.NodeEditor}
+	 * 
+	 * @alias _connect
+	 * @memberof ve.Component.ve.NodeEditor
+	 * 
+	 * @param {ve.NodeEditorDatatype} arg0_node
+	 * @param {ve.NodeEditorDatatype} arg1_node
+	 * @param {number} arg2_index
+	 * @param {Object} [arg3_options]
+	 *  @param {boolean} [arg3_options.toggle_connection=false]
+	 *  
+	 * @private
+	 */
 	_connect (arg0_node, arg1_node, arg2_index, arg3_options) {
 		//Convert from parameters
 		let node = arg0_node;
@@ -247,7 +291,20 @@ ve.NodeEditor = class extends ve.Component {
 			ot_node.dynamic_values[index - 1] = true;
 		ve.NodeEditorDatatype.draw();
 	}
-
+	
+	/**
+	 * Disconnects two nodes as a user interaction or from `arg3_options.toggle_connection` in the <span color=00ffff>{@link ve.NodeEditor._connect|_connect}</span>() function.
+	 * - Method of: {@link ve.NodeEditor}
+	 * 
+	 * @alias _disconnect
+	 * @memberof ve.Component.ve.NodeEditor
+	 * 
+	 * @param {ve.NodeEditorDatatype} arg0_node
+	 * @param {ve.NodeEditorDatatype} arg1_node
+	 * @param {number} arg2_index
+	 * 
+	 * @private
+	 */
 	_disconnect (arg0_node, arg1_node, arg2_index) {
 		//Convert from parameters
 		let node = arg0_node;
@@ -265,6 +322,18 @@ ve.NodeEditor = class extends ve.Component {
 		}
 	}
 	
+	/**
+	 * Selects a specific node index as a suer interaction.
+	 * - Method of: {@link ve.NodeEditor}
+	 *
+	 * @alias _select
+	 * @memberof ve.Component.ve.NodeEditor
+	 * 
+	 * @param {ve.NodeEditorDatatype} arg0_node
+	 * @param {number} arg1_index - [0] refers to the function itself, and [n + 1] to any parameters thereafter.
+	 * 
+	 * @private
+	 */
 	_select (arg0_node, arg1_index) {
 		//Convert from parameters
 		let node = arg0_node;
@@ -307,6 +376,13 @@ ve.NodeEditor = class extends ve.Component {
 		ve.NodeEditorDatatype.draw();
 	}
 	
+	/**
+	 * Clears the current component.
+	 * - Method of: {@link ve.NodeEditor}
+	 *
+	 * @alias clear
+	 * @memberof ve.Component.ve.NodeEditor
+	 */
 	clear () {
 		// 1. Iterate backwards to safely call remove() on all nodes
 		// This cleans up the global static instances and Maptalks geometries
@@ -324,6 +400,13 @@ ve.NodeEditor = class extends ve.Component {
 		if (this.node_layer) this.node_layer.clear();
 	}
 	
+	/**
+	 * Opens the toolbox UI for the current node editor.
+	 * - Method of: {@link ve.NodeEditor}
+	 *
+	 * @alias drawToolbox
+	 * @memberof ve.Component.ve.NodeEditor
+	 */
 	drawToolbox () {
 		//Declare local instance 
 		let page_menu_obj = {};
@@ -393,6 +476,15 @@ ve.NodeEditor = class extends ve.Component {
 		});
 	}
 	
+	/**
+	 * Returns the canvas element for the current node editor.
+	 * - Method of: {@link ve.NodeEditor}
+	 *
+	 * @alias getCanvas
+	 * @memberof ve.Component.ve.NodeEditor
+	 * 
+	 * @returns {HTMLCanvasElement}
+	 */
 	getCanvas () {
 		//Declare local instance variables
 		if (!this._canvas)
@@ -402,6 +494,15 @@ ve.NodeEditor = class extends ve.Component {
 		return this._canvas;
 	};
 	
+	/**
+	 * Returns DAG sequence layers. Inner arrays are run-order agnostic, whilst the outer array must be executed in order. Returns 'undefined' if the current graph has circular dependencies (which should never happen).
+	 * - Method of: {@link ve.NodeEditor}
+	 *
+	 * @alias getDAGSequence
+	 * @memberof ve.Component.ve.NodeEditor
+	 * 
+	 * @returns {Array.<Array.<ve.NodeEditorDatatype>>|undefined}
+	 */
 	getDAGSequence () {
 		//Declare local instance variables
 		let adjacency = new Map(); //node.id -> Set<node.id>
@@ -472,6 +573,14 @@ ve.NodeEditor = class extends ve.Component {
 		return layers;
 	};
 	
+	/**
+	 * Returns the default base layer for initialisation purposes.
+	 *
+	 * @alias getDefaultBaseLayer
+	 * @memberof ve.Component.ve.NodeEditor
+	 * 
+	 * @returns {maptalks.TileLayer}
+	 */
 	getDefaultBaseLayer () {
 		//Declare local instance variables
 		let base_layer = new maptalks.TileLayer("base", {
@@ -566,6 +675,16 @@ ve.NodeEditor = class extends ve.Component {
 		
 	}
 	
+	/**
+	 * Runs the current DAG graph, either in preview mode which simply displays values, or in non-preview mode, which runs it for real.
+	 *
+	 * @alias run
+	 * @memberof ve.Component.ve.NodeEditor
+	 * 
+	 * @async
+	 * @param {boolean} [arg0_preview_mode=false]
+	 * @returns {Object}
+	 */
 	async run (arg0_preview_mode) {
 		//Convert from parameters
 		let preview_mode = arg0_preview_mode;
