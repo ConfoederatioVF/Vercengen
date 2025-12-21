@@ -758,6 +758,12 @@ ve.NodeEditor = class extends ve.Component {
 		for (let i = 0; i < dag_sequence.length; i++) {
 			let layer = dag_sequence[i];
 			
+			if (!preview_mode)
+				for (let x = 0; x < dag_sequence[i].length; x++) {
+					delete dag_sequence[i][x].ui.information.status;
+					dag_sequence[i][x].draw();
+				}
+			
 			await Promise.all(layer.map(async (local_node) => {
 				//Declare local instance variables
 				let args = resolve_arguments(local_node);
@@ -778,8 +784,16 @@ ve.NodeEditor = class extends ve.Component {
 						value = descriptor.value;
 					
 					//3. Execute side effects (Non-preview only)
-					if (!preview_mode && descriptor && typeof descriptor.run === "function")
+					if (!preview_mode && descriptor && typeof descriptor.run === "function") {
+						local_node.ui.information.status = "is_running";
+						local_node.draw();
 						await descriptor.run();
+						local_node.ui.information.status = "finished";
+						local_node.draw();
+					} else if (!preview_mode) {
+						local_node.ui.information.status = "finished";
+						local_node.draw();
+					}
 				} catch (e) {
 					console.error(`Node execution failed (${local_node.id})`, e);
 					value = undefined;

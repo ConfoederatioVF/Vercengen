@@ -219,12 +219,24 @@ ve.NodeEditorDatatype = class extends ve.Component {
 					{ symbol: marker_symbol }
 				);
 				if (this.ui.information.dag_layer !== undefined) {
+					let sequence_status_colour;
+					let sequence_status_colours = {
+						"other": "rgb(25, 25, 25)",
+						"is_running": "rgb(240, 240, 140)",
+						"finished": "rgb(44,108,53)"
+					};
+						if (this.ui.information.status) {
+							sequence_status_colour = sequence_status_colours[this.ui.information.status];
+						} else {
+							sequence_status_colour = sequence_status_colours.other;
+						}
+					
 					let primary_sequence_circle = new maptalks.Marker(
 						Geospatiale.translatePoint(coords, 2000, 0),
 						{
 							symbol: {
 								...marker_symbol,
-								textFill: `rgb(25, 25, 25)`,
+								textFill: sequence_status_colour,
 								textSize: { stops: [[12, 4], [14, 96]] }
 							}
 						}
