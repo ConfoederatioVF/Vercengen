@@ -17,7 +17,12 @@
  * ##### Methods:
  * - <span color=00ffff>{@link ve.Table.convertToArray|convertToArray}</span>() | {@link Array}<{@link Array}<{@link Array}<{@link any}>>>
  * - <span color=00ffff>{@link ve.Table.fromArray|fromArray}</span>(arg0_array:{@link Array}<{@link Array}<{@link Array}<{@link any}>>>, arg1_do_not_display=false:{@link boolean}) | {@link Object}
+ * - <span color=00ffff>{@link ve.Table.getCellData|getCellData}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_x:{@link number}, arg2_y:{@link number}) | {f:{@link string}, v:{@link number}}
+ * - <span color=00ffff>{@link ve.Table.getSelectedRange|getSelectedRange}</span>() | [[{@link number}, {@link number}], [{@link number}, {@link number}]]
+ * - <span color=00ffff>{@link ve.Table.getSheetNames|getSheetNames}</span>() | {@link Array}<{@link string}>
+ * - <span color=00ffff>{@link ve.Table.setCellData|setCellData}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_x:{@link number}, arg2_y:{@link number}, arg3_value:{f:{@link string}, v:{@link number}})
  * - <span color=00ffff>{@link ve.Table.setDarkMode|setDarkMode}</span>(arg0_value=false:{@link boolean})
+ * - <span color=00ffff>{@link ve.Table.setSelectedRange|setSelectedRange}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_start_coords:[{@link number}, {@link number}], arg2_end_coords:[{@link number}, {@link number}])
  * 
  * ##### Static Fields:
  * - `.instances`: {@link Array}<this:{@link ve.Table}>
@@ -189,12 +194,67 @@ ve.Table = class extends ve.Component {
 	}
 	
 	/**
-	 * Sets the theme of the current Table component, either to dark mode or light mode.
-	 * - Method of: {@link ve.Table}
-	 * 
-	 * @alias setDarkMode
+	 * Returns cell data as an Object. Coords are 1-indexed.
+	 *
+	 * @alias getCellData
 	 * @memberof ve.Component.ve.Table
 	 * 
+	 * @param {number|string} arg0_sheet_index
+	 * @param {number} arg1_x
+	 * @param {number} arg2_y
+	 * 
+	 * @returns {{f: string, v: number}}
+	 */
+	getCellData (arg0_sheet_index, arg1_x, arg2_y) {
+		return this.iframe_el.contentWindow.getCellData(arg0_sheet_index, arg1_x, arg2_y);
+	}
+	
+	/**
+	 * Returns the currently selected range as a 2D array of [[start_x, start_y], [end_x, end_y]]. Coords are 1-indexed.
+	 *
+	 * @alias getSelectedRange
+	 * @memberof ve.Component.ve.Table
+	 * 
+	 * @returns {Array.<number[]>}
+	 */
+	getSelectedRange () {
+		return this.iframe_el.contentWindow.getSelectedRange();
+	}
+	
+	/**
+	 * Returns all current sheet names.
+	 *
+	 * @alias getSheetNames
+	 * @memberof ve.Component.ve.Table
+	 * 
+	 * @returns {string[]}
+	 */
+	getSheetNames () {
+		return this.iframe_el.contentWindow.getSheetNames();
+	}
+	
+	/**
+	 * Sets cell data at a target coordinate to a given Object value. Coords are 1-indexed.
+	 *
+	 * @alias setCellData
+	 * @memberof ve.Component.ve.Table
+	 * 
+	 * @param {number|string} arg0_sheet_index
+	 * @param {number} arg1_x
+	 * @param {number} arg2_y
+	 * @param {{f: string, v: number}} arg3_value
+	 */
+	setCellData (arg0_sheet_index, arg1_x, arg2_y, arg3_value) {
+		return this.iframe_el.contentWindow.setCellData(arg0_sheet_index, arg1_x, arg2_y, arg3_value);
+	}
+	
+	/**
+	 * Sets the theme of the current Table component, either to dark mode or light mode.
+	 * - Method of: {@link ve.Table}
+	 *
+	 * @alias setDarkMode
+	 * @memberof ve.Component.ve.Table
+	 *
 	 * @param {boolean} [arg0_value=false]
 	 */
 	setDarkMode (arg0_value) {
@@ -202,6 +262,20 @@ ve.Table = class extends ve.Component {
 		let value = arg0_value;
 		
 		this.iframe_el.contentWindow.toggleDarkMode(value);
+	}
+	
+	/**
+	 * Sets the currently selected range to a target coordinate range. Coords are 1-indexed.
+	 * 
+	 * @alias setSelectedRange
+	 * @memberof ve.Component.ve.Table
+	 * 
+	 * @param {number|string} arg0_sheet_index
+	 * @param {number[]} arg1_start_coords
+	 * @param {number[]} arg2_end_coords
+	 */
+	setSelectedRange (arg0_sheet_index, arg1_start_coords, arg2_end_coords) {
+		return this.iframe_el.contentWindow.setSelectedRange(arg0_sheet_index, arg1_start_coords, arg2_end_coords);
 	}
 	
 	/**
