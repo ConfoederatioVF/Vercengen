@@ -137,5 +137,9 @@ setTimeout(() => {
 				}]
 			}
 		}
-	}), { can_rename: false, name: "Node Editor" });
+	}), { 
+		can_rename: false, 
+		name: "Node Editor",
+		width: "50vw"
+	});
 }, 500);

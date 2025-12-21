@@ -2,4 +2,12 @@ function testNumber(int){
   return int
 }
 
-testNumber(5)
+function multiplyNumbers(int_a,int_b){
+  return (int_a * int_b)
+}
+
+function divideNumbers(int_a,int_b){
+  return (int_a / int_b)
+}
+
+multiplyNumbers(5, divideNumbers(3, 9))

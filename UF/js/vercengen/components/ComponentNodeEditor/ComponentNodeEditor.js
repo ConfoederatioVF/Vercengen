@@ -107,10 +107,12 @@ ve.NodeEditor = class extends ve.Component {
 			this.map_el.id = "map-container";
 			this.element.appendChild(this.map_el);
 			
-			let debug_button = veButton(() => {
-				console.log(this.getDAGSequence());
-			}, { name: "Debug" });
-			debug_button.bind(this.element);
+			if (ve.registry.debug_mode) {
+				let debug_button = veButton(() => {
+					console.log(this.getDAGSequence());
+				}, { name: "Debug" });
+				debug_button.bind(this.element);
+			}
 			let run_button = veButton(() => {
 				this.run().then(() => ve.NodeEditorDatatype.draw());
 			}, { name: "Run" });
@@ -124,6 +126,7 @@ ve.NodeEditor = class extends ve.Component {
 			this.node_layer = new maptalks.VectorLayer("nodes", [], { hitDetect: true });
 		this.node_layer.addTo(this.map);
 		this.options = options;
+		
 		this.main = {
 			nodes: [],
 			settings: { //[WIP] - Implement settings
@@ -135,7 +138,7 @@ ve.NodeEditor = class extends ve.Component {
 				selected_nodes: []
 			},
 			variables: {} //Used to store variables during a single run-cycle
-		}; 
+		};
 		this.value = value;
 		
 		//Set map bindings
@@ -418,7 +421,7 @@ ve.NodeEditor = class extends ve.Component {
 	 * @memberof ve.Component.ve.NodeEditor
 	 */
 	drawToolbox () {
-		//Declare local instance 
+		//Declare local instance variables
 		let page_menu_obj = {};
 		let unique_categories = [];
 		
@@ -719,8 +722,8 @@ ve.NodeEditor = class extends ve.Component {
 					for (let x = 0; x < ve.NodeEditorDatatype.instances.length; x++) {
 						let source = ve.NodeEditorDatatype.instances[x];
 						
-						for (let c = 0; c < source.connections.length; c++) {
-							let target_data = source.connections[c];
+						for (let y = 0; y < source.connections.length; y++) {
+							let target_data = source.connections[y];
 							let target_node = target_data[0];
 							let target_index = target_data[1];
 							

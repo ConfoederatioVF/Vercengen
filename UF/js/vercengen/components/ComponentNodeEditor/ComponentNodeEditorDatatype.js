@@ -444,12 +444,16 @@ ve.NodeEditorDatatype = class extends ve.Component {
 					
 					if (node_editor_registry.script_window) node_editor_registry.script_window.close();
 					node_editor_registry.script_window = new ve.Window(new ve.ScriptManager(local_script_value, {
-						settings: settings_obj
+						folder_path: autosave_folder,
+						settings: settings_obj,
+						style: {
+							height: "50rem"
+						}
 					}), {
 						name: "ScriptManager",
 						
 						can_rename: false,
-						height: "40rem",
+						height: "60rem",
 						width: "50rem",
 						
 						onuserchange: (v) => {

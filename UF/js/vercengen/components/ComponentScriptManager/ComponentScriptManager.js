@@ -480,8 +480,17 @@ ve.ScriptManager = class extends ve.Component {
 			let svg_el = this.scene_blockly_el.querySelector("svg");
 			let svg_rect = svg_el.getBoundingClientRect();
 			
-			this.scene_codemirror_el.style.height = `${svg_rect.height}px`;
-			this.leftbar_file_explorer.element.style.height = `${svg_rect.height}px`;
+			if (!this.options.style.height) {
+				this.scene_codemirror_el.style.height = `${svg_rect.height}px`;
+				this.leftbar_file_explorer.element.style.height = `${svg_rect.height}px`;
+			} else {
+				setTimeout(() => {
+					this.scene_blockly.max_height = this.options.style.height;
+					svg_el.style.maxHeight = this.options.style.height;
+				}, 100)
+				this.scene_codemirror_el.style.height = this.options.style.height;
+				this.leftbar_file_explorer.element.style.height = this.options.style.height;
+			}
 			
 			clearInterval(this.scriptmanager_initialisation_loop);
 		}, 100);
