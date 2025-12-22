@@ -25,6 +25,8 @@
  *       - `.coords`: {@link Array}<{@link Array}<{@link string}, {@link number}, {@link number}>, {@link Array}<{@link string}, {@link number}, {@link number}>> - The coords/range of the series using the Spreadsheet Name for the [0] element.
  *       - `.symbol`: {@link Object} - Echarts bindings per series.
  *   - `.table_value`: {@link Object} - The ve.Table value that can be used to restore both formulas and values.
+ * - `arg1_options`: {@link Object}
+ *   - `.dark_mode=true`: {@link boolean}
  *
  * @type {ve.DatavisSuite}
  */
@@ -37,6 +39,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
+		options.dark_mode = (options.dark_mode !== undefined) ? options.dark_mode : true;
 			
 		//Declare local instance variables
 		let topbar_button_style = { marginLeft: "var(--cell-padding)" };
@@ -48,6 +51,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			this.element.style.flexDirection = "column";
 			this.element.style.height = "100%";
 			HTML.setAttributesObject(this.element, options.attributes);
+		this.options = options;
 		
 		this.data_scripts = (value.data_scripts) ? value.data_scripts : {};
 		this.graphs = (value.graphs) ? value.graphs : {};
@@ -65,7 +69,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					style: topbar_button_style })
 			}),
 			table: new ve.Table(this.table_value, {
-				dark_mode: true,
+				dark_mode: this.options.dark_mode,
 				style: {
 					flex: 1,
 					height: "auto",
@@ -73,7 +77,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				}
 			})
 		};
-		this.draw();
+		this.redraw();
 	}
 	
 	get v () {
@@ -91,9 +95,67 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		let value = (arg0_value) ? arg0_value : {};
 	}
 	
-	draw () {
+	drawEditSeriesHierarchy () { //[WIP] - Finish function body
+		//Declare local instance variables
+		let actions_bar = new ve.HierarchyDatatype({
+			create_new_series: new ve.Button(() => {
+				
+			}, { name: "<icon>forms_add_on</icon>", tooltip: "Create New Series" })
+		});
+		let hierarchy_obj = {};
+		
+		//Populate hierarchy_obj based off current .series
+		
+		//Declare new_hierarchy and push it to this.series_window.hierarchy if possible
+		let new_hierarchy = new ve.Hierarchy({
+			actions_bar: actions_bar,
+			...hierarchy_obj
+		});
+		
+		if (this.series_window) {
+			this.series_window.hierarchy.element.innerHTML = "";
+			this.series_window.hierarchy.element.appendChild(new_hierarchy);
+		}
+		
+		//Return statement
+		return new_hierarchy;
+	}
+	
+	openEditGraph () {
+		
+	}
+	
+	openEditSeries () { //[WIP] - Finish function body
+		//Close this.series_window if already open
+		if (this.series_window) this.series_window.close();
+		
+		//Declare local instance variable
+		let actions_bar = new ve.HierarchyDatatype({
+			create_new_series: new ve.Button(() => {
+				
+			}, { name: "<icon>forms_add_on</icon>", tooltip: "Create New Series" })
+		});
+		let hierarchy_obj = {};
+		
+		//Populate hierarchy_obj based off current .series
+		
+		//Open this.series_window
+		this.series_window = new ve.Window({ //Use ve.Hierarchy for list creation
+			hierarchy: new ve.HTML("Loading ..", { style: { padding: 0 } })
+		}, { 
+			name: "Series", 
+			can_rename: false 
+		});
+		this.drawEditSeriesHierarchy();
+	}
+	
+	openScriptManager () {
+		
+	}
+	
+	redraw () {
 		//Reset HTML, then rebind all this.components_obj
-		this.element.innerHTML = "";
+		//this.element.innerHTML = "";
 		Object.iterate(this.components_obj, (local_key, local_value) => local_value.bind(this.element));
 	}
 };
