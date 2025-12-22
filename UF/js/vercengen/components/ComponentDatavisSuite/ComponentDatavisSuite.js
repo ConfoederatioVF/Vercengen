@@ -28,14 +28,45 @@
  *
  * @type {ve.DatavisSuite}
  */
-ve.DatavisSuite = class extends ve.Component {
+ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : {};
 		let options = (arg1_options) ? arg1_options : {};
 			super(options);
 			
+		//Initialise options
+		options.attributes = (options.attributes) ? options.attributes : {};
+			
 		//Declare local instance variables
+		this.element = document.createElement("div");
+			this.element.setAttribute("component", "ve-datavis-suite");
+			this.element.instance = this;
+			HTML.setAttributesObject(this.element, options.attributes);
 		
+		this.data_scripts = (value.data_scripts) ? value.data_scripts : {};
+		this.graphs = (value.graphs) ? value.graphs : {};
+		this.series = (value.series) ? value.series : {};
+		this.table_value = (value.table_value) ? value.table_value : {};
+		
+		//Populate this.components_obj here so that it can be changed piecemeal by set v()
+		this.components_obj = {
+			table: new ve.Table(this.table_value)
+		};
+	}
+	
+	get v () {
+		//Return statement
+		return {
+			data_scripts: this.data_scripts,
+			graphs: this.graphs,
+			series: this.series,
+			table_value: this.table_value
+		};
+	}
+	
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = (arg0_value) ? arg0_value : {};
 	}
 };
