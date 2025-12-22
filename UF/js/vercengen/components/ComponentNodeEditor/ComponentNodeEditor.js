@@ -37,6 +37,7 @@
  *       - `.alluvial_scaling=1`: {@link number} - How much to scale alluvial widths by when displayed compared to their actual number.
  *   	   - `.id=Class.generateRandomID(ve.NodeEditorDatatype)`: {@link string} - The ID to assign to the present datatype at a class level.
  *       - `.show_alluvial=false`: {@link boolean}
+ *   - `.exclude_all=false`: {@link boolean} - Whether to exclude the default 'All' category at the start.
  * 
  * ##### Instance:
  * - `.id`: {@link string}
@@ -432,11 +433,19 @@ ve.NodeEditor = class extends ve.Component {
 		});
 		if (unique_categories.length === 0)
 			unique_categories = ["Expressions", "Filters"];
+		if (!this.options.exclude_all)
+			unique_categories.unshift("All");
 		
 		//Populate page_menu_obj
 		for (let i = 0; i < unique_categories.length; i++) {
+			let filter_names_obj = {};
 			let local_search_select_obj = {};
 			
+			//Iterate over all unique_categories; populate filter_names_obj
+			for (let x = 0; x < unique_categories.length; x++)
+				filter_names_obj[`data-${unique_categories[x].toLowerCase().split(" ").join("_")}`] = unique_categories[x];
+			
+			//Iterate over all this.options.node_types
 			Object.iterate(this.options.node_types, (local_key, local_value) => {
 				let local_category_options = this.options.category_types[local_value.category];
 					local_category_options = (local_category_options) ? local_category_options : {};
@@ -449,7 +458,7 @@ ve.NodeEditor = class extends ve.Component {
 					local_category_options.text_colour : [0, 0, 0];
 					local_category_text_colour = Colour.convertRGBAToHex(local_category_text_colour);
 				
-				if (local_value.category === unique_categories[i])
+				if (local_value.category === unique_categories[i] || unique_categories[i] === "All")
 					local_search_select_obj[local_key] = new ve.Button(() => {
 						this.main.nodes.push(new ve.NodeEditorDatatype({
 							coords: this._mouse_coords,
@@ -461,6 +470,9 @@ ve.NodeEditor = class extends ve.Component {
 							...local_value.options
 						}));
 					}, { 
+						attributes: {
+							[`data-${local_value.category.split(" ").join("_")}`]: "true"
+						},
 						name: (local_value.name) ? local_value.name : local_key,
 						style: {
 							"button": { 
@@ -474,7 +486,10 @@ ve.NodeEditor = class extends ve.Component {
 			page_menu_obj[unique_categories[i]] = {
 				name: unique_categories[i],
 				components_obj: {
-					search_select: new ve.SearchSelect(local_search_select_obj, { hide_filter: true })
+					search_select: new ve.SearchSelect(local_search_select_obj, { 
+						hide_filter: (unique_categories[i] !== "All"),
+						filter_names: filter_names_obj
+					})
 				}
 			};
 		}
