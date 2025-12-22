@@ -39,9 +39,14 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		options.attributes = (options.attributes) ? options.attributes : {};
 			
 		//Declare local instance variables
+		let topbar_button_style = { marginLeft: "var(--cell-padding)" };
+		
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-datavis-suite");
 			this.element.instance = this;
+			this.element.style.display = "flex";
+			this.element.style.flexDirection = "column";
+			this.element.style.height = "100%";
 			HTML.setAttributesObject(this.element, options.attributes);
 		
 		this.data_scripts = (value.data_scripts) ? value.data_scripts : {};
@@ -51,7 +56,22 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		
 		//Populate this.components_obj here so that it can be changed piecemeal by set v()
 		this.components_obj = {
-			table: new ve.Table(this.table_value)
+			topbar_interface: new ve.RawInterface({
+				edit_graph_button: new ve.Button(() => {}, { 
+					name: "Graph", style: topbar_button_style }),
+				edit_series_button: new ve.Button(() => {}, { name: "Series",
+					style: topbar_button_style }),
+				script_button: new ve.Button(() => {}, { name: "ScriptManager", 
+					style: topbar_button_style })
+			}),
+			table: new ve.Table(this.table_value, {
+				dark_mode: true,
+				style: {
+					flex: 1,
+					height: "auto",
+					padding: 0 
+				}
+			})
 		};
 		this.draw();
 	}
