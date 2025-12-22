@@ -130,6 +130,29 @@
 	};
 	
 	/**
+	 * Formats the type name of a given value based off its actual JS type.
+	 * @param {any} arg0_value
+	 * 
+	 * @returns {string}
+	 */
+	String.formatTypeName = function (arg0_value) {
+		//Convert from parameters
+		let value = (arg0_value) ? arg0_value : undefined;
+		
+		//Return statement; internal guard clauses
+		if (value === null) return "null";
+		if (Array.isArray(value)) return `Array(${value.length})`;
+		if (typeof value === "function") {
+			let function_string = value.toString();
+			if (function_string.startsWith("class")) return "Class";
+			if (function_string.startsWith("[native code]")) return "Native Function";
+			return "Function";
+		}
+		if (value.constructor && value.constructor.name) return value.constructor.name;
+		return typeof value;
+	};
+	
+	/**
 	 * Ordinalises a given number and returns it as a string.
 	 * @param {number} arg0_number
 	 * 
