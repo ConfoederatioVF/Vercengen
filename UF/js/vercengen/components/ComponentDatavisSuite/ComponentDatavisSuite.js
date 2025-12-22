@@ -53,6 +53,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		this.components_obj = {
 			table: new ve.Table(this.table_value)
 		};
+		this.draw();
 	}
 	
 	get v () {
@@ -68,5 +69,11 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : {};
+	}
+	
+	draw () {
+		//Reset HTML, then rebind all this.components_obj
+		this.element.innerHTML = "";
+		Object.iterate(this.components_obj, (local_key, local_value) => local_value.bind(this.element));
 	}
 };
