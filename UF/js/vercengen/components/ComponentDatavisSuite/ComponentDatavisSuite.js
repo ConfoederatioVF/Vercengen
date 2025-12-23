@@ -24,6 +24,7 @@
  *     - `<series_key>`: {@link Object}
  *       - `.coords`: {@link Array}<{@link Array}<{@link string}, {@link number}, {@link number}>, {@link Array}<{@link string}, {@link number}, {@link number}>> - The coords/range of the series using the Spreadsheet Name for the [0] element.
  *       - `.name`: {@link string} - The name of the series, data column header value by default.
+ *       - `.pivot="column"`: {@link string} - Either 'column'/'row'
  *       - `.symbol`: {@link Object} - Echarts bindings per series.
  *   - `.table_value`: {@link Object} - The ve.Table value that can be used to restore both formulas and values.
  * - `arg1_options`: {@link Object}
@@ -64,7 +65,9 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			topbar_interface: new ve.RawInterface({
 				edit_graph_button: new ve.Button(() => {}, { 
 					name: "Graph", style: topbar_button_style }),
-				edit_series_button: new ve.Button(() => {}, { name: "Series",
+				edit_series_button: new ve.Button(() => {
+					this.openEditSeries();
+				}, { name: "Series",
 					style: topbar_button_style }),
 				script_button: new ve.Button(() => {}, { name: "ScriptManager", 
 					style: topbar_button_style })
@@ -96,29 +99,58 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		let value = (arg0_value) ? arg0_value : {};
 	}
 	
-	drawEditSeriesHierarchy () { //[WIP] - Finish function body
+	drawEditSeriesHierarchy () {
 		//Declare local instance variables
 		let actions_bar = new ve.HierarchyDatatype({
 			create_new_series: new ve.Button(() => {
+				let new_series_id = Object.generateRandomID(this.series);
 				
-			}, { name: "<icon>forms_add_on</icon>", tooltip: "Create New Series" })
+				//Create new series and redraw hierarchy
+				this.series[new_series_id] = {
+					pivot: "column",
+					symbol: {}
+				};
+				this.drawEditSeriesHierarchy();
+			}, { name: "<icon>add</icon> New Series", tooltip: "Create New Series" })
 		});
 		let hierarchy_obj = {};
 		
 		//Populate hierarchy_obj based off current .series
 		Object.iterate(this.series, (local_key, local_value) => { //[WIP] - Finish population function
-			let series_name = "New Series";
-				if (!local_value.name) {
-					
-				} else {
-					series_name = local_value.name;
-				}
+			let series_name = this.getSeriesName(local_value);
 			
 			hierarchy_obj[local_key] = new ve.HierarchyDatatype({
-				
+				delete_button: new ve.Button(() => {
+					new ve.Confirm(`Are you sure you wish to delete ${series_name}?`, {
+						special_function: () => {
+							delete this.series[local_key];
+							this.drawEditSeriesHierarchy();
+						}
+					});
+				}, {
+					name: "<icon>delete</icon>",
+					tooltip: "Delete Series",
+					style: {
+						marginLeft: "auto",
+						order: 100
+					}
+				}),
+				context_menu_button: new ve.Button(() => {
+					
+				}, { 
+					name: "<icon>more_vert</icon>",
+					tooltip: "Modify Series",
+					style: {
+						order: 101
+					}
+				})
 			}, {
 				name: series_name,
-				
+				name_options: {
+					onuserchange: (v) => {
+						local_value.name = v;
+					}
+				}
 			});
 		});
 		
@@ -130,18 +162,36 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		
 		if (this.series_window) {
 			this.series_window.hierarchy.element.innerHTML = "";
-			this.series_window.hierarchy.element.appendChild(new_hierarchy);
+			this.series_window.hierarchy.element.appendChild(new_hierarchy.element);
 		}
 		
 		//Return statement
 		return new_hierarchy;
 	}
 	
+	getSeriesName (arg0_series_obj) {
+		//Convert from parameters
+		let series_obj = (arg0_series_obj) ? arg0_series_obj : {};
+		
+		//Declare local instance variables
+		let series_name = "New Series";
+			if (!series_obj.name) {
+				if (series_obj.coords)
+					//The series_name is located in the top left of the current range
+					series_name = this.components_obj.table.getCellData(...series_obj.coords[0]);
+			} else {
+				series_name = series_obj.name;
+			}
+			
+		//Return statement
+		return series_name;
+	}
+	
 	openEditGraph () {
 		
 	}
 	
-	openEditSeries () { //[WIP] - Finish function body
+	openEditSeries () {
 		//Close this.series_window if already open
 		if (this.series_window) this.series_window.close();
 		
@@ -158,7 +208,8 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			hierarchy: new ve.HTML("Loading ..", { style: { padding: 0 } })
 		}, { 
 			name: "Series", 
-			can_rename: false 
+			can_rename: false,
+			width: "30rem"
 		});
 		this.drawEditSeriesHierarchy();
 	}

@@ -13,5 +13,11 @@ setTimeout(() => {
 		number: veNumber([6, 8, 0]),
 		text: veText(["hello", "world"])
 	});*/
-	global.datavis_suite = veWindow(new ve.DatavisSuite(), { name: "DatavisSuite", can_rename: false });
+	global.datavis_suite = veWindow(new ve.DatavisSuite(), { 
+		name: "DatavisSuite", 
+		can_rename: false,
+		
+		height: "50vh",
+		width: "50vw",
+	});
 }, 500);
