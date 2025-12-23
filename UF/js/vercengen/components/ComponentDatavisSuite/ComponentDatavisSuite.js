@@ -138,6 +138,9 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		let hierarchy_obj = {};
 		
 		//Populate hierarchy_obj based off current .series
+		Object.iterate(this.series, (local_key, local_value) => { //[WIP] - Finish population function
+			
+		});
 		
 		//Open this.series_window
 		this.series_window = new ve.Window({ //Use ve.Hierarchy for list creation
