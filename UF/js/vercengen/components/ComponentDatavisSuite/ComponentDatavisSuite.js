@@ -23,6 +23,7 @@
  *   - `.series`: {@link Object}
  *     - `<series_key>`: {@link Object}
  *       - `.coords`: {@link Array}<{@link Array}<{@link string}, {@link number}, {@link number}>, {@link Array}<{@link string}, {@link number}, {@link number}>> - The coords/range of the series using the Spreadsheet Name for the [0] element.
+ *       - `.name`: {@link string} - The name of the series, data column header value by default.
  *       - `.symbol`: {@link Object} - Echarts bindings per series.
  *   - `.table_value`: {@link Object} - The ve.Table value that can be used to restore both formulas and values.
  * - `arg1_options`: {@link Object}
@@ -105,6 +106,21 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		let hierarchy_obj = {};
 		
 		//Populate hierarchy_obj based off current .series
+		Object.iterate(this.series, (local_key, local_value) => { //[WIP] - Finish population function
+			let series_name = "New Series";
+				if (!local_value.name) {
+					
+				} else {
+					series_name = local_value.name;
+				}
+			
+			hierarchy_obj[local_key] = new ve.HierarchyDatatype({
+				
+			}, {
+				name: series_name,
+				
+			});
+		});
 		
 		//Declare new_hierarchy and push it to this.series_window.hierarchy if possible
 		let new_hierarchy = new ve.Hierarchy({
@@ -136,11 +152,6 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			}, { name: "<icon>forms_add_on</icon>", tooltip: "Create New Series" })
 		});
 		let hierarchy_obj = {};
-		
-		//Populate hierarchy_obj based off current .series
-		Object.iterate(this.series, (local_key, local_value) => { //[WIP] - Finish population function
-			
-		});
 		
 		//Open this.series_window
 		this.series_window = new ve.Window({ //Use ve.Hierarchy for list creation

@@ -10,6 +10,7 @@
 	
 	/**
 	 * Formats an array into a string.
+	 * @memberof String
 	 * 
 	 * @param {Array} arg0_array
 	 * 
@@ -39,6 +40,8 @@
 	
 	/**
 	 * Formats a Date object into a default string.
+	 * @memberof String
+	 * 
 	 * @param {Object} arg0_date
 	 * 
 	 * @returns {string}
@@ -59,6 +62,7 @@
 	
 	/**
 	 * Formats a date length into a string given a number of seconds.
+	 * @memberof String
 	 * 
 	 * @param {number} arg0_seconds
 	 * 
@@ -82,6 +86,7 @@
 	
 	/**
 	 * Formats an object as a given string.
+	 * @memberof String
 	 * 
 	 * @param {Object} arg0_object
 	 * 
@@ -112,6 +117,8 @@
 	
 	/**
 	 * Formats a number based off of the selected locale, rounding it to the specified number of places.
+	 * @memberof String
+	 * 
 	 * @param {number} arg0_number
 	 * @param {number} [arg1_places=0]
 	 * 
@@ -131,6 +138,8 @@
 	
 	/**
 	 * Formats the type name of a given value based off its actual JS type.
+	 * @memberof String
+	 * 
 	 * @param {any} arg0_value
 	 * 
 	 * @returns {string}
@@ -153,7 +162,55 @@
 	};
 	
 	/**
+	 * Returns spreadsheet formatted coords (i.e. 'A1', 'ZZ15') given a numeric coords pair (1-indexed).
+	 * @memberof String
+	 * 
+	 * @param {number} arg0_x
+	 * @param {number} arg1_y
+	 * 
+	 * @returns {string}
+	 */
+	String.getSpreadsheetCell = function (arg0_x, arg1_y) {
+		//Convert from parameters
+		let x_coord = Math.returnSafeNumber(arg0_x);
+		let y_coord = Math.returnSafeNumber(arg1_y);
+		
+		//Declare local instance variables
+		let column = String.getSpreadsheetColumn(x_coord);
+		
+		//Return statement
+		return `${column}${y_coord}`;
+	};
+	
+	/**
+	 * Returns the spreadsheet column (i.e. 'A', 'ZZ') given an X coordinate number.
+	 * @memberof String
+	 * 
+	 * @param {number} arg0_x
+	 * 
+	 * @returns {string}
+	 */
+	String.getSpreadsheetColumn = function (arg0_x) {
+		//Convert from parameters
+		let x_coord = Math.returnSafeNumber(arg0_x);
+		
+		//Declare local instance variables
+		let column = "";
+		
+		while (x_coord > 0) {
+			x_coord--; //Spreadsheet is 1-based
+			column = String.fromCharCode(65 + (x_coord % 26)) + column;
+			x_coord = Math.floor(x_coord/26);
+		}
+		
+		//Return statement
+		return column;
+	};
+	
+	/**
 	 * Ordinalises a given number and returns it as a string.
+	 * @memberof String
+	 * 
 	 * @param {number} arg0_number
 	 * 
 	 * @returns {string}
@@ -179,6 +236,7 @@
 	
 	/**
 	 * Checks whether a given string is loosely a valid URL.
+	 * @memberof String
 	 * 
 	 * @returns {boolean}
 	 */
