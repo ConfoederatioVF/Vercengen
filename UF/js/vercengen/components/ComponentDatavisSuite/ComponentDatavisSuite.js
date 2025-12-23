@@ -136,7 +136,34 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					}
 				}),
 				context_menu_button: new ve.Button(() => {
+					if (this.edit_series_window) this.edit_series_window.close();
 					
+					this.edit_series_window = new ve.Window({
+						range_information: new ve.HTML(() => {
+							let all_sheet_names = this.components_obj.table.getSheetNames();
+							let series_range_string = "None"; //series_range_string from local_value.coords
+							let series_sheet_name = "None";
+							
+							if (local_value.coords) {
+								series_sheet_name = all_sheet_names[local_value.coords[0][0]];
+								series_range_string = `${String.getSpreadsheetCell(local_value.coords[0][1], local_value.coords[0][2])}:${String.getSpreadsheetCell(local_value.coords[1][1], local_value.coords[1][2])}`;
+							}
+							
+							//Return statement
+							return (local_value.coords) ? `${series_sheet_name} ${series_range_string}` : "None"
+						}),
+						set_series_range: new ve.Button(() => {
+							try { 
+								local_value.coords = this.components_obj.table.getSelectedRange();
+								console.log(local_value);
+								veToast(`New series range set.`);
+							} catch (e) { console.error(e); }
+						}, { name: "Set Series Range" })
+					}, {
+						name: `Edit ${series_name}`,
+						can_rename: false,
+						width: "20rem"
+					});
 				}, { 
 					name: "<icon>more_vert</icon>",
 					tooltip: "Modify Series",

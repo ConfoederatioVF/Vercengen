@@ -172,11 +172,24 @@
 			selected_range = selected_range._range;
 			
 			return [
-				[selected_range.startColumn + 1, selected_range.startRow + 1],
-				[selected_range.endColumn + 1, selected_range.endRow + 1]
+				[getSelectedSheet(), selected_range.startColumn + 1, selected_range.startRow + 1],
+				[getSelectedSheet(), selected_range.endColumn + 1, selected_range.endRow + 1]
 			];
     }
   }
+	
+	function getSelectedSheet () {
+		//Declare local instance variables
+    let active_sheet_obj = univerAPI.getActiveWorkbook().getActiveSheet()._worksheet._snapshot;
+		let all_sheets = univerAPI.getActiveWorkbook().getSheets();
+		
+		//Iterate over all_sheets and fetch by ID
+		for (let i = 0; i < all_sheets.length; i++)
+			if (all_sheets[i]._worksheet._sheetId === active_sheet_obj.id)
+				//Return statement
+				return i;
+		return -1;
+	}
 	
 	function getSheetFromName (arg0_sheet_name) {
 		//Convert from parameters

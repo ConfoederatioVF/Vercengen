@@ -209,6 +209,10 @@ ve.Table = class extends ve.Component {
 		return this.iframe_el.contentWindow.getCellData(arg0_sheet_index, arg1_x, arg2_y);
 	}
 	
+	getRangeName (arg0_coords) { //[WIP] - Finish function body
+		
+	}
+	
 	/**
 	 * Returns the currently selected range as a 2D array of [[start_x, start_y], [end_x, end_y]]. Coords are 1-indexed.
 	 *
@@ -217,7 +221,7 @@ ve.Table = class extends ve.Component {
 	 * 
 	 * @returns {Array.<number[]>}
 	 */
-	getSelectedRange () {
+	getSelectedRange () { //[WIP} - Needs to be changed to also include the sheet name
 		return this.iframe_el.contentWindow.getSelectedRange();
 	}
 	
