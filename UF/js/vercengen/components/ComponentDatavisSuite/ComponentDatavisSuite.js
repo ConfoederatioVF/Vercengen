@@ -118,6 +118,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		//Populate hierarchy_obj based off current .series
 		Object.iterate(this.series, (local_key, local_value) => { //[WIP] - Finish population function
 			let series_name = this.getSeriesName(local_value);
+			let table_obj =  this.components_obj.table;
 			
 			hierarchy_obj[local_key] = new ve.HierarchyDatatype({
 				delete_button: new ve.Button(() => {
@@ -139,30 +140,26 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					if (this.edit_series_window) this.edit_series_window.close();
 					
 					this.edit_series_window = new ve.Window({
-						range_information: new ve.HTML(() => {
-							let all_sheet_names = this.components_obj.table.getSheetNames();
-							let series_range_string = "None"; //series_range_string from local_value.coords
-							let series_sheet_name = "None";
-							
-							if (local_value.coords) {
-								series_sheet_name = all_sheet_names[local_value.coords[0][0]];
-								series_range_string = `${String.getSpreadsheetCell(local_value.coords[0][1], local_value.coords[0][2])}:${String.getSpreadsheetCell(local_value.coords[1][1], local_value.coords[1][2])}`;
-							}
-							
-							//Return statement
-							return (local_value.coords) ? `${series_sheet_name} ${series_range_string}` : "None"
-						}),
-						set_series_range: new ve.Button(() => {
-							try { 
-								local_value.coords = this.components_obj.table.getSelectedRange();
-								console.log(local_value);
-								veToast(`New series range set.`);
-							} catch (e) { console.error(e); }
-						}, { name: "Set Series Range" })
+						range_information: new ve.HTML(() => `Series Range: ${table_obj.getRangeName(local_value.coords)}`),
+						range_selection: new ve.RawInterface({
+							clear_range: new ve.Button(() => {
+								delete local_value.coords;
+								veToast(`Cleared selected series range.`);
+							}, { name: "Clear Range", limit: () => local_value.coords }),
+							select_series_range: new ve.Button(() => {
+								this.components_obj.table.setSelectedRange(local_value.coords[0], local_value.coords[1]);
+							}, { name: "Select Series Range", limit: () => local_value.coords }),
+							set_series_range: new ve.Button(() => {
+								try {
+									local_value.coords = this.components_obj.table.getSelectedRange();
+									veToast(`New series range set.`);
+								} catch (e) { console.error(e); }
+							}, { name: "Set Series Range" })
+						})
 					}, {
 						name: `Edit ${series_name}`,
 						can_rename: false,
-						width: "20rem"
+						width: "30rem"
 					});
 				}, { 
 					name: "<icon>more_vert</icon>",

@@ -209,8 +209,32 @@ ve.Table = class extends ve.Component {
 		return this.iframe_el.contentWindow.getCellData(arg0_sheet_index, arg1_x, arg2_y);
 	}
 	
-	getRangeName (arg0_coords) { //[WIP] - Finish function body
+	/**
+	 * Returns the range name given a set of coordinates.
+	 * 
+	 * @alias getRangeName
+	 * @memberof ve.Component.ve.Table
+	 * 
+	 * @param {Array.<number[]>} arg0_coords
+	 * 
+	 * @returns {string}
+	 */
+	getRangeName (arg0_coords) {
+		//Convert from parameters
+		let coords = arg0_coords;
 		
+		//Declare local instance variables
+		let all_sheet_names = this.getSheetNames();
+		let series_range_string = "None";
+		let series_sheet_name = "None";
+		
+		if (coords) {
+			series_sheet_name = all_sheet_names[coords[0][0]];
+			series_range_string = `${String.getSpreadsheetCell(coords[0][1], coords[0][2])}:${String.getSpreadsheetCell(coords[1][1], coords[1][2])}`;
+		}
+		
+		//Return statement
+		return (coords) ? `${series_sheet_name} ${series_range_string}` : "None";
 	}
 	
 	/**
@@ -223,6 +247,19 @@ ve.Table = class extends ve.Component {
 	 */
 	getSelectedRange () { //[WIP} - Needs to be changed to also include the sheet name
 		return this.iframe_el.contentWindow.getSelectedRange();
+	}
+	
+	/**
+	 * Returns the name of the currently selected range.
+	 * 
+	 * @alias getSelectedRangeName
+	 * @memberof ve.Component.ve.Table
+	 * 
+	 * @returns {string}
+	 */
+	getSelectedRangeName () {
+		//Return statement
+		return this.getRangeName(this.getSelectedRange());
 	}
 	
 	/**
@@ -278,8 +315,25 @@ ve.Table = class extends ve.Component {
 	 * @param {number[]} arg1_start_coords
 	 * @param {number[]} arg2_end_coords
 	 */
-	setSelectedRange (arg0_sheet_index, arg1_start_coords, arg2_end_coords) {
-		return this.iframe_el.contentWindow.setSelectedRange(arg0_sheet_index, arg1_start_coords, arg2_end_coords);
+	setSelectedRange (arg0_start_coords, arg1_end_coords) {
+		//Convert from parameters
+		let start_coords = arg0_start_coords;
+		let end_coords = arg1_end_coords;
+		
+		if (start_coords.length >= 3) {
+			this.iframe_el.contentWindow.setActiveSheet(start_coords[0]);
+			this.iframe_el.contentWindow.setSelectedRange(start_coords[0], [
+				start_coords[1],
+				start_coords[2]
+			], [
+				end_coords[1],
+				end_coords[2]
+			]);
+		} else {
+			let selected_sheet_index =  this.iframe_el.contentWindow.getSelectedSheet();
+			
+			this.iframe_el.contentWindow.setSelectedRange(selected_sheet_index,[start_coords[0], start_coords[1]], [end_coords[0], end_coords[1]]);
+		}
 	}
 	
 	/**

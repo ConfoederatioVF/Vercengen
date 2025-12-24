@@ -223,6 +223,20 @@
     return all_sheet_names;
   }
 	
+	function setActiveSheet (arg0_sheet_index) {
+		//Convert from parameters
+    let sheet_index = arg0_sheet_index;
+		
+		//Declare local instance variables
+		let all_sheets = univerAPI.getActiveWorkbook().getSheets();
+		let all_sheet_ids = [];
+    
+		//Iterate over all_sheets; populate all_sheet_ids
+		for (let i = 0; i < all_sheets.length; i++)
+			all_sheet_ids.push(all_sheets[i]._worksheet._sheetId);
+		univerAPI.getActiveWorkbook().setActiveSheet(all_sheet_ids[sheet_index]);
+  }
+	
 	function setCellData (arg0_sheet_index, arg1_x, arg2_y, arg2_value) {
 		//Convert from parameters
 		let sheet_index = arg0_sheet_index;
