@@ -306,7 +306,8 @@ ve.Window = class extends ve.Feature {
 				name: " ",
 				
 				style: {
-					padding: 0
+					padding: 0,
+					width: "100%"
 				}
 			});
 			this._interface.element.setAttribute("class", "ve-disable-nesting");

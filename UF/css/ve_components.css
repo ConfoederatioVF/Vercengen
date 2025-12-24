@@ -142,6 +142,7 @@
     summary:hover {
         cursor: pointer;
     }
+    > table { width: 100%; }
     > table:has([component="ve-script-manager"]),
     > table:has([component="ve-table"]),
     > table:has([component="ve-wysiwyg"]) {

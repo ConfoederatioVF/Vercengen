@@ -63,13 +63,17 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		//Populate this.components_obj here so that it can be changed piecemeal by set v()
 		this.components_obj = {
 			topbar_interface: new ve.RawInterface({
-				edit_graph_button: new ve.Button(() => {}, { 
+				edit_graph_button: new ve.Button(() => {
+					this.openEditGraph();
+				}, { 
 					name: "Graph", style: topbar_button_style }),
 				edit_series_button: new ve.Button(() => {
 					this.openEditSeries();
 				}, { name: "Series",
 					style: topbar_button_style }),
 				script_button: new ve.Button(() => {}, { name: "ScriptManager", 
+					style: topbar_button_style }),
+				view_button: new ve.Button(() => {}, { name: "View", 
 					style: topbar_button_style })
 			}),
 			table: new ve.Table(this.table_value, {
@@ -99,6 +103,10 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		let value = (arg0_value) ? arg0_value : {};
 	}
 	
+	drawEditGraph () {
+		
+	}
+	
 	drawEditSeriesHierarchy () {
 		//Declare local instance variables
 		let actions_bar = new ve.HierarchyDatatype({
@@ -121,6 +129,8 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			let table_obj =  this.components_obj.table;
 			
 			hierarchy_obj[local_key] = new ve.HierarchyDatatype({
+				icon: new ve.HTML("<icon>legend_toggle</icon>"),
+				
 				delete_button: new ve.Button(() => {
 					new ve.Confirm(`Are you sure you wish to delete ${series_name}?`, {
 						special_function: () => {
@@ -218,26 +228,40 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 	}
 	
 	openEditGraph () {
+		//Close this.graph_window if already open
+		if (this.graph_window) this.graph_window.close();
 		
+		//Open this.graph_window with controls on the left and visualisation on the right
+		this.graph_window = new ve.Window({
+			container: new ve.RawInterface({
+				graph_options: new ve.HTML("Loading ..", {
+					style: {
+						width: "50%"
+					}
+				}),
+				graph: new ve.RawInterface({}, {
+					style: {
+						width: "50%"
+					}
+				})
+			})
+		}, {
+			name: "Edit Graph",
+			can_rename: false,
+			width: "30rem"
+		});
+		this.drawEditGraph();
 	}
 	
 	openEditSeries () {
 		//Close this.series_window if already open
 		if (this.series_window) this.series_window.close();
 		
-		//Declare local instance variable
-		let actions_bar = new ve.HierarchyDatatype({
-			create_new_series: new ve.Button(() => {
-				
-			}, { name: "<icon>forms_add_on</icon>", tooltip: "Create New Series" })
-		});
-		let hierarchy_obj = {};
-		
 		//Open this.series_window
 		this.series_window = new ve.Window({ //Use ve.Hierarchy for list creation
 			hierarchy: new ve.HTML("Loading ..", { style: { padding: 0 } })
 		}, { 
-			name: "Series", 
+			name: "Data Series", 
 			can_rename: false,
 			width: "30rem"
 		});
