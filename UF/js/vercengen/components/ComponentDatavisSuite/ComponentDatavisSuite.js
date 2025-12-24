@@ -144,6 +144,8 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 						range_selection: new ve.RawInterface({
 							clear_range: new ve.Button(() => {
 								delete local_value.coords;
+								this.drawEditSeriesHierarchy();
+								
 								veToast(`Cleared selected series range.`);
 							}, { name: "Clear Range", limit: () => local_value.coords }),
 							select_series_range: new ve.Button(() => {
@@ -152,6 +154,8 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 							set_series_range: new ve.Button(() => {
 								try {
 									local_value.coords = this.components_obj.table.getSelectedRange();
+									this.drawEditSeriesHierarchy();
+									
 									veToast(`New series range set.`);
 								} catch (e) { console.error(e); }
 							}, { name: "Set Series Range" })
@@ -202,7 +206,9 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			if (!series_obj.name) {
 				if (series_obj.coords)
 					//The series_name is located in the top left of the current range
-					series_name = this.components_obj.table.getCellData(...series_obj.coords[0]);
+					series_name = this.components_obj.table.getCellData(...series_obj.coords[0])?.v;
+				if (series_name === undefined || series_name.length === 0)
+					series_name = "New Series";
 			} else {
 				series_name = series_obj.name;
 			}

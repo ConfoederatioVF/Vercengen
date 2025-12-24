@@ -18,11 +18,11 @@
  * - <span color=00ffff>{@link ve.Table.convertToArray|convertToArray}</span>() | {@link Array}<{@link Array}<{@link Array}<{@link any}>>>
  * - <span color=00ffff>{@link ve.Table.fromArray|fromArray}</span>(arg0_array:{@link Array}<{@link Array}<{@link Array}<{@link any}>>>, arg1_do_not_display=false:{@link boolean}) | {@link Object}
  * - <span color=00ffff>{@link ve.Table.getCellData|getCellData}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_x:{@link number}, arg2_y:{@link number}) | {f:{@link string}, v:{@link number}}
- * - <span color=00ffff>{@link ve.Table.getSelectedRange|getSelectedRange}</span>() | [[{@link number}, {@link number}], [{@link number}, {@link number}]]
+ * - <span color=00ffff>{@link ve.Table.getSelectedRange|getSelectedRange}</span>() | [[{@link number}, {@link number}, {@link number}], [{@link number}, {@link number}, {@link number}]]
  * - <span color=00ffff>{@link ve.Table.getSheetNames|getSheetNames}</span>() | {@link Array}<{@link string}>
  * - <span color=00ffff>{@link ve.Table.setCellData|setCellData}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_x:{@link number}, arg2_y:{@link number}, arg3_value:{f:{@link string}, v:{@link number}})
  * - <span color=00ffff>{@link ve.Table.setDarkMode|setDarkMode}</span>(arg0_value=false:{@link boolean})
- * - <span color=00ffff>{@link ve.Table.setSelectedRange|setSelectedRange}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_start_coords:[{@link number}, {@link number}], arg2_end_coords:[{@link number}, {@link number}])
+ * - <span color=00ffff>{@link ve.Table.setSelectedRange|setSelectedRange}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_start_coords:[{@link number}, {@link number}, {@link number}], arg2_end_coords:[{@link number}, {@link number}, {@link number}])
  * 
  * ##### Static Fields:
  * - `.instances`: {@link Array}<this:{@link ve.Table}>
@@ -245,7 +245,7 @@ ve.Table = class extends ve.Component {
 	 * 
 	 * @returns {Array.<number[]>}
 	 */
-	getSelectedRange () { //[WIP} - Needs to be changed to also include the sheet name
+	getSelectedRange () {
 		return this.iframe_el.contentWindow.getSelectedRange();
 	}
 	
@@ -311,9 +311,8 @@ ve.Table = class extends ve.Component {
 	 * @alias setSelectedRange
 	 * @memberof ve.Component.ve.Table
 	 * 
-	 * @param {number|string} arg0_sheet_index
-	 * @param {number[]} arg1_start_coords
-	 * @param {number[]} arg2_end_coords
+	 * @param {number[]} arg0_start_coords
+	 * @param {number[]} arg1_end_coords
 	 */
 	setSelectedRange (arg0_start_coords, arg1_end_coords) {
 		//Convert from parameters

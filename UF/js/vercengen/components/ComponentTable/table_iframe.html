@@ -132,8 +132,9 @@
 			
 			//Return cell data
       try {
-				return local_data_obj[y_coord + 1][x_coord + 1];
+				return local_data_obj[y_coord - 1][x_coord - 1];
       } catch (e) {
+				window.parent.console.warn(e);
 				return undefined;
       }
     }
