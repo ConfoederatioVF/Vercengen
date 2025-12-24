@@ -104,7 +104,30 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 	}
 	
 	drawEditGraph () {
+		//Declare local instance variables
+		let actions_bar = new ve.HierarchyDatatype({
+			create_new_graph: new ve.Button(() => {
+				
+			}, { name: "<icon>add_chart</icon>", tooltip: "Add Graph" }),
+			create_new_graphlegend: new ve.Button(() => {
+				
+			}, { name: "<icon>format_list_bulleted</icon>", tooltip: "Add Legend" }),
+			create_new_graphtext: new ve.Button(() => {
+				
+			}, { name: "<icon>notes</icon>", tooltip: "Add Overlay Text" })
+		}, { disabled: true });
+		let hierarchy_obj = {};
 		
+		//Declare new_hierarchy and push it to this.graph_window.container.graph_options if possible
+		if (this.graph_window) {
+			let graph_options = this.graph_window.container.graph_options;
+			let new_hierarchy = new ve.Hierarchy({
+				actions_bar: actions_bar
+			});
+			
+			graph_options.element.innerHTML = "";
+			graph_options.element.appendChild(new_hierarchy.element);
+		}
 	}
 	
 	drawEditSeriesHierarchy () {
@@ -119,7 +142,11 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					symbol: {}
 				};
 				this.drawEditSeriesHierarchy();
-			}, { name: "<icon>add</icon> New Series", tooltip: "Create New Series" })
+			}, { 
+				name: "<icon>add</icon> New Series", 
+				tooltip: "Create New Series",
+				disabled: true
+			})
 		});
 		let hierarchy_obj = {};
 		
@@ -236,6 +263,8 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			container: new ve.RawInterface({
 				graph_options: new ve.HTML("Loading ..", {
 					style: {
+						overflowX: "auto",
+						scrollbarWidth: "thin",
 						width: "50%"
 					}
 				}),
