@@ -5,7 +5,7 @@
  * - `arg0_value`: {@link Object}
  *   - `.series`: {@link Object}
  *     - `.name`: {@link string}
- *     - `.origin`: {@link Array}<{@link number}, {@link number}> - The X, Y origin of the top-left corner of `.value`, the first top-left populated cell.
+ *     - `.origin`: {@link Array}<{@link number}, {@link number}, {@link number}> - The sheet index, X, Y origin of the top-left corner of `.value`, the first top-left populated cell.
  *     - `.pivot="column"`: {@link string} - Either 'column'/'row'.
  *     - `.symbol`: {@link Object} - The symbol the data line takes on.
  *     - `.labels`: {@link Array}<{@link string}> - The labels for each datapoint.
@@ -117,8 +117,10 @@ ve.Graph = class extends ve.Component {
 		let value = (arg0_value) ? arg0_value : {};
 		
 		//Initialise value
-		if (!value.series) value.series = {};
-		if (!value.type) value.type = "line_chart";
+		this.value = value;
+		
+		if (!this.value.series) this.value.series = {};
+		if (!this.value.type) this.value.type = "line_chart";
 		this.draw();
 	}
 	
@@ -128,14 +130,46 @@ ve.Graph = class extends ve.Component {
 		let options = (arg1_options) ? arg1_options : {};
 		
 		if (series_obj === undefined) return; //Internal guard clause if series_obj is undefined
+		if (series_obj.coords === undefined) return; //Internal guard clause if series_obj.coords is undefined
 		
 		//Declare local instance variables
+		let series_key = (options.key) ? 
+			options.key : Object.generateRandomID(this.value.series);
 		let return_obj = {};
 		
 		if (options.table_obj) {
+			let series_values = options.table_obj.getRangeValue(series_obj.coords, { 
+				return_raw_values: true 
+			});
 			
-		} else { //[WIP] - Implement this mode later
+			if (!series_obj.pivot || series_obj.pivot === "column") {
+				return_obj.labels = [];
+				
+				//Iterate over all series_values to fetch needed labels
+				for (let i = 0; i < series_values.length; i++) {
+					return_obj.push(series_values[i][0]);
+					series_values[i].splice(0, 1);
+				}
+			} else {
+				return_obj.labels = [];
+				
+				//Iterate over all series_values in the header to fetch needed labels
+				for (let i = 0; i < series_values[0].length; i++)
+					return_obj.push(series_values[0][i]);
+				series_values.splice(0, 1);
+			}
+			
+			return_obj.origin = series_obj.coords[0];
+			return_obj.value = series_values;
+		} else { //[WIP] - Implement this .pivot mode later
 			
 		}
+		
+		//Set new series and draw
+		this.value.series[series_key] = return_obj;
+		this.draw();
+		
+		//Return statement
+		return this.value.series[series_key];
 	}
 };

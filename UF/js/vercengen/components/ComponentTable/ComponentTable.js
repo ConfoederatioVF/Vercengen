@@ -238,7 +238,44 @@ ve.Table = class extends ve.Component {
 	}
 	
 	/**
-	 * Returns the currently selected range as a 2D array of [[start_x, start_y], [end_x, end_y]]. Coords are 1-indexed.
+	 * Returns the range value without padding the origin. Note that this does not return raw values unless specified.
+	 * 
+	 * @alias getRangeValue
+	 * 
+	 * @param {Array.<number[]>} arg0_coords
+	 * @param {Object} [arg1_options]
+	 *  @param {boolean} [arg1_options.return_raw_values=false]
+	 * 
+	 * @returns {Array.<Object[]>}
+	 */
+	getRangeValue (arg0_coords, arg1_options) {
+		//Convert from parameters
+		let coords = (arg0_coords) ? arg0_coords : [];
+		let options = (arg1_options) ? arg1_options : {};
+		
+		//Declare local instance variables
+		let return_array = [];
+		
+		//Iterate from start_x to end_x
+		for (let i = coords[0][1]; i < coords[1][1]; i++) {
+			let local_value_array = [];
+			
+			//Iterate from start_y to end_y
+			for (let x = coords[0][2]; x < coords[1][2]; x++) {
+				let local_cell_data = this.getCellData(coords[0][0], i, x);
+					if (options.return_raw_values)
+						local_cell_data = local_cell_data?.v;
+				local_value_array.push(local_cell_data);
+			}
+			return_array.push(local_value_array);
+		}
+		
+		//Return statement
+		return return_array;
+	}
+	
+	/**
+	 * Returns the currently selected range as a 2D array of [[sheet_index, start_x, start_y], [sheet_index, end_x, end_y]]. Coords are 1-indexed.
 	 *
 	 * @alias getSelectedRange
 	 * @memberof ve.Component.ve.Table
