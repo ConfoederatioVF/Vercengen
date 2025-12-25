@@ -92,6 +92,8 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			})
 		};
 		this.redraw();
+		
+		this.table_obj = this.components_obj.scene_interface.table;
 	}
 	
 	get v () {
@@ -113,7 +115,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		//Declare local instance variables
 		let actions_bar = new ve.HierarchyDatatype({
 			create_new_graph: new ve.Button(() => {
-				let new_graph_id = Object.generateRandomID(this.value.graphs);
+				let new_graph_id = Object.generateRandomID(this.graphs);
 				
 				this.graphs[new_graph_id] = new ve.Graph();
 				this.drawEditGraph();
@@ -132,19 +134,70 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		//Declare new_hierarchy and push it to this.graph_window.container.graph_options if possible
 		if (this.graph_window) {
 			let graph_options = this.graph_window.container.graph_options;
-			let new_hierarchy = new ve.Hierarchy({
-				actions_bar: actions_bar
-			});
 			
 			Object.iterate(this.graphs, (local_key, local_value) => { //[WIP] - Finish population function
-				let graph_name = (local_value?.options?.symbol?.title?.text) ? 
-					local_value.options.symbol.title.text : "New Graph";
-				
-				hierarchy_obj[local_key] = new ve.HierarchyDatatype({
-					icon: new ve.HTML("<icon>show_chart</icon>")
-				}, {
-					name: graph_name
-				});
+				if (local_value instanceof ve.Graph) {
+					let graph_name = (local_value?.options?.symbol?.title?.text) ?
+						local_value.options.symbol.title.text : "New Graph";
+					
+					hierarchy_obj[local_key] = new ve.HierarchyDatatype({
+						icon: new ve.HTML("<icon>show_chart</icon>"),
+						
+						delete_button: new ve.Button(() => {}, {
+							name: "<icon>delete</icon>",
+							tooltip: "Delete Graph",
+							style: {
+								marginLeft: "auto",
+								order: 100
+							}
+						}),
+						context_menu_button: new ve.Button(() => {
+							if (this.edit_graph_window) this.edit_graph_window.close();
+							
+							let series_names = this.getAllSeriesNames();
+							let series_select = new ve.Datalist(series_names, {
+								onuserchange: (v) => {
+									if (this.series[v]) {
+										local_value.addSeries(this.series[v], { 
+											key: v, 
+											table_obj: this.table_obj
+										});
+									} else {
+										veToast(`<icon>warning</icon> The data series you have selected is not valid.`);
+									}
+								}
+							});
+								series_select.placeholder = series_names;
+								
+							let assigned_series_values = [];
+								if (local_value.series)
+									Object.iterate(local_value.series, (local_key) =>
+										assigned_series_values.push(series_names[local_key]));
+							
+							this.edit_graph_window = new ve.Window({ //Add series using ve.List<ve.Datalist>
+								assigned_series: new ve.List((assigned_series_values.length > 0) ? 
+									assigned_series_values : [series_select])
+							}, {
+								name: `Edit ${graph_name}`,
+								can_rename: false,
+								width: "30rem"
+							});
+						}, {
+							name: "<icon>more_vert</icon>",
+							tooltip: "Modify Graph",
+							style: {
+								order: 101
+							}
+						})
+					}, {
+						name: graph_name
+					});
+				}
+			});
+			
+			let new_hierarchy = new ve.Hierarchy({
+				actions_bar: actions_bar,
+				...hierarchy_obj
 			});
 			
 			graph_options.element.innerHTML = "";
@@ -176,7 +229,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		//Populate hierarchy_obj based off current .series
 		Object.iterate(this.series, (local_key, local_value) => { //[WIP] - Finish population function
 			let series_name = this.getSeriesName(local_value);
-			let table_obj =  this.components_obj.scene_interface.table;
+			let table_obj = this.table_obj;
 			
 			hierarchy_obj[local_key] = new ve.HierarchyDatatype({
 				icon: new ve.HTML("<icon>legend_toggle</icon>"),
@@ -209,11 +262,11 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 								veToast(`Cleared selected series range.`);
 							}, { name: "Clear Range", limit: () => local_value.coords }),
 							select_series_range: new ve.Button(() => {
-								this.components_obj.scene_interface.table.setSelectedRange(local_value.coords[0], local_value.coords[1]);
+								table_obj.setSelectedRange(local_value.coords[0], local_value.coords[1]);
 							}, { name: "Select Series Range", limit: () => local_value.coords }),
 							set_series_range: new ve.Button(() => {
 								try {
-									local_value.coords = this.components_obj.scene_interface.table.getSelectedRange();
+									local_value.coords = table_obj.getSelectedRange();
 									this.drawEditSeriesHierarchy();
 									
 									veToast(`New series range set.`);
@@ -264,9 +317,23 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				let graph_el = this.graph_window.container.graph.element;
 				
 				graph_el.innerHTML = "";
-				Object.iterate(this.graphs, (local_key, local_value) => 
-					graph_el.appendChild(local_value.element));
+				Object.iterate(this.graphs, (local_key, local_value) => {
+					graph_el.appendChild(local_value.element);
+					setTimeout(() => local_value.draw());
+				});
 			}
+	}
+	
+	getAllSeriesNames () {
+		//Declare local instance variables
+		let return_obj = {};
+		
+		//Iterate over this.series and populate return_obj
+		Object.iterate(this.series, (local_key, local_value) =>
+			return_obj[local_key] = this.getSeriesName(local_value));
+		
+		//Return statement
+		return return_obj;
 	}
 	
 	getSeriesName (arg0_series_obj) {
@@ -305,9 +372,14 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				}),
 				graph: new ve.RawInterface({}, {
 					style: {
+						height: "400px",
 						width: "50%"
 					}
 				})
+			}, {
+				style: {
+					display: "flex"
+				}
 			})
 		}, {
 			name: "Edit Graph",

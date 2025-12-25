@@ -56,7 +56,11 @@ ve.List = class extends ve.Component {
 		this.shift_positions = 1;
 		this.value = Array.toArray(value);
 		
-		this.class_name = structuredClone(this.value[0].class_name);
+		try {
+			this.class_name = structuredClone(this.value[0].class_name);
+		} catch (e) { 
+			console.error(`Class name could not be found for:`, this.value[0], e);
+		}
 		this.placeholder = structuredClone(this.value[0].v);
 		this.overlay_window = undefined;
 		

@@ -132,6 +132,12 @@
     }
 }
 
+/* -- ve.Graph -- */
+[component="ve-graph"] > div {
+    height: 100%;
+    width: 100%;
+}
+
 /* -- ve.Interface -- */
 [component="ve-interface"] {
     height: 100%;

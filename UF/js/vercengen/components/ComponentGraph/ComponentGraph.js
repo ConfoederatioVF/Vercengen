@@ -32,6 +32,7 @@ ve.Graph = class extends ve.Component {
 		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
+		if (!options.type) options.type = "line_chart";
 			
 		//Declare local instance variables
 		this.element = document.createElement("div");
@@ -50,21 +51,28 @@ ve.Graph = class extends ve.Component {
 		//Declare local instance variables
 		let has_coords = (this.x !== undefined || this.y !== undefined);
 		
-		this.element.innerHTML = "";
+		//this.element.innerHTML = "";
 		if (has_coords) {
 			this.element.style.position = "absolute";
-			this.element.style.height = (typeof this.height === "number") ? `${this.height}px` : this.height;
-			this.element.style.width = (typeof this.width === "number") ? `${this.width}px` : this.width;
 			
 			this.element.style.left = (typeof this.x === "number") ? `${this.x}px` : this.x;
 			this.element.style.top = (typeof this.y === "number") ? `${this.y}px` : this.y;
+			
+			this.element.style.height = (typeof this.height === "number") ? `${this.height}px` : this.height;
+			this.element.style.width = (typeof this.width === "number") ? `${this.width}px` : this.width;
+		} else {
+			this.element.style.height = "100%";
+			this.element.style.width = "100%";
 		}
 		
 		//Draw chart
-		this.chart = echarts.init(this.element);
+		this.chart = echarts.init(this.element, null, {
+			renderer: "canvas",
+			useDirtyRect: false
+		});
 		this.chart_options = {};
 		
-		if (this.options.type === "line_chart") {
+		if (this.options.type === "line_chart" || !this.options.type) {
 			this.chart_options.series = [];
 			this.chart_options.title = {
 				text: (this.options?.title?.text) ? this.options.title.text : ""
@@ -77,34 +85,28 @@ ve.Graph = class extends ve.Component {
 				type: "value"
 			};
 			
-			Object.iterate(this.series, (local_key, local_value) => {
-				let local_data = local_value.value;
-				
-				if (local_data.length > 1 && local_data[0].length >= 1) //Make sure selection is at least 1x1
-					for (let i = 0; i < local_data[0].length; i++) {
-						let local_column_data = [];
-						
-						//Iterate over all local_data rows in the current column
-						for (let x = 1; x < local_data.length; x++)
-							local_column_data.push(local_data[i][x]);
-						
-						//Create new this.chart_options.series
-						this.chart_options.series.push({
-							name: (local_data[i][0]) ? local_data[i][0] : local_key,
-							data: local_column_data,
-							type: "line",
+			if (this.value.series)
+				Object.iterate(this.value.series, (local_key, local_value) => {
+					let local_data = local_value.value;
 							
-							areaStyle: {
-								color: "transparent"
-							},
-							emphasis: { focus: "series" },
-							stack: local_key
-						});
-					}
-			});
+					//Create new this.chart_options.series
+					this.chart_options.series.push({
+						name: (local_value.name) ? local_value.name : local_key,
+						data: local_data[0],
+						type: "line",
+						
+						areaStyle: {
+							color: "transparent"
+						},
+						emphasis: { focus: "series" },
+						stack: local_key
+					});
+				});
 			
 			this.chart.setOption(this.chart_options);
 		}
+		
+		this.chart.resize();
 	}
 	
 	get v () {
@@ -131,6 +133,7 @@ ve.Graph = class extends ve.Component {
 		
 		if (series_obj === undefined) return; //Internal guard clause if series_obj is undefined
 		if (series_obj.coords === undefined) return; //Internal guard clause if series_obj.coords is undefined
+		console.log(`Input series_obj:`, series_obj);
 		
 		//Declare local instance variables
 		let series_key = (options.key) ? 
@@ -147,7 +150,7 @@ ve.Graph = class extends ve.Component {
 				
 				//Iterate over all series_values to fetch needed labels
 				for (let i = 0; i < series_values.length; i++) {
-					return_obj.push(series_values[i][0]);
+					return_obj.labels.push(series_values[i][0]);
 					series_values[i].splice(0, 1);
 				}
 			} else {
@@ -155,7 +158,7 @@ ve.Graph = class extends ve.Component {
 				
 				//Iterate over all series_values in the header to fetch needed labels
 				for (let i = 0; i < series_values[0].length; i++)
-					return_obj.push(series_values[0][i]);
+					return_obj.labels.push(series_values[0][i]);
 				series_values.splice(0, 1);
 			}
 			
@@ -168,6 +171,8 @@ ve.Graph = class extends ve.Component {
 		//Set new series and draw
 		this.value.series[series_key] = return_obj;
 		this.draw();
+		
+		console.log(`Output series_obj:`, return_obj);
 		
 		//Return statement
 		return this.value.series[series_key];
