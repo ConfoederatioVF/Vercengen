@@ -83,7 +83,12 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 						height: "auto",
 						flex: "1 1 auto"
 					},
-					x: 1, y: 0
+					x: 1, y: 0,
+					
+					onuserchange: (v) => {
+						console.log(v);
+						this.drawGraphs();
+					}
 				})
 			}, {
 				style: {
@@ -155,28 +160,40 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 							if (this.edit_graph_window) this.edit_graph_window.close();
 							
 							let series_names = this.getAllSeriesNames();
-							let series_select = new ve.Datalist(series_names, {
+							let series_options = {
 								onuserchange: (v) => {
 									if (this.series[v]) {
-										local_value.addSeries(this.series[v], { 
-											key: v, 
+										local_value.addSeries(this.series[v], {
+											key: v,
 											table_obj: this.table_obj
 										});
 									} else {
 										veToast(`<icon>warning</icon> The data series you have selected is not valid.`);
 									}
 								}
-							});
+							};
+							let series_select = new ve.Datalist(series_names, series_options);
 								series_select.placeholder = series_names;
 								
 							let assigned_series_values = [];
-								if (local_value.series)
-									Object.iterate(local_value.series, (local_key) =>
-										assigned_series_values.push(series_names[local_key]));
+								if (local_value.value.series) {
+									let series_obj = local_value.value.series;
+									
+									Object.iterate(series_obj, (local_series_key, local_series_obj) => {
+										let local_datalist = new ve.Datalist(series_names, series_options);
+											local_datalist.v = series_names[local_series_key];
+										assigned_series_values.push(local_datalist);
+									});
+								}
+							
+							let assigned_series_list = new ve.List((assigned_series_values.length > 0) ?
+								assigned_series_values : [series_select], { options: series_options });
+								assigned_series_list.placeholder = series_names;
+								
+							console.log(`Assigned series values:`, assigned_series_values);
 							
 							this.edit_graph_window = new ve.Window({ //Add series using ve.List<ve.Datalist>
-								assigned_series: new ve.List((assigned_series_values.length > 0) ? 
-									assigned_series_values : [series_select])
+								assigned_series: assigned_series_list
 							}, {
 								name: `Edit ${graph_name}`,
 								can_rename: false,
@@ -206,8 +223,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		}
 	}
 	
-	drawEditSeriesHierarchy () { //[WIP] - Finish function body so that reordering works properly
-		//Declare local instance variables
+	drawEditSeriesHierarchy () {
 		let actions_bar = new ve.HierarchyDatatype({
 			create_new_series: new ve.Button(() => {
 				let new_series_id = Object.generateRandomID(this.series);
@@ -220,9 +236,10 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				this.drawEditSeriesHierarchy();
 			}, { 
 				name: "<icon>add</icon> New Series", 
-				tooltip: "Create New Series",
-				disabled: true
+				tooltip: "Create New Series"
 			})
+		}, {
+			disabled: true
 		});
 		let hierarchy_obj = {};
 		
@@ -318,6 +335,16 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				
 				graph_el.innerHTML = "";
 				Object.iterate(this.graphs, (local_key, local_value) => {
+					if (local_value.value.series) {
+						let series_obj = local_value.value.series;
+						
+						Object.iterate(series_obj, (local_series_key) =>
+							local_value.addSeries(this.series[local_series_key], {
+								key: local_series_key,
+								table_obj: this.table_obj
+							}));
+					}
+					
 					graph_el.appendChild(local_value.element);
 					setTimeout(() => local_value.draw());
 				});

@@ -90,17 +90,18 @@ ve.Graph = class extends ve.Component {
 					let local_data = local_value.value;
 							
 					//Create new this.chart_options.series
-					this.chart_options.series.push({
-						name: (local_value.name) ? local_value.name : local_key,
-						data: local_data[0],
-						type: "line",
-						
-						areaStyle: {
-							color: "transparent"
-						},
-						emphasis: { focus: "series" },
-						stack: local_key
-					});
+					for (let i = 0; i < local_data.length; i++)
+						this.chart_options.series.push({
+							name: (local_value.name) ? local_value.name : local_key,
+							data: local_data[i],
+							type: "line",
+							
+							areaStyle: {
+								color: "transparent"
+							},
+							emphasis: { focus: "series" },
+							stack: local_key
+						});
 				});
 			
 			this.chart.setOption(this.chart_options);
@@ -131,9 +132,10 @@ ve.Graph = class extends ve.Component {
 		let series_obj = arg0_series_obj;
 		let options = (arg1_options) ? arg1_options : {};
 		
+		console.log(`Input series_obj:`, series_obj);
+		
 		if (series_obj === undefined) return; //Internal guard clause if series_obj is undefined
 		if (series_obj.coords === undefined) return; //Internal guard clause if series_obj.coords is undefined
-		console.log(`Input series_obj:`, series_obj);
 		
 		//Declare local instance variables
 		let series_key = (options.key) ? 

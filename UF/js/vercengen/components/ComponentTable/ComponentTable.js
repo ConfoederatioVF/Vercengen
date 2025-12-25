@@ -261,12 +261,12 @@ ve.Table = class extends ve.Component {
 			let local_value_array = [];
 			
 			//Iterate from start_y to end_y
-			for (let x = coords[0][2]; x < coords[1][2] + 1; x++) {
+			for (let x = coords[0][2]; x < coords[1][2] + 1; x++) try {
 				let local_cell_data = this.getCellData(coords[0][0], i, x);
 					if (options.return_raw_values)
 						local_cell_data = local_cell_data?.v;
 				local_value_array.push(local_cell_data);
-			}
+			} catch (e) {}
 			return_array.push(local_value_array);
 		}
 		
