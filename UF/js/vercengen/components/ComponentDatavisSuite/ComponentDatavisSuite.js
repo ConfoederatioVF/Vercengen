@@ -116,6 +116,9 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				let new_graph_id = Object.generateRandomID(this.value.graphs);
 				
 				this.graphs[new_graph_id] = new ve.Graph();
+				this.drawEditGraph();
+				
+				veToast(`Added chart to graph.`);
 			}, { name: "<icon>add_chart</icon>", tooltip: "Add Graph" }),
 			create_new_graphlegend: new ve.Button(() => {
 				
@@ -134,11 +137,19 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			});
 			
 			Object.iterate(this.graphs, (local_key, local_value) => { //[WIP] - Finish population function
+				let graph_name = (local_value?.options?.symbol?.title?.text) ? 
+					local_value.options.symbol.title.text : "New Graph";
 				
+				hierarchy_obj[local_key] = new ve.HierarchyDatatype({
+					icon: new ve.HTML("<icon>show_chart</icon>")
+				}, {
+					name: graph_name
+				});
 			});
 			
 			graph_options.element.innerHTML = "";
 			graph_options.element.appendChild(new_hierarchy.element);
+			this.drawGraphs();
 		}
 	}
 	
@@ -244,6 +255,18 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		
 		//Return statement
 		return new_hierarchy;
+	}
+	
+	drawGraphs () {
+		//Update graph_window if possible
+		if (this.graph_window)
+			if (this.graph_window.container.graph) {
+				let graph_el = this.graph_window.container.graph.element;
+				
+				graph_el.innerHTML = "";
+				Object.iterate(this.graphs, (local_key, local_value) => 
+					graph_el.appendChild(local_value.element));
+			}
 	}
 	
 	getSeriesName (arg0_series_obj) {
