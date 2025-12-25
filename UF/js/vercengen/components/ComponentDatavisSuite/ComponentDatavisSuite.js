@@ -11,20 +11,12 @@
  *       - `.tags`: {@link Array}<{@link string}>
  *       - `.value`; {@link Object} - The JSON object that stores the current script from which to serialise/deserialise.
  *   - `.graphs`: {@link Object}
- *     - `<graph_key>`: {@link Object}
- *       - `.height`: {@link string}
- *       - `.width`: {@link string}
- *       - `.x`: {@link string}
- *       - `.y`: {@link string}
- *       - 
- *       - `.overlay_components`: {@link Array}<{@link ve.Component}>
- *       - `.symbol`: {@link Object} - Echarts bindings.
- *       - `.type`: {@link string}
+ *     - `<graph_key>`: {@link ve.Graph}
  *   - `.series`: {@link Object}
  *     - `<series_key>`: {@link Object}
  *       - `.coords`: {@link Array}<{@link Array}<{@link string}, {@link number}, {@link number}>, {@link Array}<{@link string}, {@link number}, {@link number}>> - The coords/range of the series using the Spreadsheet Name for the [0] element.
  *       - `.name`: {@link string} - The name of the series, data column header value by default.
- *       - `.pivot="column"`: {@link string} - Either 'column'/'row'
+ *       - `.pivot="column"`: {@link string} - Either 'column'/'row'.
  *       - `.symbol`: {@link Object} - Echarts bindings per series.
  *   - `.table_value`: {@link Object} - The ve.Table value that can be used to restore both formulas and values.
  * - `arg1_options`: {@link Object}
@@ -76,12 +68,26 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				view_button: new ve.Button(() => {}, { name: "View", 
 					style: topbar_button_style })
 			}),
-			table: new ve.Table(this.table_value, {
-				dark_mode: this.options.dark_mode,
+			scene_interface: new ve.RawInterface({
+				file_explorer: new ve.FileExplorer(undefined, {
+					style: {
+						flex: "0 0 20rem",
+						maxHeight: "50rem",
+						overflowY: "auto"
+					},
+					x: 0, y: 0
+				}),
+				table: new ve.Table(this.table_value, {
+					dark_mode: this.options.dark_mode,
+					style: {
+						height: "auto",
+						flex: "1 1 auto"
+					},
+					x: 1, y: 0
+				})
+			}, {
 				style: {
-					flex: 1,
-					height: "auto",
-					padding: 0 
+					display: "flex"
 				}
 			})
 		};
@@ -107,7 +113,9 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		//Declare local instance variables
 		let actions_bar = new ve.HierarchyDatatype({
 			create_new_graph: new ve.Button(() => {
+				let new_graph_id = Object.generateRandomID(this.value.graphs);
 				
+				this.graphs[new_graph_id] = new ve.Graph();
 			}, { name: "<icon>add_chart</icon>", tooltip: "Add Graph" }),
 			create_new_graphlegend: new ve.Button(() => {
 				
@@ -123,6 +131,10 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			let graph_options = this.graph_window.container.graph_options;
 			let new_hierarchy = new ve.Hierarchy({
 				actions_bar: actions_bar
+			});
+			
+			Object.iterate(this.graphs, (local_key, local_value) => { //[WIP] - Finish population function
+				
 			});
 			
 			graph_options.element.innerHTML = "";
@@ -153,7 +165,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		//Populate hierarchy_obj based off current .series
 		Object.iterate(this.series, (local_key, local_value) => { //[WIP] - Finish population function
 			let series_name = this.getSeriesName(local_value);
-			let table_obj =  this.components_obj.table;
+			let table_obj =  this.components_obj.scene_interface.table;
 			
 			hierarchy_obj[local_key] = new ve.HierarchyDatatype({
 				icon: new ve.HTML("<icon>legend_toggle</icon>"),
@@ -186,11 +198,11 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 								veToast(`Cleared selected series range.`);
 							}, { name: "Clear Range", limit: () => local_value.coords }),
 							select_series_range: new ve.Button(() => {
-								this.components_obj.table.setSelectedRange(local_value.coords[0], local_value.coords[1]);
+								this.components_obj.scene_interface.table.setSelectedRange(local_value.coords[0], local_value.coords[1]);
 							}, { name: "Select Series Range", limit: () => local_value.coords }),
 							set_series_range: new ve.Button(() => {
 								try {
-									local_value.coords = this.components_obj.table.getSelectedRange();
+									local_value.coords = this.components_obj.scene_interface.table.getSelectedRange();
 									this.drawEditSeriesHierarchy();
 									
 									veToast(`New series range set.`);
@@ -243,7 +255,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			if (!series_obj.name) {
 				if (series_obj.coords)
 					//The series_name is located in the top left of the current range
-					series_name = this.components_obj.table.getCellData(...series_obj.coords[0])?.v;
+					series_name = this.components_obj.scene_interface.table.getCellData(...series_obj.coords[0])?.v;
 				if (series_name === undefined || series_name.length === 0)
 					series_name = "New Series";
 			} else {
