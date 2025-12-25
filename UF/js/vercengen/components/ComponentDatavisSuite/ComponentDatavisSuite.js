@@ -109,7 +109,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		let value = (arg0_value) ? arg0_value : {};
 	}
 	
-	drawEditGraph () {
+	drawEditGraph () { //[WIP] - Finish function body
 		//Declare local instance variables
 		let actions_bar = new ve.HierarchyDatatype({
 			create_new_graph: new ve.Button(() => {
@@ -142,7 +142,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		}
 	}
 	
-	drawEditSeriesHierarchy () {
+	drawEditSeriesHierarchy () { //[WIP] - Finish function body so that reordering works properly
 		//Declare local instance variables
 		let actions_bar = new ve.HierarchyDatatype({
 			create_new_series: new ve.Button(() => {
