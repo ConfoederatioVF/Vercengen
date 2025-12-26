@@ -4,6 +4,7 @@ html, head, body {
     width: 100%;
 }
 b { font-weight: 700; }
+canvas, iframe { user-select: none; }
 
 .ve.overlay {
     pointer-events: none;
