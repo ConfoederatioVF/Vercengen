@@ -9,6 +9,7 @@
  * - `arg1_options`: {@link Object}
  *   - `.allow_disabled_reordering=false`: {@link boolean}
  *   - `.disable_searchbar=false`: {@link boolean}
+ *   - `.namespace=Class.generateRandomID(ve.Hierarchy)`: {@link string}
  *   - `.searchbar_style`: {@link Object} - The Telestyle object to apply to the searchbar.
  * 
  * ##### Instance:
@@ -43,7 +44,8 @@ ve.Hierarchy = class extends ve.Component {
 			this.element.setAttribute("component", "ve-hierarchy");
 		Object.iterate(options.attributes, (local_key, local_value) =>
 			this.element.setAttribute(local_key, local_value.toString()));
-			this.element.id = Class.generateRandomID(ve.Hierarchy);
+			this.element.id = (options.namespace) ? 
+				options.namespace : Class.generateRandomID(ve.Hierarchy);
 			this.element.instance = this;
 		this.options = options;
 		
@@ -131,7 +133,7 @@ ve.Hierarchy = class extends ve.Component {
 		this.nestable = new Nestable(ol_el, { items: ".group, .item" });
 		this.nestable.on("stop", (e) => {
 			if (!this.options.allow_disabled_ordering)
-				this._enforceDisabledOrdering(e);
+				this._handleDisabledOrdering(e);
 			this.on_stop_data = e;
 			this.fireToBinding();
 		});
@@ -139,40 +141,34 @@ ve.Hierarchy = class extends ve.Component {
 	}
 	
 	/**
-	 * Prevent placing items before disabled elements.
+	 * Prevents placing items before disabled elements.
 	 * - Private method of: {@link ve.Hierarchy}
 	 * 
-	 * @alias _enforceDisabledOrdering
+	 * @alias _handleDisabledOrdering
 	 * @memberof ve.Component.ve.Hierarchy
 	 * @param {Object} arg0_e
 	 */
-	_enforceDisabledOrdering (arg0_e) { //[WIP] - Refactor at a later date
+	_handleDisabledOrdering (arg0_e) {
 		//Convert from parameters
 		let e = arg0_e;
 		
-		let moved = e.movedNode;
-		if (!moved) return;
+		//Declare local instance variables
+		let moved_node = e.movedNode;
+			if (!moved_node) return; //Internal guard clause if there is no moved node
+		let parent_list = moved_node.parentElement;
+			if (!parent_list || parent_list.tagName !== "OL") return; //Internal guard clause if not moved and nested
+		let siblings = Array.from(parent_list.children);
 		
-		let parentList = moved.parentElement;
-		if (!parentList || parentList.tagName !== "OL") return;
+		let disabled = siblings.filter((local_el) =>
+			local_el !== moved_node && (local_el.classList.contains("ve-drag-disabled") || local_el.dataset.nestableDisabled === "disabled"));
+			if (!disabled.length) return; //Internal guard clause if there are no disabled elements
+		let first_disabled_index = siblings.indexOf(disabled[0]);
+		let moved_index = siblings.indexOf(moved_node);
 		
-		let siblings = Array.from(parentList.children);
-		let disabled = siblings.filter(
-			el =>
-				el !== moved &&
-				(el.classList.contains("ve-drag-disabled") ||
-					el.dataset.nestableDisabled === "disabled")
-		);
-		
-		if (!disabled.length) return;
-		
-		let firstDisabledIndex = siblings.indexOf(disabled[0]);
-		let movedIndex = siblings.indexOf(moved);
-		
-		/* If moved before disabled → move after last disabled */
-		if (movedIndex < firstDisabledIndex) {
+		//If moved before disabled, move after last disabled
+		if (moved_index < first_disabled_index) {
 			let lastDisabled = disabled[disabled.length - 1];
-			parentList.insertBefore(moved, lastDisabled.nextSibling);
+			parent_list.insertBefore(moved_node, lastDisabled.nextSibling);
 			
 			veToast(`<icon>warning</icon> You cannot move an element before a disabled element.`);
 		}
