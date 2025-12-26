@@ -66,6 +66,7 @@ ve.Graph = class extends ve.Component {
 		}
 		
 		//Draw chart
+		if (this.chart) this.chart.clear();
 		this.chart = echarts.init(this.element, null, {
 			renderer: "canvas",
 			useDirtyRect: false
@@ -131,8 +132,6 @@ ve.Graph = class extends ve.Component {
 		//Convert from parameters
 		let series_obj = arg0_series_obj;
 		let options = (arg1_options) ? arg1_options : {};
-		
-		console.log(`Input series_obj:`, series_obj);
 		
 		if (series_obj === undefined) return; //Internal guard clause if series_obj is undefined
 		if (series_obj.coords === undefined) return; //Internal guard clause if series_obj.coords is undefined

@@ -10,6 +10,7 @@
  *   - `.do_not_display_info_button=false`: {@link boolean}
  *   - `.max`: {@link number} - The maximum number of elements in the array.
  *   - `.min=0`: {@link number} - The minimum number of elements in the array.
+ *   - `.ondelete`: {@link function}(arg0_component_obj:{@link ve.Component})
  *   - `.options`: {@link Object} - The `.options` field to pass onto elements in the array.
  *   
  * ##### Instance:
@@ -234,6 +235,9 @@ ve.List = class extends ve.Component {
 						this.fireToBinding();
 					}, { name: "<icon>last_page</icon>", tooltip: loc("ve.registry.localisation.List_insert_item_after") }),
 					delete_button: new ve.Button(() => {
+						if (this.options.ondelete)
+							this.options.ondelete(this.v[i]);
+						
 						this.deleteItem(i);
 						if (this.overlay_window) this.overlay_window.close();
 						this.fireToBinding();

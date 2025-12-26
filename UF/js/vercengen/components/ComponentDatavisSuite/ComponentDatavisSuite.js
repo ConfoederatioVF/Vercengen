@@ -162,14 +162,9 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 							let series_names = this.getAllSeriesNames();
 							let series_options = {
 								onuserchange: (v) => {
-									if (this.series[v]) {
-										local_value.addSeries(this.series[v], {
-											key: v,
-											table_obj: this.table_obj
-										});
-									} else {
+									if (!this.series[v])
 										veToast(`<icon>warning</icon> The data series you have selected is not valid.`);
-									}
+									this.assigned_series_list.fireToBinding();
 								}
 							};
 							let series_select = new ve.Datalist(series_names, series_options);
@@ -186,11 +181,21 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 									});
 								}
 							
-							let assigned_series_list = new ve.List((assigned_series_values.length > 0) ?
-								assigned_series_values : [series_select], { options: series_options });
+							let assigned_series_list = new ve.List((assigned_series_values.length > 0) ? assigned_series_values : [series_select], {
+								onuserchange: (v) => {
+									local_value.value.series = {};
+									
+									//Iterate over all v components
+									for (let i = 0; i < v.length; i++)
+										local_value.addSeries(this.series[v[i].v], {
+											key: v[i].v,
+											table_obj: this.table_obj
+										});
+								},
+								options: series_options 
+							});
 								assigned_series_list.placeholder = series_names;
-								
-							console.log(`Assigned series values:`, assigned_series_values);
+								this.assigned_series_list = assigned_series_list;
 							
 							this.edit_graph_window = new ve.Window({ //Add series using ve.List<ve.Datalist>
 								assigned_series: assigned_series_list
@@ -275,6 +280,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 							clear_range: new ve.Button(() => {
 								delete local_value.coords;
 								this.drawEditSeriesHierarchy();
+								this.drawGraphs();
 								
 								veToast(`Cleared selected series range.`);
 							}, { name: "Clear Range", limit: () => local_value.coords }),
@@ -285,6 +291,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 								try {
 									local_value.coords = table_obj.getSelectedRange();
 									this.drawEditSeriesHierarchy();
+									this.drawGraphs();
 									
 									veToast(`New series range set.`);
 								} catch (e) { console.error(e); }
@@ -336,9 +343,10 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				graph_el.innerHTML = "";
 				Object.iterate(this.graphs, (local_key, local_value) => {
 					if (local_value.value.series) {
-						let series_obj = local_value.value.series;
+						let series_obj = JSON.parse(JSON.stringify(local_value.value.series));
 						
-						Object.iterate(series_obj, (local_series_key) =>
+						local_value.value.series = {};
+						Object.iterate(series_obj, (local_series_key, local_series_obj) =>
 							local_value.addSeries(this.series[local_series_key], {
 								key: local_series_key,
 								table_obj: this.table_obj

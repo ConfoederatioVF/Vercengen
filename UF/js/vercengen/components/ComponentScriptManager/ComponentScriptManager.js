@@ -480,7 +480,7 @@ ve.ScriptManager = class extends ve.Component {
 			let svg_el = this.scene_blockly_el.querySelector("svg");
 			let svg_rect = svg_el.getBoundingClientRect();
 			
-			if (!this.options.style.height) {
+			if (!this.options?.style?.height) {
 				this.scene_codemirror_el.style.height = `${svg_rect.height}px`;
 				this.leftbar_file_explorer.element.style.height = `${svg_rect.height}px`;
 			} else {
