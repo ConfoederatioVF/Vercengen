@@ -103,10 +103,10 @@ li > .nst-list {
         }
     }
 
-    > [data-nestable-disabled="dragging"]:first-child .nst-handle {
+    > [data-nestable-disabled="disabled"]:first-child .nst-handle {
         display: none;
     }
-    [data-nestable-disabled="dragging"] .nst-handle { 
+    [data-nestable-disabled="disabled"] .nst-handle { 
         visibility: hidden; 
     }
 }

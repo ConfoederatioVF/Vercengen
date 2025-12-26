@@ -182,6 +182,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 								}
 							
 							let assigned_series_list = new ve.List((assigned_series_values.length > 0) ? assigned_series_values : [series_select], {
+								name: "Attached Series",
 								onuserchange: (v) => {
 									local_value.value.series = {};
 									

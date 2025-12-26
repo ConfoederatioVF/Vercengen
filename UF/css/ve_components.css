@@ -178,6 +178,13 @@
     }
 }
 
+/* -- ve.List -- */
+[component="ve-horizontal-list"] {
+    > #name {
+        margin-right: var(--padding);
+    }
+}
+
 /* -- ve.ObjectInspector -- */
 [component="ve-object-inspector"], .ve-object-inspector {
     /* -- Formatting -- */
