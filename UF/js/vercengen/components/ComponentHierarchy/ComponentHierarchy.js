@@ -19,6 +19,7 @@
  * 
  * ##### Methods:
  * - <span color=00ffff>{@link ve.Hierarchy.addItem|addItem}</span>(arg0_parent_el:{@link HTMLElement}, arg1_hierarchy_datatype:{@link ve.HierarchyDatatype})
+ * - <span color=00ffff>{@link ve.Hierarchy.getHierarchyArray|getHierarchyArray}</span>(arg0_options:{flatten_object: {@link boolean} }) | {@link Object[]}
  * - <span color=00ffff>{@link ve.Hierarchy.getHierarchyObject|getHierarchyObject}</span>(arg0_options:{flatten_object: {@link boolean} }) | {@link Object}
  * - <span color=00ffff>{@link ve.Hierarchy.removeItem|removeItem}</span>(arg0_hierarchy_datatype:{@link ve.HierarchyDatatype})
  * 
@@ -193,6 +194,68 @@ ve.Hierarchy = class extends ve.Component {
 		if (typeof parent_el === "string") parent_el = this.element.querySelector(parent_el);
 		if (parent_el)
 			parent_el.appendChild(hierarchy_datatype.element);
+	}
+	
+	/**
+	 * Returns a flat array representative of the items in the hierarchy, ordered top to bottom.
+	 * - Method of: {@link ve.Hierarchy}
+	 *
+	 * @alias getHierarchyArray
+	 * @memberof ve.Component.ve.Hierarchy
+	 *
+	 * @param {Object} [arg0_options]
+	 *  @param {boolean} [arg0_options.flatten_object=false] - Whether the object should be flattened, returning only serialisable JSON keys.
+	 *
+	 * @returns {Object[]}
+	 */
+	getHierarchyArray (arg0_options) {
+		//Convert from parameters
+		let options = arg0_options ? arg0_options : {};
+		
+		//Declare local instance variables
+		let ol_el = this.element.querySelector("ol");
+		let reserved_keys = ["id", "element", "instance", "name", "type", "reserved_keys"];
+		let result = [];
+		
+		/**
+		 * Recursive helper to traverse the DOM tree top-to-bottom.
+		 * 
+		 * @param {HTMLElement} current_ol - The <ol> element to traverse
+		 */
+		let traverse = (current_ol) => {
+			// Get only direct LI children to maintain correct hierarchy order
+			let children = Array.from(current_ol.children).filter((local_el) => 
+				local_el.tagName === "LI");
+			
+			//Iterate over all children
+			for (let i = 0; i < children.length; i++) {
+				let li_el = children[i];
+				let sub_ol = li_el.querySelector("ol");
+				
+				//Extract metadata (matching getHierarchyObject logic)
+				let local_name = (li_el && li_el.instance && li_el.instance.name)
+					? li_el.instance.name : "";
+				//Determine if this is a group (has children) or a leaf item
+				let type = sub_ol ? "group" : "item";
+				
+				result.push({
+					id: li_el.id,
+					element: (!options.flatten_object) ? li_el : undefined,
+					instance: li_el.instance,
+					name: local_name ? local_name : undefined,
+					reserved_keys: reserved_keys,
+					type: type,
+				});
+				
+				//If this item has a sub-list, recurse into it immediately (Top > Bottom)
+				if (sub_ol) traverse(sub_ol);
+			}
+		};
+		
+		if (ol_el) traverse(ol_el);
+		
+		//Return statement
+		return result;
 	}
 	
 	/**
