@@ -305,7 +305,10 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		return new_hierarchy;
 	}
 	
-	drawGraphs () {
+	drawGraphs (arg0_resize_only) {
+		//Convert from parameters
+		let resize_only = arg0_resize_only;
+		
 		//Update graph_window if possible
 		if (this.graph_window)
 			if (this.graph_window.container.graph) {
@@ -313,7 +316,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				
 				graph_el.innerHTML = "";
 				Object.iterate(this.graphs, (local_key, local_value) => {
-					if (local_value.value.series) {
+					if (!resize_only && local_value.value.series) {
 						let series_obj = JSON.parse(JSON.stringify(local_value.value.series));
 						
 						local_value.value.series = {};
@@ -390,7 +393,12 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		}, {
 			name: "Edit Graph",
 			can_rename: false,
-			width: "30rem"
+			width: "30rem",
+			
+			onuserchange: (v, e) => {
+				if (v.resize)
+					this.drawGraphs(true);
+			}
 		});
 		this.drawEditGraph();
 	}

@@ -211,6 +211,7 @@ ve.Window = class extends ve.Feature {
 		if (this.options.draggable) {
 			this.element.classList.add("draggable");
 			HTML.elementDragHandler(this.element, {
+				instance: this,
 				is_resizable: (this.options.resizeable)
 			});
 		}
@@ -233,6 +234,23 @@ ve.Window = class extends ve.Feature {
 		ve.window_overlay_el.appendChild(this.element);
 		ve.Window.instances.push(this);
 		this.select();
+	}
+	
+	/**
+	 * Whether an onresize event has been fired.
+	 * - Private accessor of: {@link ve.Window}
+	 * 
+	 * @param {boolean} arg0_value
+	 * @private
+	 */
+	set _onresize (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
+		
+		//If an onresize pulse is sent, execute an onuserchange event for it
+		if (value === true)
+			if (this.options.onuserchange)
+				this.options.onuserchange({ resize: true }, { instance: this });
 	}
 	
 	/**

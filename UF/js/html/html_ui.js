@@ -90,6 +90,7 @@
 	 * @param {Object} [arg1_options]
 	 *  @param {boolean} [arg1_options.allow_overflow=false]
 	 *  @param {boolean} [arg1_options.draggable=true]
+	 *  @param {Object} [arg1_options.instance] - Any instance to begin binding events to. 
 	 *  @param {boolean} [arg1_options.is_resizable=false]
 	 *  @param {boolean} [arg1_options.unbounded=false]
 	 *
@@ -255,6 +256,8 @@
 				//Execute resize operation
 				if (resize_ops[resize_edge]) {
 					resize_ops[resize_edge]();
+					if (options.instance)
+						options.instance._onresize = true;
 				}
 			} else {
 				if (options.draggable === false) return;
