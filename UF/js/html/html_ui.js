@@ -53,7 +53,7 @@
 		}
 		
 		//Add click handler to toggle section
-		chevron_btn.addEventListener("click", function(e) {
+		chevron_btn.addEventListener("click", function (e) {
 			e.preventDefault();
 			e.stopPropagation();
 			
@@ -125,26 +125,26 @@
 			
 			//Define handle positions and cursors
 			let handle_config = {
-				'n': { top: '0', left: '0', right: '0', height: resize_threshold + 'px', cursor: 'n-resize' },
-				'e': { top: '0', right: '0', bottom: '0', width: resize_threshold + 'px', cursor: 'e-resize' },
-				's': { bottom: '0', left: '0', right: '0', height: resize_threshold + 'px', cursor: 's-resize' },
-				'w': { top: '0', left: '0', bottom: '0', width: resize_threshold + 'px', cursor: 'w-resize' },
-				'ne': { top: '0', right: '0', width: resize_threshold*2 + 'px', height: resize_threshold*2 + 'px', cursor: 'ne-resize' },
-				'nw': { top: '0', left: '0', width: resize_threshold*2 + 'px', height: resize_threshold*2 + 'px', cursor: 'nw-resize' },
-				'se': { bottom: '0', right: '0', width: resize_threshold*2 + 'px', height: resize_threshold*2 + 'px', cursor: 'se-resize' },
-				'sw': { bottom: '0', left: '0', width: resize_threshold*2 + 'px', height: resize_threshold*2 + 'px', cursor: 'sw-resize' }
+				"n": { top: '0', left: '0', right: '0', height: resize_threshold + 'px', cursor: 'n-resize' },
+				"e": { top: '0', right: '0', bottom: '0', width: resize_threshold + 'px', cursor: 'e-resize' },
+				"s": { bottom: '0', left: '0', right: '0', height: resize_threshold + 'px', cursor: 's-resize' },
+				"w": { top: '0', left: '0', bottom: '0', width: resize_threshold + 'px', cursor: 'w-resize' },
+				"ne": { top: '0', right: '0', width: resize_threshold*2 + 'px', height: resize_threshold*2 + 'px', cursor: 'ne-resize' },
+				"nw": { top: '0', left: '0', width: resize_threshold*2 + 'px', height: resize_threshold*2 + 'px', cursor: 'nw-resize' },
+				"se": { bottom: '0', right: '0', width: resize_threshold*2 + 'px', height: resize_threshold*2 + 'px', cursor: 'se-resize' },
+				"sw": { bottom: '0', left: '0', width: resize_threshold*2 + 'px', height: resize_threshold*2 + 'px', cursor: 'sw-resize' }
 			};
 			
 			//Add resize handles
-			let handles = ['n', 'e', 's', 'w', 'ne', 'nw', 'se', 'sw'];
+			let handles = ["n", "e", "s", "w", "ne", "nw", "se", "sw"];
 			
 			for (let i = 0; i < handles.length; i++)
 				(function (edge) {
 					let handle = document.createElement('div');
 					
-					handle.className = 'resize-handle resize-' + edge;
-					handle.style.position = 'absolute';
-					handle.style.zIndex = '1000';
+					handle.className = `resize-handle resize-${edge}`;
+					handle.style.position = "absolute";
+					handle.style.zIndex = "1000";
 					
 					//Apply handle configuration
 					let config = handle_config[edge];
@@ -156,7 +156,7 @@
 					handle.onmousedown = function (e) {
 						e.stopPropagation();
 						is_resizing = true;
-						resize_edge = edge; // This 'edge' is correctly scoped thanks to the IIFE.
+						resize_edge = edge; //This 'edge' is correctly scoped thanks to the IIFE.
 						
 						//Store initial dimensions
 						let rect = el.getBoundingClientRect();
@@ -205,27 +205,13 @@
 				
 				//Define resize operations
 				let resize_ops = {
-					'e': function() {
+					"e": function () {
 						let new_width = initial_width + delta_x;
 						// Constrain width to not exceed viewport boundary
 						new_width = (options.unbounded) ? new_width : Math.min(new_width, viewport_width - initial_left);
 						el.style.width = Math.max(min_width, new_width) + 'px';
 					},
-					'w': function() {
-						let new_width = initial_width - delta_x;
-						// Constrain width so the left edge doesn't go past 0
-						new_width = (options.unbounded) ? new_width : Math.min(new_width, initial_left + initial_width);
-						new_width = (options.unbounded) ? new_width : Math.max(min_width, new_width);
-						el.style.width = new_width + 'px';
-						el.style.left = (initial_left + initial_width - new_width) + 'px';
-					},
-					's': function() {
-						let new_height = initial_height + delta_y;
-						// Constrain height to not exceed viewport boundary
-						new_height = (options.unbounded) ? new_height : Math.min(new_height, viewport_height - initial_top);
-						el.style.height = Math.max(min_height, new_height) + 'px';
-					},
-					'n': function() {
+					"n": function () {
 						let new_height = initial_height - delta_y;
 						// Constrain height so the top edge doesn't go past 0
 						new_height = (options.unbounded) ? new_height : Math.min(new_height, initial_top + initial_height);
@@ -233,22 +219,37 @@
 						el.style.height = new_height + 'px';
 						el.style.top = (initial_top + initial_height - new_height) + 'px';
 					},
-					'se': function() {
-						resize_ops.s();
-						resize_ops.e();
+					"s": function () {
+						let new_height = initial_height + delta_y;
+						// Constrain height to not exceed viewport boundary
+						new_height = (options.unbounded) ? new_height : Math.min(new_height, viewport_height - initial_top);
+						el.style.height = Math.max(min_height, new_height) + 'px';
 					},
-					'sw': function() {
-						resize_ops.s();
-						resize_ops.w();
+					"w": function () {
+						let new_width = initial_width - delta_x;
+						// Constrain width so the left edge doesn't go past 0
+						new_width = (options.unbounded) ? new_width : Math.min(new_width, initial_left + initial_width);
+						new_width = (options.unbounded) ? new_width : Math.max(min_width, new_width);
+						el.style.width = new_width + 'px';
+						el.style.left = (initial_left + initial_width - new_width) + 'px';
 					},
-					'ne': function() {
+					
+					"ne": function () {
 						resize_ops.n();
 						resize_ops.e();
 					},
-					'nw': function() {
+					"nw": function () {
 						resize_ops.n();
 						resize_ops.w();
-					}
+					},
+					"se": function () {
+						resize_ops.s();
+						resize_ops.e();
+					},
+					"sw": function () {
+						resize_ops.s();
+						resize_ops.w();
+					},
 				};
 				
 				//Execute resize operation
@@ -299,20 +300,20 @@
 		
 		//Tidy up dimensional constraints later on
 		setTimeout(() => {
-			const vw = window.innerWidth;
-			const vh = window.innerHeight;
+			let vw = window.innerWidth;
+			let vh = window.innerHeight;
 			
-			const rect = el.getBoundingClientRect(); // includes left/top offsets
-			const el_left = rect.left;
-			const el_top = rect.top;
+			let rect = el.getBoundingClientRect(); // includes left/top offsets
+			let el_left = rect.left;
+			let el_top = rect.top;
 			let el_width = rect.width;
 			let el_height = rect.height;
 			
-			// Determine remaining visible space from current offset
-			const available_w = vw - el_left;
-			const available_h = vh - el_top;
+			//Determine remaining visible space from current offset
+			let available_w = vw - el_left;
+			let available_h = vh - el_top;
 			
-			// Clamp width/height so element never exceeds remaining viewport
+			//Clamp width/height so element never exceeds remaining viewport
 			if (el_width > available_w) {
 				el_width = available_w;
 				el.style.width = el_width + "px";
@@ -324,12 +325,10 @@
 			}
 			
 			// (optional) allow scroll if internally larger content
-			if (el.scrollHeight > el_height) {
+			if (el.scrollHeight > el_height)
 				el.style.overflowY = "auto";
-			}
-			if (el.scrollWidth > el_width) {
+			if (el.scrollWidth > el_width)
 				el.style.overflowX = "auto";
-			}
 		}, 150);
 		
 		//Return statement

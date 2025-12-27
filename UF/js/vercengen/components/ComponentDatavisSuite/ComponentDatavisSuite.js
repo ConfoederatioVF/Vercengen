@@ -60,7 +60,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				}, { 
 					name: "Graph", style: topbar_button_style }),
 				edit_series_button: new ve.Button(() => {
-					this.openEditSeries();
+					this.openEditSeriesHierarchy();
 				}, { name: "Series",
 					style: topbar_button_style }),
 				script_button: new ve.Button(() => {}, { name: "ScriptManager", 
@@ -116,7 +116,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		let value = (arg0_value) ? arg0_value : {};
 	}
 	
-	drawEditGraph () { //[WIP] - Finish function body
+	drawEditGraph () {
 		//Declare local instance variables
 		let actions_bar = new ve.HierarchyDatatype({
 			create_new_graph: new ve.Button(() => {
@@ -252,7 +252,6 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		//Populate hierarchy_obj based off current .series
 		Object.iterate(this.series, (local_key, local_value) => { //[WIP] - Finish population function
 			let series_name = this.getSeriesName(local_value);
-			let table_obj = this.table_obj;
 			
 			hierarchy_obj[local_key] = new ve.HierarchyDatatype({
 				icon: new ve.HTML("<icon>legend_toggle</icon>"),
@@ -273,36 +272,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					}
 				}),
 				context_menu_button: new ve.Button(() => {
-					if (this.edit_series_window) this.edit_series_window.close();
-					
-					this.edit_series_window = new ve.Window({
-						range_information: new ve.HTML(() => `Series Range: ${table_obj.getRangeName(local_value.coords)}`),
-						range_selection: new ve.RawInterface({
-							clear_range: new ve.Button(() => {
-								delete local_value.coords;
-								this.drawEditSeriesHierarchy();
-								this.drawGraphs();
-								
-								veToast(`Cleared selected series range.`);
-							}, { name: "Clear Range", limit: () => local_value.coords }),
-							select_series_range: new ve.Button(() => {
-								table_obj.setSelectedRange(local_value.coords[0], local_value.coords[1]);
-							}, { name: "Select Series Range", limit: () => local_value.coords }),
-							set_series_range: new ve.Button(() => {
-								try {
-									local_value.coords = table_obj.getSelectedRange();
-									this.drawEditSeriesHierarchy();
-									this.drawGraphs();
-									
-									veToast(`New series range set.`);
-								} catch (e) { console.error(e); }
-							}, { name: "Set Series Range" })
-						})
-					}, {
-						name: `Edit ${series_name}`,
-						can_rename: false,
-						width: "30rem"
-					});
+					this.openEditSeries(local_value);
 				}, { 
 					name: "<icon>more_vert</icon>",
 					tooltip: "Modify Series",
@@ -425,7 +395,46 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		this.drawEditGraph();
 	}
 	
-	openEditSeries () {
+	openEditSeries (arg0_series_obj) {
+		//Convert from parameters
+		let series_obj = (arg0_series_obj) ? arg0_series_obj : {};
+		
+		//Declare local instance variables
+		let series_name = this.getSeriesName(series_obj);
+		
+		//Refresh series window
+		if (this.edit_series_window) this.edit_series_window.close();
+		this.edit_series_window = new ve.Window({
+			range_information: new ve.HTML(() => `Series Range: ${this.table_obj.getRangeName(series_obj.coords)}`),
+			range_selection: new ve.RawInterface({
+				clear_range: new ve.Button(() => {
+					delete series_obj.coords;
+					this.drawEditSeriesHierarchy();
+					this.drawGraphs();
+					
+					veToast(`Cleared selected series range.`);
+				}, { name: "Clear Range", limit: () => series_obj.coords }),
+				select_series_range: new ve.Button(() => {
+					this.table_obj.setSelectedRange(series_obj.coords[0], series_obj.coords[1]);
+				}, { name: "Select Series Range", limit: () => series_obj.coords }),
+				set_series_range: new ve.Button(() => {
+					try {
+						series_obj.coords = this.table_obj.getSelectedRange();
+						this.drawEditSeriesHierarchy();
+						this.drawGraphs();
+						
+						veToast(`New series range set.`);
+					} catch (e) { console.error(e); }
+				}, { name: "Set Series Range" })
+			})
+		}, {
+			name: `Edit ${series_name}`,
+			can_rename: false,
+			width: "30rem"
+		});
+	}
+	
+	openEditSeriesHierarchy () {
 		//Close this.series_window if already open
 		if (this.series_window) this.series_window.close();
 		
