@@ -59,11 +59,14 @@ The framework is batteries included and supports a range of Features (which enca
 
 Currently supported locales: DE, EN-GB (Default), FR.
 
-Default **Features** include:
+Default **Features** (9):
 - Confirm, ContextMenu, Modal, Navbar, PageMenuWindow, Scene, Toast, Tooltip, Window
 
-Default **Components** include:
+Default **Components** (41):
 - BIUF (Rich Text), Button, Checkbox, Colour, Datalist, DatavisSuite, Date, DateLength, File, FileExplorer, FlexInterface, Graph, HTML, Hierarchy, HierarchyDatatype, Interface, List, Map, MultiTag, NodeEditor, NodeEditorDatatype, Number, ObjectInspector, PageMenu, Password, Radio, Range, RawInterface, ScriptManager, ScriptManagerBlockly, ScriptManagerCodemirror, SearchSelect, Select, Table (Spreadsheet Editor), Telephone, Text, Time, Toggle, URL, UndoRedo, WYSIWYG (Word Processor)
+
+> [!NOTE]
+> A corresponding GIS for ve.Map is available at [Naissance](https://github.com/Confoederatio/Naissance).
 
 <br>
 <img src = "https://confoederatio.org/Vercengen/autodoc/images/undo_redo_preview.png">
