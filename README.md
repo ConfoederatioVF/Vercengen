@@ -63,7 +63,7 @@ Default **Features** include:
 - Confirm, ContextMenu, Modal, Navbar, PageMenuWindow, Scene, Toast, Tooltip, Window
 
 Default **Components** include:
-- BIUF (Rich Text), Button, Checkbox, Colour, Datalist, Date, DateLength, File, FileExplorer, HTML, Hierarchy, HierarchyDatatype, Interface, List, Map, MultiTag, NodeEditor, NodeEditorDatatype, Number, ObjectInspector, PageMenu, Password, Radio, Range, RawInterface, ScriptManager, ScriptManagerBlockly, ScriptManagerCodemirror, SearchSelect, Select, Table, Telephone, Text, Time, Toggle, URL, UndoRedo, WYSIWYG
+- BIUF (Rich Text), Button, Checkbox, Colour, Datalist, DatavisSuite, Date, DateLength, File, FileExplorer, FlexInterface, Graph, HTML, Hierarchy, HierarchyDatatype, Interface, List, Map, MultiTag, NodeEditor, NodeEditorDatatype, Number, ObjectInspector, PageMenu, Password, Radio, Range, RawInterface, ScriptManager, ScriptManagerBlockly, ScriptManagerCodemirror, SearchSelect, Select, Table (Spreadsheet Editor), Telephone, Text, Time, Toggle, URL, UndoRedo, WYSIWYG (Word Processor)
 
 <br>
 <img src = "https://confoederatio.org/Vercengen/autodoc/images/undo_redo_preview.png">
