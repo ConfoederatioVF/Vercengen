@@ -65,6 +65,9 @@ Default **Features** (9):
 Default **Components** (41):
 - BIUF (Rich Text), Button, Checkbox, Colour, Datalist, DatavisSuite, Date, DateLength, File, FileExplorer, FlexInterface, Graph, HTML, Hierarchy, HierarchyDatatype, Interface, List, Map, MultiTag, NodeEditor, NodeEditorDatatype, Number, ObjectInspector, PageMenu, Password, Radio, Range, RawInterface, ScriptManager, ScriptManagerBlockly, ScriptManagerCodemirror, SearchSelect, Select, Table (Spreadsheet Editor), Telephone, Text, Time, Toggle, URL, UndoRedo, WYSIWYG (Word Processor)
 
+> [!NOTE]
+> A corresponding GIS for ve.Map is available at [Naissance](https://github.com/Confoederatio/Naissance).
+
 <br>
 <img src = "https://confoederatio.org/Vercengen/autodoc/images/undo_redo_preview.png">
 <div align = "center"><b>Note.</b> Undo/Redo supports both a Timeline view as well as a graphical Tree view.</div>
