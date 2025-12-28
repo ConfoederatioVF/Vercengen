@@ -193,7 +193,9 @@
 	 * @param {Object} arg0_object
 	 * @param {function(arg0_local_key, arg1_local_value)|function(arg0_local_value)} arg1_function
 	 * @param {Object} [arg2_options]
-	 *  @param [arg2_options.sort_mode] - Either 'ascending'/'descending'. Sorts object keys.
+	 *  @param {Object|string} [arg2_options.sort_mode] - Either 'ascending'/'descending'. Sorts object keys.
+	 *   @param {string} [arg2_options.sort_mode.key] - Refers to a subobject key to iterate by.
+	 *   @param {string} [arg2_options.sort_mode.type="descending"] - Either 'ascending'/'descending'.
 	 */
 	Object.iterate = function (arg0_object, arg1_function, arg2_options) {
 		//Convert from parameters
@@ -211,15 +213,36 @@
 		
 		//Declare local instance variables
 		let all_local_keys = Object.keys(object);
-			//Sort all_local_keys by .sort_mode
-			if (options.sort_mode === "date_ascending") {
+			if (typeof options.sort_mode === "object") {
+				let sort_key = options.sort_mode.key;
+				let sort_type = (options.sort_mode.type) ? options.sort_mode.type : "descending";
+				
 				all_local_keys = all_local_keys.sort((a, b) => {
-					return parseInt(a) - parseInt(b);
+					//Declare local instance variables
+					let value_a = Object.getValue(object[a], sort_key);
+					let value_b = Object.getValue(object[b], sort_key);
+					
+					//Make local comparison
+					let comparison = 0;
+						if (value_a < value_b) comparison = -1;
+						if (value_a > value_b) comparison = 1;
+						
+					//Return statement
+					if (sort_type === "descending")
+						return comparison*-1;
+					return comparison;
 				});
-			} else if (options.sort_mode === "date_descending") {
-				all_local_keys = all_local_keys.sort((a, b) => {
-					return parseInt(b) - parseInt(a);
-				});
+			} else if (typeof options.sort_mode === "string") {
+				//Sort all_local_keys by .sort_mode
+				if (["ascending", "date_ascending"].includes(options.sort_mode)) {
+					all_local_keys = all_local_keys.sort((a, b) => {
+						return parseInt(a) - parseInt(b);
+					});
+				} else if (["date_descending", "descending"].includes(options.sort_mode)) {
+					all_local_keys = all_local_keys.sort((a, b) => {
+						return parseInt(b) - parseInt(a);
+					});
+				}
 			}
 		
 		//Call functions

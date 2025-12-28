@@ -47,9 +47,21 @@ ve.Graph = class extends ve.Component {
 		delete this.from_binding_fire_silently;
 	}
 	
+	_getDefaultBodyStyle () {
+		//Declare local instance variables
+		let root_style = window.getComputedStyle(document.body);
+		
+		//Return statement
+		return {
+			color: (this.options?.textStyle?.color) ?
+				this.options.textStyle.color : root_style.getPropertyValue("--body-colour")
+		};
+	}
+	
 	draw () { //[WIP] - Finish function body
 		//Declare local instance variables
 		let has_coords = (this.x !== undefined || this.y !== undefined);
+		let root_style = window.getComputedStyle(document.body);
 		
 		//this.element.innerHTML = "";
 		if (has_coords) {
@@ -76,14 +88,30 @@ ve.Graph = class extends ve.Component {
 		if (this.options.type === "line_chart" || !this.options.type) {
 			this.chart_options.series = [];
 			this.chart_options.title = {
-				text: (this.options?.title?.text) ? this.options.title.text : ""
+				text: (this.options?.title?.text) ? this.options.title.text : "",
+				textStyle: {
+					color: (this.options?.title?.textStyle?.color) ? 
+						this.options.title.textStyle.color : root_style.getPropertyValue("--header-colour"),
+					fontFamily: (this.options?.title?.textStyle?.fontFamily) ?
+						this.options.title.textStyle.fontFamily : root_style.getPropertyValue("--header-font-family")
+				}
 			};
 			this.chart_options.xAxis = {
 				boundaryGap: false,
-				type: "category"
+				type: "category",
+				
+				axisLabel: this._getDefaultBodyStyle(),
+				axisLine: {
+					lineStyle: this._getDefaultBodyStyle()
+				}
 			};
 			this.chart_options.yAxis = {
-				type: "value"
+				type: "value",
+				
+				axisLabel: this._getDefaultBodyStyle(),
+				axisLine: {
+					lineStyle: this._getDefaultBodyStyle()
+				}
 			};
 			
 			if (this.value.series)

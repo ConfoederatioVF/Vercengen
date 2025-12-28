@@ -45,8 +45,6 @@ ve.Hierarchy = class extends ve.Component {
 			this.element.setAttribute("component", "ve-hierarchy");
 		Object.iterate(options.attributes, (local_key, local_value) =>
 			this.element.setAttribute(local_key, local_value.toString()));
-			this.element.id = (options.namespace) ? 
-				options.namespace : Class.generateRandomID(ve.Hierarchy);
 			this.element.instance = this;
 		this.options = options;
 		
@@ -124,6 +122,8 @@ ve.Hierarchy = class extends ve.Component {
 		
 		//2. Append all hierarchy datatype Vercengen components; iterate over all this.components_obj
 		let ol_el = document.createElement("ol");
+		ol_el.id = (this.options.namespace) ?
+			this.options.namespace : Class.generateRandomID(ve.Hierarchy);
 		ol_el.setAttribute("class", "list ve-drag-disabled ve-hierarchy");
 		
 		Object.iterate(this.components_obj, (local_key, local_value) => {

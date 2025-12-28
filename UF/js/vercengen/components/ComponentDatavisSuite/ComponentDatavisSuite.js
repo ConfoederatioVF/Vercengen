@@ -123,6 +123,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				let new_graph_id = Object.generateRandomID(this.graphs);
 				
 				this.graphs[new_graph_id] = new ve.Graph();
+					this.graphs[new_graph_id].options.order = Object.keys(this.graphs).length;
 				this.drawEditGraph();
 				
 				veToast(`Added chart to graph.`);
@@ -143,7 +144,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			Object.iterate(this.graphs, (local_key, local_value) => { //[WIP] - Finish population function
 				if (local_value instanceof ve.Graph) {
 					let graph_name = (local_value?.options?.symbol?.title?.text) ?
-						local_value.options.symbol.title.text : "New Graph";
+						local_value.options.symbol.title.text : "New Graph"
 					
 					hierarchy_obj[local_key] = new ve.HierarchyDatatype({
 						icon: new ve.HTML("<icon>show_chart</icon>"),
@@ -213,14 +214,36 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 							}
 						})
 					}, {
-						name: graph_name
+						key: local_key,
+						name: graph_name,
+						name_options: {
+							onuserchange: (v) => {
+								if (!local_value.options.title) local_value.options.title = {};
+									local_value.options.title.text = v;
+								local_value.draw();
+							}
+						}
 					});
+				}
+			}, {
+				sort_mode: {
+					key: "order",
+					type: "ascending"
 				}
 			});
 			
 			let new_hierarchy = new ve.Hierarchy({
 				actions_bar: actions_bar,
 				...hierarchy_obj
+			}, {
+				onuserchange: (v, e) => {
+					//Declare local instance variables
+					let hierarchy_array = e.getHierarchyArray();
+					
+					for (let i = 0; i < hierarchy_array.length; i++) try {
+						this.series[hierarchy_array[i].instance.options.key].order = i;
+					} catch (e) {}
+				}
 			});
 			
 			graph_options.element.innerHTML = "";
@@ -236,6 +259,8 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				
 				//Create new series and redraw hierarchy
 				this.series[new_series_id] = {
+					coords: this.table_obj.getSelectedRange(),
+					order: Object.keys(this.series).length,
 					pivot: "column",
 					symbol: {}
 				};
@@ -281,6 +306,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					}
 				})
 			}, {
+				key: local_key,
 				name: series_name,
 				name_options: {
 					onuserchange: (v) => {
@@ -288,12 +314,26 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					}
 				}
 			});
+		}, {
+			sort_mode: {
+				key: "order",
+				type: "ascending"
+			}
 		});
 		
 		//Declare new_hierarchy and push it to this.series_window.hierarchy if possible
 		let new_hierarchy = new ve.Hierarchy({
 			actions_bar: actions_bar,
 			...hierarchy_obj
+		}, {
+			onuserchange: (v, e) => {
+				//Declare local instance variables
+				let hierarchy_array = e.getHierarchyArray();
+				
+				for (let i = 0; i < hierarchy_array.length; i++) try {
+					this.series[hierarchy_array[i].instance.options.key].order = i;
+				} catch (e) {}
+			}
 		});
 		
 		if (this.series_window) {
