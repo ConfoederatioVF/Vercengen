@@ -337,4 +337,12 @@
 		//Return statement
 		return el;
 	};
+	
+	HTML.handleFlexResize = function (arg0_md, arg1_size_prop, arg2_pos_prop) { //[WIP] - Finish function body
+		
+	};
+	
+	HTML.handleFlexResizeEvents = function (arg0_el) { //[WIP] - Finish function body
+		
+	};
 }

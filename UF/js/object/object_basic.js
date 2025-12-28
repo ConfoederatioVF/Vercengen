@@ -191,7 +191,7 @@
 	 * Iterates over an object, with similar conventions to other Object static methods.
 	 *
 	 * @param {Object} arg0_object
-	 * @param {function(arg0_local_key, arg1_local_value)|function(arg0_local_value)} arg1_function
+	 * @param {function(string: arg0_local_key, arg1_local_value: any, arg2_index: number)|function(arg0_local_value: any)} arg1_function
 	 * @param {Object} [arg2_options]
 	 *  @param {Object|string} [arg2_options.sort_mode] - Either 'ascending'/'descending'. Sorts object keys.
 	 *   @param {string} [arg2_options.sort_mode.key] - Refers to a subobject key to iterate by.
@@ -251,7 +251,7 @@
 				local_function(object[all_local_keys[i]]);
 		} else {
 			for (let i = 0; i < all_local_keys.length; i++)
-				local_function(all_local_keys[i], object[all_local_keys[i]]);
+				local_function(all_local_keys[i], object[all_local_keys[i]], i);
 		}
 	};
 	
