@@ -107,11 +107,10 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 		this.fireFromBinding();
 	}
 	
-	
 	/**
 	 * Handles events for the current component.
 	 * - Method of: {@link ve.FlexInterface}
-	 * 
+	 *
 	 * @alias handleEvents
 	 * @memberof ve.Component.ve.FlexInterface
 	 */
@@ -119,25 +118,21 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 		this.element.addEventListener("mousedown", (e) => {
 			let html = document.querySelector("html");
 			let target = e.target;
-			
 			let parent = target.parentNode;
 			
-			if (target.nodeType !== 1 || target.tagName !== "FLEX-RESIZER") return; //Internal guard clause if the target is not a <flex-resizer> element.
+			if (target.nodeType !== 1 || target.tagName !== "FLEX-RESIZER") return;
 			
-			//Declare local instance variables 
 			let is_horizontal = parent.classList.contains("horizontal");
 			let is_vertical = parent.classList.contains("vertical");
 			
 			if (is_horizontal) {
-				// Horizontal container means we resize side-by-side items (X-axis)
 				target.style.cursor = "col-resize";
 				html.style.cursor = "col-resize";
-				this.handleResize(e, "offsetWidth", "pageX", "col-resize", "ew-resize");
+				this.handleResize(e, "width", "pageX");
 			} else if (is_vertical) {
-				// Vertical container means we resize stacked items (Y-axis)
 				target.style.cursor = "row-resize";
 				html.style.cursor = "row-resize";
-				this.handleResize(e, "offsetHeight", "pageY", "row-resize", "ns-resize");
+				this.handleResize(e, "height", "pageY");
 			}
 		});
 	}
@@ -145,43 +140,44 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 	/**
 	 * Handles a resize event given a MouseDown event type. Internal helper method.
 	 * - Method of: {@link ve.FlexInterface}
-	 * 
+	 *
 	 * @alias handleResize
 	 * @memberof ve.Component.ve.FlexInterface
-	 * 
+	 *
 	 * @param {Event} arg0_e
-	 * @param {string} arg1_size_property
-	 * @param {string} arg2_position_property
+	 * @param {string} arg1_dimension_property - "width" or "height"
+	 * @param {string} arg2_position_property - "pageX" or "pageY"
 	 */
-	handleResize (arg0_e, arg1_size_property, arg2_position_property) {
+	handleResize (arg0_e, arg1_dimension_property, arg2_position_property) {
 		//Convert from parameters
 		let md = arg0_e;
-		let sizeProp = arg1_size_property;
+		let dimension_prop = arg1_dimension_property; // "width" or "height"
 		let position_property = arg2_position_property;
 		
 		//Declare local instance variables
 		let r = md.target;
-		
+		let parent = r.parentNode;
 		let next = r.nextElementSibling;
 		let prev = r.previousElementSibling;
 		
-		if (!prev || !next) return; //Internal guard clause if there is no next or previous sibling element
+		if (!prev || !next) return;
 		
-		//Capture initial state (Anchor points)
-		//We use getBoundingClientRect for sub-pixel precision to prevent "shrinking"
+		//Capture initial state using getBoundingClientRect for sub-pixel accuracy
 		let prev_rect = prev.getBoundingClientRect();
 		let next_rect = next.getBoundingClientRect();
+		let parent_rect = parent.getBoundingClientRect();
 		
-		let start_next_size = (sizeProp === 'offsetWidth') ? next_rect.width : next_rect.height;
+		let start_prev_size = prev_rect[dimension_prop];
+		let start_next_size = next_rect[dimension_prop];
+		let parent_total_size = parent_rect[dimension_prop];
+		
 		let start_position = md[position_property];
-		let start_prev_size = (sizeProp === 'offsetWidth') ? prev_rect.width : prev_rect.height;
-		
-		//The total combined size must remain constant
 		let total_combined_size = start_prev_size + start_next_size;
-			md.preventDefault();
+		
+		md.preventDefault();
 		
 		let _onmousemove = (e) => {
-			//Calculate delta from the STARTing click, not the last frame
+			//Calculate delta from the starting click
 			let current_position = e[position_property];
 			let d = current_position - start_position;
 			
@@ -198,10 +194,16 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 				new_prev_size = total_combined_size;
 			}
 			
-			//Apply styles
-			//Use flex-basis specifically to ensure Flexbox respects the calculation
-			prev.style.flex = `0 0 ${new_prev_size}px`;
-			next.style.flex = `0 0 ${new_next_size}px`;
+			/**
+			 * Calculate percentage relative to the parent container.
+			 * This ensures that when the root element resizes, the partitions scale proportionally.
+			 */
+			let prev_percentage = (new_prev_size / parent_total_size) * 100;
+			let next_percentage = (new_next_size / parent_total_size) * 100;
+			
+			//Apply styles as percentages
+			prev.style.flex = `0 0 ${prev_percentage}%`;
+			next.style.flex = `0 0 ${next_percentage}%`;
 		};
 		
 		let _onmouseup = () => {
@@ -255,13 +257,13 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 			let flex_resizer_el = document.createElement("flex-resizer");
 			
 			if (typeof local_value === "object" && local_key !== "options" && !(local_value instanceof ve.Component)) {
-				if (!options.flex_disabled && local_index !== 1)
+				if (!options.flex_disabled && local_index >= 1)
 					root_el.appendChild(flex_resizer_el);
 				
 				let container_el = ve.FlexInterface.generateHTMLRecursively(undefined, local_value, local_value.options);
 					root_el.appendChild(container_el);
 			} else if (local_value instanceof ve.Component) {
-				if (!options.flex_disabled && local_index !== 1)
+				if (!options.flex_disabled && local_index >= 1)
 					root_el.appendChild(flex_resizer_el);
 				
 				local_value.bind(flex_item_el);

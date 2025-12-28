@@ -191,7 +191,7 @@
 	 * Iterates over an object, with similar conventions to other Object static methods.
 	 *
 	 * @param {Object} arg0_object
-	 * @param {function(string: arg0_local_key, arg1_local_value: any, arg2_index: number)|function(arg0_local_value: any)} arg1_function
+	 * @param {function(arg0_local_key, arg1_local_value, arg2_index)|function(arg0_local_value)} arg1_function
 	 * @param {Object} [arg2_options]
 	 *  @param {Object|string} [arg2_options.sort_mode] - Either 'ascending'/'descending'. Sorts object keys.
 	 *   @param {string} [arg2_options.sort_mode.key] - Refers to a subobject key to iterate by.

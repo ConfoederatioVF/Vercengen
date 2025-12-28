@@ -134,6 +134,13 @@
 
 /* -- ve.FlexInterface -- */
 [component="ve-flex-interface"] {
+    height: 100%;
+    width: 100%;
+    
+    > flex {
+        height: 100%;
+        width: 100%;
+    }
     flex {
         display: flex;
         overflow: hidden;
@@ -155,6 +162,9 @@
                 mask-position: center;
             }
         }
+    }
+    flex flex-resizer:first-child {
+        display: none;
     }
 
     flex.horizontal {
@@ -185,6 +195,8 @@
 
     flex-item {
         overflow: auto;
+        scrollbar-color: var(--body-colour) transparent;
+        scrollbar-width: thin;
     }
 }
 
@@ -204,7 +216,10 @@
     summary:hover {
         cursor: pointer;
     }
-    > table { width: 100%; }
+    > table { 
+        height: 100%;
+        width: 100%; 
+    }
     > table:has([component="ve-script-manager"]),
     > table:has([component="ve-table"]),
     > table:has([component="ve-wysiwyg"]) {

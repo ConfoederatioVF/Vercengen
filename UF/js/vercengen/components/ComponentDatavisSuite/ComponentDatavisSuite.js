@@ -275,7 +275,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		let hierarchy_obj = {};
 		
 		//Populate hierarchy_obj based off current .series
-		Object.iterate(this.series, (local_key, local_value) => { //[WIP] - Finish population function
+		Object.iterate(this.series, (local_key, local_value) => {
 			let series_name = this.getSeriesName(local_value);
 			
 			hierarchy_obj[local_key] = new ve.HierarchyDatatype({
@@ -411,23 +411,26 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		
 		//Open this.graph_window with controls on the left and visualisation on the right
 		this.graph_window = new ve.Window({
-			container: new ve.RawInterface({
+			container: new ve.FlexInterface({
 				graph_options: new ve.HTML("Loading ..", {
 					style: {
-						overflowX: "auto",
-						scrollbarWidth: "thin",
-						width: "50%"
+						scrollbarWidth: "thin"
 					}
 				}),
 				graph: new ve.RawInterface({}, {
 					style: {
-						height: "400px",
-						width: "50%"
+						height: "100%",
+						width: "100%",
+						
+						overflow: "hidden"
 					}
 				})
 			}, {
+				onuserchange: (v, e) => {
+					this.drawGraphs(true);
+				},
 				style: {
-					display: "flex"
+					padding: 0
 				}
 			})
 		}, {
