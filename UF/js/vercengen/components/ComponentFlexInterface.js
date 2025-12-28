@@ -53,6 +53,102 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 		this.fireFromBinding();
 	}
 	
+	handleEvents () { //[WIP] - Refactor function at a later date
+		this.element.addEventListener("mousedown", (md) => {
+			const target = md.target;
+			const html = document.querySelector("html");
+			
+			// Check if the target is a resizer
+			if (target.nodeType !== 1 || target.tagName !== "FLEX-RESIZER") {
+				return;
+			}
+			
+			const parent = target.parentNode;
+			const isHorizontal = parent.classList.contains("horizontal");
+			const isVertical = parent.classList.contains("vertical");
+			
+			if (isHorizontal) {
+				// Horizontal container means we resize side-by-side items (X-axis)
+				target.style.cursor = "col-resize";
+				html.style.cursor = "col-resize";
+				this.handleResize(md, "offsetWidth", "pageX", "col-resize", "ew-resize");
+			} else if (isVertical) {
+				// Vertical container means we resize stacked items (Y-axis)
+				target.style.cursor = "row-resize";
+				html.style.cursor = "row-resize";
+				this.handleResize(md, "offsetHeight", "pageY", "row-resize", "ns-resize");
+			}
+		});
+	}
+	
+	handleResize(md, sizeProp, posProp, activeCursor, resetCursor) { //[WIP] - Refactor function at a later date
+		const r = md.target;
+		const prev = r.previousElementSibling;
+		const next = r.nextElementSibling;
+		
+		if (!prev || !next) return;
+		
+		md.preventDefault();
+		
+		// Capture initial state
+		let prevSize = prev[sizeProp];
+		let nextSize = next[sizeProp];
+		const sumSize = prevSize + nextSize;
+		
+		// Use getComputedStyle to ensure we get current flex values if not set inline
+		const getFlexGrow = (el) =>
+			Number(window.getComputedStyle(el).flexGrow) || 0;
+		
+		const prevGrow = getFlexGrow(prev);
+		const nextGrow = getFlexGrow(next);
+		const sumGrow = prevGrow + nextGrow;
+		
+		let lastPos = md[posProp];
+		
+		const onMouseMove = (mm) => {
+			const pos = mm[posProp];
+			const d = pos - lastPos;
+			
+			prevSize += d;
+			nextSize -= d;
+			
+			// Constrain boundaries
+			if (prevSize < 0) {
+				nextSize += prevSize;
+				prevSize = 0;
+			}
+			if (nextSize < 0) {
+				prevSize += nextSize;
+				nextSize = 0;
+			}
+			
+			// Calculate new proportional flex-grow values
+			// Formula: (New Pixel Size / Total Pixel Size) * Total Flex Grow
+			const prevGrowNew = sumGrow * (prevSize / sumSize);
+			const nextGrowNew = sumGrow * (nextSize / sumSize);
+			
+			prev.style.flexGrow = prevGrowNew;
+			next.style.flexGrow = nextGrowNew;
+			
+			lastPos = pos;
+		};
+		
+		const onMouseUp = () => {
+			const html = document.querySelector("html");
+			html.style.cursor = "default";
+			r.style.cursor = resetCursor;
+			
+			window.removeEventListener("mousemove", onMouseMove);
+			window.removeEventListener("mouseup", onMouseUp);
+			
+			// Notify system of changes if binding exists
+			this.fireToBinding();
+		};
+		
+		window.addEventListener("mousemove", onMouseMove);
+		window.addEventListener("mouseup", onMouseUp);
+	}
+	
 	static generateHTMLRecursively (arg0_root_el, arg1_value, arg2_options) {
 		//Convert from parameters
 		let root_el = (arg0_root_el) ? arg0_root_el : document.createElement("flex");
