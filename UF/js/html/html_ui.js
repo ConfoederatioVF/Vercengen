@@ -286,9 +286,10 @@
 			let e = (arg0_e || window.event);
 			
 			if (document.querySelectorAll(`
+				[contenteditable]:not(#window-name):focus,
+				flex-resizer:hover,
 				.maptalks-wrapper:hover,
 				input:focus, 
-				[contenteditable]:not(#window-name):focus,
 				#scene:hover,
 				.wysiwyg-editor-container:hover,
 				.ve-drag-disabled:hover

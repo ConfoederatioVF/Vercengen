@@ -132,6 +132,62 @@
     }
 }
 
+/* -- ve.FlexInterface -- */
+[component="ve-flex-interface"] {
+    flex {
+        display: flex;
+        overflow: hidden;
+
+        > flex-resizer {
+            background-color: var(--hover-colour);
+            flex: 0 0 var(--cell-padding);
+            position: relative;
+
+            /* The icon is placed in a pseudo-element to allow separate coloring via masks */
+            &::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background-color: var(--body-colour);
+                -webkit-mask-repeat: no-repeat;
+                -webkit-mask-position: center;
+                mask-repeat: no-repeat;
+                mask-position: center;
+            }
+        }
+    }
+
+    flex.horizontal {
+        flex-direction: row;
+
+        > flex-resizer {
+            cursor: ew-resize;
+
+            &::after {
+                -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='30'><path d='M5 0v30' stroke='black' stroke-width='1'/></svg>");
+                mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='30'><path d='M5 0v30' stroke='black' stroke-width='1'/></svg>");
+            }
+        }
+    }
+
+    flex.vertical {
+        flex-direction: column;
+
+        > flex-resizer {
+            cursor: ns-resize;
+
+            &::after {
+                -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='10'><path d='M0 5h30' stroke='black' stroke-width='1'/></svg>");
+                mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='10'><path d='M0 5h30' stroke='black' stroke-width='1'/></svg>");
+            }
+        }
+    }
+
+    flex-item {
+        overflow: auto;
+    }
+}
+
 /* -- ve.Graph -- */
 [component="ve-graph"] > div {
     height: 100%;

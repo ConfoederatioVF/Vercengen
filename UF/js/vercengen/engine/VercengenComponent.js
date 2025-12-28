@@ -69,9 +69,12 @@
  * - {@link ve.Component.ve.Checkbox|veCheckbox}(arg0_value:{@link boolean}|{@link Object}<{@link boolean}>\*, arg1_options: {@link Object}) | {@link boolean}|{@link Object}<{@link boolean}>\* - A recursive list of checkboxes, or a single toggleable input.
  * - {@link ve.Component.ve.Colour|veColour}(arg0_value:{@link Array}<{@link number}, {@link number}, {@link number}|{@link string}, arg1_options: {@link Object}>) | {@link Array}<{@link number}, {@link number}, {@link number}> - RGB colour selector.
  * - {@link ve.Component.ve.Datalist|veDatalist}(arg0_value:{@link Object}<{@link string}>, arg1_options: {@link Object})
+ * - {@link ve.Component.ve.DatavisSuite|veDatavisSuite}(arg0_value:{@link Object}, arg1_options:{@link Object}) | {@link Object}
  * - {@link ve.Component.ve.Date|veDate}(arg0_value:{@link UF.Date}, arg1_options: {@link Object}) | {@link UF.Date}
  * - {@link ve.Component.ve.DateLength|veDateLength}(arg0_value:{@link UF.Date}, arg1_options: {@link Object}) | {@link UF.Date}
  * - {@link ve.Component.ve.File|veFile}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string} - The file/folder path selected by the user.
+ * - {@link ve.Component.ve.FlexInterface|veFlexInterface}(arg0_value:{@link Object}<{@link Object}|{@link ve.Component}>, arg1_options:{@link Object}) | {@link Object}<{@link Object}|{@link ve.Component}>
+ * - {@link ve.Component.ve.Graph|veGraph}(arg0_value:{@link Object}, arg1_options:{@link Object}) | {@link Object}
  * - {@link ve.Component.ve.HTML|veHTML}(arg0_value:{@link function}|{@link HTMLElement}|{@link string}, arg1_options: {@link Object}) | {@link string}
  * - {@link ve.Component.ve.Interface|veInterface}(arg0_value:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) | {@link Object}<{@link ve.Component}>
  * - {@link ve.Component.ve.List|veList}(arg0_value:{@link Array}<{@link ve.Component}>, arg1_options:{@link Object}) | {@link Array}<{@link ve.Component}>

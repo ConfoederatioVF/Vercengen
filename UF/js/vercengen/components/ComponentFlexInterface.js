@@ -1,6 +1,9 @@
 /**
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  * 
+ * Flex interface used for partitions within the same window that can be automatically resized by the user, similar to sub-windows.
+ * - Functional binding: <span color=00ffff>veFlexInterface</span>().
+ * 
  * ##### Constructor:
  * - `arg0_value`: {@link Object}
  *   - `<category_key>`: {@link Object}
@@ -10,7 +13,24 @@
  *         - `.flex_disabled=false`: {@link boolean}
  *     - `.type="horizontal"` - Either 'horizontal'/'vertical'.
  *   - `.type="horizontal"` - Either 'horizontal'/'vertical'.
+ * - `arg1_options`: {@link Object}
  * 
+ * ##### Instance:
+ * - `<category_key>`: {@link Object}<{@link ve.Component}|{@link Object}>
+ * - `<component_key>`: {@link ve.Component}
+ * - `.reserved_keys`: {@link Array}<{@link string}> - Controls what keys are reserved and cannot be destructured.
+ * - `.v`: {@link Object}
+ * - `.value`: {@link Object} - Uses this.value instead of this.components_obj.
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.FlexInterface.handleEvents|handleEvents}</span>()
+ * - <span color=00ffff>{@link ve.FlexInterface.handleResize|handleResize}</span>(arg0_e:{@link Event}, arg1_size_property:{@link string}, arg2_position_property:{@link string})
+ * 
+ * ##### Static Methods:
+ * - <span color=00ffff>{@link ve.FlexInterface.generateHTMLRecursively|generateHTMLRecursively}</span>(arg0_root_el:{@link HTMLElement}, arg1_value:{@link Object}, arg2_options:{ flex_disabled:{@link boolean} })
+ * 
+ * @augments ve.Component
+ * @memberof ve.Component
  * @type {ve.FlexInterface}
  */
 ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS handlers
@@ -32,7 +52,13 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 		this.value = value;
 		
 		//Set .v
+		this.from_binding_fire_silently = true;
+		//KEEP AT BOTTOM!
+		this.name = this.options.name;
+		this.reserved_keys = Object.keys(this).concat(["reserved_keys", "v"]);
 		this.v = this.value;
+		
+		delete this.from_binding_fire_silently;
 	}
 	
 	get v () {
@@ -50,103 +76,112 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 		this.element.appendChild(ve.FlexInterface.generateHTMLRecursively(undefined, this.value, {
 			type: this.value.type
 		}));
+		
+		//Destructure components
+		Object.iterate(this.value, (local_key, local_value) => {
+			if (!this.reserved_keys.includes(local_key) && typeof local_value === "object") {
+				this[local_key] = local_value;
+			} else {
+				console.warn(`ve.RawInterface: ${local_key} is a reserved key. It can therefore not be set to:`, local_value);
+			}
+		});
+		
+		this.handleEvents();
 		this.fireFromBinding();
 	}
 	
-	handleEvents () { //[WIP] - Refactor function at a later date
-		this.element.addEventListener("mousedown", (md) => {
-			const target = md.target;
-			const html = document.querySelector("html");
+	handleEvents () {
+		this.element.addEventListener("mousedown", (e) => {
+			let html = document.querySelector("html");
+			let target = e.target;
 			
-			// Check if the target is a resizer
-			if (target.nodeType !== 1 || target.tagName !== "FLEX-RESIZER") {
-				return;
-			}
+			let parent = target.parentNode;
 			
-			const parent = target.parentNode;
-			const isHorizontal = parent.classList.contains("horizontal");
-			const isVertical = parent.classList.contains("vertical");
+			if (target.nodeType !== 1 || target.tagName !== "FLEX-RESIZER") return; //Internal guard clause if the target is not a <flex-resizer> element.
 			
-			if (isHorizontal) {
+			//Declare local instance variables 
+			let is_horizontal = parent.classList.contains("horizontal");
+			let is_vertical = parent.classList.contains("vertical");
+			
+			if (is_horizontal) {
 				// Horizontal container means we resize side-by-side items (X-axis)
 				target.style.cursor = "col-resize";
 				html.style.cursor = "col-resize";
-				this.handleResize(md, "offsetWidth", "pageX", "col-resize", "ew-resize");
-			} else if (isVertical) {
+				this.handleResize(e, "offsetWidth", "pageX", "col-resize", "ew-resize");
+			} else if (is_vertical) {
 				// Vertical container means we resize stacked items (Y-axis)
 				target.style.cursor = "row-resize";
 				html.style.cursor = "row-resize";
-				this.handleResize(md, "offsetHeight", "pageY", "row-resize", "ns-resize");
+				this.handleResize(e, "offsetHeight", "pageY", "row-resize", "ns-resize");
 			}
 		});
 	}
 	
-	handleResize(md, sizeProp, posProp, activeCursor, resetCursor) { //[WIP] - Refactor function at a later date
-		const r = md.target;
-		const prev = r.previousElementSibling;
-		const next = r.nextElementSibling;
+	handleResize (arg0_e, arg1_size_property, arg2_position_property) {
+		//Convert from parameters
+		let md = arg0_e;
+		let sizeProp = arg1_size_property;
+		let position_property = arg2_position_property;
 		
-		if (!prev || !next) return;
+		//Declare local instance variables
+		let r = md.target;
 		
-		md.preventDefault();
+		let next = r.nextElementSibling;
+		let prev = r.previousElementSibling;
 		
-		// Capture initial state
-		let prevSize = prev[sizeProp];
-		let nextSize = next[sizeProp];
-		const sumSize = prevSize + nextSize;
+		if (!prev || !next) return; //Internal guard clause if there is no next or previous sibling element
 		
-		// Use getComputedStyle to ensure we get current flex values if not set inline
-		const getFlexGrow = (el) =>
-			Number(window.getComputedStyle(el).flexGrow) || 0;
+		//Capture initial state (Anchor points)
+		//We use getBoundingClientRect for sub-pixel precision to prevent "shrinking"
+		let prev_rect = prev.getBoundingClientRect();
+		let next_rect = next.getBoundingClientRect();
 		
-		const prevGrow = getFlexGrow(prev);
-		const nextGrow = getFlexGrow(next);
-		const sumGrow = prevGrow + nextGrow;
+		let start_next_size = (sizeProp === 'offsetWidth') ? next_rect.width : next_rect.height;
+		let start_position = md[position_property];
+		let start_prev_size = (sizeProp === 'offsetWidth') ? prev_rect.width : prev_rect.height;
 		
-		let lastPos = md[posProp];
+		//The total combined size must remain constant
+		let total_combined_size = start_prev_size + start_next_size;
+			md.preventDefault();
 		
-		const onMouseMove = (mm) => {
-			const pos = mm[posProp];
-			const d = pos - lastPos;
+		let _onmousemove = (e) => {
+			//Calculate delta from the STARTing click, not the last frame
+			let current_position = e[position_property];
+			let d = current_position - start_position;
 			
-			prevSize += d;
-			nextSize -= d;
+			let new_prev_size = start_prev_size + d;
+			let new_next_size = start_next_size - d;
 			
-			// Constrain boundaries
-			if (prevSize < 0) {
-				nextSize += prevSize;
-				prevSize = 0;
+			// Constrain boundaries logic
+			if (new_prev_size < 0) {
+				new_prev_size = 0;
+				new_next_size = total_combined_size;
 			}
-			if (nextSize < 0) {
-				prevSize += nextSize;
-				nextSize = 0;
+			if (new_next_size < 0) {
+				new_next_size = 0;
+				new_prev_size = total_combined_size;
 			}
 			
-			// Calculate new proportional flex-grow values
-			// Formula: (New Pixel Size / Total Pixel Size) * Total Flex Grow
-			const prevGrowNew = sumGrow * (prevSize / sumSize);
-			const nextGrowNew = sumGrow * (nextSize / sumSize);
-			
-			prev.style.flexGrow = prevGrowNew;
-			next.style.flexGrow = nextGrowNew;
-			
-			lastPos = pos;
+			//Apply styles
+			//Use flex-basis specifically to ensure Flexbox respects the calculation
+			prev.style.flex = `0 0 ${new_prev_size}px`;
+			next.style.flex = `0 0 ${new_next_size}px`;
 		};
 		
-		const onMouseUp = () => {
-			const html = document.querySelector("html");
-			html.style.cursor = "default";
-			r.style.cursor = resetCursor;
+		let _onmouseup = () => {
+			let html = document.querySelector('html');
+			html.style.cursor = 'default';
+			r.style.cursor = (position_property === "pageX") ? "ew-resize" : "ns-resize";
 			
-			window.removeEventListener("mousemove", onMouseMove);
-			window.removeEventListener("mouseup", onMouseUp);
+			window.removeEventListener("mousemove", _onmousemove);
+			window.removeEventListener("mouseup", _onmouseup);
 			
-			// Notify system of changes if binding exists
-			this.fireToBinding();
+			if (typeof this.fireToBinding === "function")
+				this.fireToBinding();
 		};
 		
-		window.addEventListener("mousemove", onMouseMove);
-		window.addEventListener("mouseup", onMouseUp);
+		window.addEventListener("mousemove", _onmousemove);
+		window.addEventListener("mouseup", _onmouseup);
 	}
 	
 	static generateHTMLRecursively (arg0_root_el, arg1_value, arg2_options) {
@@ -170,13 +205,13 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 			let flex_resizer_el = document.createElement("flex-resizer");
 			
 			if (typeof local_value === "object" && local_key !== "options" && !(local_value instanceof ve.Component)) {
-				if (!options.flex_disabled && local_index !== 0)
+				if (!options.flex_disabled && local_index !== 1)
 					root_el.appendChild(flex_resizer_el);
 				
 				let container_el = ve.FlexInterface.generateHTMLRecursively(undefined, local_value, local_value.options);
 					root_el.appendChild(container_el);
 			} else if (local_value instanceof ve.Component) {
-				if (!options.flex_disabled && local_index !== 0)
+				if (!options.flex_disabled && local_index !== 1)
 					root_el.appendChild(flex_resizer_el);
 				
 				local_value.bind(flex_item_el);
@@ -187,4 +222,14 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 		//Return statement
 		return root_el;
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.FlexInterface}
+ */
+veFlexInterface = function () {
+	//Return statement
+	return new ve.FlexInterface(...arguments);
 };

@@ -9,6 +9,7 @@
  * - `arg1_options`: {@link Object}
  *   - `.is_folder=false`: {@link boolean}
  *   - `.open=false`: {@link boolean}
+ *   - `.type="default"`: {@link string} - Either 'default'/'flex'/'raw'. Returns a {@link ve.FlexInterface} and {@link ve.RawInterface} in other cases.
  * 
  * ##### Instance:
  * - `<component_key>`: {@link ve.Component} - Automatic destructuring for component_key.
@@ -46,6 +47,10 @@ ve.Interface = class extends ve.Component {
 		//Initialise options
 		if (options.is_folder !== false) options.is_folder = true;
 		
+		//Factory handler
+		if (options.type === "flex") return new ve.FlexInterface(components_obj, options);
+		if (options.type === "raw") return new ve.RawInterface(components_obj, options);
+		
 		//Declare local instance variables
 		let attributes = {
 			open: options.open,
@@ -63,7 +68,7 @@ ve.Interface = class extends ve.Component {
 			this.element.instance = this;
 			
 		this.options = options;
-			
+		
 		let html_string = [];
 		if (options.is_folder) {
 			html_string.push(`<details class = "ve interface-folder" ${(options.open) ? "open" : ""}>`);
