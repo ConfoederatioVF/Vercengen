@@ -61,11 +61,28 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 		delete this.from_binding_fire_silently;
 	}
 	
+	/**
+	 * Returns the current value of the component.
+	 * - Accessor of: {@link ve.FlexInterface}
+	 * 
+	 * @alias v
+	 * @memberof ve.Component.ve.FlexInterface
+	 * @type {Object}
+	 */
 	get v () {
 		//Return statement
 		return this.value;
 	}
 	
+	/**
+	 * Sets the present value of the component.
+	 * - Accessor of: {@link ve.FlexInterface}
+	 * 
+	 * @alias v
+	 * @memberof ve.Component.ve.FlexInterface
+	 * 
+	 * @param {Object} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : {};
@@ -90,6 +107,14 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 		this.fireFromBinding();
 	}
 	
+	
+	/**
+	 * Handles events for the current component.
+	 * - Method of: {@link ve.FlexInterface}
+	 * 
+	 * @alias handleEvents
+	 * @memberof ve.Component.ve.FlexInterface
+	 */
 	handleEvents () {
 		this.element.addEventListener("mousedown", (e) => {
 			let html = document.querySelector("html");
@@ -117,6 +142,17 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 		});
 	}
 	
+	/**
+	 * Handles a resize event given a MouseDown event type. Internal helper method.
+	 * - Method of: {@link ve.FlexInterface}
+	 * 
+	 * @alias handleResize
+	 * @memberof ve.Component.ve.FlexInterface
+	 * 
+	 * @param {Event} arg0_e
+	 * @param {string} arg1_size_property
+	 * @param {string} arg2_position_property
+	 */
 	handleResize (arg0_e, arg1_size_property, arg2_position_property) {
 		//Convert from parameters
 		let md = arg0_e;
@@ -184,6 +220,20 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 		window.addEventListener("mouseup", _onmouseup);
 	}
 	
+	/**
+	 * Generates HTML recursively given a current value compatible with the component's initialising `arg0_value` and a root element.
+	 * - Static method of: {@link ve.FlexInterface}
+	 * 
+	 * @alias #generateHTMLRecursively
+	 * @memberof ve.Component.ve.FlexInterface
+	 * 
+	 * @param {HTMLElement|undefined} arg0_root_el
+	 * @param {Object} arg1_value
+	 * @param {Object} [arg2_options]
+	 *  @param {boolean} [arg2_options.flex_disabled=false] - Whether flex resizing is disabled for the given element.
+	 * 
+	 * @returns {HTMLElement}
+	 */
 	static generateHTMLRecursively (arg0_root_el, arg1_value, arg2_options) {
 		//Convert from parameters
 		let root_el = (arg0_root_el) ? arg0_root_el : document.createElement("flex");
