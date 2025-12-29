@@ -281,6 +281,9 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			hierarchy_obj[local_key] = new ve.HierarchyDatatype({
 				icon: new ve.HTML("<icon>legend_toggle</icon>"),
 				
+				series_range: new ve.HTML(`(${this.table_obj.getRangeName(local_value.coords)})`, {
+					style: { order: 1 }
+				}),
 				delete_button: new ve.Button(() => {
 					new ve.Confirm(`Are you sure you wish to delete ${series_name}?`, {
 						special_function: () => {

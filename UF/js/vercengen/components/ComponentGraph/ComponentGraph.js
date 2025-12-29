@@ -47,7 +47,7 @@ ve.Graph = class extends ve.Component {
 		delete this.from_binding_fire_silently;
 	}
 	
-	_getDefaultBodyStyle () {
+	_getAxisStyle () {
 		//Declare local instance variables
 		let root_style = window.getComputedStyle(document.body);
 		
@@ -55,6 +55,19 @@ ve.Graph = class extends ve.Component {
 		return {
 			color: (this.options?.textStyle?.color) ?
 				this.options.textStyle.color : root_style.getPropertyValue("--body-colour")
+		};
+	}
+	
+	_getTitleStyle () {
+		//Declare local instance variables
+		let root_style = window.getComputedStyle(document.body);
+		
+		//Return statement
+		return {
+			color: (this.options?.title?.textStyle?.color) ?
+				this.options.title.textStyle.color : root_style.getPropertyValue("--header-colour"),
+			fontFamily: (this.options?.title?.textStyle?.fontFamily) ?
+				this.options.title.textStyle.fontFamily : root_style.getPropertyValue("--header-font-family")
 		};
 	}
 	
@@ -84,33 +97,28 @@ ve.Graph = class extends ve.Component {
 			useDirtyRect: false
 		});
 		this.chart_options = {};
+		this.chart_options.series = [];
+		this.chart_options.title = {
+			text: (this.options?.title?.text) ? this.options.title.text : "",
+			textStyle: this._getTitleStyle()
+		};
 		
 		if (this.options.type === "line_chart" || !this.options.type) {
-			this.chart_options.series = [];
-			this.chart_options.title = {
-				text: (this.options?.title?.text) ? this.options.title.text : "",
-				textStyle: {
-					color: (this.options?.title?.textStyle?.color) ? 
-						this.options.title.textStyle.color : root_style.getPropertyValue("--header-colour"),
-					fontFamily: (this.options?.title?.textStyle?.fontFamily) ?
-						this.options.title.textStyle.fontFamily : root_style.getPropertyValue("--header-font-family")
-				}
-			};
 			this.chart_options.xAxis = {
 				boundaryGap: false,
 				type: "category",
 				
-				axisLabel: this._getDefaultBodyStyle(),
+				axisLabel: this._getAxisStyle(),
 				axisLine: {
-					lineStyle: this._getDefaultBodyStyle()
+					lineStyle: this._getAxisStyle()
 				}
 			};
 			this.chart_options.yAxis = {
 				type: "value",
 				
-				axisLabel: this._getDefaultBodyStyle(),
+				axisLabel: this._getAxisStyle(),
 				axisLine: {
-					lineStyle: this._getDefaultBodyStyle()
+					lineStyle: this._getAxisStyle()
 				}
 			};
 			
