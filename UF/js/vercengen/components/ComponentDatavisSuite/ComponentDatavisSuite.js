@@ -480,6 +480,16 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 						veToast(`New series range set.`);
 					} catch (e) { console.error(e); }
 				}, { name: "Set Series Range" })
+			}),
+			
+			symbol: new ve.Interface({
+				stroke_colour: new ve.Colour([255, 255, 255], {
+					onuserchange: (v, e) => {
+						
+					}
+				})
+			}, {
+				name: "Series Symbol"
 			})
 		}, {
 			name: `Edit ${series_name}`,
