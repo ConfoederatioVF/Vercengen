@@ -338,7 +338,11 @@ global.path = require("path");
 			"UF/js/vercengen/engine",
 			"UF/js/vercengen/engine/Demo.js",
 			"UF/js/vercengen/components",
+			
+			"UF/js/vercengen/components/ComponentDatavisSuite/ComponentDatavisSuite.js",
+			"UF/js/vercengen/components/ComponentDatavisSuite/ui",
 			"UF/js/vercengen/components/ComponentFileExplorer/file_operations_ui.js",
+			
 			"UF/js/vercengen/features",
 			
 			//Localisation

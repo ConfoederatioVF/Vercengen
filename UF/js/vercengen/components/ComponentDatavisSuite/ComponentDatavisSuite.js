@@ -22,6 +22,8 @@
  * - `arg1_options`: {@link Object}
  *   - `.dark_mode=true`: {@link boolean}
  *
+ * @augments ve.Component
+ * @memberof ve.Component
  * @type {ve.DatavisSuite}
  */
 ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
@@ -86,7 +88,6 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					x: 1, y: 0,
 					
 					onuserchange: (v) => {
-						console.log(v);
 						this.drawGraphs();
 					}
 				})
