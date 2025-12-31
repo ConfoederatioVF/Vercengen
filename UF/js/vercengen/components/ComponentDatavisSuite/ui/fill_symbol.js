@@ -5,7 +5,7 @@
  *   - `.series_key`: {@link string} - The series key being edited, if valid.
  *
  * @augments ve.Component
- * @memberof ve.DatavisSuite
+ * @memberof ve.Component.ve.DatavisSuite
  * @type {ve.DatavisSuite.FillSymbol}
  */
 ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Finish function body
