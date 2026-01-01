@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>html/html_initialise.js - Documentation</title>
+    <title>vercengen/components/ComponentDatavisSuite/ui/FillSymbol.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,7 +32,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">html/html_initialise.js</h1>
+    <h1 class="page-title">vercengen/components/ComponentDatavisSuite/ui/FillSymbol.js</h1>
     
 
     
@@ -42,83 +42,113 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>//Initialise functions
-{
-	if (!global.HTML) global.HTML = {};
-	
-	/**
-	 * Initialises HTML related fields and functions.
-	 */
-	HTML.initialise = function () {
-		//Add event listeners
-		{
-			document.addEventListener("keydown", (e) => {
-				if (e.keyCode === 17) { //Ctrl
-					if (window.is_naissance)
-						try { 
-							map.scrollWheelZoom.disable(); 
-						} catch (e) { console.log(e); } //Disable map zoom upon Ctrl down
-					/**
-					 * Whether the `Ctrl` key is currently pressed.
-					 * @type {boolean}
-					 */
-					HTML.ctrl_pressed = true;
-				}
-			});
-			document.addEventListener("keyup", (e) => {
-				if (e.keyCode === 17) { //Ctrl
-					if (window.is_naissance) {
-						try { 
-							map.scrollWheelZoom.enable(); 
-						} catch (e) { console.log(e); } //Re-enable map zoom upon Ctrl up
-					}
-					delete HTML.ctrl_pressed;
-				}
-			});
-			document.addEventListener("mousemove", (e) => {
-				/**
-				 * The current mouse X position.
-				 * @type {number}
-				 */
-				HTML.mouse_x = e.clientX;
-				/**
-				 * The current mouse Y position.
-				 * @type {number}
-				 */
-				HTML.mouse_y = e.clientY;
-			});
-		}
-	}
-	
-	//Vercengen CSS handler
-	{
-		//Flag to ensure only one RAF loop is running
-		if (!HTML.ve_css_active_loops) {
-			HTML.ve_css_active_loops = true;
-			HTML.ve_css_global_loop = () => {
-				let ve_css_registry = HTML.ve_css_registry;
-				
-				//Iterate over all elements in ve_css_registry
-				for (let [local_el, local_entry] of ve_css_registry.entries()) {
-					if (!document.body.contains(local_el)) {
-						//Cleanup elements removed from DOM
-						ve_css_registry.delete(local_el);
-						continue;
-					}
-					
-					//Reapply only dynamic (function) styles
-					HTML.applyDynamicTelestyle(local_el, local_entry.dynamic);
-				}
-				requestAnimationFrame(HTML.ve_css_global_loop);
+            <pre class="prettyprint source linenums"><code>/**
+ * Internal sub-component of &lt;span color = "yellow">{@link ve.DatavisSuite}&lt;/span>. 
+ * 
+ * Please refer to &lt;span color = "yellow">{@link ve.Component}&lt;/span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link Object}
+ *   - `.fill_colour`: {@link string}
+ *   - `.origin="auto"`: {@link number}|{@link string} - Either 'auto'/'start'/'end'.
+ *   - `.opacity=0.7`: {@link number} - Value from 0 to 1.
+ *   - 
+ *   - `.shadow_blur`: {@link number}
+ *   - `.shadow_offset_x`: {@link number}
+ *   - `.shadow_offset_y`: {@link number}
+ * - `arg1_options`: {@link Object}
+ *   - `.name`: {@link string}
+ *
+ * @augments ve.Component
+ * @memberof ve.Component.ve.DatavisSuite
+ * @type {ve.DatavisSuite.FillSymbol}
+ */
+ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Finish function body
+	constructor (arg0_value, arg1_options) {
+		//Convert from parameters
+		let value = (arg0_value) ? arg0_value : {};
+		let options = (arg1_options) ? arg1_options : {};
+			super(options);
+			
+		//Initialise options
+		options.attributes = (options.attributes) ? options.attributes : {};
+			
+		//Declare local instance variables
+		this.element = document.createElement("div");
+			this.element.setAttribute("component", "ve-datavis-suite-fill-symbol");
+			this.element.instance = this;
+			HTML.setAttributesObject(this.element, options.attributes);
+			this.interface_options = { 
+				onuserchange: () => this.fireToBinding()
 			};
 			
-			//Jumpstart RAF loop
-			requestAnimationFrame(HTML.ve_css_global_loop);
-		}
-		if (!HTML.ve_css_registry)
-			HTML.ve_css_registry = new Map();
+		this.interface = new ve.Interface({
+			fill_colour: new ve.Colour("#000000", this.interface_options),
+			origin: new ve.Select({
+				auto: {
+					name: "Auto",
+					selected: true
+				},
+				end: { name: "End" },
+				start: { name: "Start" }
+			}, this.interface_options),
+			opacity: new ve.Range(0.7, this.interface_options),
+			shadow_enabled: new ve.Toggle(false, this.interface_options),
+			
+			shadow_blur: new ve.Number(0, this.interface_options),
+			shadow_offset_x: new ve.Number(0, this.interface_options),
+			shadow_offset_y: new ve.Number(0, this.interface_options)
+		});
 	}
-}</code></pre>
+	
+	get v () {
+		//Declare local instance variables
+		let ui_obj = this.interface;
+		let shadow_obj = (ui_obj.shadow_enabled.v) ? {
+			shadow_enabled: ui_obj.shadow_enabled.v,
+			
+			shadowBlur: ui_obj.shadow_blur.v,
+			shadowOffsetX: ui_obj.shadow_offset_x.v,
+			shadowOffsetY: ui_obj.shadow_offset_y.v
+		} : {};
+		
+		//Return statement
+		return {
+			color: ui_obj.fill_colour.getHex(),
+			origin: ui_obj.origin.v,
+			opacity: ui_obj.opacity.v,
+			
+			...shadow_obj
+		};
+	}
+	
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = (arg0_value) ? arg0_value : {};
+		
+		//Parse value
+		if (value.color) this.interface.fill_colour.v = value.color;
+		if (value.origin) this.interface.origin.v = value.origin;
+		if (value.opacity) this.interface.opacity.v = value.opacity;
+		
+		if (value.shadow_enabled) {
+			if (value.shadowBlur) this.interface.shadow_blur.v = value.shadowBlur;
+			if (value.shadowOffsetX) this.interface.shadow_offset_x.v = value.shadowOffsetX;
+			if (value.shadowOffsetY) this.interface.shadow_offset_y.v = value.shadowOffsetY;
+		}
+	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.DatavisSuite.FillSymbol}
+ */
+veDatavisSuiteFillSymbol = function () {
+	//Return statement
+	return new ve.DatavisSuite.FillSymbol(...arguments);
+};
+</code></pre>
         </article>
     </section>
 
