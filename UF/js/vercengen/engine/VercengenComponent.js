@@ -64,7 +64,6 @@
  * - {@link ve.Component.ve.NodeEditor|veNodeEditor}(arg0_value:{@link Object}, arg1_options:{@link Object}) | {@link Object} - Visual node-based DAG editor with async processing.
  *   - {@link ve.Component.ve.NodeEditorDatatype|veNodeEditorDatatype}(arg0_value:{@link Object}, arg1_options:{@link Object}) | {@link Object}
  * 
- * - {@link ve.Component.ve.RichText|veRichText}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string} - Single-line rich text input. `.v` is an HTML string.
  * - {@link ve.Component.ve.Button|veButton}(arg0_value:{@link function}, arg1_options:{@link Object}) | {@link function}
  * - {@link ve.Component.ve.Checkbox|veCheckbox}(arg0_value:{@link boolean}|{@link Object}<{@link boolean}>\*, arg1_options: {@link Object}) | {@link boolean}|{@link Object}<{@link boolean}>\* - A recursive list of checkboxes, or a single toggleable input.
  * - {@link ve.Component.ve.Colour|veColour}(arg0_value:{@link Array}<{@link number}, {@link number}, {@link number}|{@link string}, arg1_options: {@link Object}>) | {@link Array}<{@link number}, {@link number}, {@link number}> - RGB colour selector.
@@ -87,6 +86,7 @@
  * - {@link ve.Component.ve.Radio|veRadio}(arg0_value:{@link Object}<{@link boolean}>\* | {@link Object}<{@link boolean}>\*
  * - {@link ve.Component.ve.Range|veRange}(arg0_value:{@link number}, arg1_options: {@link Object}) | {@link number}
  * - {@link ve.Component.ve.RawInterface|veRawInterface}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) | {@link Object}<{@link ve.Component}>
+ * - {@link ve.Component.ve.RichText|veRichText}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string} - Single-line rich text input. `.v` is an HTML string.
  * - {@link ve.Component.ve.SearchSelect|veSearchSelect}(arg0_components_obj:{@link Object}<{@link ve.Component}>, arg1_options:{@link Object}) | {@link Object}<{@link ve.Component}>
  * - {@link ve.Component.ve.ScriptManager|veScriptManager}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string}
  *   - {@link ve.Component.ve.ScriptManagerBlockly|veScriptManagerBlockly}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string}
