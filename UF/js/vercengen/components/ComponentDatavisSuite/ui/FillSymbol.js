@@ -34,12 +34,11 @@ ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Finish funct
 			this.element.setAttribute("component", "ve-datavis-suite-fill-symbol");
 			this.element.instance = this;
 			HTML.setAttributesObject(this.element, options.attributes);
-			this.interface_options = { 
+			let io = { 
 				onuserchange: () => this.fireToBinding()
 			};
-			
 		this.interface = new ve.Interface({
-			fill_colour: new ve.Colour("#000000", this.interface_options),
+			fill_colour: new ve.Colour("#000000", { name: "Fill Colour", ...io }),
 			origin: new ve.Select({
 				auto: {
 					name: "Auto",
@@ -47,14 +46,19 @@ ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Finish funct
 				},
 				end: { name: "End" },
 				start: { name: "Start" }
-			}, this.interface_options),
-			opacity: new ve.Range(0.7, this.interface_options),
-			shadow_enabled: new ve.Toggle(false, this.interface_options),
+			}, { name: "Origin", ...io }),
+			opacity: new ve.Range(0.7, { name: "Opacity", ...io }),
+			shadow_enabled: new ve.Toggle(false, { name: "Shadow Enabled", ...io }),
 			
-			shadow_blur: new ve.Number(0, this.interface_options),
-			shadow_offset_x: new ve.Number(0, this.interface_options),
-			shadow_offset_y: new ve.Number(0, this.interface_options)
+			shadow_blur: new ve.Number(0, { name: "Shadow Blur", ...io }),
+			shadow_offset_x: new ve.Number(0, { name: "Shadow Offset X", ...io }),
+			shadow_offset_y: new ve.Number(0, { name: "Shadow Offset Y", ...io })
+		}, {
+			name: (options.name) ? options.name : "Fill Symbol"
 		});
+		this.from_binding_fire_silently = true;
+		this.v = value;
+		delete this.from_binding_fire_silently;
 	}
 	
 	get v () {
