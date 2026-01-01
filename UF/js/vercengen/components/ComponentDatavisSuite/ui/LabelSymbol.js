@@ -8,7 +8,7 @@
  * @memberof ve.Component.ve.DatavisSuite
  * @type {ve.DatavisSuite.LabelSymbol}
  */
-ve.DatavisSuite.LabelSymbol = class extends ve.Component {
+ve.DatavisSuite.LabelSymbol = class extends ve.Component { //[WIP] - Refactor to use .value mutation
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : {};

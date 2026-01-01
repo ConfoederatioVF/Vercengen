@@ -19,7 +19,7 @@
  * @memberof ve.Component.ve.DatavisSuite
  * @type {ve.DatavisSuite.FillSymbol}
  */
-ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Finish function body
+ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Refactor to use .value mutation
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : {};
