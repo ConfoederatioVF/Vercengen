@@ -1,17 +1,28 @@
 /**
+ * Internal sub-component of <span color = "yellow">{@link ve.DatavisSuite}</span>. 
+ * 
+ * Please refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
  * ##### Constructor:
- * - `arg0_datavis_suite`: {@link ve.DatavisSuite}
+ * - `arg0_value`: {@link Object}
+ *   - `.fill_colour`: {@link string}
+ *   - `.origin="auto"`: {@link number}|{@link string} - Either 'auto'/'start'/'end'.
+ *   - `.opacity=0.7`: {@link number} - Value from 0 to 1.
+ *   - 
+ *   - `.shadow_blur`: {@link number}
+ *   - `.shadow_offset_x`: {@link number}
+ *   - `.shadow_offset_y`: {@link number}
  * - `arg1_options`: {@link Object}
- *   - `.series_key`: {@link string} - The series key being edited, if valid.
+ *   - `.name`: {@link string}
  *
  * @augments ve.Component
  * @memberof ve.Component.ve.DatavisSuite
  * @type {ve.DatavisSuite.FillSymbol}
  */
 ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Finish function body
-	constructor (arg0_datavis_suite, arg1_options) {
+	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
-		let datavis_suite = arg0_datavis_suite;
+		let value = (arg0_value) ? arg0_value : {};
 		let options = (arg1_options) ? arg1_options : {};
 			super(options);
 			
@@ -23,5 +34,73 @@ ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Finish funct
 			this.element.setAttribute("component", "ve-datavis-suite-fill-symbol");
 			this.element.instance = this;
 			HTML.setAttributesObject(this.element, options.attributes);
+			this.interface_options = { 
+				onuserchange: () => this.fireToBinding()
+			};
+			
+		this.interface = new ve.Interface({
+			fill_colour: new ve.Colour("#000000", this.interface_options),
+			origin: new ve.Select({
+				auto: {
+					name: "Auto",
+					selected: true
+				},
+				end: { name: "End" },
+				start: { name: "Start" }
+			}, this.interface_options),
+			opacity: new ve.Range(0.7, this.interface_options),
+			shadow_enabled: new ve.Toggle(false, this.interface_options),
+			
+			shadow_blur: new ve.Number(0, this.interface_options),
+			shadow_offset_x: new ve.Number(0, this.interface_options),
+			shadow_offset_y: new ve.Number(0, this.interface_options)
+		});
 	}
+	
+	get v () {
+		//Declare local instance variables
+		let ui_obj = this.interface;
+		let shadow_obj = (ui_obj.shadow_enabled.v) ? {
+			shadow_enabled: ui_obj.shadow_enabled.v,
+			
+			shadowBlur: ui_obj.shadow_blur.v,
+			shadowOffsetX: ui_obj.shadow_offset_x.v,
+			shadowOffsetY: ui_obj.shadow_offset_y.v
+		} : {};
+		
+		//Return statement
+		return {
+			color: ui_obj.fill_colour.getHex(),
+			origin: ui_obj.origin.v,
+			opacity: ui_obj.opacity.v,
+			
+			...shadow_obj
+		};
+	}
+	
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = (arg0_value) ? arg0_value : {};
+		
+		//Parse value
+		if (value.color) this.interface.fill_colour.v = value.color;
+		if (value.origin) this.interface.origin.v = value.origin;
+		if (value.opacity) this.interface.opacity.v = value.opacity;
+		
+		if (value.shadow_enabled) {
+			if (value.shadowBlur) this.interface.shadow_blur.v = value.shadowBlur;
+			if (value.shadowOffsetX) this.interface.shadow_offset_x.v = value.shadowOffsetX;
+			if (value.shadowOffsetY) this.interface.shadow_offset_y.v = value.shadowOffsetY;
+		}
+	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.DatavisSuite.FillSymbol}
+ */
+veDatavisSuiteFillSymbol = function () {
+	//Return statement
+	return new ve.DatavisSuite.FillSymbol(...arguments);
 };
