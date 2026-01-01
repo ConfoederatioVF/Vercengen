@@ -26,10 +26,90 @@ ve.DatavisSuite.LabelSymbol = class extends ve.Component {
 			};
 		this.interface = new ve.Interface({
 			text_options: new ve.Interface({
+				show: new ve.Toggle(false, { name: "Show", ...io }),
 				
+				colour: new ve.Color("#ffffff", { name: "Colour", ...io }),
+				formatter: new ve.Text("", { name: "Formatter", ...io }),
+				font_family: new ve.Text("sans-serif", { name: "Font Family", ...io }),
+				font_size: new ve.Number(12, { min: 0, name: "Font Size", ...io }),
+				font_style: new ve.Select({
+					normal: { name: "Normal", selected: true },
+					italic: { name: "Italic" },
+					oblique: { name: "Oblique" }
+				}, { name: "Font Style", ...io }),
+				font_weight: new ve.Select({
+					light: { name: "Light" },
+					normal: { name: "Normal", selected: true },
+					bolder: { name: "Medium" },
+					bold: { name: "Bold" }
+				}, { name: "Font Weight", ...io }),
+				height: new ve.Number(50, { min: 0, name: "Height", ...io }),
+				width: new ve.Number(100, { min: 0, name: "Width", ...io })
 			}, { name: "Text Options" }),
 			text_style: new ve.Interface({
-				
+				background_colour: new ve.Colour("#000000", { name: "Background Colour", ...io }),
+				background_colour_opacity: new ve.Range(0, { name: "Background Colour Opacity", ...io }),
+				border_colour: new ve.Colour("#000000", { name: "Border Colour", ...io }),
+				border_dash_offset: new ve.Number(0, { name: "Border Dash Offset", ...io }),
+				border_radius: new ve.Number(0, { name: "Border Radius", ...io }),
+				border_type: new ve.Select({
+					dashed: { name: "Dashed" },
+					dotted: { name: "Dotted" },
+					solid: { name: "Solid", selected: true },
+				}, { name: "Border Type", ...io }),
+				border_width: new ve.Number(0, { name: "Border Width", ...io }),
+				distance: new ve.Number(5, { name: "Distance", ...io }),
+				ellipsis: new ve.Text("...", { name: "Ellipsis", ...io }),
+				line_height: new ve.Number(12, { min: 0, name: "Line Height", ...io }),
+				offset_x: new ve.Number(0, { name: "Offset X", ...io }),
+				offset_y: new ve.Number(0, { name: "Offset Y", ...io }),
+				overflow: new ve.Select({
+					break: { name: "Break" },
+					breakAll: { name: "Break All" },
+					none: { name: "None", selected: true },
+					truncate: { name: "Truncate" }
+				}, { name: "Overflow", ...io }),
+				min_margin: new ve.Number(0, { name: "Minimum Margin", ...io }),
+				padding: new ve.List([new ve.Number(0)], { min: 1, max: 4, name: "Padding", ...io }),
+				position: new ve.Select({
+					bottom: { name: "Bottom" },
+					inside: { name: "Inside" },
+					insideBottom: { name: "Inside Bottom" },
+					insideBottomLeft: { name: "Inside Bottom Left" },
+					insideBottomRight: { name: "Inside Bottom Right" },
+					insideLeft: { name: "Inside Left" },
+					insideRight: { name: "Inside Right" },
+					insideTop: { name: "Inside Top" },
+					insideTopLeft: { name: "Inside Top Left" },
+					insideTopRight: { name: "Inside Top Right" },
+					left: { name: "Left" },
+					right: { name: "Right" },
+					top: { name: "Top", selected: true }
+				}, { name: "Position", ...io })
+				rotate: new ve.Number(0, { name: "Rotate", ...io }),
+				text_align_horizontal: new ve.Select({
+					left: { name: "Left", selected: true },
+					center: { name: "Centre" },
+					right: { name: "Right" }
+				}, { name: "Text Align (Horizontal)", ...io }),
+				text_align_vertical: new ve.Select({
+					top: { name: "Top" },
+					middle: { name: "Middle", selected: true },
+					bottom: { name: "Bottom" }
+				}, { name: "Text Align (Vertical)", ...io }),
+				text_border_colour: new ve.Colour("#000000", { name: "Text Border Colour", ...io }),
+				text_border_dash_offset: new ve.Number(0, { name: "Text Border Dash Offset", ...io }),
+				text_border_type: new ve.Select({
+					dashed: { name: "Dashed" },
+					dotted: { name: "Dotted" },
+					solid: { name: "Solid", selected: true },
+				}, { name: "Text Border Type", ...io }),
+				text_border_width: new ve.Number(0, { name: "Text Border Width", ...io }),
+				text_margin_x: new ve.Number(0, { name: "Text Margin X", ...io }),
+				text_margin_y: new ve.Number(0, { name: "Text Margin Y", ...io }),
+				text_shadow_blur: new ve.Number(0, { name: "Text Shadow Blur", ...io }),
+				text_shadow_offset_x: new ve.Number(0, { name: "Text Shadow Offset X", ...io }),
+				text_shadow_offset_y: new ve.Number(0, { name: "Text Shadow Offset Y", ...io })
 			}, { name: "Text Style" }),
 			shadow_options: new ve.Interface({
 				shadow_enabled: new ve.Toggle(false, { name: "Shadow Enabled", ...io }),
