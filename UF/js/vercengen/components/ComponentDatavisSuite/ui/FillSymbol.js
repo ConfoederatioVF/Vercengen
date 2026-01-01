@@ -88,14 +88,14 @@ ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Finish funct
 		let value = (arg0_value) ? arg0_value : {};
 		
 		//Parse value
-		if (value.color) this.interface.fill_colour.v = value.color;
-		if (value.origin) this.interface.origin.v = value.origin;
-		if (value.opacity) this.interface.opacity.v = value.opacity;
+		if (value.color !== undefined) this.interface.fill_colour.v = value.color;
+		if (value.origin !== undefined) this.interface.origin.v = value.origin;
+		if (value.opacity !== undefined) this.interface.opacity.v = value.opacity;
 		
 		if (value.shadow_enabled) {
-			if (value.shadowBlur) this.interface.shadow_blur.v = value.shadowBlur;
-			if (value.shadowOffsetX) this.interface.shadow_offset_x.v = value.shadowOffsetX;
-			if (value.shadowOffsetY) this.interface.shadow_offset_y.v = value.shadowOffsetY;
+			if (value.shadowBlur !== undefined) this.interface.shadow_blur.v = value.shadowBlur;
+			if (value.shadowOffsetX !== undefined) this.interface.shadow_offset_x.v = value.shadowOffsetX;
+			if (value.shadowOffsetY !== undefined) this.interface.shadow_offset_y.v = value.shadowOffsetY;
 		}
 	}
 };

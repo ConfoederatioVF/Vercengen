@@ -4,6 +4,8 @@
  * - `arg1_options`: {@link Object}
  *   - `.name`; {@link string}
  * 
+ * @augments ve.Component
+ * @memberof ve.Component.ve.DatavisSuite
  * @type {ve.DatavisSuite.LabelSymbol}
  */
 ve.DatavisSuite.LabelSymbol = class extends ve.Component {
@@ -138,7 +140,7 @@ ve.DatavisSuite.LabelSymbol = class extends ve.Component {
 		//Return statement
 		return {
 			show: ui_obj.show.v,
-			color: ui_obj.color.v,
+			color: ui_obj.colour.v,
 			formatter: ui_obj.formatter.v,
 			fontFamily: ui_obj.font_family.v,
 			fontSize: ui_obj.font_size.v,
@@ -179,10 +181,35 @@ ve.DatavisSuite.LabelSymbol = class extends ve.Component {
 		};
 	}
 	
-	set v (arg0_value) {
+	set v (arg0_value) { //[WIP] - Finish function body
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : {};
 		
+		//Declare local instance variables
+		let text_options = this.interface.text_options;
+		let text_style = this.interface.text_style;
+		let shadow_options = this.interface.shadow_options;
+		
 		//Parse value
+		if (value.show !== undefined) text_options.show.v = value.show;
+		if (value.color !== undefined) text_options.colour.v = value.color;
+		if (value.formatter !== undefined) text_options.formatter.v = value.formatter;
+		if (value.fontFamily !== undefined) text_options.font_family.v = value.fontFamily;
+		if (value.fontSize !== undefined) text_options.font_size.v = value.fontSize;
+		if (value.fontWeight !== undefined) text_options.font_weight.v = value.fontWeight;
+		if (value.height !== undefined) text_options.height.v = value.height;
+		if (value.width !== undefined) text_options.width.v = value.width;
+		
+		
 	}
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.DatavisSuite.LabelSymbol}
+ */
+veDatavisSuiteLabelSymbol = function () {
+	//Return statement
+	return new ve.DatavisSuite.LabelSymbol(...arguments);
 };
