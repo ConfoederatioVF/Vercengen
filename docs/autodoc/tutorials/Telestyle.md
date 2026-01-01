@@ -19,7 +19,7 @@ new ve.Theme("theme-test", {
 Themes can then be applied to new Components/compatible Features via their `arg1_options` flag:
 ```js
 //Spawns a Window with a rich text editor that uses 'theme-test'
-veWindow(veBIUF("test", { theme: "theme-test" }));
+veWindow(veRichText("test", { theme: "theme-test" }));
 ```
 
 By definition, all Vercengen Themes are stored in `ve.registry.themes`: Object.

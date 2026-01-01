@@ -46,8 +46,8 @@
     }
 }
 
-/* -- ve.BIUF -- */
-[component="ve-biuf"] {
+/* -- ve.RichText -- */
+[component="ve-rich-text"] {
     position: relative;
     
     #biuf-toolbar {
@@ -222,7 +222,7 @@
     }
     > table:has([component="ve-script-manager"]),
     > table:has([component="ve-spreadsheet"]),
-    > table:has([component="ve-wysiwyg"]) {
+    > table:has([component="ve-word-processor"]) {
         height: 100%;
         width: 100%;
     }

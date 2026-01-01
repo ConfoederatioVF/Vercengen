@@ -64,7 +64,7 @@
  * - {@link ve.Component.ve.NodeEditor|veNodeEditor}(arg0_value:{@link Object}, arg1_options:{@link Object}) | {@link Object} - Visual node-based DAG editor with async processing.
  *   - {@link ve.Component.ve.NodeEditorDatatype|veNodeEditorDatatype}(arg0_value:{@link Object}, arg1_options:{@link Object}) | {@link Object}
  * 
- * - {@link ve.Component.ve.BIUF|veBIUF}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string} - Single-line rich text input. `.v` is an HTML string.
+ * - {@link ve.Component.ve.RichText|veRichText}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string} - Single-line rich text input. `.v` is an HTML string.
  * - {@link ve.Component.ve.Button|veButton}(arg0_value:{@link function}, arg1_options:{@link Object}) | {@link function}
  * - {@link ve.Component.ve.Checkbox|veCheckbox}(arg0_value:{@link boolean}|{@link Object}<{@link boolean}>\*, arg1_options: {@link Object}) | {@link boolean}|{@link Object}<{@link boolean}>\* - A recursive list of checkboxes, or a single toggleable input.
  * - {@link ve.Component.ve.Colour|veColour}(arg0_value:{@link Array}<{@link number}, {@link number}, {@link number}|{@link string}, arg1_options: {@link Object}>) | {@link Array}<{@link number}, {@link number}, {@link number}> - RGB colour selector.
@@ -99,7 +99,7 @@
  * - {@link ve.Component.ve.Toggle|veToggle}(arg0_value:{@link boolean}, arg1_options:{@link Object}) | {@link boolean}
  * - {@link ve.Component.ve.UndoRedo|veUndoRedo}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string} - The {@link DALS.Timeline} ID that the UndoRedo component is currently navigating.
  * - {@link ve.Component.ve.URL|veURL}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string}
- * - {@link ve.Component.ve.WYSIWYG|WYSIWYG}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string} - Word processor.
+ * - {@link ve.Component.ve.WordProcessor|WYSIWYG}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string} - Word processor.
  * 
  * @class
  * @memberof ve

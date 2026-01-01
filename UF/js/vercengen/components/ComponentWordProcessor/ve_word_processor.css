@@ -1,4 +1,4 @@
-/* -- ve.WYSIWYG -- */
+/* -- ve.WordProcessor -- */
 .wysiwyg-editor-container {
     flex-grow: 1;
     overflow-x: hidden;
@@ -233,7 +233,7 @@
 }
 
 /* -- Toolbar fixes -- */
-@keyframes ve-wysiwyg-submenu-fade {
+@keyframes ve-word-processor-submenu-fade {
     from {}
     99% {
         opacity: 0;
@@ -245,7 +245,7 @@
     }
 }
 .has-submenu:not(:hover) .submenu:not(:hover) {
-    animation: 0.2s ve-wysiwyg-submenu-fade forwards;
+    animation: 0.2s ve-word-processor-submenu-fade forwards;
 }
 .submenu {
     background-color: white;

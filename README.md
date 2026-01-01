@@ -114,7 +114,7 @@ WYSIWYG Word Editor (4 lines):
 ```js
 word_editor = veWindow({
   file_explorer: veFileExplorer(__dirname, { y: 0 }),
-  text_editor: veWYSIWYG("Hello world.", { y: 0 })
+  text_editor: veWordProcessor("Hello world.", { y: 0 })
 }, { name: "Word Editor", width: "40rem" });
 ```
 

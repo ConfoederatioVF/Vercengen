@@ -3,8 +3,8 @@
  *
  * Single-line rich text editor with bold, italic, underline, and clear text formatting options.
  *
- * Stands for Bold, Italic, Underline, Formatting.
- * - Functional binding: <span color=00ffff>veBIUF</span>().
+ * BIUF stands for Bold, Italic, Underline, Formatting.
+ * - Functional binding: <span color=00ffff>veRichText</span>().
  *
  * ##### Constructor:
  * - `arg0_value`: {@link string} - The HTML content to initialise the component with.
@@ -15,19 +15,19 @@
  * - `.v`: {@link string} - Returns an HTML string.
  *
  * ##### Methods:
- * - <span color=00ffff>{@link ve.BIUF.handleBIUF|handleBIUF}</span>(arg0_biuf_el:{@link HTMLElement})
- * - <span color=00ffff>{@link ve.BIUF.initBIUFToolbar|initBIUFToolbar}</span>()
- * - <span color=00ffff>{@link ve.BIUF.sendOnchangeEvent|sendOnchangeEvent}</span>()
+ * - <span color=00ffff>{@link ve.RichText.handleBIUF|handleBIUF}</span>(arg0_biuf_el:{@link HTMLElement})
+ * - <span color=00ffff>{@link ve.RichText.initBIUFToolbar|initBIUFToolbar}</span>()
+ * - <span color=00ffff>{@link ve.RichText.sendOnchangeEvent|sendOnchangeEvent}</span>()
  *
  * @augments ve.Component
  * @memberof ve.Component
- * @type {ve.BIUF}
+ * @type {ve.RichText}
  */
-ve.BIUF = class extends ve.Component {
+ve.RichText = class extends ve.Component {
 	static demo_value = `<b>Bold</b> <i>Italic</i>, <u>Underline</u>, and regular text formatting are supported by BIUF fields.`;
 	static demo_options = {
 		onchange: (e) => {
-			console.log(`ve.BIUF:`, e);
+			console.log(`ve.RichText:`, e);
 		}
 	};
 	
@@ -46,7 +46,7 @@ ve.BIUF = class extends ve.Component {
 			...options.attributes
 		};
 		this.element = document.createElement("div");
-			this.element.setAttribute("component", "ve-biuf");
+			this.element.setAttribute("component", "ve-rich-text");
 			this.element.instance = this;
 		this.options = options;
 		this.value = value;
@@ -76,10 +76,10 @@ ve.BIUF = class extends ve.Component {
 	
 	/**
 	 * Returns the current HTML content in the present Component.
-	 * - Accessor of {@link ve.BIUF}
+	 * - Accessor of {@link ve.RichText}
 	 *
 	 * @alias v
-	 * @memberof ve.Component.ve.BIUF
+	 * @memberof ve.Component.ve.RichText
 	 * @type {string}
 	 */
 	get v () {
@@ -88,11 +88,11 @@ ve.BIUF = class extends ve.Component {
 	}
 	
 	/**
-	 * Sets the HTML content value for {@link ve.BIUF}
-	 * - Accessor of {@link ve.BIUF}
+	 * Sets the HTML content value for {@link ve.RichText}
+	 * - Accessor of {@link ve.RichText}
 	 *
 	 * @alias v
-	 * @memberof ve.Component.ve.BIUF
+	 * @memberof ve.Component.ve.RichText
 	 * 
 	 * @param {string} arg0_value
 	 */
@@ -109,10 +109,10 @@ ve.BIUF = class extends ve.Component {
 	
 	/**
 	 * Initialises all event handlers for BIUF buttons and keybinds.
-	 * - Method of: {@link ve.BIUF}
+	 * - Method of: {@link ve.RichText}
 	 *
 	 * @alias handleBIUF
-	 * @memberof ve.Component.ve.BIUF
+	 * @memberof ve.Component.ve.RichText
 	 * 
 	 * @param {HTMLElement} arg0_biuf_el - The mounted BIUF element.
 	 */
@@ -140,10 +140,10 @@ ve.BIUF = class extends ve.Component {
 	
 	/**
 	 * Initialises the present BIUF toolbar.
-	 * - Method of: {@link ve.BIUF}
+	 * - Method of: {@link ve.RichText}
 	 *
 	 * @alias initBIUFToolbar
-	 * @memberof ve.Component.ve.BIUF
+	 * @memberof ve.Component.ve.RichText
 	 */
 	initBIUFToolbar () {
 		//Declare local instance variables
@@ -188,10 +188,10 @@ ve.BIUF = class extends ve.Component {
 	
 	/**
 	 * Fires an onuserchange event whilst synchronising the present value.
-	 * - Method of: {@link ve.BIUF}
+	 * - Method of: {@link ve.RichText}
 	 *
 	 * @alias sendOnchangeEvent
-	 * @memberof ve.Component.ve.BIUF
+	 * @memberof ve.Component.ve.RichText
 	 */
 	sendOnchangeEvent () {
 		this.value = this.v;
@@ -202,9 +202,9 @@ ve.BIUF = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.BIUF}
+ * @returns {ve.RichText}
  */
-veBIUF = function () {
+veRichText = function () {
 	//Return statement
-	return new ve.BIUF(...arguments);
+	return new ve.RichText(...arguments);
 };

@@ -2,7 +2,7 @@
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  * 
  * Multiline rich text editor used as a word processor.
- * - Functional binding: <span color=00ffff>veWYSIWYG</span>().
+ * - Functional binding: <span color=00ffff>veWordProcessor</span>().
  * 
  * ##### Constructor:
  * - `arg0_value`: {@link string} - The HTML contents of the current text editor.
@@ -12,31 +12,31 @@
  * - `.v`: {@link string} - The current HTML contents, same as `arg0_value`.
  * 
  * ##### Methods:
- * - <span color=00ffff>{@link ve.WYSIWYG.handleEvents|handleEvents}</span>() - Initialises event handlers for the present component.
- * - <span color=00ffff>{@link ve.WYSIWYG.getWYSIWYGFromFields|getWYSIWYGFromFields}</span>(arg0_wysiwyg_el:{@link HTMLElement}) | {@link string} - Fetches the internal .innerHTML value, resolving conflicts between visual/code views.
- * - <span color=00ffff>{@link ve.WYSIWYG.initWYSIWYG|initWYSIWYG}</span>() - Internal helper function. Initialises the component.
+ * - <span color=00ffff>{@link ve.WordProcessor.handleEvents|handleEvents}</span>() - Initialises event handlers for the present component.
+ * - <span color=00ffff>{@link ve.WordProcessor.getWYSIWYGFromFields|getWYSIWYGFromFields}</span>(arg0_wysiwyg_el:{@link HTMLElement}) | {@link string} - Fetches the internal .innerHTML value, resolving conflicts between visual/code views.
+ * - <span color=00ffff>{@link ve.WordProcessor.initWYSIWYG|initWYSIWYG}</span>() - Internal helper function. Initialises the component.
  * - 
- * - <span color=00ffff>{@link ve.WYSIWYG.addParagraphTag|addParagraphTag}</span>(arg0_e:{@link KeyboardEvent})
- * - <span color=00ffff>{@link ve.WYSIWYG.parentTagActive|parentTagActive}</span>(arg0_el:{@link HTMLElement}) | {@link boolean}
- * - <span color=00ffff>{@link ve.WYSIWYG.selectionChange|selectionChange}</span>(arg0_e:{@link Event}, arg1_buttons:{@link Array}<{@link HTMLElement}>, arg2_editor:{@link HTMLElement}) | {@link boolean} - Fires an internal selection change event.
- * - <span color=00ffff>{@link ve.WYSIWYG.pasteEvent|pasteEvent}</span>(arg0_e:{@link ClipboardEvent})
+ * - <span color=00ffff>{@link ve.WordProcessor.addParagraphTag|addParagraphTag}</span>(arg0_e:{@link KeyboardEvent})
+ * - <span color=00ffff>{@link ve.WordProcessor.parentTagActive|parentTagActive}</span>(arg0_el:{@link HTMLElement}) | {@link boolean}
+ * - <span color=00ffff>{@link ve.WordProcessor.selectionChange|selectionChange}</span>(arg0_e:{@link Event}, arg1_buttons:{@link Array}<{@link HTMLElement}>, arg2_editor:{@link HTMLElement}) | {@link boolean} - Fires an internal selection change event.
+ * - <span color=00ffff>{@link ve.WordProcessor.pasteEvent|pasteEvent}</span>(arg0_e:{@link ClipboardEvent})
  * 
  * ##### Static Methods:
- * - <span color=00ffff>{@link ve.WYSIWYG.execCodeAction|execCodeAction}</span>(arg0_button_el:{@link HTMLElement}, arg1_editor_el:{@link HTMLElement}, arg2_visual_view_el:{@link HTMLElement}, arg3_html_view_el:{@link HTMLElement})
- * - <span color=00ffff>{@link ve.WYSIWYG.execDefaultAction|execDefaultAction}</span>(arg0_action:{@link string})
- * - <span color=00ffff>{@link ve.WYSIWYG.execLinkAction|execLinkAction}</span>(arg0_modal_el:{@link HTMLElement})
- * - <span color=00ffff>{@link ve.WYSIWYG.restoreSelection|restoreSelection}</span>(arg0_saved_selection:{@link Selection})
- * - <span color=00ffff>{@link ve.WYSIWYG.saveSelection|saveSelection}</span>() | {@link Range}
+ * - <span color=00ffff>{@link ve.WordProcessor.execCodeAction|execCodeAction}</span>(arg0_button_el:{@link HTMLElement}, arg1_editor_el:{@link HTMLElement}, arg2_visual_view_el:{@link HTMLElement}, arg3_html_view_el:{@link HTMLElement})
+ * - <span color=00ffff>{@link ve.WordProcessor.execDefaultAction|execDefaultAction}</span>(arg0_action:{@link string})
+ * - <span color=00ffff>{@link ve.WordProcessor.execLinkAction|execLinkAction}</span>(arg0_modal_el:{@link HTMLElement})
+ * - <span color=00ffff>{@link ve.WordProcessor.restoreSelection|restoreSelection}</span>(arg0_saved_selection:{@link Selection})
+ * - <span color=00ffff>{@link ve.WordProcessor.saveSelection|saveSelection}</span>() | {@link Range}
  * 
  * @augments ve.Component
  * @memberof ve.Component
- * @type {ve.WYSIWYG}
+ * @type {ve.WordProcessor}
  */
-ve.WYSIWYG = class extends ve.Component {
+ve.WordProcessor = class extends ve.Component {
 	static demo_value = `This is an immediate test for WYSIWYG editors being ported.`;
 	static demo_options = {
 		onchange: (e) => {
-			console.log(`ve.WYSIWYG:`, e);
+			console.log(`ve.WordProcessor:`, e);
 		}
 	};
 	
@@ -51,7 +51,7 @@ ve.WYSIWYG = class extends ve.Component {
 		
 		//Declare local instance variables
 		this.element = document.createElement("span");
-		this.element.setAttribute("component", "ve-wysiwyg");
+		this.element.setAttribute("component", "ve-word-processor");
 		this.element.instance = this;
 		let html_string = [];
 
@@ -175,10 +175,10 @@ ve.WYSIWYG = class extends ve.Component {
 	
 	/**
 	 * Returns the innerHTML of the present Component's input value.
-	 * - Accessor of: {@link ve.WYSIWYG}
+	 * - Accessor of: {@link ve.WordProcessor}
 	 *
 	 * @alias v
-	 * @memberof ve.Component.ve.WYSIWYG
+	 * @memberof ve.Component.ve.WordProcessor
 	 * @type {string}
 	 */
 	get v () {
@@ -188,10 +188,10 @@ ve.WYSIWYG = class extends ve.Component {
 	
 	/**
 	 * Sets the HTML value for the present Component as a string.
-	 * - Accessor of: {@link ve.WYSIWYG}
+	 * - Accessor of: {@link ve.WordProcessor}
 	 *
 	 * @alias v
-	 * @memberof ve.Component.ve.WYSIWYG
+	 * @memberof ve.Component.ve.WordProcessor
 	 * 
 	 * @param {string} arg0_value
 	 */
@@ -207,10 +207,10 @@ ve.WYSIWYG = class extends ve.Component {
 	
 	/**
 	 * Initialises event handlers for the present Component.
-	 * - Method of: {@link ve.WYSIWYG}
+	 * - Method of: {@link ve.WordProcessor}
 	 * 
 	 * @alias handleEvents
-	 * @memberof ve.Component.ve.WYSIWYG
+	 * @memberof ve.Component.ve.WordProcessor
 	 */
 	handleEvents () {
 		//Declare local instance variables
@@ -230,10 +230,10 @@ ve.WYSIWYG = class extends ve.Component {
 	
 	/**
 	 * Adds a paragraph tag on newline.
-	 * - Method of: {@link ve.WYSIWYG}
+	 * - Method of: {@link ve.WordProcessor}
 	 *
 	 * @alias addParagraphTag
-	 * @memberof ve.Component.ve.WYSIWYG
+	 * @memberof ve.Component.ve.WordProcessor
 	 * 
 	 * @param {KeyboardEvent} arg0_e
 	 */
@@ -253,10 +253,10 @@ ve.WYSIWYG = class extends ve.Component {
 	
 	/**
 	 * Fetches the internal .innerHTML value, resolving any conflicts between the visual view and the code view.
-	 * - Method of: {@link ve.WYSIWYG}
+	 * - Method of: {@link ve.WordProcessor}
 	 *
 	 * @alias getWYSIWYGFromFields
-	 * @memberof ve.Component.ve.WYSIWYG
+	 * @memberof ve.Component.ve.WordProcessor
 	 *
 	 * @param {HTMLElement} arg0_wysiwyg_el
 	 *
@@ -277,10 +277,10 @@ ve.WYSIWYG = class extends ve.Component {
 	
 	/**
 	 * Initialises the present WYSIWYG Component.
-	 * - Method of: {@link ve.WYSIWYG}
+	 * - Method of: {@link ve.WordProcessor}
 	 *
 	 * @alias initWYSIWYG
-	 * @memberof ve.Component.ve.WYSIWYG
+	 * @memberof ve.Component.ve.WordProcessor
 	 */
 	initWYSIWYG () {
 		//Declare local instance variables
@@ -315,13 +315,13 @@ ve.WYSIWYG = class extends ve.Component {
 				//execCommand handler
 				switch (action) {
 					case "toggle-view":
-						ve.WYSIWYG.execCodeAction(this, editor, visual_view, html_view);
+						ve.WordProcessor.execCodeAction(this, editor, visual_view, html_view);
 						break;
 					case "createLink":
-						ve.WYSIWYG.execLinkAction(modal);
+						ve.WordProcessor.execLinkAction(modal);
 						break;
 					default:
-						ve.WYSIWYG.execDefaultAction(action);
+						ve.WordProcessor.execDefaultAction(action);
 				}
 			});
 		}
@@ -329,10 +329,10 @@ ve.WYSIWYG = class extends ve.Component {
 	
 	/**
 	 * Check if the parent tag of an element was active.
-	 * - Method of: {@link ve.WYSIWYG}
+	 * - Method of: {@link ve.WordProcessor}
 	 *
 	 * @alias parentTagActive
-	 * @memberof ve.Component.ve.WYSIWYG
+	 * @memberof ve.Component.ve.WordProcessor
 	 * 
 	 * @param {HTMLElement} arg0_el
 	 * 
@@ -367,10 +367,10 @@ ve.WYSIWYG = class extends ve.Component {
 	
 	/**
 	 * Internal helper function for monitoring selection changes.
-	 * - Method of: {@link ve.WYSIWYG}
+	 * - Method of: {@link ve.WordProcessor}
 	 *
 	 * @alias selectionChange
-	 * @memberof ve.Component.ve.WYSIWYG
+	 * @memberof ve.Component.ve.WordProcessor
 	 * 
 	 * @param {Event} arg0_e
 	 * @param {HTMLElement[]} arg1_buttons
@@ -405,10 +405,10 @@ ve.WYSIWYG = class extends ve.Component {
 	
 	/**
 	 * 	pasteEvent() - Handles paste event by removing all HTML tags.
-	 * - Method of: {@link ve.WYSIWYG}
+	 * - Method of: {@link ve.WordProcessor}
 	 *
 	 * @alias pasteEvent
-	 * @memberof ve.Component.ve.WYSIWYG
+	 * @memberof ve.Component.ve.WordProcessor
 	 * 
 	 * @param {ClipboardEvent} arg0_e
 	 */
@@ -426,11 +426,11 @@ ve.WYSIWYG = class extends ve.Component {
 	//Static helper methods
 	
 	/**
-	 * Executes a code action and changes the formatting within the {@link ve.WYSIWYG} component.
-	 * - Static method of: {@link ve.WYSIWYG}
+	 * Executes a code action and changes the formatting within the {@link ve.WordProcessor} component.
+	 * - Static method of: {@link ve.WordProcessor}
 	 *
 	 * @alias #execCodeAction
-	 * @memberof ve.Component.ve.WYSIWYG
+	 * @memberof ve.Component.ve.WordProcessor
 	 * 
 	 * @param {HTMLElement} arg0_button_el - The button_el that determines the code action to execute.
 	 * @param {HTMLElement} arg1_editor_el
@@ -461,10 +461,10 @@ ve.WYSIWYG = class extends ve.Component {
 	
 	/**
 	 * Executes a default action given its string via {@link document.execCommand}.
-	 * - Static method of: {@link ve.WYSIWYG}
+	 * - Static method of: {@link ve.WordProcessor}
 	 *
 	 * @alias #execDefaultAction
-	 * @memberof ve.Component.ve.WYSIWYG
+	 * @memberof ve.Component.ve.WordProcessor
 	 * 
 	 * @param {string} arg0_action
 	 */
@@ -477,11 +477,11 @@ ve.WYSIWYG = class extends ve.Component {
 	}
 	
 	/**
-	 * Adds a link to the current {@link ve.WYSIWYG} editor being mentioned.
-	 * - Static method of: {@link ve.WYSIWYG}
+	 * Adds a link to the current {@link ve.WordProcessor} editor being mentioned.
+	 * - Static method of: {@link ve.WordProcessor}
 	 *
 	 * @alias #execLinkAction
-	 * @memberof ve.Component.ve.WYSIWYG
+	 * @memberof ve.Component.ve.WordProcessor
 	 * 
 	 * @param {HTMLElement} arg0_modal_el
 	 */
@@ -491,7 +491,7 @@ ve.WYSIWYG = class extends ve.Component {
 		
 		//Declare local instance variables
 		let close = modal.querySelectorAll(".close")[0];
-		let selection = ve.WYSIWYG.saveSelection();
+		let selection = ve.WordProcessor.saveSelection();
 		let submit = modal.querySelectorAll("button.done")[0];
 		
 		//Set modal to visible
@@ -507,7 +507,7 @@ ve.WYSIWYG = class extends ve.Component {
 			let new_tab = new_tab_checkbox.checked;
 			
 			//Restore selection
-			ve.WYSIWYG.restoreSelection(selection);
+			ve.WordProcessor.restoreSelection(selection);
 			
 			//Handle selection
 			if (window.getSelection().toString()) {
@@ -543,11 +543,11 @@ ve.WYSIWYG = class extends ve.Component {
 	}
 	
 	/**
-	 * Restores a saved selection for the current {@link ve.WYSIWYG} component.
-	 * - Static method of: {@link ve.WYSIWYG}
+	 * Restores a saved selection for the current {@link ve.WordProcessor} component.
+	 * - Static method of: {@link ve.WordProcessor}
 	 *
 	 * @alias #restoreSelection
-	 * @memberof ve.Component.ve.WYSIWYG
+	 * @memberof ve.Component.ve.WordProcessor
 	 * 
 	 * @param {Selection} arg0_saved_selection
 	 */
@@ -570,11 +570,11 @@ ve.WYSIWYG = class extends ve.Component {
 	}
 	
 	/**
-	 * Saves the current selection for later restoration by {@link ve.WYSIWYG.restoreSelection}().
-	 * - Static method of: {@link ve.WYSIWYG}
+	 * Saves the current selection for later restoration by {@link ve.WordProcessor.restoreSelection}().
+	 * - Static method of: {@link ve.WordProcessor}
 	 *
 	 * @alias #saveSelection
-	 * @memberof ve.Component.ve.WYSIWYG
+	 * @memberof ve.Component.ve.WordProcessor
 	 * 
 	 * @returns {Range}
 	 */
@@ -602,9 +602,9 @@ ve.WYSIWYG = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.WYSIWYG}
+ * @returns {ve.WordProcessor}
  */
-veWYSIWYG = function () {
+veWordProcessor = function () {
 	//Return statement
-	return new ve.WYSIWYG(...arguments);
+	return new ve.WordProcessor(...arguments);
 };
