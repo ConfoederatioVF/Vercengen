@@ -340,6 +340,7 @@ global.path = require("path");
 			"UF/js/vercengen/components",
 			
 			"UF/js/vercengen/components/ComponentDatavisSuite/ComponentDatavisSuite.js",
+			"UF/js/vercengen/components/ComponentDatavisSuite/framework",
 			"UF/js/vercengen/components/ComponentDatavisSuite/ui",
 			"UF/js/vercengen/components/ComponentFileExplorer/file_operations_ui.js",
 			
