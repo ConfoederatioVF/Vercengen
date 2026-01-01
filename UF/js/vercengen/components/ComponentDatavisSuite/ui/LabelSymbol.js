@@ -120,6 +120,9 @@ ve.DatavisSuite.LabelSymbol = class extends ve.Component {
 			}, { name: "Shadow" })
 		}, { name: (options.name) ? options.name : "Label Symbol" });
 		this.interface.bind(this.element);
+		this.from_binding_fire_silently = true;
+		this.v = value;
+		delete this.from_binding_fire_silently;
 	}
 	
 	get v () {
