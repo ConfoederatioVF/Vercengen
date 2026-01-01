@@ -115,6 +115,7 @@ ve.DatavisSuite.LabelSymbol = class extends ve.Component {
 				shadow_enabled: new ve.Toggle(false, { name: "Shadow Enabled", ...io }),
 				
 				shadow_blur: new ve.Number(0, { name: "Shadow Blur", ...io }),
+				shadow_colour: new ve.Colour("#000000", { name: "Shadow Colour", ...io }),
 				shadow_offset_x: new ve.Number(0, { name: "Shadow Offset X", ...io }),
 				shadow_offset_y: new ve.Number(0, { name: "Shadow Offset Y", ...io })
 			}, { name: "Shadow" })
@@ -126,10 +127,62 @@ ve.DatavisSuite.LabelSymbol = class extends ve.Component {
 	}
 	
 	get v () {
+		//Declare local instance variables
+		let ui_obj = {
+			...this.interface.text_options.v,
+			...this.interface.text_style.v,
+			...(this.interface.shadow_options.shadow_enabled.v) ? 
+				this.interface.shadow_options.v : {}
+		};
 		
+		//Return statement
+		return {
+			show: ui_obj.show.v,
+			color: ui_obj.color.v,
+			formatter: ui_obj.formatter.v,
+			fontFamily: ui_obj.font_family.v,
+			fontSize: ui_obj.font_size.v,
+			fontStyle: ui_obj.font_style.v,
+			fontWeight: ui_obj.font_weight.v,
+			height: ui_obj.height.v,
+			width: ui_obj.width.v,
+			
+			backgroundColor: Colour.convertRGBAToHex([...ui_obj.background_colour.v, ui_obj.background_colour_opacity.v*255]),
+			borderColor: ui_obj.border_colour.v,
+			borderDashOffset: ui_obj.border_dash_offset.v,
+			borderRadius: ui_obj.border_radius.v,
+			borderType: ui_obj.border_type.v,
+			borderWidth: ui_obj.border_width.v,
+			distance: ui_obj.distance.v,
+			ellipsis: ui_obj.ellipsis.v,
+			lineHeight: ui_obj.line_height.v,
+			offset: [ui_obj.offset_x.v, ui_obj.offset_y.v],
+			overflow: ui_obj.overflow.v,
+			minMargin: ui_obj.min_margin.v,
+			padding: ui_obj.padding.v.map((v) => v.v),
+			align: ui_obj.text_align_horizontal.v,
+			verticalAlign: ui_obj.text_align_vertical.v,
+			textBorderColor: ui_obj.text_border_colour.v,
+			textBorderDashOffset: ui_obj.text_border_dash_offset.v,
+			textBorderType: ui_obj.text_border_type.v,
+			textBorderWidth: ui_obj.text_border_width.v,
+			textMargin: [ui_obj.text_margin_x.v, ui_obj.text_margin_y.v],
+			textShadowBlur: ui_obj.text_shadow_blur.v,
+			textShadowOffsetX: ui_obj.text_shadow_offset_x.v,
+			textShadowOffsetY: ui_obj.text_shadow_offset_y.v,
+			
+			shadow_enabled: ui_obj?.shadow_enabled.v,
+			shadowBlur: ui_obj?.shadow_blur.v,
+			shadowColour: ui_obj?.shadow_colour.getHex(),
+			shadowOffsetX: ui_obj?.shadow_offset_x.v,
+			shadowOffsetY: ui_obj?.shadow_offset_y.v
+		};
 	}
 	
 	set v (arg0_value) {
+		//Convert from parameters
+		let value = (arg0_value) ? arg0_value : {};
 		
+		//Parse value
 	}
 };
