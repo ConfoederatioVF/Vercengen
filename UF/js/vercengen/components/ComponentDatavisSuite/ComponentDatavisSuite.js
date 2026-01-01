@@ -18,7 +18,7 @@
  *       - `.name`: {@link string} - The name of the series, data column header value by default.
  *       - `.pivot="column"`: {@link string} - Either 'column'/'row'.
  *       - `.symbol`: {@link Object} - Echarts bindings per series.
- *   - `.table_value`: {@link Object} - The ve.Table value that can be used to restore both formulas and values.
+ *   - `.table_value`: {@link Object} - The ve.Spreadsheet value that can be used to restore both formulas and values.
  * - `arg1_options`: {@link Object}
  *   - `.dark_mode=true`: {@link boolean}
  *
@@ -79,7 +79,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					},
 					x: 0, y: 0
 				}),
-				table: new ve.Table(this.table_value, {
+				table: new ve.Spreadsheet(this.table_value, {
 					dark_mode: this.options.dark_mode,
 					style: {
 						height: "auto",

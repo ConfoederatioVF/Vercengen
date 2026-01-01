@@ -42,7 +42,7 @@
 	
 	univerAPI.createWorkbook({ name: 'Test Sheet' });
 	univerAPI.addEvent(univerAPI.Event.SheetValueChanged, (e) => {
-		window.parent.ve.Table.fireToBinding(window.table_id);
+		window.parent.ve.Spreadsheet.fireToBinding(window.table_id);
 	});
 	
 	//HELPER FUNCTIONS START

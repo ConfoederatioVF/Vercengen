@@ -221,7 +221,7 @@
         width: 100%; 
     }
     > table:has([component="ve-script-manager"]),
-    > table:has([component="ve-table"]),
+    > table:has([component="ve-spreadsheet"]),
     > table:has([component="ve-wysiwyg"]) {
         height: 100%;
         width: 100%;

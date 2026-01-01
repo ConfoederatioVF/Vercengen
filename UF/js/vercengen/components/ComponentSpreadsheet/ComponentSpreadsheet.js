@@ -15,26 +15,26 @@
  * - `.v`: {@link Object}
  * 
  * ##### Methods:
- * - <span color=00ffff>{@link ve.Table.convertToArray|convertToArray}</span>() | {@link Array}<{@link Array}<{@link Array}<{@link any}>>>
- * - <span color=00ffff>{@link ve.Table.fromArray|fromArray}</span>(arg0_array:{@link Array}<{@link Array}<{@link Array}<{@link any}>>>, arg1_do_not_display=false:{@link boolean}) | {@link Object}
- * - <span color=00ffff>{@link ve.Table.getCellData|getCellData}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_x:{@link number}, arg2_y:{@link number}) | {f:{@link string}, v:{@link number}}
- * - <span color=00ffff>{@link ve.Table.getSelectedRange|getSelectedRange}</span>() | [[{@link number}, {@link number}, {@link number}], [{@link number}, {@link number}, {@link number}]]
- * - <span color=00ffff>{@link ve.Table.getSheetNames|getSheetNames}</span>() | {@link Array}<{@link string}>
- * - <span color=00ffff>{@link ve.Table.setCellData|setCellData}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_x:{@link number}, arg2_y:{@link number}, arg3_value:{f:{@link string}, v:{@link number}})
- * - <span color=00ffff>{@link ve.Table.setDarkMode|setDarkMode}</span>(arg0_value=false:{@link boolean})
- * - <span color=00ffff>{@link ve.Table.setSelectedRange|setSelectedRange}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_start_coords:[{@link number}, {@link number}, {@link number}], arg2_end_coords:[{@link number}, {@link number}, {@link number}])
+ * - <span color=00ffff>{@link ve.Spreadsheet.convertToArray|convertToArray}</span>() | {@link Array}<{@link Array}<{@link Array}<{@link any}>>>
+ * - <span color=00ffff>{@link ve.Spreadsheet.fromArray|fromArray}</span>(arg0_array:{@link Array}<{@link Array}<{@link Array}<{@link any}>>>, arg1_do_not_display=false:{@link boolean}) | {@link Object}
+ * - <span color=00ffff>{@link ve.Spreadsheet.getCellData|getCellData}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_x:{@link number}, arg2_y:{@link number}) | {f:{@link string}, v:{@link number}}
+ * - <span color=00ffff>{@link ve.Spreadsheet.getSelectedRange|getSelectedRange}</span>() | [[{@link number}, {@link number}, {@link number}], [{@link number}, {@link number}, {@link number}]]
+ * - <span color=00ffff>{@link ve.Spreadsheet.getSheetNames|getSheetNames}</span>() | {@link Array}<{@link string}>
+ * - <span color=00ffff>{@link ve.Spreadsheet.setCellData|setCellData}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_x:{@link number}, arg2_y:{@link number}, arg3_value:{f:{@link string}, v:{@link number}})
+ * - <span color=00ffff>{@link ve.Spreadsheet.setDarkMode|setDarkMode}</span>(arg0_value=false:{@link boolean})
+ * - <span color=00ffff>{@link ve.Spreadsheet.setSelectedRange|setSelectedRange}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_start_coords:[{@link number}, {@link number}, {@link number}], arg2_end_coords:[{@link number}, {@link number}, {@link number}])
  * 
  * ##### Static Fields:
- * - `.instances`: {@link Array}<this:{@link ve.Table}>
+ * - `.instances`: {@link Array}<this:{@link ve.Spreadsheet}>
  *
  * ##### Static Methods:
- * - <span color=00ffff>{@link ve.Table.fireToBinding|fireToBinding}</span>(arg0_table_id:{@link string})
+ * - <span color=00ffff>{@link ve.Spreadsheet.fireToBinding|fireToBinding}</span>(arg0_table_id:{@link string})
  * 
  * @augments ve.Component
  * @memberof ve.Component
- * @type {ve.Table}
+ * @type {ve.Spreadsheet}
  */
-ve.Table = class extends ve.Component {
+ve.Spreadsheet = class extends ve.Component {
 	static demo_value = [[["Test","hello",1,7,"Row 1"],["","world",2,8,"Row 2"],["","this",3,9,"Row 3"],["","is",4,10,"Row 4"],["","a",5,11,"Row 5"],["","test",6,12,"Row 6"],["","",7,"",""]]];
 	static instances = [];
 	
@@ -46,7 +46,7 @@ ve.Table = class extends ve.Component {
 			
 		//Declare local instance variables
 		this.element = document.createElement("div");
-		this.element.setAttribute("component", "ve-table");
+		this.element.setAttribute("component", "ve-spreadsheet");
 		this.element.instance = this;
 		this.element.style.height = "100%";
 			this.name_el = document.createElement("div");
@@ -54,7 +54,7 @@ ve.Table = class extends ve.Component {
 			this.element.appendChild(this.name_el);
 		
 			this.iframe_el = document.createElement("iframe");
-			this.iframe_el.src = "./UF/js/vercengen/components/ComponentTable/table_iframe.html";
+			this.iframe_el.src = "./UF/js/vercengen/components/ComponentSpreadsheet/spreadsheet_iframe.html";
 			this.iframe_el.style.height = "100%";
 			this.iframe_el.style.width = "100%";
 			this.element.appendChild(this.iframe_el);
@@ -63,7 +63,7 @@ ve.Table = class extends ve.Component {
 				Object.keys(options.attributes, (local_key, local_value) => {
 					this.element.setAttribute(local_key, local_value.toString());
 				});
-		this.id = Class.generateRandomID(ve.Table);
+		this.id = Class.generateRandomID(ve.Spreadsheet);
 		this.options = options;
 		this.value = value;
 		
@@ -79,17 +79,17 @@ ve.Table = class extends ve.Component {
 				clearInterval(this.initialisation_loop);
 			} catch (e) {}
 		});
-		ve.Table.instances.push(this);
+		ve.Spreadsheet.instances.push(this);
 		
 		if (options.name) this.name = options.name;
 	}
 	
 	/**
 	 * Returns the current Object value, including both formulas/cells.
-	 * - Accessor of: {@link ve.Table}
+	 * - Accessor of: {@link ve.Spreadsheet}
 	 *
 	 * @alias v
-	 * @memberof ve.Component.ve.Table
+	 * @memberof ve.Component.ve.Spreadsheet
 	 * @type {Object}
 	 */
 	get v () {
@@ -99,10 +99,10 @@ ve.Table = class extends ve.Component {
 	
 	/**
 	 * Sets the Object value contained in the Component, including both formulas/cells.
-	 * - Accessor of: {@link ve.Table}
+	 * - Accessor of: {@link ve.Spreadsheet}
 	 * 
 	 * @alias v
-	 * @memberof ve.Component.ve.Table
+	 * @memberof ve.Component.ve.Spreadsheet
 	 * 
 	 * @param {Object} arg0_value
 	 */
@@ -121,10 +121,10 @@ ve.Table = class extends ve.Component {
 	
 	/**
 	 * Converts the present value to a 3D array.
-	 * - Method of: {@link ve.Table}
+	 * - Method of: {@link ve.Spreadsheet}
 	 *
 	 * @alias convertToArray
-	 * @memberof ve.Component.ve.Table
+	 * @memberof ve.Component.ve.Spreadsheet
 	 * 
 	 * @returns {Array}
 	 */
@@ -135,10 +135,10 @@ ve.Table = class extends ve.Component {
 	
 	/**
 	 * Sets the present component value from an exported 3D array.
-	 * - Method of: {@link ve.Table}
+	 * - Method of: {@link ve.Spreadsheet}
 	 * 
 	 * @alias fromArray
-	 * @memberof ve.Component.ve.Table
+	 * @memberof ve.Component.ve.Spreadsheet
 	 * @param {Array} arg0_array
 	 * @param {boolean} [arg1_do_not_display=false]
 	 * 
@@ -197,7 +197,7 @@ ve.Table = class extends ve.Component {
 	 * Returns cell data as an Object. Coords are 1-indexed.
 	 *
 	 * @alias getCellData
-	 * @memberof ve.Component.ve.Table
+	 * @memberof ve.Component.ve.Spreadsheet
 	 * 
 	 * @param {number|string} arg0_sheet_index
 	 * @param {number} arg1_x
@@ -213,7 +213,7 @@ ve.Table = class extends ve.Component {
 	 * Returns the range name given a set of coordinates.
 	 * 
 	 * @alias getRangeName
-	 * @memberof ve.Component.ve.Table
+	 * @memberof ve.Component.ve.Spreadsheet
 	 * 
 	 * @param {Array.<number[]>} arg0_coords
 	 * 
@@ -278,7 +278,7 @@ ve.Table = class extends ve.Component {
 	 * Returns the currently selected range as a 2D array of [[sheet_index, start_x, start_y], [sheet_index, end_x, end_y]]. Coords are 1-indexed.
 	 *
 	 * @alias getSelectedRange
-	 * @memberof ve.Component.ve.Table
+	 * @memberof ve.Component.ve.Spreadsheet
 	 * 
 	 * @returns {Array.<number[]>}
 	 */
@@ -290,7 +290,7 @@ ve.Table = class extends ve.Component {
 	 * Returns the name of the currently selected range.
 	 * 
 	 * @alias getSelectedRangeName
-	 * @memberof ve.Component.ve.Table
+	 * @memberof ve.Component.ve.Spreadsheet
 	 * 
 	 * @returns {string}
 	 */
@@ -303,7 +303,7 @@ ve.Table = class extends ve.Component {
 	 * Returns all current sheet names.
 	 *
 	 * @alias getSheetNames
-	 * @memberof ve.Component.ve.Table
+	 * @memberof ve.Component.ve.Spreadsheet
 	 * 
 	 * @returns {string[]}
 	 */
@@ -315,7 +315,7 @@ ve.Table = class extends ve.Component {
 	 * Sets cell data at a target coordinate to a given Object value. Coords are 1-indexed.
 	 *
 	 * @alias setCellData
-	 * @memberof ve.Component.ve.Table
+	 * @memberof ve.Component.ve.Spreadsheet
 	 * 
 	 * @param {number|string} arg0_sheet_index
 	 * @param {number} arg1_x
@@ -328,10 +328,10 @@ ve.Table = class extends ve.Component {
 	
 	/**
 	 * Sets the theme of the current Table component, either to dark mode or light mode.
-	 * - Method of: {@link ve.Table}
+	 * - Method of: {@link ve.Spreadsheet}
 	 *
 	 * @alias setDarkMode
-	 * @memberof ve.Component.ve.Table
+	 * @memberof ve.Component.ve.Spreadsheet
 	 *
 	 * @param {boolean} [arg0_value=false]
 	 */
@@ -346,7 +346,7 @@ ve.Table = class extends ve.Component {
 	 * Sets the currently selected range to a target coordinate range. Coords are 1-indexed.
 	 * 
 	 * @alias setSelectedRange
-	 * @memberof ve.Component.ve.Table
+	 * @memberof ve.Component.ve.Spreadsheet
 	 * 
 	 * @param {number[]} arg0_start_coords
 	 * @param {number[]} arg1_end_coords
@@ -374,10 +374,10 @@ ve.Table = class extends ve.Component {
 	
 	/**
 	 * Fires to_binding statically, used by the embedded iframe since it has no `this` context.
-	 * - Static method of: {@link ve.Table}
+	 * - Static method of: {@link ve.Spreadsheet}
 	 * 
 	 * @alias #fireToBinding
-	 * @memberof ve.Component.ve.Table
+	 * @memberof ve.Component.ve.Spreadsheet
 	 * 
 	 * @param {string} arg0_table_id
 	 */
@@ -386,7 +386,7 @@ ve.Table = class extends ve.Component {
 		let table_id = arg0_table_id;
 		
 		//Declare local instance variables
-		let table_obj = ve.Table.instances.filter((v) => v.id === table_id)[0];
+		let table_obj = ve.Spreadsheet.instances.filter((v) => v.id === table_id)[0];
 		
 		if (table_obj)
 			table_obj.fireToBinding();
@@ -396,9 +396,9 @@ ve.Table = class extends ve.Component {
 //Functional binding
 
 /**
- * @returns {ve.Table}
+ * @returns {ve.Spreadsheet}
  */
-veTable = function () {
+veSpreadsheet = function () {
 	//Return statement
-	return new ve.Table(...arguments);
+	return new ve.Spreadsheet(...arguments);
 };
