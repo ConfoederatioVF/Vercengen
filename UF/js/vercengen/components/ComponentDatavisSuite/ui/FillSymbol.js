@@ -56,6 +56,7 @@ ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Finish funct
 		}, {
 			name: (options.name) ? options.name : "Fill Symbol"
 		});
+		this.interface.bind(this.element);
 		this.from_binding_fire_silently = true;
 		this.v = value;
 		delete this.from_binding_fire_silently;

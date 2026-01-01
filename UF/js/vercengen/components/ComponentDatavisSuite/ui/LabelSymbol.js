@@ -28,7 +28,7 @@ ve.DatavisSuite.LabelSymbol = class extends ve.Component {
 			text_options: new ve.Interface({
 				show: new ve.Toggle(false, { name: "Show", ...io }),
 				
-				colour: new ve.Color("#ffffff", { name: "Colour", ...io }),
+				colour: new ve.Colour("#ffffff", { name: "Colour", ...io }),
 				formatter: new ve.Text("", { name: "Formatter", ...io }),
 				font_family: new ve.Text("sans-serif", { name: "Font Family", ...io }),
 				font_size: new ve.Number(12, { min: 0, name: "Font Size", ...io }),
@@ -85,7 +85,7 @@ ve.DatavisSuite.LabelSymbol = class extends ve.Component {
 					left: { name: "Left" },
 					right: { name: "Right" },
 					top: { name: "Top", selected: true }
-				}, { name: "Position", ...io })
+				}, { name: "Position", ...io }),
 				rotate: new ve.Number(0, { name: "Rotate", ...io }),
 				text_align_horizontal: new ve.Select({
 					left: { name: "Left", selected: true },
@@ -119,6 +119,7 @@ ve.DatavisSuite.LabelSymbol = class extends ve.Component {
 				shadow_offset_y: new ve.Number(0, { name: "Shadow Offset Y", ...io })
 			}, { name: "Shadow" })
 		}, { name: (options.name) ? options.name : "Label Symbol" });
+		this.interface.bind(this.element);
 	}
 	
 	get v () {
