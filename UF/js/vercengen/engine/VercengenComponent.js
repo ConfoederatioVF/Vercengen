@@ -49,6 +49,7 @@
  * - <span color=00ffff>{@link ve.Component.fireToBinding|fireToBinding}</span>() - Pseudo-setter to binding. Fires only upon user-driven changes to `.v`.
  * - <span color=00ffff>{@link ve.Component.remove|remove}</span>() - Removes the component/element from the DOM.
  * - <span color=00ffff>{@link ve.Component.removeComponent|removeComponent}</span>() - Unmounts the current component from its parent_el.
+ * - <span color=00ffff>{@link ve.Component.setValueFromObject|setValueFromObject}</span>(arg0_object:{@link Object}, arg1_object:{@link Object}) - 
  * - <span color=00ffff>{@link ve.Component.setOwner|setOwner}</span>(arg0_value:{@link Object}, arg1_owner_array=[]:{@link Array}<{@link Object}>) - Used by the reflection engine in {@link ve.Class} to set the owner hierarchy automatically.
  * 
  * ##### Static Methods:
@@ -513,6 +514,33 @@ ve.Component = class {
 				this.parent_el.removeChild(this.element);
 			}
 		} catch (e) { console.error(e); }
+	}
+	
+	/**
+	 * Destructures Object values and transfers them into the `.v` instance fields of each Vercengen component.
+	 * - Method of: {@link ve.Component}
+	 * 
+	 * @param {Object} arg0_object - The Vercengen object to transfer to.
+	 * @param {Object} arg1_object - The other object to transfer from.
+	 */
+	setValueFromObject (arg0_object, arg1_object) {
+		//Convert from parameters
+		let object = (arg0_object) ? arg0_object : {};
+		let ot_object = (arg1_object) ? arg1_object : {};
+		
+		//Iterate over ot_object
+		Object.iterate(ot_object, (local_key, local_value) => {
+			try {
+				if (object[local_key]?.v !== undefined) {
+					object[local_key].v = local_value;
+				} else if (
+					object[local_key] !== undefined && local_value !== undefined && 
+					typeof local_value === "object" && !local_value.is_vercengen_component
+				) {
+					this.setValueFromObject(object[local_key], local_value);
+				}
+			} catch (e) {}
+		});
 	}
 	
 	/**

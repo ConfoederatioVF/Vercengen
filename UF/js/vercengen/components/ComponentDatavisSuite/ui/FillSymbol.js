@@ -34,53 +34,14 @@ ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Refactor to 
 			this.element.setAttribute("component", "ve-datavis-suite-fill-symbol");
 			this.element.instance = this;
 			HTML.setAttributesObject(this.element, options.attributes);
-			let io = { 
-				onuserchange: () => this.fireToBinding()
-			};
-		this.interface = new ve.Interface({
-			fill_colour: new ve.Colour("#000000", { name: "Fill Colour", ...io }),
-			origin: new ve.Select({
-				auto: {
-					name: "Auto",
-					selected: true
-				},
-				end: { name: "End" },
-				start: { name: "Start" }
-			}, { name: "Origin", ...io }),
-			opacity: new ve.Range(0.7, { name: "Opacity", ...io }),
-			shadow_enabled: new ve.Toggle(false, { name: "Shadow Enabled", ...io }),
-			
-			shadow_blur: new ve.Number(0, { name: "Shadow Blur", ...io }),
-			shadow_offset_x: new ve.Number(0, { name: "Shadow Offset X", ...io }),
-			shadow_offset_y: new ve.Number(0, { name: "Shadow Offset Y", ...io })
-		}, {
-			name: (options.name) ? options.name : "Fill Symbol"
-		});
-		this.interface.bind(this.element);
+		this.value = {};
 		this.from_binding_fire_silently = true;
 		this.v = value;
 		delete this.from_binding_fire_silently;
 	}
 	
 	get v () {
-		//Declare local instance variables
-		let ui_obj = this.interface;
-		let shadow_obj = (ui_obj.shadow_enabled.v) ? {
-			shadow_enabled: ui_obj.shadow_enabled.v,
-			
-			shadowBlur: ui_obj.shadow_blur.v,
-			shadowOffsetX: ui_obj.shadow_offset_x.v,
-			shadowOffsetY: ui_obj.shadow_offset_y.v
-		} : {};
-		
-		//Return statement
-		return {
-			color: ui_obj.fill_colour.getHex(),
-			origin: ui_obj.origin.v,
-			opacity: ui_obj.opacity.v,
-			
-			...shadow_obj
-		};
+		return this.value;
 	}
 	
 	set v (arg0_value) {
@@ -88,15 +49,43 @@ ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Refactor to 
 		let value = (arg0_value) ? arg0_value : {};
 		
 		//Parse value
-		if (value.color !== undefined) this.interface.fill_colour.v = value.color;
-		if (value.origin !== undefined) this.interface.origin.v = value.origin;
-		if (value.opacity !== undefined) this.interface.opacity.v = value.opacity;
-		
-		if (value.shadow_enabled) {
-			if (value.shadowBlur !== undefined) this.interface.shadow_blur.v = value.shadowBlur;
-			if (value.shadowOffsetX !== undefined) this.interface.shadow_offset_x.v = value.shadowOffsetX;
-			if (value.shadowOffsetY !== undefined) this.interface.shadow_offset_y.v = value.shadowOffsetY;
-		}
+		this.element.innerHTML = "";
+		this.interface = new ve.Interface({
+			fill_colour: new ve.Colour(value.color, {
+				name: "Fill Colour",
+				onuserchange: (v, e) => this.value.color = e.getHex()
+			}),
+			origin: new ve.Select({
+				auto: { name: "Auto" },
+				end: { name: "End" },
+				start: { name: "Start" }
+			}, {
+				name: "Origin",
+				selected: (value.origin) ? value.origin : "auto",
+				onuserchange: (v) => this.value.origin = v
+			}),
+			opacity: new ve.Range(Math.returnSafeNumber(value.opacity, 0.7), {
+				name: "Opacity",
+				onuserchange: (v) => this.value.opacity = v
+			}),
+			
+			shadow_blur: new ve.Number(Math.returnSafeNumber(value.shadowBlur), {
+				name: "Shadow Blur",
+				onuserchange: (v) => this.value.shadowBlur = v
+			}),
+			shadow_offset_x: new ve.Number(Math.returnSafeNumber(value.shadowOffsetX), {
+				name: "Shadow Offset X",
+				onuserchange: (v) => this.value.shadowOffsetX = v
+			}),
+			shadow_offset_y: new ve.Number(Math.returnSafeNumber(value.shadowOffsetY), {
+				name: "Shadow Offset Y",
+				onuserchange: (v) => this.value.shadowOffsetY = v
+			})
+		}, {
+			name: (options.name) ? options.name : "Fill Symbol"
+		});
+		this.interface.bind(this.element);
+		this.value = value;
 	}
 };
 
