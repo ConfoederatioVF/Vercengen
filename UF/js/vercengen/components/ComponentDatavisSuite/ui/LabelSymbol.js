@@ -139,11 +139,11 @@ ve.DatavisSuite.LabelSymbol = class extends ve.Component { //[WIP] - Refactor to
 					name: "Line Height",
 					onuserchange: (v) => this.value.lineHeight = v
 				}),
-				offset_x: new ve.Number(Math.returnSafeNumber(value.offset[0]), { 
+				offset_x: new ve.Number((value.offset) ? Math.returnSafeNumber(value.offset[0]) : 0, { 
 					name: "Offset X", 
 					onuserchange: (v) => this.value.offset = [v, this.interface.text_style.offset_y.v]
 				}),
-				offset_y: new ve.Number(Math.returnSafeNumber(value.offset[1]), { 
+				offset_y: new ve.Number((value.offset) ? Math.returnSafeNumber(value.offset[1]) : 0, { 
 					name: "Offset Y",
 					onuserchange: (v) => this.value.offset = [this.interface.text_style.offset_x.v, v]
 				}),
@@ -161,7 +161,8 @@ ve.DatavisSuite.LabelSymbol = class extends ve.Component { //[WIP] - Refactor to
 					name: "Minimum Margin",
 					onuserchange: (v) => this.value.minMargin = v
 				}),
-				padding: new ve.List(value.padding.map((v) => ve.Number(v)), { 
+				padding: new ve.List((value.padding) ? 
+					value.padding.map((v) => ve.Number(v)) : [new ve.Number(0)], { 
 					min: 1, max: 4, 
 					name: "Padding",
 					onuserchange: (v) => this.value.padding = v.map((v) => v.v)
@@ -270,7 +271,7 @@ ve.DatavisSuite.LabelSymbol = class extends ve.Component { //[WIP] - Refactor to
 					onuserchange: (v) => this.value.shadowOffsetY = v
 				})
 			}, { name: "Shadow" })
-		}, { name: (options.name) ? options.name : "Label Symbol" });
+		}, { name: (this.options.name) ? this.options.name : "Label Symbol" });
 		this.interface.bind(this.element);
 		this.value = value;
 	}

@@ -158,7 +158,7 @@ ve.DatavisSuite.PointSymbol = class extends ve.Component {
 				onuserchange: (v) => this.value.shadowOffsetY = v
 			})
 		}, {
-			name: (options.name) ? options.name : "Point Symbol"
+			name: (this.options.name) ? this.options.name : "Point Symbol"
 		});
 		this.interface.bind(this.element);
 		this.value = value;
