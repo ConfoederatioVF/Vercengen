@@ -41,6 +41,7 @@ ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Refactor to 
 	}
 	
 	get v () {
+		//Return statement
 		return this.value;
 	}
 	

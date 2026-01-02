@@ -121,3 +121,13 @@ ve.DatavisSuite.StrokeSymbol = class extends ve.Component {
 		this.value = value;
 	}
 };
+
+//Functional binding
+
+/**
+ * @returns {ve.DatavisSuite.StrokeSymbol}
+ */
+veDatavisSuiteStrokeSymbol = function () {
+	//Return statement
+	return new ve.DatavisSuite.StrokeSymbol(...arguments);
+};
