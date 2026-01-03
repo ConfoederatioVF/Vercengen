@@ -52,6 +52,9 @@ ve.ScriptManagerCodemirror = class extends ve.Component {
 		this.codemirror_initialisation_loop = setInterval(() => {
 			if (!document.body.contains(this.element)) return;
 			this.codemirror = CodeMirror.fromTextArea(this.codemirror_el, {
+				extraKeys: {
+					"Alt-F": "findPersistent"
+				},
 				foldGutter: true,
 				lineNumbers: true,
 				lineWrapping: true,
