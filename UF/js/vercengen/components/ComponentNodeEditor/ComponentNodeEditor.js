@@ -1,9 +1,9 @@
 /**
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  * 
- * Creates a drag-and-drop Node Editor using Maptalks. Note that the entire state is stored in Maptalks, with scripts and metadata in the properties portion of Geometry symbols.
+ * Creates a drag-and-drop Node Editor using Maptalks as a backend. Nodes are executed from a root node using a parallelised version of Kahn's algorithm, and nodes must form a directed acyclic graph (DAG). Circular references will not be executed if forced.
  * 
- * All nodes are implemented as a {@link maptalks.GeometryCollection}, with [0] containing node data and [n] containing other visual geometries. The ID of the GeometryCollection is the same as that of the Node. Their class type is implemented as a {@link ve.NodeEditorDatatype}.
+ * If you need a loop, call `async run()` multiple times instead.
  * - Functional binding: <span color=00ffff>veNodeEditor</span>().
  * 
  * [WIP] - Settings remain to be concretely implemented.
@@ -16,8 +16,9 @@
  *   - `.category_types`: {@link Object}
  *     - `<category_key>`: {@link Object}
  *       - `.colour`: {@link Array}<{@link number}, {@link number}, {@link number}>|{@link string} - Either a hex/RGB value.
+ *   - `.exclude_all=false`: {@link boolean}
  *   - `.node_types`: {@link Object}
- *     - `<node_key>`: {@link Object}
+ *     - `<node_key>`: {@link Object} - Current valid types for `.input_parameters` and `.output_type` include 'any'/'number[]'/'string[]'/'boolean'/'number'/'script'/'string'.
  *       - `.category="Expression"` - The category that any {@link ve.NodeEditorDatatype} instances should belong to. Typically should either be 'Filter'/'Expression'.
  *       - `.input_parameters=[]`: {@link Array}<{@link Object}> - The types of input parameters that will be accepted for evaluation.
  *         - `[n]`: {@link Object}
@@ -43,7 +44,7 @@
  * - `.id`: {@link string}
  * - `.main`: {@link Object}
  *   - `.variables`: {@link Object} - Where values during the run-cycle are stored.
- * - `.map`: {@link maptalks.Map}
+ * - `.map`: {@link maptalks.Map} - Not an actual map instance. Used for rendering the node environment in 3D space.
  * - `.node_layer`: {@link maptalks.VectorLayer}
  * - `.v`: {@link Object}
  * 
