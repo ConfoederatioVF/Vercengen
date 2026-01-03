@@ -245,7 +245,7 @@
         padding: 0;
     }
     table tbody tr td {
-        padding-inline-start: 0 !important;
+        padding-inline-start: 0;
     }
 }
 
@@ -385,6 +385,26 @@
 [component="ve-select"] {
     #name:not(:empty) {
         margin-right: calc(var(--padding)*0.5);
+    }
+}
+
+/* -- ve.Table -- */
+[component="ve-table"] {
+    .label-current-page {
+        margin-right: var(--cell-padding);
+    }
+    .pagination-controls {
+        text-align: center;
+    }
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    td, th {
+        border: 1px solid var(--hover-colour);
+        padding: var(--padding);
+        padding-inline-start: var(--padding) !important;
+        text-align: left;
     }
 }
 

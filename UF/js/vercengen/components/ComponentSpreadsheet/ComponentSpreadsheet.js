@@ -4,6 +4,7 @@
  * Spreadsheet editor that returns a 2D array list/object using iframes for encapsulation. Excel/Google Sheets/HTML compatible with formulas and limited styling options. Note that there might be a slight initialisation delay due to lazy-loading.
  * 
  * The reason this does not always serialise to an {@link Array} is so that formulas and format data can be preserved.
+ * - Functional binding: <span color=00ffff>veSpreadsheet</span>().
  * 
  * ##### Constructor:
  * - `arg0_value`: {@link Array}<{@link Array}<{@link Array}<{@link any}>>>|{@link Object}
@@ -16,6 +17,8 @@
  * 
  * ##### Methods:
  * - <span color=00ffff>{@link ve.Spreadsheet.convertToArray|convertToArray}</span>() | {@link Array}<{@link Array}<{@link Array}<{@link any}>>>
+ * - <span color=00ffff>{@link ve.Spreadsheet.convertToSpreadsheet|convertToSpreadsheet}</span>() | {@link ve.Spreadsheet}
+ * - <span color=00ffff>{@link ve.Spreadsheet.convertToTable|convertToTable}</span>() | {@link ve.Table}
  * - <span color=00ffff>{@link ve.Spreadsheet.fromArray|fromArray}</span>(arg0_array:{@link Array}<{@link Array}<{@link Array}<{@link any}>>>, arg1_do_not_display=false:{@link boolean}) | {@link Object}
  * - <span color=00ffff>{@link ve.Spreadsheet.getCellData|getCellData}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_x:{@link number}, arg2_y:{@link number}) | {f:{@link string}, v:{@link number}}
  * - <span color=00ffff>{@link ve.Spreadsheet.getSelectedRange|getSelectedRange}</span>() | [[{@link number}, {@link number}, {@link number}], [{@link number}, {@link number}, {@link number}]]
@@ -134,6 +137,59 @@ ve.Spreadsheet = class extends ve.Component {
 	}
 	
 	/**
+	 * Restores the Spreadsheet view. If the Table is currently active, it syncs the data back from the Table before swapping.
+	 * - Method of: {@link ve.Spreadsheet}
+	 *
+	 * @alias convertToSpreadsheet
+	 * @memberof ve.Component.ve.Spreadsheet
+	 *
+	 * @returns {ve.Spreadsheet}
+	 */
+	convertToSpreadsheet () { //[WIP] - Refactor later
+		//If we are coming back from a table, sync the data first
+		if (this.table_component) {
+			this.v = [this.table_component.v];
+			
+			// Swap DOM back if the table is currently visible
+			if (this.table_component.element.parentNode)
+				this.table_component.element.replaceWith(this.element);
+		}
+		
+		//Return statement
+		return this;
+	}
+	
+	/**
+	 * Switches the view to the bound Table. If no Table exists, creates one.
+	 * - Method of: {@link ve.Spreadsheet}
+	 * 
+	 * @alias convertToTable
+	 * @memberof ve.Component.ve.Table
+	 * 
+	 * @returns {ve.Table}
+	 */
+	convertToTable () { //[WIP] - Refactor later
+		// Extract 2D data from the 3D Spreadsheet
+		const spreadsheet_data = this.convertToArray();
+		const table_data = (spreadsheet_data && spreadsheet_data[0]) ? spreadsheet_data[0] : [];
+		
+		if (!this.table_component) {
+			// Create the counterpart and link them
+			this.table_component = new ve.Table(table_data, this.options);
+			this.table_component.spreadsheet_component = this;
+		} else {
+			// Sync current data to existing table
+			this.table_component.v = table_data;
+		}
+		
+		// Swap DOM
+		if (this.element.parentNode)
+			this.element.replaceWith(this.table_component.element);
+		
+		return this.table_component;
+	}
+	
+	/**
 	 * Sets the present component value from an exported 3D array.
 	 * - Method of: {@link ve.Spreadsheet}
 	 * 
@@ -152,6 +208,8 @@ ve.Spreadsheet = class extends ve.Component {
 		//Declare local instance variables
 		let data_obj = {};
 		
+		console.log("fromArray() called")
+		
 		//Iterate over array; transform into valid sheets
 		for (let i = 0; i < array.length; i++) {
 			let local_data_obj = {};
@@ -163,7 +221,7 @@ ve.Spreadsheet = class extends ve.Component {
 					let local_value = array[i][x][y];
 					
 					//Coerce types based on local_value
-					if (local_value.startsWith("=")) {
+					if (local_value && typeof local_value === "string" && local_value.startsWith("=")) {
 						local_row_obj[y] = { f: local_value };
 					} else {
 						if (isNaN(parseFloat(local_value))) {
