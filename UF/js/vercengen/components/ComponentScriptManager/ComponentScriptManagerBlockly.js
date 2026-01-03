@@ -1,19 +1,19 @@
 /**
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
- * 
+ *
  * Represents a {@link Blockly} sub-component used as a visual editor for {@link ve.ComponentScriptManager}.
- * 
+ *
  * **Note.** Declaring duplicate {@link ve.ScriptManager} components will reset the main Blockly workspace for each new instance.
  * - Functional binding: <span color=00ffff>veScriptManagerBlockly</span>().
- * 
+ *
  * ##### Constructor:
  * - `arg0_value`: {@link string} - The code to input into the present Blockly viewer.
  * - `arg1_options`: {@link Object}
- * 
+ *
  * ##### Instance:
  * - `.workspace`: {@link Blockly.Workspace}
  * - `.v`: {@link string}
- * 
+ *
  * ##### Methods:
  * - <span color=00ffff>{@link ve.ScriptManagerBlockly.disable|disable}</span>()
  * - <span color=00ffff>{@link ve.ScriptManagerBlockly.enable|enable}</span>()
@@ -23,7 +23,7 @@
  * - <span color=00ffff>{@link ve.ScriptManagerBlockly.interceptBlocklyTransforms|interceptBlocklyTransforms}</span>()
  * - <span color=00ffff>{@link ve.ScriptManagerBlockly.setTheme|setTheme}</span>(arg0_theme:{@link string}) - Either 'theme_default'/'theme_light'.
  * - <span color=00ffff>{@link ve.ScriptManagerBlockly.show|show}</span>()
- * 
+ *
  * @augments ve.Component
  * @memberof ve.Component
  * @type {ve.ScriptManagerBlockly}
@@ -35,8 +35,8 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		//Convert from parameters
 		let value = arg0_value;
 		let options = (arg1_options) ? arg1_options : {};
-			super(options);
-			
+		super(options);
+		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
 		
@@ -44,14 +44,14 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		let toolbox = ve.ScriptManager.toolbox;
 		
 		this.element = document.createElement("div");
-			this.element.instance = this;
-			this.element.setAttribute("component", "ve-script-manager-blockly");
-			this.element.style.width = "35%";
-			this.element.style.position = "relative"; 
-			if (options.attributes)
-				Object.iterate(options.attributes, (local_key, local_value) => {
-					this.element.setAttribute(local_key, local_value.toString());
-				});
+		this.element.instance = this;
+		this.element.setAttribute("component", "ve-script-manager-blockly");
+		this.element.style.width = "100%"; //Updated to 100% to fill the flex-item
+		this.element.style.position = "relative";
+		if (options.attributes)
+			Object.iterate(options.attributes, (local_key, local_value) => {
+				this.element.setAttribute(local_key, local_value.toString());
+			});
 		this.options = options;
 		this.value = value;
 		
@@ -82,13 +82,21 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 			
 			if (!this.to_binding_fire_silently)
 				try {
-					let codemirror_obj = this.element.parentElement.querySelector(`[component="ve-script-manager-codemirror"]`).instance;
+					//Traverse up to the ScriptManager container, then search down for Codemirror
+					let manager_el = this.element.closest(`[component="ve-script-manager"]`);
+					let codemirror_el = (manager_el) ?
+						manager_el.querySelector(`[component="ve-script-manager-codemirror"]`) :
+						undefined;
 					
-					codemirror_obj.to_binding_fire_silently = true;
-					codemirror_obj.v = blockly_value;
-					delete codemirror_obj.to_binding_fire_silently;
-					
-					this.fireToBinding();
+					if (codemirror_el && codemirror_el.instance) {
+						let codemirror_obj = codemirror_el.instance;
+						
+						codemirror_obj.to_binding_fire_silently = true;
+						codemirror_obj.v = blockly_value;
+						delete codemirror_obj.to_binding_fire_silently;
+						
+						this.fireToBinding();
+					}
 				} catch (e) { console.error(e); }
 		});
 		
@@ -122,7 +130,7 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 	 *
 	 * @alias v
 	 * @memberof ve.Component.ve.ScriptManagerBlockly
-	 * 
+	 *
 	 * @param {string} arg0_value
 	 */
 	set v (arg0_value) {
@@ -230,15 +238,15 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 			
 			this.max_height = this.svg_rect.height;
 			this.max_width = this.svg_rect.width;
+			this.svg_el.style.width = "100%";
 			this.svg_el.style.maxHeight = `${this.max_height}px`;
-			this.svg_el.style.maxWidth = `${this.max_width}px`;
 			
 			//Change anchor for this.blockly_toolbox_el
 			let rect = this.element.getBoundingClientRect();
 			this.blockly_toolbox_mode = (this.element.querySelector(".blocklyFlyout:hover") ||
 				this.blockly_toolbox_el.querySelector(":hover") ||
 				document.querySelector(".blocklyDraggable:hover")
-			) ? 
+			) ?
 				"body" : "canvas";
 			
 			if (this.blockly_toolbox_mode === "body") {
@@ -316,7 +324,7 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 	 *
 	 * @alias setTheme
 	 * @memberof ve.Component.ve.ScriptManagerBlockly
-	 * 
+	 *
 	 * @param {string} arg0_theme_class
 	 */
 	setTheme (arg0_theme_class) {
@@ -346,7 +354,6 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		delete this._hidden;
 		this.element.style.display = "block";
 		this.svg_el.style.maxHeight = `${this._preserved_height}px`;
-		this.svg_el.style.maxWidth = `${this._preserved_width}px`;
 		
 		delete this._preserved_height;
 		delete this._preserved_width;

@@ -1,12 +1,12 @@
 /**
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
- * 
- * Visual block-based and code-based IDE used to assemble `.js` script files. ES6 compatible; non-compatible files will degrade to code editor only. 
- * 
+ *
+ * Visual block-based and code-based IDE used to assemble `.js` script files. ES6 compatible; non-compatible files will degrade to code editor only.
+ *
  * **Note:** Declaring duplicate ve.ScriptManager components will reset the main Blockly workspace for each new instance.
  * - Functional binding: <span color=00ffff>veScriptManager</span>().
  * - This component has special default settings located in {@link ve.registry.settings.ScriptManager}.
- * 
+ *
  * ##### Constructor:
  * - `arg0_value`: {@link string} - The code to load into the present ve.ScriptManager.
  * - `arg1_options`: {@link Object}
@@ -22,26 +22,27 @@
  * 	   - `.keybinds="sublime"`: {@link string} - Either 'emacs'/'sublime'/'vim'
  * 	   - `.theme="theme-default"`: {@link string} - Either 'theme-default'/'theme-light'
  * 	   - `.view_file_explorer=true`: {@link boolean}
- * 	   
+ *
  * ##### Instance:
  * - `.console_el`: {@link HTMLElement}
  *   - `.print`: {@link function}(arg0_message:{@link string}, arg1_type:{@link string}) - arg1_type is either 'message'/'error'.
  * - `.leftbar_file_explorer`: {@link ve.FileExplorer}
  * - `.scene_blockly`: {@link ve.ScriptManagerBlockly}
  * - `.scene_codemirror`: {@link ve.ScriptManagerCodemirror}
+ * - `.scene_interface`: {@link ve.FlexInterface}
  * - `.v`: {@link string}
- * 
+ *
  * Private Fields:
  * - `._codemirror_themes`: {@link Object}<{@link string}>
  * - `._settings`: {@link Object}
- * 
+ *
  * ##### Methods:
  * - <span color=00ffff>{@link ve.ScriptManager.loadSettings|loadSettings}</span>(arg0_settings:{@link Object})
  * - <span color=00ffff>{@link ve.ScriptManager.saveSettings|saveSettings}</span>() | {@link string}
  * - <span color=00ffff>{@link ve.ScriptManager.setCodeEditorTheme|setCodeEditorTheme}</span>(arg0_theme_class:{@link string})
  * - <span color=00ffff>{@link ve.ScriptManager.setTheme|setTheme}</span>(arg0_theme_class:{@link string})
  * - <span color=00ffff>{@link ve.ScriptManager.throwLoadError|throwLoadError}</span>(arg0_error:{@link Error}|{@link string})
- * 
+ *
  * @augments ve.Component
  * @memberof ve.Component
  * @type {ve.ScriptManager}
@@ -49,13 +50,13 @@
 ve.ScriptManager = class extends ve.Component {
 	static excluded_from_demo = true;
 	static instances = [];
-
+	
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
 		let value = arg0_value;
 		let options = (arg1_options) ? arg1_options : {};
-			super(options);
-			
+		super(options);
+		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
 		if (options.name === undefined) options.name = "ScriptManager";
@@ -161,317 +162,328 @@ ve.ScriptManager = class extends ve.Component {
 		try { Blockly.mainWorkspace.clear(); } catch (e) {}
 		
 		this.console_el = document.createElement("div");
-			this.console_el.print = (arg0_message, arg1_type) => {
-				//Convert from parameters
-				let message = (arg0_message) ? arg0_message : "";
-				let type = (arg1_type) ? arg1_type : "message";
-				
-				//Declare local instance variables
-				let local_msg_el = document.createElement("div");
-					local_msg_el.classList.add(type);
-					local_msg_el.innerText = message;
-					this.console_el.appendChild(local_msg_el);
- 			};
+		this.console_el.print = (arg0_message, arg1_type) => {
+			//Convert from parameters
+			let message = (arg0_message) ? arg0_message : "";
+			let type = (arg1_type) ? arg1_type : "message";
+			
+			//Declare local instance variables
+			let local_msg_el = document.createElement("div");
+			local_msg_el.classList.add(type);
+			local_msg_el.innerText = message;
+			this.console_el.appendChild(local_msg_el);
+		};
 		this.element = document.createElement("div");
-			this.element.setAttribute("component", "ve-script-manager");
-			this.element.instance = this;
-			this.element.style.padding = "0";
-			if (this.options.attributes)
-				Object.iterate(this.options.attributes, (local_key, local_value) => {
-					this.element.setAttribute(local_key, local_value.toString());
-				});
-		
-			this.container_el = document.createElement("div");
-			this.container_el.id = "container";
-			this.container_el.style.display = "flex";
-			this.container_el.style.flexDirection = "row";
-			
-			this.leftbar_el = document.createElement("div");
-			this.leftbar_el.id = "leftbar";
-				this.leftbar_file_explorer = new ve.FileExplorer((this.options.folder_path) ? this.options.folder_path : process.cwd(), {
-					load_function: (arg0_data, arg1_file_path) => {
-						let local_data = arg0_data;
-						let file_path = arg1_file_path;
-						
-						this._file_path = file_path;
-						try {
-							this.v = local_data;
-							this.fireToBinding();
-						} catch (e) {}
-					},
-					save_extension: (this.options.save_extension) ? this.options.save_extension : [".*"],
-					save_function: (arg0_save_name) => {
-						this._file_path = arg0_save_name;
-						
-						//Return statement
-						return this.scene_codemirror.v;
-					},
-					style: {
-						marginRight: "calc(var(--cell-padding)*2)",
-						maxHeight: "80dvh",
-						overflow: "auto",
-						paddingBottom: 0,
-						paddingTop: 0,
-						paddingRight: 0,
-						width: "20rem"
-					}
-				});
-				this.leftbar_file_explorer.bind(this.leftbar_el);
-			this.scene_el = document.createElement("div");
-			this.scene_el.style.display = "flex";
-			this.scene_el.style.flexDirection = "row";
-			this.scene_el.style.width = "100%";
-			this.scene_el.id = "scene";
-				this.scene_blockly = new ve.ScriptManagerBlockly();
-				this.scene_blockly_el = this.scene_blockly.element;
-					this.scene_blockly_el.id = "scene-blockly";
-					this.scene_blockly_el.style.display = "block";
-				this.scene_codemirror = new ve.ScriptManagerCodemirror(undefined, { 
-					script_manager: this 
-				});
-					this.scene_codemirror_el = this.scene_codemirror.element;
-					this.scene_codemirror_el.id = "scene-codemirror";
-				this.scene_tabs_el = document.createElement("div");
-					this.scene_tabs_el.id = "scene-tabs";
-				
-				this.scene_el.append(this.scene_blockly_el, this.scene_codemirror_el, this.scene_tabs_el);
-			this.topbar_el = document.createElement("div");
-			this.topbar_el.id = "topbar";
-		
-			this.console_html = new ve.HTML(() => this.console_el, {
-				attributes: { "class": "ve-script-manager-console" },
-				x: 0, y: 0
+		this.element.setAttribute("component", "ve-script-manager");
+		this.element.instance = this;
+		this.element.style.padding = "0";
+		if (this.options.attributes)
+			Object.iterate(this.options.attributes, (local_key, local_value) => {
+				this.element.setAttribute(local_key, local_value.toString());
 			});
-				this.topbar_interface = new ve.RawInterface({
-					name_el: new ve.HTML(() => `<span id = "name">${this.name}</span>${(!options.do_not_display_file_name) ? `<span id = "file-name"> | ${(this._file_path) ? this._file_path : loc("ve.registry.localisation.ScriptManager_none")}</span>` : ""}`,
-						{ style: { marginRight: "1rem", overflow: "clip", width: "19rem" } }),
-					/*file: new ve.Button(() => {
-						
-					}, { name: "File" }),*/
-					settings: new ve.Button(() => {
-						if (this.settings_window) this.settings_window.close();
-						this.settings_window = new ve.Window({
-							hide_blockly_workspace_on_error: new ve.Toggle(this._settings.hide_blockly_workspace_on_error, {
-								name: loc("ve.registry.localisation.ScriptManager_hide_show_blockly"),
-								onuserchange: (v) => this._settings.hide_blockly_workspace_on_error = v
-							}),
-							keybinds: new ve.Select({
-								emacs: {
-									name: "Emacs",
-									selected: (this._settings.keybinds === "emacs")
-								},
-								sublime: {
-									name: "Sublime Text",
-									selected: (this._settings.keybinds === "sublime")
-								},
-								vim: {
-									name: "Vim",
-									selected: (this._settings.keybinds === "vim")
-								}
-							}, { 
-								name: loc("ve.registry.localisation.ScriptManager_keybinds"),
-								onuserchange: (v) => {
-									this.loadSettings({ keybinds: v });
-								}
-							}),
-							actions_bar: new ve.RawInterface({
-								load_settings: new ve.File(undefined, {
-									name: loc("ve.registry.localisation.ScriptManager_load_settings"),
-									do_not_display: true,
-									onuserchange: (v) => {
-										//Declare local instance variables
-										let display_error = false;
-										
-										//Try to load new settings
-										try {
-											let settings_obj = JSON.parse(fs.readFileSync(v[0], "utf8"));
-											
-											if (settings_obj && settings_obj.is_vercengen_script_manager_settings) {
-												this.loadSettings(settings_obj);
-											} else {
-												display_error = true;
-											}
-										} catch (e) {
-											display_error = true;
-										}
-										
-										if (display_error)
-											veWindow(`<span style = "align-items: center; display: flex"><icon>warning</icon> ${loc("ve.registry.localisation.ScriptManager_could_not_load_settings")}</span>`, { 
-												can_rename: false, 
-												name: loc("ve.registry.localisation.ScriptManager_error_loading_settings"), 
-												width: "20rem" 
-											});
-									},
-								}),
-								save_settings: (ve.registry.settings.ScriptManager.save_file === false) ?
-									new ve.File(undefined, {
-										name: loc("ve.registry.localisation.ScriptManager_save_settings"),
-										do_not_display: true,
-										onuserchange: (v) => {
-											console.log(v);
-										},
-										save_function: () => this.saveSettings()
-									}) :
-									new ve.Button(() => {
-										let dirname = path.dirname(scriptmanager_settings.save_file);
-										
-										fs.mkdir(dirname, { recursive: true }, (err) => {
-											if (err) {
-												console.error(err);
-												return;
-											}
-											
-											fs.writeFileSync(scriptmanager_settings.save_file, this.saveSettings());
-											veToast(loc("ve.registry.localisation.ScriptManager_saved_settings", scriptmanager_settings.save_file));
-										});
-									}, {
-										name: loc("ve.registry.localisation.ScriptManager_save_settings")
-									})
-							}, { name: " ", style: { alignItems: "center", display: "flex" } })
-						}, { can_rename: false, name: loc("ve.registry.localisation.ScriptManager_settings"), width: "24rem" })
-					}, { name: loc("ve.registry.localisation.ScriptManager_settings") }),
-					view: new ve.Button(() => {
-						//Populate themes_obj
-						let themes_obj = {};
-						
-						Object.iterate(this._codemirror_themes, (local_key, local_value) => {
-							themes_obj[local_key] = { name: local_value, selected: (this._settings.codemirror_theme === local_key) }
-						});
-						
-						let local_context_menu = new ve.ContextMenu({
-							view_header: new ve.HTML(`<b>${loc("ve.registry.localisation.ScriptManager_view_settings")}</b><br><br>`, { x: 0, y: 0 }),
-							
-							editor_theme: new ve.Select({
-								"theme-default": {
-									name: loc("ve.registry.localisation.ScriptManager_theme_default"),
-									selected: (!["theme-light"].includes(this._settings.theme))
-								},
-								"theme-light": {
-									name: loc("ve.registry.localisation.ScriptManager_theme_light"),
-									selected: (this._settings.theme === "theme-light")
-								}
-							}, {
-								name: loc("ve.registry.localisation.ScriptManager_editor_theme"),
-								onchange: (v) => {
-									this.loadSettings({ theme: v });
-								},
-								style: {
-									alignItems: "center",
-									display: "flex"
-								},
-								x: 0, y: 1
-							}),
-							codemirror_theme: new ve.Select({
-								...themes_obj
-							}, {
-								name: loc("ve.registry.localisation.ScriptManager_codemirror_theme"),
-								onchange: (v) => {
-									this.loadSettings({ codemirror_theme: v });
-								},
-								x: 0, y: 2
-							}),
-							
-							hide_blockly: new ve.Button(() => {
-								this.loadSettings({ hide_blockly: true });
-							}, { name: loc("ve.registry.localisation.ScriptManager_hide_blockly"), limit: () => !this.scene_blockly._hidden, x: 0, y: 3 }),
-							show_blockly: new ve.Button(() => {
-								this.loadSettings({ hide_blockly: false });
-								this.v = this.v;
-							}, { name: loc("ve.registry.localisation.ScriptManager_show_blockly"), limit: () => this.scene_blockly._hidden, x: 0, y: 3 }),
-							
-							clear_blockly_workspace_on_error: new ve.Toggle(this._settings.clear_blockly_workspace_on_error, {
-								name: loc("ve.registry.localisation.ScriptManager_clear_blockly_on_error"),
-								onuserchange: (v) => this._settings.clear_blockly_workspace_on_error = v
-							}, { x: 0, y: 4 }),
-							display_load_errors: new ve.Toggle(this._settings.display_load_errors, {
-								name: loc("ve.registry.localisation.ScriptManager_display_load_errors"),
-								onuserchange: (v) => this._settings.display_load_errors = v
-							}),
-							show_file_explorer: new ve.Toggle(this._settings.view_file_explorer, {
-								name: loc("ve.registry.localisation.ScriptManager_view_file_explorer"),
-								onuserchange: (v) => this.loadSettings({ view_file_explorer: v })
-							})
-						}, {
-							id: "script_manager_view"
-						});
-					}, { name: loc("ve.registry.localisation.ScriptManager_view"), x: 0, y: 2 }),
-					run: new ve.Button(() => {
-						let local_context_menu = new ve.ContextMenu({
-							run_header: new ve.HTML(`<b>${loc("ve.registry.localisation.ScriptManager_run_settings")}</b><br>`, { x: 0, y: 0 }),
-							
-							warning: new ve.HTML(`<div style = "align-items: center; display: flex"><icon style = "width: auto;">info</icon><b style = "margin-left: calc(var(--padding)*0.5);">${loc("ve.registry.localisation.ScriptManager_note")}</b></div><span>${loc("ve.registry.localisation.ScriptManager_trust_warning")}</span><br><br>`),
-							run_this_file_button: new ve.Button(() => {
-								try {
-									eval(this.v);
-								} catch (e) {
-									this.console_el.print(e, "error");
-								}
-							}, { name: loc("ve.registry.localisation.ScriptManager_run_current_file") })
-						}, { id: "script_manager_run" });
-					}, { name: loc("ve.registry.localisation.ScriptManager_run") }),
-					console: new ve.Button(() => {
-						if (this.local_console) this.local_console.close();
-						this.local_console = new ve.Window({
-							console_el: this.console_html,
-							actions_bar: new ve.RawInterface({
-								console_command: new ve.Text("", { 
-									attributes: { placeholder: loc("ve.registry.localisation.ScriptManager_enter_console_command") }, 
-									name: " ",
-									style: { display: "inline" }
-								}),
-								send_command: new ve.Button(() => {
-									//Declare local instance variables
-									let command_value = this.local_console.actions_bar.console_command.v;
-									
-									if (command_value.length > 0) try {
-										eval(command_value);
-									} catch (e) {
-										this.console_el.print(e, "error");
-									}
-								}, { name: loc("ve.registry.localisation.ScriptManager_send") }),
-								information: new ve.Button(() => {
-									this.console_el.print(loc("ve.registry.localisation.ScriptManager_help_menu"));
-									this.console_el.print(`- this.console_el.print(arg0_message:string, arg1_type:string) - Prints a message to the console.`);
-									this.console_el.print(`- - arg1_type: 'error'/'info'`);
-								}, {
-									name: loc("ve.registry.localisation.ScriptManager_help"),
-									tooltip: loc("ve.registry.localisation.ScriptManager_prints_help_information")
-								}),
-								clear_console: new ve.Button(() => {
-									let local_confirm_modal = new ve.Confirm(loc("ve.registry.localisation.ScriptManager_are_you_sure_clear_console"), {
-										special_function: () => this.console_el.innerHTML = ""
-									});
-								}, { name: loc("ve.registry.localisation.ScriptManager_clear_console") }),
-							}, {
-								style: {
-									alignItems: "center",
-									display: "flex"
-								},
-								name: " "
-							})
-						}, { 
-							can_rename: false, 
-							name: loc("ve.registry.localisation.ScriptManager_console"), 
-							width: "40rem" 
-						});
-					}, { name: loc("ve.registry.localisation.ScriptManager_console") })
-				}, { 
-					no_name_element: true,
-					is_folder: false,
-					style: {
-						alignItems: "center",
-						display: "flex",
-						padding: 0,
-						
-						"[component='ve-button']": {
-							marginRight: "calc(var(--cell-padding)*2)"
+		
+		this.container_el = document.createElement("div");
+		this.container_el.id = "container";
+		this.container_el.style.display = "flex";
+		this.container_el.style.flexDirection = "row";
+		
+		this.leftbar_el = document.createElement("div");
+		this.leftbar_el.id = "leftbar";
+		this.leftbar_file_explorer = new ve.FileExplorer((this.options.folder_path) ? this.options.folder_path : process.cwd(), {
+			load_function: (arg0_data, arg1_file_path) => {
+				let local_data = arg0_data;
+				let file_path = arg1_file_path;
+				
+				this._file_path = file_path;
+				try {
+					this.v = local_data;
+					this.fireToBinding();
+				} catch (e) {}
+			},
+			save_extension: (this.options.save_extension) ? this.options.save_extension : [".*"],
+			save_function: (arg0_save_name) => {
+				this._file_path = arg0_save_name;
+				
+				//Return statement
+				return this.scene_codemirror.v;
+			},
+			style: {
+				marginRight: "calc(var(--cell-padding)*2)",
+				maxHeight: "80dvh",
+				overflow: "auto",
+				paddingBottom: 0,
+				paddingTop: 0,
+				paddingRight: 0,
+				width: "20rem"
+			}
+		});
+		this.leftbar_file_explorer.bind(this.leftbar_el);
+		this.scene_el = document.createElement("div");
+		this.scene_el.style.display = "flex";
+		this.scene_el.style.flexDirection = "row";
+		this.scene_el.style.width = "100%";
+		this.scene_el.id = "scene";
+		this.scene_blockly = new ve.ScriptManagerBlockly();
+		this.scene_blockly_el = this.scene_blockly.element;
+		this.scene_blockly_el.id = "scene-blockly";
+		this.scene_blockly_el.style.display = "block";
+		this.scene_blockly_el.style.height = "100%";
+		this.scene_codemirror = new ve.ScriptManagerCodemirror(undefined, {
+			script_manager: this
+		});
+		this.scene_codemirror_el = this.scene_codemirror.element;
+		this.scene_codemirror_el.id = "scene-codemirror";
+		this.scene_codemirror_el.style.height = "100%";
+		this.scene_tabs_el = document.createElement("div");
+		this.scene_tabs_el.id = "scene-tabs";
+		
+		this.scene_interface = new ve.FlexInterface({
+			type: "horizontal",
+			blockly: this.scene_blockly,
+			codemirror: this.scene_codemirror
+		}, {
+			name: "ScriptManagerInterface"
+		});
+		this.scene_interface.element.style.flex = "1";
+		
+		this.scene_el.append(this.scene_interface.element, this.scene_tabs_el);
+		this.topbar_el = document.createElement("div");
+		this.topbar_el.id = "topbar";
+		
+		this.console_html = new ve.HTML(() => this.console_el, {
+			attributes: { "class": "ve-script-manager-console" },
+			x: 0, y: 0
+		});
+		this.topbar_interface = new ve.RawInterface({
+			name_el: new ve.HTML(() => `<span id = "name">${this.name}</span>${(!options.do_not_display_file_name) ? `<span id = "file-name"> | ${(this._file_path) ? this._file_path : loc("ve.registry.localisation.ScriptManager_none")}</span>` : ""}`,
+				{ style: { marginRight: "1rem", overflow: "clip", width: "19rem" } }),
+			/*file: new ve.Button(() => {
+				
+			}, { name: "File" }),*/
+			settings: new ve.Button(() => {
+				if (this.settings_window) this.settings_window.close();
+				this.settings_window = new ve.Window({
+					hide_blockly_workspace_on_error: new ve.Toggle(this._settings.hide_blockly_workspace_on_error, {
+						name: loc("ve.registry.localisation.ScriptManager_hide_show_blockly"),
+						onuserchange: (v) => this._settings.hide_blockly_workspace_on_error = v
+					}),
+					keybinds: new ve.Select({
+						emacs: {
+							name: "Emacs",
+							selected: (this._settings.keybinds === "emacs")
+						},
+						sublime: {
+							name: "Sublime Text",
+							selected: (this._settings.keybinds === "sublime")
+						},
+						vim: {
+							name: "Vim",
+							selected: (this._settings.keybinds === "vim")
 						}
-					}
+					}, {
+						name: loc("ve.registry.localisation.ScriptManager_keybinds"),
+						onuserchange: (v) => {
+							this.loadSettings({ keybinds: v });
+						}
+					}),
+					actions_bar: new ve.RawInterface({
+						load_settings: new ve.File(undefined, {
+							name: loc("ve.registry.localisation.ScriptManager_load_settings"),
+							do_not_display: true,
+							onuserchange: (v) => {
+								//Declare local instance variables
+								let display_error = false;
+								
+								//Try to load new settings
+								try {
+									let settings_obj = JSON.parse(fs.readFileSync(v[0], "utf8"));
+									
+									if (settings_obj && settings_obj.is_vercengen_script_manager_settings) {
+										this.loadSettings(settings_obj);
+									} else {
+										display_error = true;
+									}
+								} catch (e) {
+									display_error = true;
+								}
+								
+								if (display_error)
+									veWindow(`<span style = "align-items: center; display: flex"><icon>warning</icon> ${loc("ve.registry.localisation.ScriptManager_could_not_load_settings")}</span>`, {
+										can_rename: false,
+										name: loc("ve.registry.localisation.ScriptManager_error_loading_settings"),
+										width: "20rem"
+									});
+							},
+						}),
+						save_settings: (ve.registry.settings.ScriptManager.save_file === false) ?
+							new ve.File(undefined, {
+								name: loc("ve.registry.localisation.ScriptManager_save_settings"),
+								do_not_display: true,
+								onuserchange: (v) => {
+									console.log(v);
+								},
+								save_function: () => this.saveSettings()
+							}) :
+							new ve.Button(() => {
+								let dirname = path.dirname(scriptmanager_settings.save_file);
+								
+								fs.mkdir(dirname, { recursive: true }, (err) => {
+									if (err) {
+										console.error(err);
+										return;
+									}
+									
+									fs.writeFileSync(scriptmanager_settings.save_file, this.saveSettings());
+									veToast(loc("ve.registry.localisation.ScriptManager_saved_settings", scriptmanager_settings.save_file));
+								});
+							}, {
+								name: loc("ve.registry.localisation.ScriptManager_save_settings")
+							})
+					}, { name: " ", style: { alignItems: "center", display: "flex" } })
+				}, { can_rename: false, name: loc("ve.registry.localisation.ScriptManager_settings"), width: "24rem" })
+			}, { name: loc("ve.registry.localisation.ScriptManager_settings") }),
+			view: new ve.Button(() => {
+				//Populate themes_obj
+				let themes_obj = {};
+				
+				Object.iterate(this._codemirror_themes, (local_key, local_value) => {
+					themes_obj[local_key] = { name: local_value, selected: (this._settings.codemirror_theme === local_key) }
 				});
-				this.topbar_interface.bind(this.topbar_el);
-			
-			this.element.appendChild(this.topbar_el);
-			this.container_el.append(this.leftbar_el, this.scene_el);
+				
+				let local_context_menu = new ve.ContextMenu({
+					view_header: new ve.HTML(`<b>${loc("ve.registry.localisation.ScriptManager_view_settings")}</b><br><br>`, { x: 0, y: 0 }),
+					
+					editor_theme: new ve.Select({
+						"theme-default": {
+							name: loc("ve.registry.localisation.ScriptManager_theme_default"),
+							selected: (!["theme-light"].includes(this._settings.theme))
+						},
+						"theme-light": {
+							name: loc("ve.registry.localisation.ScriptManager_theme_light"),
+							selected: (this._settings.theme === "theme-light")
+						}
+					}, {
+						name: loc("ve.registry.localisation.ScriptManager_editor_theme"),
+						onchange: (v) => {
+							this.loadSettings({ theme: v });
+						},
+						style: {
+							alignItems: "center",
+							display: "flex"
+						},
+						x: 0, y: 1
+					}),
+					codemirror_theme: new ve.Select({
+						...themes_obj
+					}, {
+						name: loc("ve.registry.localisation.ScriptManager_codemirror_theme"),
+						onchange: (v) => {
+							this.loadSettings({ codemirror_theme: v });
+						},
+						x: 0, y: 2
+					}),
+					
+					hide_blockly: new ve.Button(() => {
+						this.loadSettings({ hide_blockly: true });
+					}, { name: loc("ve.registry.localisation.ScriptManager_hide_blockly"), limit: () => !this.scene_blockly._hidden, x: 0, y: 3 }),
+					show_blockly: new ve.Button(() => {
+						this.loadSettings({ hide_blockly: false });
+						this.v = this.v;
+					}, { name: loc("ve.registry.localisation.ScriptManager_show_blockly"), limit: () => this.scene_blockly._hidden, x: 0, y: 3 }),
+					
+					clear_blockly_workspace_on_error: new ve.Toggle(this._settings.clear_blockly_workspace_on_error, {
+						name: loc("ve.registry.localisation.ScriptManager_clear_blockly_on_error"),
+						onuserchange: (v) => this._settings.clear_blockly_workspace_on_error = v
+					}, { x: 0, y: 4 }),
+					display_load_errors: new ve.Toggle(this._settings.display_load_errors, {
+						name: loc("ve.registry.localisation.ScriptManager_display_load_errors"),
+						onuserchange: (v) => this._settings.display_load_errors = v
+					}),
+					show_file_explorer: new ve.Toggle(this._settings.view_file_explorer, {
+						name: loc("ve.registry.localisation.ScriptManager_view_file_explorer"),
+						onuserchange: (v) => this.loadSettings({ view_file_explorer: v })
+					})
+				}, {
+					id: "script_manager_view"
+				});
+			}, { name: loc("ve.registry.localisation.ScriptManager_view"), x: 0, y: 2 }),
+			run: new ve.Button(() => {
+				let local_context_menu = new ve.ContextMenu({
+					run_header: new ve.HTML(`<b>${loc("ve.registry.localisation.ScriptManager_run_settings")}</b><br>`, { x: 0, y: 0 }),
+					
+					warning: new ve.HTML(`<div style = "align-items: center; display: flex"><icon style = "width: auto;">info</icon><b style = "margin-left: calc(var(--padding)*0.5);">${loc("ve.registry.localisation.ScriptManager_note")}</b></div><span>${loc("ve.registry.localisation.ScriptManager_trust_warning")}</span><br><br>`),
+					run_this_file_button: new ve.Button(() => {
+						try {
+							eval(this.v);
+						} catch (e) {
+							this.console_el.print(e, "error");
+						}
+					}, { name: loc("ve.registry.localisation.ScriptManager_run_current_file") })
+				}, { id: "script_manager_run" });
+			}, { name: loc("ve.registry.localisation.ScriptManager_run") }),
+			console: new ve.Button(() => {
+				if (this.local_console) this.local_console.close();
+				this.local_console = new ve.Window({
+					console_el: this.console_html,
+					actions_bar: new ve.RawInterface({
+						console_command: new ve.Text("", {
+							attributes: { placeholder: loc("ve.registry.localisation.ScriptManager_enter_console_command") },
+							name: " ",
+							style: { display: "inline" }
+						}),
+						send_command: new ve.Button(() => {
+							//Declare local instance variables
+							let command_value = this.local_console.actions_bar.console_command.v;
+							
+							if (command_value.length > 0) try {
+								eval(command_value);
+							} catch (e) {
+								this.console_el.print(e, "error");
+							}
+						}, { name: loc("ve.registry.localisation.ScriptManager_send") }),
+						information: new ve.Button(() => {
+							this.console_el.print(loc("ve.registry.localisation.ScriptManager_help_menu"));
+							this.console_el.print(`- this.console_el.print(arg0_message:string, arg1_type:string) - Prints a message to the console.`);
+							this.console_el.print(`- - arg1_type: 'error'/'info'`);
+						}, {
+							name: loc("ve.registry.localisation.ScriptManager_help"),
+							tooltip: loc("ve.registry.localisation.ScriptManager_prints_help_information")
+						}),
+						clear_console: new ve.Button(() => {
+							let local_confirm_modal = new ve.Confirm(loc("ve.registry.localisation.ScriptManager_are_you_sure_clear_console"), {
+								special_function: () => this.console_el.innerHTML = ""
+							});
+						}, { name: loc("ve.registry.localisation.ScriptManager_clear_console") }),
+					}, {
+						style: {
+							alignItems: "center",
+							display: "flex"
+						},
+						name: " "
+					})
+				}, {
+					can_rename: false,
+					name: loc("ve.registry.localisation.ScriptManager_console"),
+					width: "40rem"
+				});
+			}, { name: loc("ve.registry.localisation.ScriptManager_console") })
+		}, {
+			no_name_element: true,
+			is_folder: false,
+			style: {
+				alignItems: "center",
+				display: "flex",
+				padding: 0,
+				
+				"[component='ve-button']": {
+					marginRight: "calc(var(--cell-padding)*2)"
+				}
+			}
+		});
+		this.topbar_interface.bind(this.topbar_el);
+		
+		this.element.appendChild(this.topbar_el);
+		this.container_el.append(this.leftbar_el, this.scene_el);
 		this.element.appendChild(this.container_el);
 		
 		//Initialisation loop for ScriptManager to ensure all requisite elements are loaded first
@@ -481,14 +493,14 @@ ve.ScriptManager = class extends ve.Component {
 			let svg_rect = svg_el.getBoundingClientRect();
 			
 			if (!this.options?.style?.height) {
-				this.scene_codemirror_el.style.height = `${svg_rect.height}px`;
+				this.scene_interface.element.style.height = `${svg_rect.height}px`;
 				this.leftbar_file_explorer.element.style.height = `${svg_rect.height}px`;
 			} else {
 				setTimeout(() => {
 					this.scene_blockly.max_height = this.options.style.height;
 					svg_el.style.maxHeight = this.options.style.height;
 				}, 100)
-				this.scene_codemirror_el.style.height = this.options.style.height;
+				this.scene_interface.element.style.height = this.options.style.height;
 				this.leftbar_file_explorer.element.style.height = this.options.style.height;
 			}
 			
@@ -582,7 +594,7 @@ ve.ScriptManager = class extends ve.Component {
 	 *
 	 * @alias loadSettings
 	 * @memberof ve.Component.ve.ScriptManager
-	 * 
+	 *
 	 * @param {Object} [arg0_settings]
 	 *  @param {string} [arg0_settings.autosave_folder]
 	 *  @param {string} [arg0_settings.codemirror_theme] - One of the default CodeMirror themes. [View CodeMirror theming list](https://codemirror.net/5/demo/theme.html)
@@ -609,10 +621,21 @@ ve.ScriptManager = class extends ve.Component {
 					this.setCodeEditorTheme(settings_obj.codemirror_theme);
 				if (settings_obj.keybinds)
 					this.scene_codemirror.codemirror.setOption("keyMap", settings_obj.keybinds);
-				if (settings_obj.hide_blockly === true) {
-					this.scene_blockly.hide();
-				} else {
-					this.scene_blockly.show();
+				if (settings_obj.hide_blockly !== undefined) {
+					if (settings_obj.hide_blockly === true) {
+						this.scene_interface.v = {
+							type: "horizontal",
+							codemirror: this.scene_codemirror
+						};
+						this.scene_blockly.hide();
+					} else {
+						this.scene_interface.v = {
+							type: "horizontal",
+							blockly: this.scene_blockly,
+							codemirror: this.scene_codemirror
+						};
+						this.scene_blockly.show();
+					}
 				}
 				if (settings_obj.theme)
 					this.setTheme(settings_obj.theme);
@@ -642,7 +665,7 @@ ve.ScriptManager = class extends ve.Component {
 	 *
 	 * @alias saveSettings
 	 * @memberof ve.Component.ve.ScriptManager
-	 * 
+	 *
 	 * @returns {string}
 	 */
 	saveSettings () {
@@ -656,7 +679,7 @@ ve.ScriptManager = class extends ve.Component {
 	 *
 	 * @alias setCodeEditorTheme
 	 * @memberof ve.Component.ve.ScriptManager
-	 * 
+	 *
 	 * @param {string} arg0_theme_class
 	 */
 	setCodeEditorTheme (arg0_theme_class) {
@@ -674,7 +697,7 @@ ve.ScriptManager = class extends ve.Component {
 	 *
 	 * @alias setTheme
 	 * @memberof ve.Component.ve.ScriptManager
-	 * 
+	 *
 	 * @param {string} arg0_theme_class - Either 'theme-default'/'theme-light'
 	 */
 	setTheme (arg0_theme_class) {
@@ -708,7 +731,7 @@ ve.ScriptManager = class extends ve.Component {
 	 *
 	 * @alias throwLoadError
 	 * @memberof ve.Component.ve.ScriptManager
-	 * 
+	 *
 	 * @param {Error|string} arg0_error
 	 */
 	throwLoadError (arg0_error) {
@@ -716,8 +739,8 @@ ve.ScriptManager = class extends ve.Component {
 		let error = arg0_error;
 		
 		//Instantiate load message popup
-		veWindow(`${loc("ve.registry.localisation.error_compatibility", (this.options.compatibility_message) ? this.options.compatibility_message : "ES6")}<br><br><div style = "align-items: center; display: flex;"><icon>warning</icon>&nbsp;${error}</div><br><b>${loc("ve.registry.localisation.ScriptManager_stack_trace")}</b><br><div style = "margin-left: 1rem;">${error.stack}</div>`, { 
-			name: loc("ve.registry.localisation.ScriptManager_error_reading_file"), 
+		veWindow(`${loc("ve.registry.localisation.error_compatibility", (this.options.compatibility_message) ? this.options.compatibility_message : "ES6")}<br><br><div style = "align-items: center; display: flex;"><icon>warning</icon>&nbsp;${error}</div><br><b>${loc("ve.registry.localisation.ScriptManager_stack_trace")}</b><br><div style = "margin-left: 1rem;">${error.stack}</div>`, {
+			name: loc("ve.registry.localisation.ScriptManager_error_reading_file"),
 			width: "24rem"
 		});
 	}
