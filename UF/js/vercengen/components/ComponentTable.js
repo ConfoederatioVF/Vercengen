@@ -47,7 +47,7 @@ ve.Table = class extends ve.Component {
 		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
-		options.page_size = Math.returnSafeNumber(options.page_size, 5);
+		options.page_size = Math.returnSafeNumber(options.page_size, 50);
 		options.sortable = (options.sortable !== undefined) ? options.sortable : true;
 		options.sort_ascending = (options.sort_ascending !== undefined) ? 
 			options.sort_ascending : true;
