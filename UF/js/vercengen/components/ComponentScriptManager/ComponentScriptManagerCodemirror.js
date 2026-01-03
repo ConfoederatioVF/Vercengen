@@ -5,17 +5,17 @@
  *
  * Stands for Bold, Italic, Underline, Formatting.
  * - Functional binding: <span color=00ffff>veScriptManagerCodemirror</span>().
- * 
+ *
  * ##### Constructor:
  * - `arg0_value`: {@link string} - The code to load into the present component.
  * - `arg1_options`: {@link Object}
  *   - `.codemirror_options`: {@link Object} - Any codemirror options to use upon instantiation.
  *   - `.script_manager`: {@link ve.ScriptManager}
- * 
+ *
  * ##### Instance:
  * - `.codemirror`: {@link CodeMirror}
  * - `.v`: {@link string}
- * 
+ *
  * @augments ve.Component
  * @memberof ve.Component
  * @type {ve.ScriptManagerCodemirror}
@@ -27,24 +27,24 @@ ve.ScriptManagerCodemirror = class extends ve.Component {
 		//Convert from parameters
 		let value = arg0_value;
 		let options = (arg1_options) ? arg1_options : {};
-			super(options);
-			
+		super(options);
+		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");
-			this.element.instance = this;
-			this.element.setAttribute("component", "ve-script-manager-codemirror");
-			this.element.style.width = "100%";
-			if (options.attributes)
-				Object.iterate(options.attributes, (local_key, local_value) => {
-					this.element.setAttribute(local_key, local_value.toString());
-				});
-			
-			this.codemirror_el = document.createElement("textarea");
-			this.codemirror_el.id = "codemirror";
-			this.element.appendChild(this.codemirror_el);
+		this.element.instance = this;
+		this.element.setAttribute("component", "ve-script-manager-codemirror");
+		this.element.style.width = "100%";
+		if (options.attributes)
+			Object.iterate(options.attributes, (local_key, local_value) => {
+				this.element.setAttribute(local_key, local_value.toString());
+			});
+		
+		this.codemirror_el = document.createElement("textarea");
+		this.codemirror_el.id = "codemirror";
+		this.element.appendChild(this.codemirror_el);
 		this.options = options;
 		this.value = value;
 		
@@ -69,10 +69,20 @@ ve.ScriptManagerCodemirror = class extends ve.Component {
 			this.codemirror.on("change", (e) => {
 				try {
 					if (!this.to_binding_fire_silently) {
-						let blockly_obj = this.element.parentElement.querySelector(`[component="ve-script-manager-blockly"]`).instance;
+						//Refactored to find parent ScriptManager, then search down for sibling Blockly component
+						//This allows it to work within ve.FlexInterface structures
+						let manager_el = this.element.closest(`[component="ve-script-manager"]`);
+						let blockly_el = (manager_el) ?
+							manager_el.querySelector(`[component="ve-script-manager-blockly"]`) :
+							undefined;
 						
-						blockly_obj.to_binding_fire_silently = true;
-						blockly_obj.v = e.doc.getValue();
+						if (blockly_el && blockly_el.instance) {
+							let blockly_obj = blockly_el.instance;
+							
+							blockly_obj.to_binding_fire_silently = true;
+							blockly_obj.v = e.doc.getValue();
+						}
+						
 						this.autosave();
 						this.fireToBinding();
 					}
@@ -101,7 +111,7 @@ ve.ScriptManagerCodemirror = class extends ve.Component {
 	 *
 	 * @alias v
 	 * @memberof ve.Component.ve.ScriptManagerCodemirror
-	 * 
+	 *
 	 * @param {string} arg0_value
 	 */
 	set v (arg0_value) {
@@ -117,7 +127,7 @@ ve.ScriptManagerCodemirror = class extends ve.Component {
 	/**
 	 * Automatically saves the current CodeMirror component value.
 	 * - Method of: {@link ve.ScriptManagerCodemirror}
-	 * 
+	 *
 	 * @alias v
 	 * @memberof ve.Component.ve.ScriptManagerCodemirror
 	 */
