@@ -37,6 +37,7 @@
     "taffydb": "^2.7.3"
   },
   "dependencies": {
+    "monaco-editor": "^0.55.1",
     "shell": "^0.12.0"
   }
 }

@@ -20,7 +20,8 @@ let win;
         contextIsolation: false,
         enableRemoteModule: false,
         nodeIntegration: true,
-        webSecurity: false
+        webSecurity: false,
+        webviewTag: true
       },
 
       icon: path.join(__dirname, `gfx/logo.png`)
