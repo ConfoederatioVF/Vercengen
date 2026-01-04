@@ -286,7 +286,6 @@
 			let e = (arg0_e || window.event);
 			
 			if (document.querySelectorAll(`
-				[component="ve-monaco"]:hover,
 				[contenteditable]:not(#window-name):focus,
 				flex-resizer:hover,
 				.maptalks-wrapper:hover,
