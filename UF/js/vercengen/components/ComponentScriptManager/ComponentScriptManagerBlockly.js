@@ -84,16 +84,16 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 				try {
 					//Traverse up to the ScriptManager container, then search down for Codemirror
 					let manager_el = this.element.closest(`[component="ve-script-manager"]`);
-					let codemirror_el = (manager_el) ?
-						manager_el.querySelector(`[component="ve-script-manager-codemirror"]`) :
+					let monaco_el = (manager_el) ?
+						manager_el.querySelector(`[component="ve-script-manager-monaco"]`) :
 						undefined;
 					
-					if (codemirror_el && codemirror_el.instance) {
-						let codemirror_obj = codemirror_el.instance;
+					if (monaco_el && monaco_el.instance) {
+						let monaco_obj = monaco_el.instance;
 						
-						codemirror_obj.to_binding_fire_silently = true;
-						codemirror_obj.v = blockly_value;
-						delete codemirror_obj.to_binding_fire_silently;
+						monaco_obj.to_binding_fire_silently = true;
+						monaco_obj.v = blockly_value;
+						delete monaco_obj.to_binding_fire_silently;
 						
 						this.fireToBinding();
 					}
