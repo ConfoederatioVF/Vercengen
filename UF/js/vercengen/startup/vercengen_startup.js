@@ -343,11 +343,14 @@ global.path = require("path");
 			"UF/js/vercengen/components/ComponentDatavisSuite/framework",
 			"UF/js/vercengen/components/ComponentDatavisSuite/ui",
 			"UF/js/vercengen/components/ComponentFileExplorer/file_operations_ui.js",
+			"UF/js/vercengen/components/ComponentScriptManager/ComponentCodemirror",
 			
 			"UF/js/vercengen/features",
 			
 			//Localisation
-			"UF/js/vercengen/vercengen_localisation.js"
+			"UF/js/vercengen/vercengen_localisation.js",
+			"!UF/libraries/monaco/",
+			"UF/js/vercengen/components/ComponentScriptManager/ComponentMonaco/monaco_startup.js"
 		] : [];
 			load_patterns = load_patterns.concat(options.load_files);
 		
