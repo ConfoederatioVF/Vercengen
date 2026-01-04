@@ -6,4 +6,5 @@
 }
 .monaco-editor {
     font-family: var(--body-font-family) !important;
+    position: absolute;
 }
