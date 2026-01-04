@@ -16,10 +16,9 @@
  * 	 - `.settings`: {@link Object}
  * 	   - `.autosave_folder="none"`: {@link string}
  * 	   - `.clear_blockly_workspace_on_error=true`: {@link boolean}
- * 	   - `.codemirror_theme="nord"`: {@link string}
+ * 	   - `.monaco_theme="nord"`: {@link string}
  * 	   - `.display_load_errors=false`: {@link boolean}
  * 	   - `.hide_blockly_workspace_on_error`: {@link boolean}
- * 	   - `.keybinds="sublime"`: {@link string} - Either 'emacs'/'sublime'/'vim'
  * 	   - `.theme="theme-default"`: {@link string} - Either 'theme-default'/'theme-light'
  * 	   - `.view_file_explorer=true`: {@link boolean}
  *
@@ -28,12 +27,12 @@
  *   - `.print`: {@link function}(arg0_message:{@link string}, arg1_type:{@link string}) - arg1_type is either 'message'/'error'.
  * - `.leftbar_file_explorer`: {@link ve.FileExplorer}
  * - `.scene_blockly`: {@link ve.ScriptManagerBlockly}
- * - `.scene_codemirror`: {@link ve.ScriptManagerCodemirror}
+ * - `.scene_monaco`: {@link ve.ScriptManagerMonaco}
  * - `.scene_interface`: {@link ve.FlexInterface}
  * - `.v`: {@link string}
  *
  * Private Fields:
- * - `._codemirror_themes`: {@link Object}<{@link string}>
+ * - `._monaco_themes`: {@link Object}<{@link string}>
  * - `._settings`: {@link Object}
  *
  * ##### Methods:
@@ -62,73 +61,60 @@ ve.ScriptManager = class extends ve.Component {
 		if (options.name === undefined) options.name = "ScriptManager";
 		
 		//Declare local instance variables
-		this._codemirror_themes = {
-			"3024-day": "3024-day",
-			"3024-night": "3024-night",
-			"abbott": "Abbott",
-			"abcdef": "abcdef",
-			"ambiance-mobile": "Ambiance Mobile",
-			"ambiance": "Ambiance",
-			"ayu-dark": "Ayu Dark",
-			"ayu-mirage": "Ayu Mirage",
-			"base16-dark": "base16-dark",
-			"base16-light": "base16-light",
-			"bespin": "Bespin",
+		this._monaco_themes = {
+			"active4d": "Active4D",
+			"all-hallows-eve": "All Hallows Eve",
+			"amy": "Amy",
+			"birds-of-paradise": "Birds of Paradise",
 			"blackboard": "Blackboard",
+			"brilliance-black": "Brilliance Black",
+			"brilliance-dull": "Brilliance Dull",
+			"chrome-devtools": "Chrome DevTools",
+			"clouds-midnight": "Clouds Midnight",
+			"clouds": "Clouds",
 			"cobalt": "Cobalt",
-			"colorforth": "Colourforth",
-			"darcula": "Darcula",
-			"default": "Default",
+			"cobalt2": "Cobalt2",
+			"dawn": "Dawn",
 			"dracula": "Dracula",
-			"duotone-dark": "Duotone Dark",
-			"duotone-light": "Duotone Light",
-			"eclipse": "Eclipse",
-			"elegant": "Elegant",
-			"erlang-dark": "Erlang-dark",
-			"gruvbox-dark": "Gruvbox-dark",
-			"hopscotch": "Hopscotch",
-			"icecoder": "Icecoder",
-			"idea": "Idea",
-			"isotope": "Isotope",
-			"juejin": "Juejin",
-			"lesser-dark": "Lesser-dark",
-			"liquibyte": "Liquibyte",
-			"lucario": "Lucario",
-			"material-darker": "Material Darker",
-			"material-ocean": "Material Ocean",
-			"material-palenight": "Material Palenight",
-			"material": "Material",
-			"mbo": "mbo",
-			"mdn-like": "mdn-like",
-			"midnight": "Midnight",
+			"dreamweaver": "Dreamweaver",
+			"eiffel": "Eiffel",
+			"espresso-libre": "Espresso Libre",
+			"github-dark": "GitHub Dark",
+			"github-light": "GitHub Light",
+			"github": "GitHub",
+			"idle": "IDLE",
+			"katzenmilch": "Katzenmilch",
+			"kuroir-theme": "Kuroir Theme",
+			"lazy": "LAZY",
+			"magicwb--amiga-": "MagicWB (Amiga)",
+			"merbivore-soft": "Merbivore Soft",
+			"merbivore": "Merbivore",
+			"monokai-bright": "Monokai Bright",
 			"monokai": "Monokai",
-			"moxer": "Moxer",
-			"neat": "Neat",
-			"neo": "Neo",
-			"night": "Night",
+			"night-owl": "Night Owl",
 			"nord": "Nord",
 			"oceanic-next": "Oceanic Next",
-			"panda-syntax": "Panda Syntax",
-			"paraiso-dark": "Paraiso Dark",
-			"paraiso-light": "Paraiso Light",
-			"pastel-on-dark": "Pastel on Dark",
-			"railscasts": "Railscasts",
-			"rubyblue": "Rubyblue",
-			"seti": "SETI",
-			"shadowfox": "Shadowfox",
-			"solarized": "Solarised",
-			"ssms": "SSMS",
-			"the-matrix": "The Matrix",
-			"tomorrow-night-bright": "Tomorrow Night Bright",
-			"tomorrow-night-eighties": "Tomorrow Night 80s",
-			"ttcn": "TTCN",
+			"pastels-on-dark": "Pastels on Dark",
+			"slush-and-poppies": "Slush and Poppies",
+			"solarized-dark": "Solarized-dark",
+			"solarized-light": "Solarized-light",
+			"spacecadet": "SpaceCadet",
+			"sunburst": "Sunburst",
+			"textmate--mac-classic-": "Textmate (Mac Classic)",
+			"tomorrow-night-blue": "Tomorrow-Night-Blue",
+			"tomorrow-night-bright": "Tomorrow-Night-Bright",
+			"tomorrow-night-eighties": "Tomorrow-Night-Eighties",
+			"tomorrow-night": "Tomorrow-Night",
+			"tomorrow": "Tomorrow",
 			"twilight": "Twilight",
+			"upstream-sunburst": "Upstream Sunburst",
 			"vibrant-ink": "Vibrant Ink",
-			"xq-dark": "XQ Dark",
-			"xq-light": "XQ Light",
-			"yeti": "Yeti",
-			"yonce": "Yonce",
-			"zenburn": "Zenburn"
+			"xcode-default": "Xcode_default",
+			"zenburnesque": "Zenburnesque",
+			"iplastic": "iPlastic",
+			"idlefingers": "idleFingers",
+			"krtheme": "krTheme",
+			"monoindustrial": "monoindustrial"
 		};
 		this.id = Class.generateRandomID(ve.ScriptManager);
 		this.options = options;
@@ -137,10 +123,9 @@ ve.ScriptManager = class extends ve.Component {
 			
 			autosave_folder: "none",
 			clear_blockly_workspace_on_error: true,
-			codemirror_theme: "nord",
+			monaco_theme: "nord",
 			display_load_errors: false,
 			hide_blockly_workspace_on_error: false,
-			keybinds: "sublime",
 			theme: "theme-default",
 			view_file_explorer: true
 		};
@@ -205,7 +190,7 @@ ve.ScriptManager = class extends ve.Component {
 				this._file_path = arg0_save_name;
 				
 				//Return statement
-				return this.scene_codemirror.v;
+				return this.scene_monaco.v;
 			},
 			style: {
 				marginRight: "calc(var(--cell-padding)*2)",
@@ -228,19 +213,22 @@ ve.ScriptManager = class extends ve.Component {
 		this.scene_blockly_el.id = "scene-blockly";
 		this.scene_blockly_el.style.display = "block";
 		this.scene_blockly_el.style.height = "100%";
-		this.scene_codemirror = new ve.ScriptManagerCodemirror(undefined, {
-			script_manager: this
+		
+		this.scene_monaco = new ve.ScriptManagerMonaco(undefined, {
+			script_manager: this,
+			theme: this._settings.monaco_theme
 		});
-		this.scene_codemirror_el = this.scene_codemirror.element;
-		this.scene_codemirror_el.id = "scene-codemirror";
-		this.scene_codemirror_el.style.height = "100%";
+		this.scene_monaco_el = this.scene_monaco.element;
+		this.scene_monaco_el.id = "scene-monaco";
+		this.scene_monaco_el.style.height = "100%";
+		
 		this.scene_tabs_el = document.createElement("div");
 		this.scene_tabs_el.id = "scene-tabs";
 		
 		this.scene_interface = new ve.FlexInterface({
 			type: "horizontal",
 			blockly: this.scene_blockly,
-			codemirror: this.scene_codemirror
+			monaco: this.scene_monaco
 		}, {
 			name: "ScriptManagerInterface"
 		});
@@ -257,9 +245,6 @@ ve.ScriptManager = class extends ve.Component {
 		this.topbar_interface = new ve.RawInterface({
 			name_el: new ve.HTML(() => `<span id = "name">${this.name}</span>${(!options.do_not_display_file_name) ? `<span id = "file-name"> | ${(this._file_path) ? this._file_path : loc("ve.registry.localisation.ScriptManager_none")}</span>` : ""}`,
 				{ style: { marginRight: "1rem", overflow: "clip", width: "19rem" } }),
-			/*file: new ve.Button(() => {
-				
-			}, { name: "File" }),*/
 			settings: new ve.Button(() => {
 				if (this.settings_window) this.settings_window.close();
 				this.settings_window = new ve.Window({
@@ -267,37 +252,14 @@ ve.ScriptManager = class extends ve.Component {
 						name: loc("ve.registry.localisation.ScriptManager_hide_show_blockly"),
 						onuserchange: (v) => this._settings.hide_blockly_workspace_on_error = v
 					}),
-					keybinds: new ve.Select({
-						emacs: {
-							name: "Emacs",
-							selected: (this._settings.keybinds === "emacs")
-						},
-						sublime: {
-							name: "Sublime Text",
-							selected: (this._settings.keybinds === "sublime")
-						},
-						vim: {
-							name: "Vim",
-							selected: (this._settings.keybinds === "vim")
-						}
-					}, {
-						name: loc("ve.registry.localisation.ScriptManager_keybinds"),
-						onuserchange: (v) => {
-							this.loadSettings({ keybinds: v });
-						}
-					}),
 					actions_bar: new ve.RawInterface({
 						load_settings: new ve.File(undefined, {
 							name: loc("ve.registry.localisation.ScriptManager_load_settings"),
 							do_not_display: true,
 							onuserchange: (v) => {
-								//Declare local instance variables
 								let display_error = false;
-								
-								//Try to load new settings
 								try {
 									let settings_obj = JSON.parse(fs.readFileSync(v[0], "utf8"));
-									
 									if (settings_obj && settings_obj.is_vercengen_script_manager_settings) {
 										this.loadSettings(settings_obj);
 									} else {
@@ -306,7 +268,6 @@ ve.ScriptManager = class extends ve.Component {
 								} catch (e) {
 									display_error = true;
 								}
-								
 								if (display_error)
 									veWindow(`<span style = "align-items: center; display: flex"><icon>warning</icon> ${loc("ve.registry.localisation.ScriptManager_could_not_load_settings")}</span>`, {
 										can_rename: false,
@@ -326,13 +287,11 @@ ve.ScriptManager = class extends ve.Component {
 							}) :
 							new ve.Button(() => {
 								let dirname = path.dirname(scriptmanager_settings.save_file);
-								
 								fs.mkdir(dirname, { recursive: true }, (err) => {
 									if (err) {
 										console.error(err);
 										return;
 									}
-									
 									fs.writeFileSync(scriptmanager_settings.save_file, this.saveSettings());
 									veToast(loc("ve.registry.localisation.ScriptManager_saved_settings", scriptmanager_settings.save_file));
 								});
@@ -346,8 +305,8 @@ ve.ScriptManager = class extends ve.Component {
 				//Populate themes_obj
 				let themes_obj = {};
 				
-				Object.iterate(this._codemirror_themes, (local_key, local_value) => {
-					themes_obj[local_key] = { name: local_value, selected: (this._settings.codemirror_theme === local_key) }
+				Object.iterate(this._monaco_themes, (local_key, local_value) => {
+					themes_obj[local_key] = { name: local_value, selected: (this._settings.monaco_theme === local_key) }
 				});
 				
 				let local_context_menu = new ve.ContextMenu({
@@ -373,12 +332,12 @@ ve.ScriptManager = class extends ve.Component {
 						},
 						x: 0, y: 1
 					}),
-					codemirror_theme: new ve.Select({
+					monaco_theme: new ve.Select({
 						...themes_obj
 					}, {
-						name: loc("ve.registry.localisation.ScriptManager_codemirror_theme"),
+						name: loc("ve.registry.localisation.ScriptManager_monaco_theme"),
 						onchange: (v) => {
-							this.loadSettings({ codemirror_theme: v });
+							this.loadSettings({ monaco_theme: v });
 						},
 						x: 0, y: 2
 					}),
@@ -526,7 +485,7 @@ ve.ScriptManager = class extends ve.Component {
 	 */
 	get v () {
 		//Return statement
-		return this.scene_codemirror.v;
+		return this.scene_monaco.v;
 	}
 	
 	/**
@@ -544,15 +503,15 @@ ve.ScriptManager = class extends ve.Component {
 		
 		//Declare local instance variables
 		let set_value_loop = setInterval(() => {
-			if (this.scene_codemirror?.codemirror) try {
+			if (this.scene_monaco?.editor) try {
 				//Set new code value
 				if (!this.scene_blockly._hidden) {
 					this.scene_blockly.enable();
 					js2blocks.parseCode(local_value);
 				}
-				this.scene_codemirror.to_binding_fire_silently = true;
-				this.scene_codemirror.v = local_value;
-				delete this.scene_codemirror.to_binding_fire_silently;
+				this.scene_monaco.to_binding_fire_silently = true;
+				this.scene_monaco.v = local_value;
+				delete this.scene_monaco.to_binding_fire_silently;
 				this.fireFromBinding();
 				clearInterval(set_value_loop);
 				
@@ -573,9 +532,9 @@ ve.ScriptManager = class extends ve.Component {
 				
 				//Load the file anyway
 				this.scene_blockly.disable();
-				this.scene_codemirror.to_binding_fire_silently = true;
-				this.scene_codemirror.v = local_value;
-				delete this.scene_codemirror.to_binding_fire_silently;
+				this.scene_monaco.to_binding_fire_silently = true;
+				this.scene_monaco.v = local_value;
+				delete this.scene_monaco.to_binding_fire_silently;
 				this.fireFromBinding();
 			}
 		});
@@ -597,8 +556,7 @@ ve.ScriptManager = class extends ve.Component {
 	 *
 	 * @param {Object} [arg0_settings]
 	 *  @param {string} [arg0_settings.autosave_folder]
-	 *  @param {string} [arg0_settings.codemirror_theme] - One of the default CodeMirror themes. [View CodeMirror theming list](https://codemirror.net/5/demo/theme.html)
-	 *  @param {string} [arg0_settings.keybinds] - Either 'emacs'/'sublime'/'vim'
+	 *  @param {string} [arg0_settings.monaco_theme] - One of the default Monaco themes or a custom JSON theme name.
 	 *  @param {boolean} [arg0_settings.hide_blockly]
 	 *  @param {theme} [arg0_settings.theme] - Either 'theme-default'/'theme-light'
 	 *  @param {boolean} [arg0_settings.view_file_explorer] - Whether to show the file explorer.
@@ -617,22 +575,20 @@ ve.ScriptManager = class extends ve.Component {
 				if (settings_obj.autosave_folder)
 					settings_obj.autosave_folder = (fs.existsSync(settings_obj.autosave_folder) && fs.statSync(settings_obj.autosave_folder).isDirectory()) ?
 						settings_obj.autosave_folder : "none";
-				if (settings_obj.codemirror_theme)
-					this.setCodeEditorTheme(settings_obj.codemirror_theme);
-				if (settings_obj.keybinds)
-					this.scene_codemirror.codemirror.setOption("keyMap", settings_obj.keybinds);
+				if (settings_obj.monaco_theme)
+					this.setCodeEditorTheme(settings_obj.monaco_theme);
 				if (settings_obj.hide_blockly !== undefined) {
 					if (settings_obj.hide_blockly === true) {
 						this.scene_interface.v = {
 							type: "horizontal",
-							codemirror: this.scene_codemirror
+							monaco: this.scene_monaco
 						};
 						this.scene_blockly.hide();
 					} else {
 						this.scene_interface.v = {
 							type: "horizontal",
 							blockly: this.scene_blockly,
-							codemirror: this.scene_codemirror
+							monaco: this.scene_monaco
 						};
 						this.scene_blockly.show();
 					}
@@ -674,7 +630,7 @@ ve.ScriptManager = class extends ve.Component {
 	}
 	
 	/**
-	 * Sets the present code editor theme to a default CodeMirror theme. [View CodeMirror theming list](https://codemirror.net/5/demo/theme.html)
+	 * Sets the present code editor theme.
 	 * - Method of: {@link ve.ScriptManager}
 	 *
 	 * @alias setCodeEditorTheme
@@ -687,8 +643,8 @@ ve.ScriptManager = class extends ve.Component {
 		let theme_class = arg0_theme_class;
 		
 		//Declare local instance variables
-		this._settings.codemirror_theme = theme_class;
-		this.scene_codemirror.codemirror.setOption("theme", theme_class);
+		this._settings.monaco_theme = theme_class;
+		this.scene_monaco.setTheme(theme_class);
 	}
 	
 	/**
