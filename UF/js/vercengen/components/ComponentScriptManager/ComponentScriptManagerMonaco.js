@@ -38,13 +38,7 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 		this.element = document.createElement("div");
 			this.element.instance = this;
 			this.element.setAttribute("component", "ve-script-manager-monaco");
-			this.element.style.width = "100%";
-			this.element.style.height = "100%";
-			this.element.style.position = "relative";
-		if (options.attributes)
-			Object.iterate(options.attributes, (local_key, local_value) => {
-				this.element.setAttribute(local_key, local_value.toString());
-			});
+			HTML.setAttributesObject(this.element, options.attributes);
 		
 		this.options = options;
 		this._pending_value = (value === null || value === undefined) ? "" : value.toString();
