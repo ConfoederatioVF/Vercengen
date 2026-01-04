@@ -81,11 +81,11 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 			let blockly_value = Blockly.JavaScript.workspaceToCode(Blockly.mainWorkspace);
 			
 			if (!this.to_binding_fire_silently)
-				try {
+				try { //[WIP] - Refactor at a later date
 					//Traverse up to the ScriptManager container, then search down for Codemirror
 					let manager_el = this.element.closest(`[component="ve-script-manager"]`);
 					let codemirror_el = (manager_el) ?
-						manager_el.querySelector(`[component="ve-script-manager-codemirror"]`) :
+						manager_el.querySelector(`[component="ve-script-manager-monaco"]`) :
 						undefined;
 					
 					if (codemirror_el && codemirror_el.instance) {
