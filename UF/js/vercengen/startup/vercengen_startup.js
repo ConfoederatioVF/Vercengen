@@ -350,7 +350,8 @@ global.path = require("path");
 			//Localisation
 			"UF/js/vercengen/vercengen_localisation.js",
 			"!UF/libraries/monaco/",
-			"UF/js/vercengen/components/ComponentScriptManager/ComponentMonaco/monaco_startup.js"
+			"UF/js/vercengen/components/ComponentScriptManager/ComponentMonaco/monaco_startup.js",
+			"UF/js/vercengen/components/ComponentScriptManager/blockly_toolbox.js"
 		] : [];
 			load_patterns = load_patterns.concat(options.load_files);
 		
