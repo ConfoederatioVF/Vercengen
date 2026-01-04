@@ -36,11 +36,11 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");
-		this.element.instance = this;
-		this.element.setAttribute("component", "ve-script-manager-monaco");
-		this.element.style.width = "100%";
-		this.element.style.height = "100%";
-		this.element.style.position = "relative";
+			this.element.instance = this;
+			this.element.setAttribute("component", "ve-script-manager-monaco");
+			this.element.style.width = "100%";
+			this.element.style.height = "100%";
+			this.element.style.position = "relative";
 		if (options.attributes)
 			Object.iterate(options.attributes, (local_key, local_value) => {
 				this.element.setAttribute(local_key, local_value.toString());
@@ -48,7 +48,7 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 		
 		this.options = options;
 		this._pending_value = (value === null || value === undefined) ? "" : value.toString();
-		this._current_theme = (options.theme) ? options.theme : "nord";
+		this._theme = (options.theme) ? options.theme : "nord";
 		
 		//Load Monaco once DOM populates
 		this.monaco_initialisation_loop = setInterval(() => {
@@ -71,7 +71,7 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 				});
 				
 				// 2. Load and Set the correct theme
-				this.setTheme(this._current_theme);
+				this.setTheme(this._theme);
 				
 				// 3. Fix paste event for Electron
 				this.editor.addAction({
@@ -193,11 +193,11 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 	 *
 	 * @param {string} arg0_theme_name
 	 */
-	async setTheme(arg0_theme_name) {
+	async setTheme (arg0_theme_name) {
 		let theme_name = arg0_theme_name;
-		this._current_theme = theme_name;
+		this._theme = theme_name;
 		
-		//Guard clause: If Monaco isn't loaded yet, the init loop will handle setting this._current_theme
+		//Guard clause: If Monaco isn't loaded yet, the init loop will handle setting this._theme
 		if (!window.monaco || !monaco.editor) return;
 		
 		//If it's a standard internal theme (vs, vs-dark, hc-black), just set it
@@ -207,7 +207,7 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 		}
 		
 		try {
-			let file_path = `${process.cwd()}/UF/js/vercengen/components/ComponentScriptManager/ComponentMonaco/themes/${theme_name}.json`;
+			let file_path = `${process.cwd()}/UF/js/vercengen/components/ComponentScriptManager/monaco/themes/${theme_name}.json`;
 			
 			if (fs.existsSync(file_path)) {
 				let theme_data = JSON.parse(fs.readFileSync(file_path, "utf8"));
