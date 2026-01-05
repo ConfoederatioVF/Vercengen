@@ -222,50 +222,59 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 	 */
 	handleCSS () {
 		//Declare local instance variables
+		let blockly_raf;
 		this.blockly_toolbox_mode = "canvas"; //Either 'body'/'canvas'
-		this.element.style.width = "auto";
-		
-		//Handle blockly_toolbox_el
-		this.blockly_toolbox_loop = setInterval(() => {
-			if (this._hidden) return;
-			if (this._disabled) { //Internal guard clause if this._disabled
-				if (this.blockly_toolbox_el.parentElement)
-					this.blockly_toolbox_el.parentElement.removeChild(this.blockly_toolbox_el);
+		let runToolboxUpdate = () => {
+			if (this._hidden) {
+				blockly_raf = requestAnimationFrame(runToolboxUpdate);
 				return;
 			}
+			
+			if (this._disabled) {
+				if (this.blockly_toolbox_el.parentElement)
+					this.blockly_toolbox_el.parentElement.removeChild(this.blockly_toolbox_el);
+				blockly_raf = requestAnimationFrame(runToolboxUpdate);
+				return;
+			}
+			
 			this.svg_el = this.element.querySelector("svg");
+				this.svg_el.setAttribute("width", "100%");
+				this.svg_el.setAttribute("height", "100%");
 			this.svg_rect = this.svg_el.getBoundingClientRect();
 			
-			this.max_height = this.svg_rect.height;
-			this.max_width = this.svg_rect.width;
-			this.svg_el.style.width = "100%";
-			this.svg_el.style.maxHeight = `${this.max_height}px`;
-			
-			//Change anchor for this.blockly_toolbox_el
-			let rect = this.element.getBoundingClientRect();
-			this.blockly_toolbox_mode = (this.element.querySelector(".blocklyFlyout:hover") ||
+			const rect = this.element.getBoundingClientRect();
+			this.blockly_toolbox_mode =
+				this.element.querySelector(".blocklyFlyout:hover") ||
 				this.blockly_toolbox_el.querySelector(":hover") ||
 				document.querySelector(".blocklyDraggable:hover")
-			) ?
-				"body" : "canvas";
+					? "body"
+					: "canvas";
 			
 			if (this.blockly_toolbox_mode === "body") {
-				if (!document.querySelector("body > .blocklyToolboxDiv"))
+				if (!document.querySelector("body > .blocklyToolboxDiv")) {
 					document.body.appendChild(this.blockly_toolbox_el);
-				this.blockly_toolbox_el.style.height = `${this.svg_rect.height}px`;
+				}
+				this.blockly_toolbox_el.style.height = `${this.toolbox_height}px`;
 				this.blockly_toolbox_el.style.left = `${rect.x}px`;
 				this.blockly_toolbox_el.style.top = `calc(${rect.y}px + var(--cell-padding))`;
-				this.blockly_toolbox_el.style.zIndex = 2;
-			}
-			if (this.blockly_toolbox_mode === "canvas") {
-				if (!this.element.contains(this.blockly_toolbox_el))
+				this.blockly_toolbox_el.style.zIndex = "2";
+			} else {
+				// canvas mode
+				if (!this.element.contains(this.blockly_toolbox_el)) {
 					this.element.appendChild(this.blockly_toolbox_el);
+				}
 				this.blockly_toolbox_el.style.height = `${this.svg_rect.height}px`;
 				this.blockly_toolbox_el.style.left = "0px";
 				this.blockly_toolbox_el.style.top = `calc(var(--cell-padding))`;
-				this.blockly_toolbox_el.style.zIndex = 0;
+				this.blockly_toolbox_el.style.zIndex = "0";
+				this.toolbox_height = HTML.getElementDimensions(this.blockly_toolbox_el).height;
 			}
-		});
+			
+			blockly_raf = requestAnimationFrame(runToolboxUpdate);
+		};
+		
+		//Start RAF to handle CSS
+		blockly_raf = requestAnimationFrame(runToolboxUpdate);
 	}
 	
 	/**
@@ -280,9 +289,6 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		
 		//Declare local instance variables
 		this._hidden = true;
-		this._preserved_height = this.svg_el.style.maxHeight;
-		this._preserved_width = this.svg_el.style.maxWidth;
-		
 		this.element.style.display = "none";
 	}
 	
@@ -353,10 +359,6 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		//Declare local instance variables
 		delete this._hidden;
 		this.element.style.display = "block";
-		this.svg_el.style.maxHeight = `${this._preserved_height}px`;
-		
-		delete this._preserved_height;
-		delete this._preserved_width;
 	}
 };
 

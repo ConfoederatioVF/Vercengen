@@ -94,6 +94,81 @@
 		};
 	};
 	
+	HTML.getElementDimensions = function (element) { //[WIP] - Refactor later
+		if (!element || !(element instanceof HTMLElement)) {
+			return { width: 0, height: 0 };
+		}
+		
+		// 1. Get the element's basic bounding box (accounts for transforms/scaling)
+		let visibleRect = element.getBoundingClientRect();
+		
+		let parent = element.parentElement;
+		
+		// 2. Traverse up the DOM tree to check for clipping ancestors
+		while (parent && parent !== document.documentElement) {
+			const style = window.getComputedStyle(parent);
+			const overflowX = style.overflowX;
+			const overflowY = style.overflowY;
+			
+			// If the parent clips its children
+			if (
+				overflowX !== "visible" ||
+				overflowY !== "visible" ||
+				parent === document.body
+			) {
+				const parentRect = parent.getBoundingClientRect();
+				
+				// We account for the scrollbar and borders by using the client area
+				// However, for clipping, the border-box of the parent is the limit
+				const clipRect = {
+					left: parentRect.left,
+					top: parentRect.top,
+					right: parentRect.left + parent.clientWidth +
+						parseFloat(style.borderLeftWidth),
+					bottom: parentRect.top + parent.clientHeight +
+						parseFloat(style.borderTopWidth),
+				};
+				
+				// Calculate the intersection between current visibleRect and parent
+				const intersectedRect = {
+					left: Math.max(visibleRect.left, parentRect.left),
+					top: Math.max(visibleRect.top, parentRect.top),
+					right: Math.min(visibleRect.right, parentRect.right),
+					bottom: Math.min(visibleRect.bottom, parentRect.bottom),
+				};
+				
+				visibleRect = intersectedRect;
+			}
+			
+			parent = parent.parentElement;
+		}
+		
+		// 3. Intersect with the Viewport (handle scrolling out of window)
+		const viewportRect = {
+			left: 0,
+			top: 0,
+			right: window.innerWidth || document.documentElement.clientWidth,
+			bottom: window.innerHeight || document.documentElement.clientHeight,
+		};
+		
+		const finalRect = {
+			left: Math.max(visibleRect.left, viewportRect.left),
+			top: Math.max(visibleRect.top, viewportRect.top),
+			right: Math.min(visibleRect.right, viewportRect.right),
+			bottom: Math.min(visibleRect.bottom, viewportRect.bottom),
+		};
+		
+		// 4. Calculate final width and height
+		const width = Math.max(0, finalRect.right - finalRect.left);
+		const height = Math.max(0, finalRect.bottom - finalRect.top);
+		
+		return {
+			width: width,
+			height: height,
+			isFullyHidden: width === 0 || height === 0,
+		};
+	}
+	
 	/**
 	 * Returns an escaped string in HTML terms such that it renders properly.
 	 * 
