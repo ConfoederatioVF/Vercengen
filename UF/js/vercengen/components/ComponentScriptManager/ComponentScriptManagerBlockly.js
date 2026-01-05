@@ -46,10 +46,8 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		this.element = document.createElement("div");
 		this.element.instance = this;
 		this.element.setAttribute("component", "ve-script-manager-blockly");
-		this.element.style.overflow = "clip";
-		this.element.style.padding = "0";
-		this.element.style.position = "relative";
 		this.element.style.width = "100%"; //Updated to 100% to fill the flex-item
+		this.element.style.position = "relative";
 		if (options.attributes)
 			Object.iterate(options.attributes, (local_key, local_value) => {
 				this.element.setAttribute(local_key, local_value.toString());
@@ -222,109 +220,52 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 	 * @alias handleCSS
 	 * @memberof ve.Component.ve.ScriptManagerBlockly
 	 */
-	/**
-	 * Internal helper method. Handles CSS issues so that Blockly can be mounted into a window.
-	 * - Method of: {@link ve.ScriptManagerBlockly}
-	 *
-	 * @alias handleCSS
-	 * @memberof ve.Component.ve.ScriptManagerBlockly
-	 */
 	handleCSS () {
 		//Declare local instance variables
 		this.blockly_toolbox_mode = "canvas"; //Either 'body'/'canvas'
 		this.element.style.width = "auto";
 		
-		//Cancel existing loop if present
-		if (this.blockly_toolbox_raf) cancelAnimationFrame(this.blockly_toolbox_raf);
-		
-		const updateToolbox = () => {
-			//Queue next frame immediately
-			this.blockly_toolbox_raf = requestAnimationFrame(updateToolbox);
-			
-			try {
-				if (this._hidden) return;
-				
-				//Internal guard clause if disabled or detached from DOM
-				if (this._disabled || !document.body.contains(this.element)) {
-					if (this.blockly_toolbox_el.parentElement && this.blockly_toolbox_el.parentElement !== this.element)
-						this.blockly_toolbox_el.parentElement.removeChild(this.blockly_toolbox_el);
-					return;
-				}
-				
-				this.svg_el = this.element.querySelector("svg");
-				if (!this.svg_el) return;
-				
-				// Force SVG to fill container
-				this.svg_el.style.width = "100%";
-				this.svg_el.style.height = "100%";
-				
-				// Calculate Intersection / Visible Rect of the Container
-				// This is used for 'body' mode positioning.
-				let container_rect = this.element.getBoundingClientRect();
-				let visible_top = container_rect.top;
-				let visible_bottom = container_rect.bottom;
-				
-				// Climb tree to clip against scrollable parents
-				let parent = this.element.parentElement;
-				while (parent && parent.nodeType === 1 && parent !== document.body) {
-					let style = window.getComputedStyle(parent);
-					if (style.overflow !== 'visible') {
-						let p_rect = parent.getBoundingClientRect();
-						visible_top = Math.max(visible_top, p_rect.top);
-						visible_bottom = Math.min(visible_bottom, p_rect.bottom);
-					}
-					parent = parent.parentElement;
-				}
-				
-				// Clip against Viewport
-				visible_top = Math.max(visible_top, 0);
-				visible_bottom = Math.min(visible_bottom, window.innerHeight);
-				
-				let visible_height = Math.max(0, visible_bottom - visible_top);
-				
-				// Determine Mode
-				let is_hovering = (
-					this.element.querySelector(".blocklyFlyout:hover") ||
-					this.blockly_toolbox_el.querySelector(":hover") ||
-					(Blockly.dragMode_ !== 0)
-				);
-				
-				if (visible_height <= 0) is_hovering = false;
-				
-				this.blockly_toolbox_mode = (is_hovering) ? "body" : "canvas";
-				
-				if (this.blockly_toolbox_mode === "body") {
-					if (this.blockly_toolbox_el.parentElement !== document.body) {
-						// Lock width before moving to body to prevent reflow collapse
-						this.blockly_toolbox_el.style.width = `${this.blockly_toolbox_el.offsetWidth}px`;
-						document.body.appendChild(this.blockly_toolbox_el);
-					}
-					
-					this.blockly_toolbox_el.style.position = "fixed";
-					this.blockly_toolbox_el.style.top = `${visible_top}px`;
-					this.blockly_toolbox_el.style.left = `${container_rect.left}px`;
-					this.blockly_toolbox_el.style.height = `${visible_height}px`;
-					this.blockly_toolbox_el.style.zIndex = 10000;
-				} else {
-					// Canvas mode - styles must be enforced even if element is already present
-					if (!this.element.contains(this.blockly_toolbox_el)) {
-						this.element.appendChild(this.blockly_toolbox_el);
-					}
-					
-					this.blockly_toolbox_el.style.position = "absolute";
-					this.blockly_toolbox_el.style.top = "0px";
-					this.blockly_toolbox_el.style.left = "0px";
-					this.blockly_toolbox_el.style.height = "100%";
-					this.blockly_toolbox_el.style.width = ""; // Unlock width
-					this.blockly_toolbox_el.style.zIndex = "";
-				}
-			} catch (e) {
-				console.error("ve.ScriptManagerBlockly: RAF Error", e);
+		//Handle blockly_toolbox_el
+		this.blockly_toolbox_loop = setInterval(() => {
+			if (this._hidden) return;
+			if (this._disabled) { //Internal guard clause if this._disabled
+				if (this.blockly_toolbox_el.parentElement)
+					this.blockly_toolbox_el.parentElement.removeChild(this.blockly_toolbox_el);
+				return;
 			}
-		};
-		
-		//Start loop
-		this.blockly_toolbox_raf = requestAnimationFrame(updateToolbox);
+			this.svg_el = this.element.querySelector("svg");
+			this.svg_rect = this.svg_el.getBoundingClientRect();
+			
+			this.max_height = this.svg_rect.height;
+			this.max_width = this.svg_rect.width;
+			this.svg_el.style.width = "100%";
+			this.svg_el.style.maxHeight = `${this.max_height}px`;
+			
+			//Change anchor for this.blockly_toolbox_el
+			let rect = this.element.getBoundingClientRect();
+			this.blockly_toolbox_mode = (this.element.querySelector(".blocklyFlyout:hover") ||
+				this.blockly_toolbox_el.querySelector(":hover") ||
+				document.querySelector(".blocklyDraggable:hover")
+			) ?
+				"body" : "canvas";
+			
+			if (this.blockly_toolbox_mode === "body") {
+				if (!document.querySelector("body > .blocklyToolboxDiv"))
+					document.body.appendChild(this.blockly_toolbox_el);
+				this.blockly_toolbox_el.style.height = `${this.svg_rect.height}px`;
+				this.blockly_toolbox_el.style.left = `${rect.x}px`;
+				this.blockly_toolbox_el.style.top = `calc(${rect.y}px + var(--cell-padding))`;
+				this.blockly_toolbox_el.style.zIndex = 2;
+			}
+			if (this.blockly_toolbox_mode === "canvas") {
+				if (!this.element.contains(this.blockly_toolbox_el))
+					this.element.appendChild(this.blockly_toolbox_el);
+				this.blockly_toolbox_el.style.height = `${this.svg_rect.height}px`;
+				this.blockly_toolbox_el.style.left = "0px";
+				this.blockly_toolbox_el.style.top = `calc(var(--cell-padding))`;
+				this.blockly_toolbox_el.style.zIndex = 0;
+			}
+		});
 	}
 	
 	/**
