@@ -242,7 +242,7 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 				this.svg_el.setAttribute("height", "100%");
 			this.svg_rect = this.svg_el.getBoundingClientRect();
 			
-			const rect = this.element.getBoundingClientRect();
+			let rect = this.element.getBoundingClientRect();
 			this.blockly_toolbox_mode =
 				this.element.querySelector(".blocklyFlyout:hover") ||
 				this.blockly_toolbox_el.querySelector(":hover") ||
@@ -312,7 +312,7 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 			
 			if (local_element) {
 				// Override setAttribute to intercept transform changes
-				const originalSetAttribute = local_element.setAttribute;
+				let originalSetAttribute = local_element.setAttribute;
 				local_element.setAttribute = function (name, value) {
 					if (name === 'transform' && value.includes('scale(')) {
 						// Preserve translate, force scale(1)
