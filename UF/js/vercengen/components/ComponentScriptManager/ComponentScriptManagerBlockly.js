@@ -46,8 +46,10 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		this.element = document.createElement("div");
 		this.element.instance = this;
 		this.element.setAttribute("component", "ve-script-manager-blockly");
-		this.element.style.width = "100%"; //Updated to 100% to fill the flex-item
+		this.element.style.overflow = "clip";
+		this.element.style.padding = "0";
 		this.element.style.position = "relative";
+		this.element.style.width = "100%"; //Updated to 100% to fill the flex-item
 		if (options.attributes)
 			Object.iterate(options.attributes, (local_key, local_value) => {
 				this.element.setAttribute(local_key, local_value.toString());
