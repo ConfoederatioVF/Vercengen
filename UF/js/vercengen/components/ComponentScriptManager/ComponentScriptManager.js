@@ -231,7 +231,10 @@ ve.ScriptManager = class extends ve.Component {
 			blockly: this.scene_blockly,
 			monaco: this.scene_monaco
 		}, {
-			name: "ScriptManagerInterface"
+			name: "ScriptManagerInterface",
+			style: {
+				padding: 0
+			}
 		});
 		this.scene_interface.element.style.flex = "1";
 		
