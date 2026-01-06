@@ -208,18 +208,17 @@ ve.ScriptManager = class extends ve.Component {
 		});
 		this.leftbar_file_explorer.bind(this.leftbar_el);
 		this.scene_el = document.createElement("div");
-		this.scene_el.id = "scene";
+			this.scene_el.id = "scene";
 		this.scene_blockly = new ve.ScriptManagerBlockly();
 		this.scene_blockly_el = this.scene_blockly.element;
-		this.scene_blockly_el.id = "scene-blockly";
+			this.scene_blockly_el.id = "scene-blockly";
 		
 		this.scene_monaco = new ve.ScriptManagerMonaco(undefined, {
 			script_manager: this,
 			theme: this._settings.monaco_theme
 		});
 		this.scene_monaco_el = this.scene_monaco.element;
-		this.scene_monaco_el.id = "scene-monaco";
-		this.scene_monaco_el.style.height = "100%";
+			this.scene_monaco_el.id = "scene-monaco";
 		
 		this.scene_tabs_el = document.createElement("div");
 		this.scene_tabs_el.id = "scene-tabs";
@@ -229,12 +228,8 @@ ve.ScriptManager = class extends ve.Component {
 			blockly: this.scene_blockly,
 			monaco: this.scene_monaco
 		}, {
-			name: "ScriptManagerInterface",
-			style: {
-				padding: 0
-			}
+			name: "ScriptManagerInterface"
 		});
-		this.scene_interface.element.style.flex = "1";
 		
 		this.scene_el.append(this.scene_interface.element, this.scene_tabs_el);
 		this.topbar_el = document.createElement("div");
@@ -430,20 +425,13 @@ ve.ScriptManager = class extends ve.Component {
 			}, { name: loc("ve.registry.localisation.ScriptManager_console") })
 		}, {
 			no_name_element: true,
-			is_folder: false,
-			style: {
-				alignItems: "center",
-				display: "flex",
-				padding: 0,
-				
-				"[component='ve-button']": {
-					marginRight: "calc(var(--cell-padding)*2)"
-				}
-			}
+			is_folder: false
 		});
 		this.topbar_interface.bind(this.topbar_el);
 		
+		//Layer 1. Append topbar
 		this.element.appendChild(this.topbar_el);
+		//Layer 2. Append leftbar and scene
 		this.container_el.append(this.leftbar_el, this.scene_el);
 		this.element.appendChild(this.container_el);
 		

@@ -34,6 +34,7 @@
 .blocklyToolboxDiv {
     background-color: var(--bg-primary-colour);
     color: var(--body-colour);
+    transform: translateY(calc(var(--padding)*-1));
     
     .blocklyTreeLabel {
         font-family: var(--body-font-family);
@@ -68,6 +69,23 @@
         flex-direction: row;
         padding-top: var(--cell-padding);
         width: 100%;
+        
+        [component="ve-flex-interface"] {
+            flex: 1;
+            padding: 0;
+        }
+    }
+    #scene-monaco {
+        height: 100%;
+    }
+    #topbar [component="ve-raw-interface"] {
+        align-items: center;
+        display: flex;
+        padding: 0;
+        
+        [component="ve-button"] {
+            margin-right: calc(var(--cell-padding)*2);
+        }
     }
 }
 [component="ve-script-manager-blockly"] {
