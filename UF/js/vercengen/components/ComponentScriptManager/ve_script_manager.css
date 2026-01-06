@@ -45,7 +45,40 @@
 .blocklyTreeRow:not(.blocklyTreeSelected):hover {
     background-color: var(--accent-primary-colour);
 }
+[component="ve-script-manager"] {
+    #leftbar {
+        padding-top: var(--cell-padding);
+        
+        [component="ve-file-explorer"] {
+            margin-right: calc(var(--cell-padding));
+            max-height: 80dvh;
+            overflow: auto;
+            padding-bottom: 0;
+            padding-right: 0;
+            padding-top: 0;
+            width: 20rem;
+        }
+        #file-explorer-body [component="ve-hierarchy"] {
+            padding-bottom: 0;
+            padding-top: 0;
+        }
+    }
+    #scene {
+        display: flex;
+        flex-direction: row;
+        padding-top: var(--cell-padding);
+        width: 100%;
+    }
+}
 [component="ve-script-manager-blockly"] {
+    display: block;
+    height: 100%;
+    left: 0;
+    overflow: clip;
+    padding: 0;
+    position: relative;
+    width: 100%; /* -- Updated to 100% to fill the flex item -- */
+    
     svg {
         .blocklyTrash, .blocklyZoom {
             filter: brightness(100);

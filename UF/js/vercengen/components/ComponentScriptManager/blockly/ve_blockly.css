@@ -1,6 +1,0 @@
-[component="ve-script-manager-blockly"] {
-    overflow: clip;
-    padding: 0;
-    position: relative;
-    width: 100%; /* -- Updated to 100% to fill the flex item -- */
-}

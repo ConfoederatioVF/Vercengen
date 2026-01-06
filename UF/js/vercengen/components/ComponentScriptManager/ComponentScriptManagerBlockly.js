@@ -44,14 +44,9 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		let toolbox = ve.ScriptManager.toolbox;
 		
 		this.element = document.createElement("div");
-		this.element.instance = this;
-		this.element.setAttribute("component", "ve-script-manager-blockly");
-		this.element.style.width = "100%"; //Updated to 100% to fill the flex-item
-		this.element.style.position = "relative";
-		if (options.attributes)
-			Object.iterate(options.attributes, (local_key, local_value) => {
-				this.element.setAttribute(local_key, local_value.toString());
-			});
+			this.element.instance = this;
+			this.element.setAttribute("component", "ve-script-manager-blockly");
+			HTML.setAttributesObject(this.element, options.attributes);
 		this.options = options;
 		this.value = value;
 		
@@ -99,11 +94,6 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 					}
 				} catch (e) { console.error(e); }
 		});
-		
-		//Initialise onresize, flyout scaling fixes
-		this.element.style.left = '0px' // x + 'px';
-		this.element.style.width = "100%"
-		this.element.style.height = "100%";
 		
 		this.fixBlocklyScaling();
 		this.handleCSS();

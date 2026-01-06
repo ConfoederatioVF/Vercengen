@@ -175,8 +175,8 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 		if (this.options.script_manager) {
 			let script_manager = this.options.script_manager;
 			
-			if (script_manager._settings.autosave_folder && script_manager._settings.autosave_folder !== "none")
-				if (script_manager._file_path && File.containsPath(script_manager._file_path, script_manager._settings.autosave_folder))
+			if (script_manager._settings.project_folder && script_manager._settings.project_folder !== "none")
+				if (script_manager._file_path && File.containsPath(script_manager._file_path, script_manager._settings.project_folder))
 					fs.writeFileSync(script_manager._file_path, this.v);
 		}
 	}

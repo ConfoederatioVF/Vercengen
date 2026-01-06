@@ -87,6 +87,7 @@ ve.RawInterface = class extends ve.Component {
 			}
 			
 			this.element.appendChild(local_value.element);
+			local_value.parent_el = this.element;
 		});
 		if (this.options.onchange) this.options.onchange(this);
 	}

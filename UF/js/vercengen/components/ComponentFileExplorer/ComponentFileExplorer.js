@@ -7,6 +7,7 @@
  * ##### Constructor:
  * - `arg0_value`: {@link string} - The file path in which the FileExplorer should be initialised.
  * - `arg1_options`: {@link Object}
+ *   - `.actions_components_obj`: {@link Object}<{@link ve.Component}> - Appended components in the topbar action meny, usually at the end.
  *   - `.file_components_obj={select: ...}`: {@link Object}<{@link ve.Component}>
  *   - `.file_icon="<icon>description</icon>"`: {@link string}
  *   - `.file_options`: {@link Object}
@@ -259,8 +260,11 @@ ve.FileExplorer = class extends ve.Component {
 		let hierarchy_obj = {};
 		
 		//Add item button to move up one folder at the top
+		let actions_components_obj = (this.options.actions_components_obj) ? 
+			this.options.actions_components_obj : {};
 		let previous_folder_path = path.join(this.value, "..");
 		
+		console.log(this.options.actions_components_obj);
 		hierarchy_obj.file_path = new ve.HierarchyDatatype({
 			information: new ve.HTML(() => this.v)
 		}, { disabled: true });
@@ -370,7 +374,8 @@ ve.FileExplorer = class extends ve.Component {
 								}
 							})
 						}, { can_rename: false, name: loc("ve.registry.localisation.FileExplorer_create_new_file") });
-					}, { name: "<icon>note_add</icon>", tooltip: loc("ve.registry.localisation.FileExplorer_create_new_file") } )
+					}, { name: "<icon>note_add</icon>", tooltip: loc("ve.registry.localisation.FileExplorer_create_new_file") } ),
+					...actions_components_obj
 				}, {
 					style: { marginLeft: "auto", order: 99, marginTop: "var(--cell-padding)", padding: 0 }
 				}),

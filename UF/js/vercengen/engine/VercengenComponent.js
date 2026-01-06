@@ -23,7 +23,11 @@
  *     - `<css_property>`: {@link function}|{@link string}
  *
  * ##### DOM:
- * - `.instance`: this:{@link ve.Component}
+ * - Attributes:
+ *   - `data-debug-add-component`: {@link boolean}
+ *   - `data-debug-limit`: {@link boolean}
+ * - Fields:
+ *   - `.instance`: this:{@link ve.Component}
  *
  * ##### Instance:
  * - `.child_class=this.constructor`: {@link ve.Component} - The constructor object of the child class.
@@ -175,7 +179,8 @@ ve.Component = class {
 	 */
 	get limit () {
 		//Return statement
-		return (this.limit_function) ? this.limit_function(this.v, this) : true;
+		return (this.limit_function !== undefined) ? 
+			this.limit_function(this.v, this) : true;
 	}
 	
 	/**
@@ -192,8 +197,12 @@ ve.Component = class {
 			this.limit_logic_loop = setInterval(() => {
 				if (!this.limit) {
 					this.removeComponent();
+					if (this.element.getAttribute("data-debug-limit"))
+						console.log(`- .limit: Removing component:`, this);
 				} else {
 					this.addComponent();
+					if (this.element.getAttribute("data-debug-limit"))
+						console.log(`- .limit: Adding component:`, this);
 				}
 			}, 100);
 		} else {
@@ -460,8 +469,12 @@ ve.Component = class {
 	 */
 	addComponent () {
 		if (this.parent_el) try {
-			if (!this.parent_el.contains(this.element))
+			if (!this.parent_el.contains(this.element)) {
 				this.parent_el.appendChild(this.element);
+				
+				if (this.element.getAttribute("data-debug-add-component"))
+					console.log(`- addComponent() called for:`, this, `bound to`, this.parent_el);
+			}
 		} catch (e) { console.error(e); }
 	}
 	

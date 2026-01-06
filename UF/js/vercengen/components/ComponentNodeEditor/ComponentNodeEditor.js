@@ -11,12 +11,11 @@
  * ##### Constructor:
  * - `arg0_value`: {@link Object} - The JSON object for the Maptalks instance attached to the current NodeEditor, including properties data.
  * - `arg1_options`: {@link Object}
- *   - `.autosave_folder`: {@link string}
  *   - `.bg_ctx`: {@link function} | {@link Object} - Returns the context of a Canvas.
  *   - `.category_types`: {@link Object}
  *     - `<category_key>`: {@link Object}
  *       - `.colour`: {@link Array}<{@link number}, {@link number}, {@link number}>|{@link string} - Either a hex/RGB value.
- *   - `.exclude_all=false`: {@link boolean}
+ *   - `.exclude_all=false`: {@link boolean} - Whether to exclude the default 'All' category at the start.
  *   - `.node_types`: {@link Object}
  *     - `<node_key>`: {@link Object} - Current valid types for `.input_parameters` and `.output_type` include 'any'/'number[]'/'string[]'/'boolean'/'number'/'script'/'string'.
  *       - `.category="Expression"` - The category that any {@link ve.NodeEditorDatatype} instances should belong to. Typically should either be 'Filter'/'Expression'.
@@ -38,7 +37,7 @@
  *       - `.alluvial_scaling=1`: {@link number} - How much to scale alluvial widths by when displayed compared to their actual number.
  *   	   - `.id=Class.generateRandomID(ve.NodeEditorDatatype)`: {@link string} - The ID to assign to the present datatype at a class level.
  *       - `.show_alluvial=false`: {@link boolean}
- *   - `.exclude_all=false`: {@link boolean} - Whether to exclude the default 'All' category at the start.
+ *   - `.project_folder`: {@link string}
  * 
  * ##### Instance:
  * - `.id`: {@link string}

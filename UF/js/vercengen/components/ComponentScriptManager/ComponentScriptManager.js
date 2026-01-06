@@ -14,12 +14,12 @@
  *   - `.folder_path=process.cwd()`: {@link string}
  *   - `.save_extension=[".*"]`: {@link Array}<{@link string}>
  * 	 - `.settings`: {@link Object}
- * 	   - `.autosave_folder="none"`: {@link string}
  * 	   - `.clear_blockly_workspace_on_error=true`: {@link boolean}
  * 	   - `.monaco_theme="nord"`: {@link string}
  * 	   - `.display_load_errors=false`: {@link boolean}
  * 	   - `.hide_blockly_workspace_on_error`: {@link boolean}
  * 	   - `.theme="theme-default"`: {@link string} - Either 'theme-default'/'theme-light'
+ * 	   - `.project_folder="none"`: {@link string}
  * 	   - `.view_file_explorer=true`: {@link boolean}
  *
  * ##### Instance:
@@ -122,7 +122,7 @@ ve.ScriptManager = class extends ve.Component {
 		this._settings = {
 			is_vercengen_script_manager_settings: true,
 			
-			autosave_folder: "none",
+			project_folder: "none",
 			clear_blockly_workspace_on_error: true,
 			monaco_theme: "nord",
 			display_load_errors: false,
@@ -176,6 +176,18 @@ ve.ScriptManager = class extends ve.Component {
 		this.leftbar_el = document.createElement("div");
 		this.leftbar_el.id = "leftbar";
 		this.leftbar_file_explorer = new ve.FileExplorer((this.options.folder_path) ? this.options.folder_path : process.cwd(), {
+			actions_components_obj: {
+				set_project_folder: new ve.Button(() => {
+					let new_folder_path = path.resolve(this.leftbar_file_explorer.v);
+					
+					this._settings.project_folder = new_folder_path;
+					veToast(`Changed project folder to ${new_folder_path}`);
+				}, { 
+					name: "<icon>gite</icon>",
+					tooltip: "Set as Project Folder",
+					limit: () => (path.resolve(this.leftbar_file_explorer.v) !== this._settings.project_folder)
+				})
+			},
 			load_function: (arg0_data, arg1_file_path) => {
 				let local_data = arg0_data;
 				let file_path = arg1_file_path;
@@ -192,28 +204,14 @@ ve.ScriptManager = class extends ve.Component {
 				
 				//Return statement
 				return this.scene_monaco.v;
-			},
-			style: {
-				marginRight: "calc(var(--cell-padding)*2)",
-				maxHeight: "80dvh",
-				overflow: "auto",
-				paddingBottom: 0,
-				paddingTop: 0,
-				paddingRight: 0,
-				width: "20rem"
 			}
 		});
 		this.leftbar_file_explorer.bind(this.leftbar_el);
 		this.scene_el = document.createElement("div");
-		this.scene_el.style.display = "flex";
-		this.scene_el.style.flexDirection = "row";
-		this.scene_el.style.width = "100%";
 		this.scene_el.id = "scene";
 		this.scene_blockly = new ve.ScriptManagerBlockly();
 		this.scene_blockly_el = this.scene_blockly.element;
 		this.scene_blockly_el.id = "scene-blockly";
-		this.scene_blockly_el.style.display = "block";
-		this.scene_blockly_el.style.height = "100%";
 		
 		this.scene_monaco = new ve.ScriptManagerMonaco(undefined, {
 			script_manager: this,
@@ -545,7 +543,7 @@ ve.ScriptManager = class extends ve.Component {
 	}
 	
 	/**
-	 * Attempts to save the current {@link this._file_path} if it is in `this._settings.autosave_folder`.
+	 * Attempts to save the current {@link this._file_path} if it is in `this._settings.project_folder`.
 	 */
 	autosave () {
 		
@@ -559,11 +557,12 @@ ve.ScriptManager = class extends ve.Component {
 	 * @memberof ve.Component.ve.ScriptManager
 	 *
 	 * @param {Object} [arg0_settings]
-	 *  @param {string} [arg0_settings.autosave_folder]
+	 *  @param {string} [arg0_settings.project_folder]
 	 *  @param {string} [arg0_settings.monaco_theme] - One of the default Monaco themes or a custom JSON theme name.
 	 *  @param {boolean} [arg0_settings.hide_blockly]
 	 *  @param {theme} [arg0_settings.theme] - Either 'theme-default'/'theme-light'
 	 *  @param {boolean} [arg0_settings.view_file_explorer] - Whether to show the file explorer.
+	 * @param {boolean} arg1_loaded
 	 */
 	loadSettings (arg0_settings, arg1_loaded) {
 		//Convert from parameters
@@ -576,9 +575,9 @@ ve.ScriptManager = class extends ve.Component {
 		let scriptmanager_settings = ve.registry.settings.ScriptManager;
 		let settings_apply_loop = setInterval(() => {
 			try {
-				if (settings_obj.autosave_folder)
-					settings_obj.autosave_folder = (fs.existsSync(settings_obj.autosave_folder) && fs.statSync(settings_obj.autosave_folder).isDirectory()) ?
-						settings_obj.autosave_folder : "none";
+				if (settings_obj.project_folder)
+					settings_obj.project_folder = (fs.existsSync(settings_obj.project_folder) && fs.statSync(settings_obj.project_folder).isDirectory()) ?
+						settings_obj.project_folder : "none";
 				if (settings_obj.monaco_theme)
 					this.setCodeEditorTheme(settings_obj.monaco_theme);
 				if (settings_obj.hide_blockly !== undefined) {
