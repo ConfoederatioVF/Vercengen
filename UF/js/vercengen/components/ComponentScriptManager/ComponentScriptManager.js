@@ -11,6 +11,7 @@
  * - `arg0_value`: {@link string} - The code to load into the present ve.ScriptManager.
  * - `arg1_options`: {@link Object}
  *   - `.do_not_display_file_name=false`: {@link boolean}
+ *   - `.do_not_display_project_name=false`: {@link boolean}
  *   - `.folder_path=process.cwd()`: {@link string}
  *   - `.save_extension=[".*"]`: {@link Array}<{@link string}>
  * 	 - `.settings`: {@link Object}
@@ -240,8 +241,17 @@ ve.ScriptManager = class extends ve.Component {
 			x: 0, y: 0
 		});
 		this.topbar_interface = new ve.RawInterface({
-			name_el: new ve.HTML(() => `<span id = "name">${this.name}</span>${(!options.do_not_display_file_name) ? `<span id = "file-name"> | ${(this._file_path) ? this._file_path : loc("ve.registry.localisation.ScriptManager_none")}</span>` : ""}`,
-				{ style: { marginRight: "1rem", overflow: "clip", width: "19rem" } }),
+			name_el: new ve.HTML(() => {
+				return [
+					//ScriptManager .name
+					`<span id = "name">${this.name}</span>`,
+					//Project Header
+					`${(!options.do_not_display_project_name) ? `<div id = "project-name"><b>${(this._settings.project_folder !== "none") ? this._settings.project_folder : "No Project"}</b></div>` : ""}`,
+					//File Header
+					`${(!options.do_not_display_file_name) ? `- <span id = "file-name">${(this._file_path) ? this._file_path : loc("ve.registry.localisation.ScriptManager_none")}</span>` : ""}`
+				].join("");
+			},
+			{ style: { marginRight: "1rem", overflow: "clip", width: "19rem" } }),
 			settings: new ve.Button(() => {
 				if (this.settings_window) this.settings_window.close();
 				this.settings_window = new ve.Window({
@@ -528,13 +538,6 @@ ve.ScriptManager = class extends ve.Component {
 				this.fireFromBinding();
 			}
 		});
-	}
-	
-	/**
-	 * Attempts to save the current {@link this._file_path} if it is in `this._settings.project_folder`.
-	 */
-	autosave () {
-		
 	}
 	
 	/**
