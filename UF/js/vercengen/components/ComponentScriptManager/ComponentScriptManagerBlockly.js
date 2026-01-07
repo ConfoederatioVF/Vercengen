@@ -86,6 +86,8 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 					if (monaco_el && monaco_el.instance) {
 						let monaco_obj = monaco_el.instance;
 						
+						console.trace(`Monaco is being set via here!`)
+						
 						monaco_obj.to_binding_fire_silently = true;
 						monaco_obj.v = blockly_value;
 						delete monaco_obj.to_binding_fire_silently;

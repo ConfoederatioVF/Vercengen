@@ -349,18 +349,6 @@ ve.ScriptManager = class extends ve.Component {
 						x: 0, y: 2
 					}),
 					
-					hide_blockly: new ve.Button(() => {
-						this.loadSettings({ hide_blockly: true });
-					}, { name: loc("ve.registry.localisation.ScriptManager_hide_blockly"), limit: () => !this.scene_blockly._hidden, x: 0, y: 3 }),
-					show_blockly: new ve.Button(() => {
-						this.loadSettings({ hide_blockly: false });
-						this.v = this.v;
-					}, { name: loc("ve.registry.localisation.ScriptManager_show_blockly"), limit: () => this.scene_blockly._hidden, x: 0, y: 3 }),
-					
-					clear_blockly_workspace_on_error: new ve.Toggle(this._settings.clear_blockly_workspace_on_error, {
-						name: loc("ve.registry.localisation.ScriptManager_clear_blockly_on_error"),
-						onuserchange: (v) => this._settings.clear_blockly_workspace_on_error = v
-					}, { x: 0, y: 4 }),
 					display_load_errors: new ve.Toggle(this._settings.display_load_errors, {
 						name: loc("ve.registry.localisation.ScriptManager_display_load_errors"),
 						onuserchange: (v) => this._settings.display_load_errors = v
@@ -507,7 +495,9 @@ ve.ScriptManager = class extends ve.Component {
 				//Set new code value
 				if (!this.scene_blockly._hidden) {
 					this.scene_blockly.enable();
+					this.scene_blockly.to_binding_fire_silently = true;
 					js2blocks.parseCode(local_value);
+					setTimeout(() => delete this.scene_blockly.to_binding_fire_silently);
 				}
 				this.scene_monaco.to_binding_fire_silently = true;
 				this.scene_monaco.v = local_value;
@@ -515,22 +505,17 @@ ve.ScriptManager = class extends ve.Component {
 				this.fireFromBinding();
 				clearInterval(set_value_loop);
 				
-				if (this._settings.hide_blockly_workspace_on_error)
-					this.scene_blockly.show();
+				this.scene_blockly.show();
 			} catch (e) {
 				clearInterval(set_value_loop);
-				if (this._settings.display_load_errors)
-					this.throwLoadError(e);
-				if (this._settings.hide_blockly_workspace_on_error)
-					this.scene_blockly.hide();
 				
-				if (this._settings.clear_blockly_workspace_on_error) {
-					this.scene_blockly.enable();
-					js2blocks.parseCode("");
-					this.scene_blockly.disable();
-				}
+				//Hide Blockly workspace, then clear it
+				this.scene_blockly.hide();
+				this.scene_blockly.enable();
+				js2blocks.parseCode("");
+				this.scene_blockly.disable();
 				
-				//Load the file anyway
+				//Load the file to the text editor instead (graceful degradation)
 				this.scene_blockly.disable();
 				this.scene_monaco.to_binding_fire_silently = true;
 				this.scene_monaco.v = local_value;

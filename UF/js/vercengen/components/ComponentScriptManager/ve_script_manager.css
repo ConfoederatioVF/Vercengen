@@ -74,6 +74,12 @@
             flex: 1;
             padding: 0;
         }
+        flex-item:has([component="ve-script-manager-blockly"].disabled) {
+            display: none;
+        }
+        flex-item:has([component="ve-script-manager-blockly"].disabled) + flex-resizer {
+            display: none;
+        }
     }
     #scene-monaco {
         height: 100%;
