@@ -433,13 +433,19 @@ ve.ScriptManager = class extends ve.Component {
 						console_command: new ve.Text("", {
 							attributes: { placeholder: loc("ve.registry.localisation.ScriptManager_enter_console_command") },
 							name: " ",
-							style: { display: "inline" }
+							style: { 
+								display: "inline",
+								'input[type="text"]': {
+									maxWidth: "30rem"
+								}
+							}
 						}),
 						send_command: new ve.Button(() => {
 							//Declare local instance variables
 							let command_value = this.local_console.actions_bar.console_command.v;
 							
 							if (command_value.length > 0) try {
+								this.console_el.print(command_value, "user-command");
 								eval(command_value);
 							} catch (e) {
 								this.console_el.print(e, "error");
