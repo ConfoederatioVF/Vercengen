@@ -264,7 +264,6 @@ ve.FileExplorer = class extends ve.Component {
 			this.options.actions_components_obj : {};
 		let previous_folder_path = path.join(this.value, "..");
 		
-		console.log(this.options.actions_components_obj);
 		hierarchy_obj.file_path = new ve.HierarchyDatatype({
 			information: new ve.HTML(() => this.v)
 		}, { disabled: true });

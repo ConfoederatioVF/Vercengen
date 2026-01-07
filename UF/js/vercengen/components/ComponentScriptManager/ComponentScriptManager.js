@@ -60,6 +60,7 @@ ve.ScriptManager = class extends ve.Component {
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
 		if (options.name === undefined) options.name = "ScriptManager";
+		if (options.style === undefined) options.style = {};
 		
 		//Declare local instance variables
 		this._monaco_themes = {
@@ -123,11 +124,18 @@ ve.ScriptManager = class extends ve.Component {
 		this._settings = {
 			is_vercengen_script_manager_settings: true,
 			
+			//Project
 			project_folder: "none",
-			clear_blockly_workspace_on_error: true,
-			monaco_theme: "nord",
+			
+			//Settings
+			index_documentation: true,
+			log_large_objects_in_console: false,
+			manual_synchronisation: false,
+			scene_height: 0,
+			
+			//View
 			display_load_errors: false,
-			hide_blockly_workspace_on_error: false,
+			monaco_theme: "nord",
 			theme: "theme-default",
 			view_file_explorer: true
 		};
@@ -246,7 +254,7 @@ ve.ScriptManager = class extends ve.Component {
 					//ScriptManager .name
 					`<span id = "name">${this.name}</span>`,
 					//Project Header
-					`${(!options.do_not_display_project_name) ? `<div id = "project-name"><b>${(this._settings.project_folder !== "none") ? this._settings.project_folder : "No Project"}</b></div>` : ""}`,
+					`${(!options.do_not_display_project_name) ? `<div id = "project-name"><b>${(this._settings.project_folder !== "none") ? this._settings.project_folder : loc("ve.registry.localisation.ScriptManager_no_project")}</b></div>` : ""}`,
 					//File Header
 					`${(!options.do_not_display_file_name) ? `- <span id = "file-name">${(this._file_path) ? this._file_path : loc("ve.registry.localisation.ScriptManager_none")}</span>` : ""}`
 				].join("");
@@ -255,9 +263,30 @@ ve.ScriptManager = class extends ve.Component {
 			settings: new ve.Button(() => {
 				if (this.settings_window) this.settings_window.close();
 				this.settings_window = new ve.Window({
-					hide_blockly_workspace_on_error: new ve.Toggle(this._settings.hide_blockly_workspace_on_error, {
-						name: loc("ve.registry.localisation.ScriptManager_hide_show_blockly"),
-						onuserchange: (v) => this._settings.hide_blockly_workspace_on_error = v
+					index_documentation: new ve.Toggle(this._settings.index_documentation, {
+						name: "Index documentation",
+						onuserchange: (v) => this._settings.index_documentation = v
+					}),
+					log_large_objects_in_console: new ve.Toggle(this._settings.log_large_objects_in_console, {
+						name: "Log large objects in console",
+						onuserchange: (v) => this._settings.log_large_objects_in_console = v
+					}),
+					manual_synchronisation: new ve.Toggle(this._settings.manual_synchronisation, {
+						name: "Manual synchronisation",
+						onuserchange: (v) => this._settings.manual_synchronisation = v
+					}),
+					scene_height: new ve.Number(Math.returnSafeNumber(this._settings.scene_height, 0), {
+						name: "Scene height (px)",
+						min: 0,
+						onuserchange: (v) => {
+							if (v === 0) {
+								delete this.options.style.height;
+							} else {
+								this.options.style.height = `${v}px`;
+							}
+							this._settings.scene_height = v;
+							this._drawHeight();
+						}
 					}),
 					actions_bar: new ve.RawInterface({
 						load_settings: new ve.File(undefined, {
@@ -358,7 +387,8 @@ ve.ScriptManager = class extends ve.Component {
 						onuserchange: (v) => this.loadSettings({ view_file_explorer: v })
 					})
 				}, {
-					id: "script_manager_view"
+					id: "script_manager_view",
+					width: "16rem"
 				});
 			}, { name: loc("ve.registry.localisation.ScriptManager_view"), x: 0, y: 2 }),
 			run: new ve.Button(() => {
@@ -435,22 +465,7 @@ ve.ScriptManager = class extends ve.Component {
 		
 		//Initialisation loop for ScriptManager to ensure all requisite elements are loaded first
 		this.scriptmanager_initialisation_loop = setInterval(() => {
-			if (!document.body.contains(this.scene_blockly_el.querySelector("svg"))) return;
-			let svg_el = this.scene_blockly_el.querySelector("svg");
-			let svg_rect = svg_el.getBoundingClientRect();
-			
-			if (!this.options?.style?.height) {
-				this.scene_interface.element.style.height = `${svg_rect.height}px`;
-				this.leftbar_file_explorer.element.style.height = `${svg_rect.height}px`;
-			} else {
-				setTimeout(() => {
-					this.scene_blockly.max_height = this.options.style.height;
-					svg_el.style.maxHeight = this.options.style.height;
-				}, 100)
-				this.scene_interface.element.style.height = this.options.style.height;
-				this.leftbar_file_explorer.element.style.height = this.options.style.height;
-			}
-			
+			this._drawHeight();
 			clearInterval(this.scriptmanager_initialisation_loop);
 		}, 100);
 		
@@ -509,6 +524,10 @@ ve.ScriptManager = class extends ve.Component {
 			} catch (e) {
 				clearInterval(set_value_loop);
 				
+				//Log error to console if this._settings.display_load_errors is true
+				if (this._settings.display_load_errors)
+					this.console_el.print(`On parsing file: ${e.toString()}. The loaded file is not ES6-compatible.`, "error");
+				
 				//Hide Blockly workspace, then clear it
 				this.scene_blockly.hide();
 				this.scene_blockly.enable();
@@ -523,6 +542,27 @@ ve.ScriptManager = class extends ve.Component {
 				this.fireFromBinding();
 			}
 		});
+	}
+	
+	_drawHeight () {
+		if (!document.body.contains(this.scene_blockly_el.querySelector("svg"))) return; //Internal guard clause if svg is not currently defined
+		
+		//Declare local instance variables
+		let svg_el = this.scene_blockly_el.querySelector("svg");
+		let svg_rect = svg_el.getBoundingClientRect();
+		
+		//Set new height
+		if (!this.options?.style?.height) {
+			this.scene_interface.element.style.height = `${svg_rect.height}px`;
+			this.leftbar_file_explorer.element.style.height = `${svg_rect.height}px`;
+		} else {
+			setTimeout(() => {
+				this.scene_blockly.max_height = this.options.style.height;
+				svg_el.style.maxHeight = this.options.style.height;
+			}, 100)
+			this.scene_interface.element.style.height = this.options.style.height;
+			this.leftbar_file_explorer.element.style.height = this.options.style.height;
+		}
 	}
 	
 	/**

@@ -12,8 +12,10 @@
  * - `arg1_options`: {@link Object}
  *   - `.anchor="left"/"right"` - Either 'left'/'right'. Position defaults to the side that has the most space.
  *   - `.button_options`: {@link ve.Button|ve.Button.options}
+ *   - `.height`: {@link string}
  *   - `.id`: {@link string}
  *   - `.mode="static_ui"` - Either 'static_ui'/'static_window'/'window'.
+ *   - `.width`: {@link string}
  *   - `.x=HTML.mouse_x`: {@link number}
  *   - `.y=HTML.mouse_y`: {@link number}
  *   
@@ -55,8 +57,10 @@ ve.ContextMenu = class extends ve.Feature {
 		this.options = options;
 		this.windows = [];
 		
-		this.addContextMenu(this.components_obj, { 
-			id: options.id
+		this.addContextMenu(this.components_obj, {
+			id: options.id,
+			height: options.height,
+			width: options.width
 		});
 	}
 	

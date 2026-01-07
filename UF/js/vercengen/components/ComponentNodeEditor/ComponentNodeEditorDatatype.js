@@ -452,7 +452,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 					let node_editor_registry = ve.registry.settings.NodeEditor;
 					let settings_obj = {};
 						let project_folder = this.options.node_editor.options.project_folder;
-							if (project_folder) settings_obj.autosave_folder = project_folder;
+							if (project_folder) settings_obj.project_folder = project_folder;
 					
 					if (node_editor_registry.script_window) node_editor_registry.script_window.close();
 					node_editor_registry.script_window = new ve.Window(new ve.ScriptManager(local_script_value, {

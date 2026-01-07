@@ -109,7 +109,6 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 								blockly_obj.v = this.editor.getValue();
 							}
 							
-							this.autosave();
 							this.fireToBinding();
 						}
 					} catch (e) { console.warn(e); }
@@ -149,9 +148,6 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 		//Convert from parameters
 		let value = (arg0_value === null || arg0_value === undefined) ? "" : String(arg0_value);
 		
-		//Set monaco value
-		this.autosave();
-		
 		if (!this.editor) {
 			this._pending_value = value;
 		} else {
@@ -162,23 +158,6 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 		}
 		
 		this.fireFromBinding();
-	}
-	
-	/**
-	 * Automatically saves the current Monaco component value.
-	 * - Method of: {@link ve.ScriptManagerMonaco}
-	 *
-	 * @alias autosave
-	 * @memberof ve.Component.ve.ScriptManagerMonaco
-	 */
-	autosave () {
-		if (this.options.script_manager) {
-			let script_manager = this.options.script_manager;
-			
-			if (script_manager._settings.project_folder && script_manager._settings.project_folder !== "none")
-				if (script_manager._file_path && File.containsPath(script_manager._file_path, script_manager._settings.project_folder))
-					fs.writeFileSync(script_manager._file_path, this.v);
-		}
 	}
 	
 	/**

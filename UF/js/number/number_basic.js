@@ -10,7 +10,7 @@
 	
 	/**
 	 * Alphabetises a given number into a string (a0-j9).
-	 * @memberof Math
+	 * @alias Math.alphabetise
 	 * 
 	 * @param {number} arg0_string
 	 * 
@@ -38,7 +38,7 @@
 	
 	/**
 	 * Numerises a given string back into a number (a0-j9).
-	 * @memberof Math
+	 * @alias Math.numerise
 	 * 
 	 * @param {string} arg0_string
 	 * 
@@ -66,7 +66,7 @@
 	
 	/**
 	 * Generates a random number between [arg0_min, arg1_max].
-	 * @memberof Math
+	 * @alias Math.randomNumber
 	 *
 	 * @param {number} arg0_min
 	 * @param {number} arg1_max
@@ -92,7 +92,7 @@
 	
 	/**
 	 * Returns a safe number from a given variable.
-	 * @memberof Math
+	 * @alias Math.returnSafeNumber
 	 * 
 	 * @param {any} arg0_number
 	 * @param {number} [arg1_default=0]
@@ -109,7 +109,7 @@
 	
 	/**
 	 * Rounds a number to a specific number of places.
-	 * @memberof Math
+	 * @alias Math.roundNumber
 	 * 
 	 * @param arg0_number
 	 * @param arg1_places

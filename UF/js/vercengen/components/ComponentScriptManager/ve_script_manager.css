@@ -34,6 +34,7 @@
 .blocklyToolboxDiv {
     background-color: var(--bg-primary-colour);
     color: var(--body-colour);
+    padding-bottom: var(--cell-padding);
     transform: translateY(calc(var(--padding)*-1));
     
     .blocklyTreeLabel {
@@ -103,6 +104,9 @@
     position: relative;
     width: 100%; /* -- Updated to 100% to fill the flex item -- */
     
+    .blocklyToolboxDiv {
+        padding-bottom: var(--padding);
+    }
     svg {
         .blocklyTrash, .blocklyZoom {
             filter: brightness(100);

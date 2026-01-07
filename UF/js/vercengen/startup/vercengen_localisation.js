@@ -73,6 +73,7 @@ ve.registry.localisation = {
 	ScriptManager_hide_blockly: "Hide Blockly",
 	ScriptManager_hide_show_blockly: "Hide/show Blockly workspace on error",
 	ScriptManager_load_settings: "Load Settings",
+	ScriptManager_no_project: "No Project",
 	ScriptManager_none: "None",
 	ScriptManager_note: "Note:",
 	ScriptManager_keybinds: "Keybinds",
