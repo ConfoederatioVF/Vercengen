@@ -65,7 +65,17 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					this.openEditSeriesHierarchy();
 				}, { name: "Series",
 					style: topbar_button_style }),
-				script_button: new ve.Button(() => {}, { name: "ScriptManager", 
+				script_button: new ve.Button(() => {
+					if (this.script_manager_window) this.script_manager_window.close();
+					this.script_manager_window = veWindow({
+						script_manager: new ve.ScriptManager()
+					}, {
+						name: "ScriptManager (Datavis Suite)",
+						
+						can_rename: false,
+						width: "80dvw"
+					})
+				}, { name: "ScriptManager", 
 					style: topbar_button_style }),
 				view_button: new ve.Button(() => {}, { name: "View", 
 					style: topbar_button_style })

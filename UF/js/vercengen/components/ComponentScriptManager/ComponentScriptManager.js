@@ -15,10 +15,12 @@
  *   - `.folder_path=process.cwd()`: {@link string}
  *   - `.save_extension=[".*"]`: {@link Array}<{@link string}>
  * 	 - `.settings`: {@link Object}
- * 	   - `.clear_blockly_workspace_on_error=true`: {@link boolean}
- * 	   - `.monaco_theme="nord"`: {@link string}
  * 	   - `.display_load_errors=false`: {@link boolean}
- * 	   - `.hide_blockly_workspace_on_error`: {@link boolean}
+ * 	   - `.monaco_theme="nord"`: {@link string}
+ * 	   - `.index_documentation=true`: {@link boolean}
+ * 	   - `.log_large_objects_in_console=false`: {@link boolean}
+ * 	   - `.manual_synchronisation`: {@link true}
+ * 	   - `.scene_height=0`: {@link number} - The scene height of the main workspace in px.
  * 	   - `.theme="theme-default"`: {@link string} - Either 'theme-default'/'theme-light'
  * 	   - `.project_folder="none"`: {@link string}
  * 	   - `.view_file_explorer=true`: {@link boolean}
@@ -130,7 +132,7 @@ ve.ScriptManager = class extends ve.Component {
 			//Settings
 			index_documentation: true,
 			log_large_objects_in_console: false,
-			manual_synchronisation: false,
+			manual_synchronisation: true,
 			scene_height: 0,
 			
 			//View
@@ -164,8 +166,26 @@ ve.ScriptManager = class extends ve.Component {
 			
 			//Declare local instance variables
 			let local_msg_el = document.createElement("div");
-			local_msg_el.classList.add(type);
-			local_msg_el.innerText = message;
+				local_msg_el.classList.add(type);
+				if (type === "error" && typeof message === "object" && message?.stack)
+					message = message.stack;
+					
+				if (typeof message === "string") {
+					local_msg_el.innerText = message;
+				} else {
+					let local_object_inspector = new ve.ObjectInspector(message);
+					
+					if (
+						local_object_inspector.element.innerHTML.length > 10000 && 
+						this._settings.log_large_objects_in_console === false
+					) {
+						veConfirm(`Object to be logged exceeds 10k characters. Are you sure you want to view it?`, {
+							special_function: () => local_object_inspector.bind(local_msg_el)
+						});
+					} else {
+						local_object_inspector.bind(local_msg_el);
+					}
+				}
 			this.console_el.appendChild(local_msg_el);
 		};
 		this.element = document.createElement("div");
@@ -244,7 +264,7 @@ ve.ScriptManager = class extends ve.Component {
 		this.topbar_el = document.createElement("div");
 		this.topbar_el.id = "topbar";
 		
-		this.console_html = new ve.HTML(() => this.console_el, {
+		this.console_html = new ve.HTML(this.console_el, {
 			attributes: { "class": "ve-script-manager-console" },
 			x: 0, y: 0
 		});
@@ -268,7 +288,7 @@ ve.ScriptManager = class extends ve.Component {
 						onuserchange: (v) => this._settings.index_documentation = v
 					}),
 					log_large_objects_in_console: new ve.Toggle(this._settings.log_large_objects_in_console, {
-						name: "Log large objects in console",
+						name: "Log large objects in console without confirmation",
 						onuserchange: (v) => this._settings.log_large_objects_in_console = v
 					}),
 					manual_synchronisation: new ve.Toggle(this._settings.manual_synchronisation, {
