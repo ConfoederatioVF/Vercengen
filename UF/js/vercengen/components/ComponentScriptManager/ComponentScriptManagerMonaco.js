@@ -50,7 +50,7 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 			if (!window.monaco_require) return; // Wait for loader
 			
 			window.monaco_require(["vs/editor/editor.main"], () => {
-				// 1. Create Editor
+				//1. Create Editor
 				this.editor = monaco.editor.create(this.element, {
 					value: this._pending_value,
 					language: "javascript",
@@ -64,13 +64,13 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 					...this.options.monaco_options
 				});
 				
-				// 2. Load and Set the correct theme
+				//2. Load and Set the correct theme
 				this.setTheme(this._theme);
 				
-				// 3. Fix paste event for Electron
+				//3. Fix paste event for Electron
 				this.editor.addAction({
 					id: "electron-native-paste",
-					label: "Paste",
+					label: "Electron Paste",
 					keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyV],
 					contextMenuGroupId: "9_cutcopypaste",
 					run: (ed) => {

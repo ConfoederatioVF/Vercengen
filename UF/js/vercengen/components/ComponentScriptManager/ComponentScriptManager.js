@@ -246,6 +246,22 @@ ve.ScriptManager = class extends ve.Component {
 			script_manager: this,
 			theme: this._settings.monaco_theme
 		});
+			this.scene_monaco_initialisation_loop = setInterval(() => {
+				try {
+					this.scene_monaco.editor.addAction({
+						id: "open-project-find-and-replace",
+						label: "Open Project Find and Replace",
+						keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyF],
+						contextMenuGroupId: "1_modification",
+						run: (ed) => {
+							this._openFindAndReplace.call(this);
+						}
+					});
+					
+					clearInterval(this.scene_monaco_initialisation_loop);
+					delete this.scene_monaco_initialisation_loop;
+				} catch (e) {}
+			}, 100);
 		this.scene_monaco_el = this.scene_monaco.element;
 			this.scene_monaco_el.id = "scene-monaco";
 		
@@ -368,6 +384,15 @@ ve.ScriptManager = class extends ve.Component {
 				let local_context_menu = new ve.ContextMenu({
 					view_header: new ve.HTML(`<b>${loc("ve.registry.localisation.ScriptManager_view_settings")}</b><br><br>`, { x: 0, y: 0 }),
 					
+					monaco_theme: new ve.Select({
+						...themes_obj
+					}, {
+						name: loc("ve.registry.localisation.ScriptManager_monaco_theme"),
+						onchange: (v) => {
+							this.loadSettings({ monaco_theme: v });
+						},
+						x: 0, y: 1
+					}),
 					editor_theme: new ve.Select({
 						"theme-default": {
 							name: loc("ve.registry.localisation.ScriptManager_theme_default"),
@@ -386,16 +411,12 @@ ve.ScriptManager = class extends ve.Component {
 							alignItems: "center",
 							display: "flex"
 						},
-						x: 0, y: 1
-					}),
-					monaco_theme: new ve.Select({
-						...themes_obj
-					}, {
-						name: loc("ve.registry.localisation.ScriptManager_monaco_theme"),
-						onchange: (v) => {
-							this.loadSettings({ monaco_theme: v });
-						},
 						x: 0, y: 2
+					}),
+					open_project_find_and_replace: new ve.Button(() => {
+						this._openFindAndReplace.call(this);
+					}, {
+						name: "Open Project Find & Replace"
 					}),
 					
 					display_load_errors: new ve.Toggle(this._settings.display_load_errors, {
