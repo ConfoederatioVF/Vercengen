@@ -13,6 +13,21 @@ ve.ScriptManager.FindAndReplace = class {
 		];
 	}
 	
+	draw (arg0_element, arg1_results) {
+		//Convert from parameters
+		let element = (arg0_element) ? arg0_element : document.createElement("div");
+		let results = (arg1_results) ? arg1_results : [];
+		
+		//Iterate over all results and append them to the given element
+		for (let i = 0; i < results.length; i++) {
+			let local_entry_el = document.createElement("div");
+				local_entry_el.className = "match-entry";
+				local_entry_el.innerHTML = `${results[i].file}:${results[i].line}`;
+			
+			element.appendChild(local_entry_el);
+		}
+	}
+	
 	execute (arg0_root_path, arg1_search_string, arg2_replace_string, arg3_options) {
 		//Convert from parameters
 		let root_path = arg0_root_path;
@@ -114,11 +129,68 @@ ve.ScriptManager.prototype._openFindAndReplace = function () {
 	//Declare local instance variables
 	let current_folder = (this._settings.project_folder !== "none") ? 
 		this._settings.project_folder : this.leftbar_file_explorer.v;
+	if (this._find_and_replace_obj) this._find_and_replace_obj = new ve.ScriptManager.FindAndReplace();
+	let matches_el = document.createElement("div");
+		matches_el.id = "matches";
 	
 	//Open this.find_and_replace_window
 	if (this.find_and_replace_window) this.find_and_replace_window.close();
 	this.find_and_replace_window = new ve.Window({
+		find_text: new ve.Text((this._settings.far_find_text) ? this._settings.far_find_text : "", { //[WIP] - Add Find Text functionality
+			name: "Find:",
+			width: 99,
+			x: 0,
+			y: 0,
+			
+			onuserchange: (v) => {
+				this._settings.far_find_text = v;
+			}
+		}),
+		replace_text: new ve.Text((this._settings.far_replace_text) ? this._settings.far_replace_text : "", {
+			name: "Replace:",
+			width: 99,
+			x: 0,
+			y: 1,
+			
+			onuserchange: (v) => {
+				this._settings.far_replace_text = v;
+			}
+		}),
+		is_case_sensitive: new ve.Toggle(this._settings.far_is_case_sensitive, {
+			name: "Is Case Sensitive",
+			onuserchange: (v) => {
+				this._settings.far_is_case_sensitive = v;
+			},
+			x: 0,
+			y: 2
+		}),
+		is_regex: new ve.Toggle(this._settings.far_is_regex, {
+			name: "Is Regex",
+			onuserchange: (v) => {
+				this._settings.far_is_regex = v;
+			},
+			x: 1,
+			y: 2
+		}),
 		
+		matches: new ve.HTML(matches_el, {
+			width: 99,
+			y: 3
+		}),
+		replace: new ve.Button(() => { //[WIP] - Add Replace functionality
+			
+		}, {
+			name: "Replace",
+			x: 0,
+			y: 4
+		}),
+		replace_all: new ve.Button(() => { //[WIP] - Add Replace All functionality
+			
+		}, {
+			name: "Replace All",
+			x: 1,
+			y: 4
+		})
 	}, {
 		name: "Find and Replace",
 		width: "30rem",
