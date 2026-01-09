@@ -134,6 +134,13 @@ text.blocklyText {
 
 /* -- Find and Replace -- */
 #ve-script-manager-find-and-replace {
+    #matches-details {
+        max-height: 50dvh;
+        overflow-y: auto;
+        scrollbar-color: white transparent;
+        scrollbar-width: thin;
+    }
+    
     .match-entry {
         margin-left: var(--padding);
     }
