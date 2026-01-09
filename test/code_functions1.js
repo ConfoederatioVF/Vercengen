@@ -17,13 +17,13 @@
 //}
 
 // This works for now as anonymous function
-var f2 = (a,b,c) => {
+var f1 = (a,b,c) => {
   var x = a;
   var y = b;
   return x+y+c;
 }
 
 var args = [1,2,3];
-f2(...args);
+f1(...args);
 
-f2({a:2, b:3});
+f1({a:2, b:3});

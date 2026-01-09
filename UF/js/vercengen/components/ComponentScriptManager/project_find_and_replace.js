@@ -61,7 +61,7 @@ ve.ScriptManager.FindAndReplace = class {
 		//Initialise options
 		options.flags = (options.flags) ? options.flags : ["g"];
 		if (options.is_case_sensitive === undefined) options.is_case_sensitive = true;
-		if (options.is_regex === undefined) options.is_regex = true;
+		if (options.is_regex === undefined) options.is_regex = false;
 		
 		//Regex 'i' flag is for case-insensitivity; only add if is_case_sensitive is false
 		if (!options.is_case_sensitive) options.flags.push("i");
