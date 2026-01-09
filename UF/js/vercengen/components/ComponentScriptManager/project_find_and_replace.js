@@ -79,8 +79,11 @@ ve.ScriptManager.FindAndReplace = class {
 				if (this.script_manager_instance) {
 					let monaco_obj = this.script_manager_instance.scene_monaco.editor;
 					
-					if (!this._saved_file_content)
+					if (!this._saved_file_content) {
 						this._saved_file_content = this.script_manager_instance.v;
+						this._saved_file_position = monaco_obj.getPosition();
+						this._saved_file_selection = monaco_obj.getSelection();
+					}
 					
 					//Scroll to position and move caret to it
 					this.script_manager_instance.v = fs.readFileSync(new_results[i].file, "utf8");
@@ -117,7 +120,8 @@ ve.ScriptManager.FindAndReplace = class {
 			onfinish: () => {}
 		};
 		
-		//Handle Cancellation
+		//Handle cancellation
+		this._restoreContent();
 		if (this.is_searching) {
 			this.cancel_search = true;
 			//Wait a tick for the previous loop to exit
@@ -213,7 +217,7 @@ ve.ScriptManager.FindAndReplace = class {
 			
 			//Iterate lines
 			lines.forEach((line_content, index) => {
-				//Reset lastIndex to ensures we find the first match on the line
+				//Reset lastIndex to ensure we find the first match on the line
 				pattern.lastIndex = 0;
 				let local_match = pattern.exec(line_content);
 				
@@ -283,11 +287,33 @@ ve.ScriptManager.FindAndReplace = class {
 				lines[line_number - 1] = target_line.replace(pattern, replace_string);
 				fs.writeFileSync(file_path, lines.join("\n"), "utf8");
 				
+				//Return statement
 				return true;
 			}
 		} catch (e) { console.error(e); }
 		
+		//Return statement
 		return false;
+	}
+	
+	_restoreContent () {
+		//Declare local instance variables
+		let monaco_obj = this.script_manager_instance.scene_monaco.editor;
+		
+		//Restore selection after loading file
+		if (this._saved_file_content) {
+			this.script_manager_instance.v = this._saved_file_content;
+			setTimeout(() => {
+				if (this._saved_file_position)
+					monaco_obj.setPosition(this._saved_file_position);
+				if (!this._saved_file_selection.isEmpty())
+					monaco_obj.setSelection(this._saved_file_selection);
+				
+				delete this._saved_file_content;
+				delete this._saved_file_position;
+				delete this._saved_file_selection;
+			});
+		}
 	}
 };
 
@@ -466,6 +492,12 @@ ve.ScriptManager.prototype._openFindAndReplace = function () {
 	}, {
 		name: "Find and Replace",
 		width: "30rem",
-		can_rename: false
+		can_rename: false,
+		
+		onuserchange: (v) => {
+			if (v.close) {
+				this._find_and_replace_obj._restoreContent();
+			}
+		}
 	});
 };
