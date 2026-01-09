@@ -1,4 +1,4 @@
 export var a = 10;
-export var f1 = function(){
+export var f2 = function(){
   var t1 = 1;
 }

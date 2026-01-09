@@ -131,3 +131,16 @@
 text.blocklyText {
     font-family: var(--body-font-family);
 }
+
+/* -- Find and Replace -- */
+#ve-script-manager-find-and-replace {
+    .match-entry {
+        margin-left: var(--padding);
+    }
+    .match-entry:not(.selected):hover {
+        cursor: pointer;
+    }
+    .match-entry.selected {
+        background-color: var(--accent-primary-colour);
+    }
+}

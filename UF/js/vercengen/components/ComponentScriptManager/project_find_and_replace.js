@@ -11,6 +11,8 @@ ve.ScriptManager.FindAndReplace = class {
 			".git",
 			"node_modules"
 		];
+		this.matches = [];
+		this.selected_index = -1;
 	}
 	
 	draw (arg0_element, arg1_results) {
@@ -18,13 +20,34 @@ ve.ScriptManager.FindAndReplace = class {
 		let element = (arg0_element) ? arg0_element : document.createElement("div");
 		let results = (arg1_results) ? arg1_results : [];
 		
+		//Declare local instance variables
+		let is_open = false;
+		let old_details_el = element.querySelector(`#matches-details`);
+			if (old_details_el && typeof old_details_el.getAttribute("open") === "string")
+				is_open = true;
+		
+		//Populate element
+		element.innerHTML = `<details id = "matches-details"${(!is_open) ? is_open : " open"}>
+			<summary id = "matches-label"></summary>
+		</details>`;
+		
+		let matches_container_el = element.querySelector(`#matches-details`);
+		let matches_label_el = element.querySelector(`#matches-label`);
+			matches_label_el.innerHTML = `Occurrences (${String.formatNumber(results.length)})`;
+		
 		//Iterate over all results and append them to the given element
 		for (let i = 0; i < results.length; i++) {
 			let local_entry_el = document.createElement("div");
-				local_entry_el.className = "match-entry";
-				local_entry_el.innerHTML = `${results[i].file}:${results[i].line}`;
+			local_entry_el.className = (this.selected_index === i) ? "match-entry selected" : "match-entry";
+			local_entry_el.innerHTML = `${results[i].file}:${results[i].line}`;
 			
-			element.appendChild(local_entry_el);
+			//Add click event for manual selection
+			local_entry_el.onclick = () => {
+				this.selected_index = i;
+				this.draw(element, results);
+			};
+			
+			matches_container_el.appendChild(local_entry_el);
 		}
 	}
 	
@@ -40,7 +63,8 @@ ve.ScriptManager.FindAndReplace = class {
 		if (options.is_case_sensitive === undefined) options.is_case_sensitive = true;
 		if (options.is_regex === undefined) options.is_regex = true;
 		
-		if (options.is_case_sensitive) options.flags.push("i");
+		//Regex 'i' flag is for case-insensitivity; only add if is_case_sensitive is false
+		if (!options.is_case_sensitive) options.flags.push("i");
 		
 		//Declare local instance variables
 		let pattern = (options.is_regex) ?
@@ -96,7 +120,7 @@ ve.ScriptManager.FindAndReplace = class {
 			
 			//Iterate over all lines
 			lines.forEach((line_content, index) => {
-				pattern.last_index = 0; //Reset regex state for global patterns
+				pattern.lastIndex = 0; //Javascript native property is camelCase
 				
 				if (pattern.test(line_content)) {
 					match_found_in_file = true;
@@ -108,7 +132,7 @@ ve.ScriptManager.FindAndReplace = class {
 				}
 			});
 			
-			//If a replacement string is provided and matches were found, update the file
+			//If a replacement string is provided (Replace All) and matches were found, update the file
 			if (replace_string !== undefined && match_found_in_file) {
 				let new_content = content.replace(pattern, replace_string);
 				fs.writeFileSync(file_path, new_content, "utf8");
@@ -117,80 +141,153 @@ ve.ScriptManager.FindAndReplace = class {
 			console.error(`Could not process file ${file_path}: ${e.message}`);
 		}
 	}
+	
+	_replaceInFile (arg0_file_path, arg1_pattern, arg2_line_number, arg3_replace_string) {
+		//Convert from parameters
+		let file_path = arg0_file_path;
+		let pattern = arg1_pattern;
+		let line_number = arg2_line_number;
+		let replace_string = arg3_replace_string;
+		
+		try {
+			//Declare local instance variables
+			let content = fs.readFileSync(file_path, "utf8");
+			let lines = content.split(/\r?\n/);
+			
+			//Lines are 1-indexed for users, 0-indexed for arrays
+			let target_line = lines[line_number - 1];
+			pattern.lastIndex = 0;
+			
+			if (pattern.test(target_line)) {
+				//FIX: Reset lastIndex again because .test() advanced it
+				pattern.lastIndex = 0;
+				
+				lines[line_number - 1] = target_line.replace(pattern, replace_string);
+				fs.writeFileSync(file_path, lines.join("\n"), "utf8");
+				
+				return true;
+			}
+		} catch (e) { console.error(e); }
+		
+		//Return statement
+		return false;
+	}
 };
 
 /**
- * Opens a global find and replace prompt across the current set project folder. If no project folder is set, it looks in the current leftbar file explorer.
+ * Opens a global find and replace prompt across the current set project folder.
  * - Method of: {@link ve.ScriptManager}
- * 
+ *
  * @private
  */
 ve.ScriptManager.prototype._openFindAndReplace = function () {
 	//Declare local instance variables
-	let current_folder = (this._settings.project_folder !== "none") ? 
+	let current_folder = (this._settings.project_folder !== "none") ?
 		this._settings.project_folder : this.leftbar_file_explorer.v;
-	if (this._find_and_replace_obj) this._find_and_replace_obj = new ve.ScriptManager.FindAndReplace();
+	if (!this._find_and_replace_obj) this._find_and_replace_obj = new ve.ScriptManager.FindAndReplace();
 	let matches_el = document.createElement("div");
-		matches_el.id = "matches";
+		matches_el.id = "ve-script-manager-find-and-replace";
+	
+	//Internal helper to get current RegExp pattern based on UI settings
+	let local_get_pattern = () => {
+		let local_flags = ["g"];
+		if (!this._settings.far_is_case_sensitive) local_flags.push("i");
+		
+		return (this._settings.far_is_regex) ?
+			new RegExp(this._settings.far_find_text, local_flags.join("")) :
+			new RegExp(this._settings.far_find_text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), local_flags.join(""));
+	};
 	
 	//Open this.find_and_replace_window
 	if (this.find_and_replace_window) this.find_and_replace_window.close();
 	this.find_and_replace_window = new ve.Window({
-		find_text: new ve.Text((this._settings.far_find_text) ? this._settings.far_find_text : "", { //[WIP] - Add Find Text functionality
+		find_text: new ve.Text((this._settings.far_find_text) ? this._settings.far_find_text : "", {
 			name: "Find:",
-			width: 99,
-			x: 0,
-			y: 0,
-			
 			onuserchange: (v) => {
 				this._settings.far_find_text = v;
 			}
 		}),
 		replace_text: new ve.Text((this._settings.far_replace_text) ? this._settings.far_replace_text : "", {
 			name: "Replace:",
-			width: 99,
-			x: 0,
-			y: 1,
-			
 			onuserchange: (v) => {
 				this._settings.far_replace_text = v;
 			}
 		}),
-		is_case_sensitive: new ve.Toggle(this._settings.far_is_case_sensitive, {
-			name: "Is Case Sensitive",
-			onuserchange: (v) => {
-				this._settings.far_is_case_sensitive = v;
-			},
-			x: 0,
-			y: 2
+		toggles: new ve.RawInterface({
+			is_case_sensitive: new ve.Toggle(this._settings.far_is_case_sensitive, {
+				name: "Is Case Sensitive",
+				onuserchange: (v) => {
+					this._settings.far_is_case_sensitive = v;
+				}
+			}),
+			is_regex: new ve.Toggle(this._settings.far_is_regex, {
+				name: "Is Regex",
+				onuserchange: (v) => {
+					this._settings.far_is_regex = v;
+				}
+			}),
+		}, {
+			style: { display: "flex" }
 		}),
-		is_regex: new ve.Toggle(this._settings.far_is_regex, {
-			name: "Is Regex",
-			onuserchange: (v) => {
-				this._settings.far_is_regex = v;
-			},
-			x: 1,
-			y: 2
+		matches: new ve.HTML(matches_el, {
 		}),
 		
-		matches: new ve.HTML(matches_el, {
-			width: 99,
-			y: 3
-		}),
-		replace: new ve.Button(() => { //[WIP] - Add Replace functionality
-			
+		actions_bar: new ve.RawInterface({
+			find: new ve.Button(() => {
+				if (this._settings.far_find_text) {
+					let local_far = this._find_and_replace_obj;
+					
+					local_far.matches = local_far.execute(current_folder, this._settings.far_find_text, undefined, {
+						is_case_sensitive: this._settings.far_is_case_sensitive,
+						is_regex: this._settings.far_is_regex
+					});
+					local_far.selected_index = (local_far.matches.length > 0) ? 0 : -1;
+					local_far.draw(matches_el, local_far.matches);
+				}
+			}, {
+				name: "Find"
+			}),
+			replace: new ve.Button(() => {
+				let local_far = this._find_and_replace_obj;
+				
+				if (local_far.selected_index !== -1 && local_far.matches[local_far.selected_index]) {
+					let local_match = local_far.matches[local_far.selected_index];
+					let local_pattern = local_get_pattern();
+					
+					//Perform single line replacement
+					local_far._replaceInFile(local_match.file, local_pattern, local_match.line, this._settings.far_replace_text);
+					
+					//Remove replaced entry and advance selection
+					local_far.matches.splice(local_far.selected_index, 1);
+					if (local_far.selected_index >= local_far.matches.length) {
+						local_far.selected_index = (local_far.matches.length > 0) ? 0 : -1;
+					}
+					
+					local_far.draw(matches_el, local_far.matches);
+				}
+			}, {
+				name: "Replace"
+			}),
+			replace_all: new ve.Button(() => {
+				if (this._settings.far_find_text) {
+					let local_far = this._find_and_replace_obj;
+					
+					local_far.execute(current_folder, this._settings.far_find_text, this._settings.far_replace_text, {
+						is_case_sensitive: this._settings.far_is_case_sensitive,
+						is_regex: this._settings.far_is_regex
+					});
+					
+					//Reset state and clear UI
+					local_far.matches = [];
+					local_far.selected_index = -1;
+					local_far.draw(matches_el, []);
+				}
+			}, {
+				name: "Replace All"
+			})
 		}, {
-			name: "Replace",
-			x: 0,
-			y: 4
+			style: { display: "flex" }
 		}),
-		replace_all: new ve.Button(() => { //[WIP] - Add Replace All functionality
-			
-		}, {
-			name: "Replace All",
-			x: 1,
-			y: 4
-		})
 	}, {
 		name: "Find and Replace",
 		width: "30rem",
