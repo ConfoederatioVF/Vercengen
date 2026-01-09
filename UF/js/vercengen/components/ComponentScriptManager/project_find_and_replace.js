@@ -3,6 +3,9 @@ ve.ScriptManager.FindAndReplace = class {
 		//Convert from parameters
 		let options = (arg0_options) ? arg0_options : {};
 		
+		//Initialise options
+		this.options = options;
+		
 		//Declare local instance variables
 		this.ignore_folders = (options.ignore_folders) ? options.ignore_folders : [
 			"build",
@@ -71,6 +74,27 @@ ve.ScriptManager.FindAndReplace = class {
 				
 				this.selected_index = global_index;
 				local_entry_el.classList.add("selected");
+				
+				//Save content if possible
+				if (this.script_manager_instance) {
+					let monaco_obj = this.script_manager_instance.scene_monaco.editor;
+					
+					if (!this._saved_file_content)
+						this._saved_file_content = this.script_manager_instance.v;
+					
+					//Scroll to position and move caret to it
+					this.script_manager_instance.v = fs.readFileSync(new_results[i].file, "utf8");
+					setTimeout(() => {
+						monaco_obj.revealLine(new_results[i].line);
+						monaco_obj.setSelection({
+							startLineNumber: new_results[i].line,
+							startColumn: new_results[i].start_column,
+							endLineNumber: new_results[i].line,
+							endColumn: new_results[i].end_column
+						});
+						monaco_obj.focus();
+					}, 100);
+				}
 			};
 			
 			matches_container_el.appendChild(local_entry_el);
@@ -189,14 +213,19 @@ ve.ScriptManager.FindAndReplace = class {
 			
 			//Iterate lines
 			lines.forEach((line_content, index) => {
+				//Reset lastIndex to ensures we find the first match on the line
 				pattern.lastIndex = 0;
-				if (pattern.test(line_content)) {
+				let local_match = pattern.exec(line_content);
+				
+				if (local_match) {
 					match_found_in_file = true;
 					
 					file_matches.push({
 						file: file_path,
 						line: index + 1,
-						match: line_content.trim()
+						match: line_content.trim(),
+						start_column: local_match.index + 1,
+						end_column: local_match.index + 1 + local_match[0].length,
 					});
 				}
 			});
@@ -204,14 +233,11 @@ ve.ScriptManager.FindAndReplace = class {
 			//If matches found, notify callback immediately (Streaming)
 			if (match_found_in_file) {
 				if (replace_string !== undefined) {
-					// REPLACE MODE
 					let new_content = content.replace(pattern, replace_string);
 					await fs.promises.writeFile(file_path, new_content, "utf8");
 				} else {
-					// FIND MODE
-					if (callbacks.onmatch) {
+					if (callbacks.onmatch)
 						callbacks.onmatch(file_matches);
-					}
 				}
 			}
 		} catch (e) {
@@ -276,7 +302,10 @@ ve.ScriptManager.prototype._openFindAndReplace = function () {
 	let current_folder = (this._settings.project_folder !== "none") ?
 		this._settings.project_folder : this.leftbar_file_explorer.v;
 	
-	if (!this._find_and_replace_obj) this._find_and_replace_obj = new ve.ScriptManager.FindAndReplace();
+	if (!this._find_and_replace_obj) {
+		this._find_and_replace_obj = new ve.ScriptManager.FindAndReplace();
+			this._find_and_replace_obj.script_manager_instance = this;
+	}
 	
 	let matches_el = document.createElement("div");
 	matches_el.id = "ve-script-manager-find-and-replace";
