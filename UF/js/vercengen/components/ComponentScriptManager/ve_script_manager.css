@@ -133,21 +133,44 @@ text.blocklyText {
 }
 
 /* -- Find and Replace -- */
+#status-label kbd {
+    font-family: var(--monospace-font-family);
+}
 #ve-script-manager-find-and-replace {
     #matches-details {
-        max-height: 50dvh;
+        box-sizing: border-box;
+        max-height: 35dvh;
+        max-width: calc(30rem - var(--padding)*2 - var(--cell-padding)*2);
         overflow-y: auto;
+        padding-right: var(--padding);
         scrollbar-color: white transparent;
         scrollbar-width: thin;
+        word-wrap: break-word;
     }
     
-    .match-entry {
+    #file-submatches:has(.match-entry.selected) {
+        background-color: var(--hover-colour);
+    }
+    .line {
+        opacity: 0.5;
+    }
+    .match-entry:first-child {
         margin-left: var(--padding);
+    }
+    .match-entry:not(:first-child):before {
+        content: ", ";
     }
     .match-entry:not(.selected):hover {
         cursor: pointer;
     }
-    .match-entry.selected {
+    .match-entry.selected .line {
         background-color: var(--accent-primary-colour);
+        opacity: 1;
+    }
+    .match-entry.selected:before {
+        background-color: transparent;
+    }
+    .match-file {
+        overflow-wrap: break-word;
     }
 }

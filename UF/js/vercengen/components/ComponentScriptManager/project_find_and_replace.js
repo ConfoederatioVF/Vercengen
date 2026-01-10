@@ -34,6 +34,9 @@ ve.ScriptManager.FindAndReplace = class {
 		let new_results = (arg1_new_results) ? arg1_new_results : [];
 		let should_reset = (arg2_reset === true);
 		
+		//Declare local instance variables
+		let files_obj = {};
+		
 		//1. Initialize container if resetting
 		if (should_reset) {
 			let is_open = false;
@@ -50,9 +53,8 @@ ve.ScriptManager.FindAndReplace = class {
 		let matches_label_el = element.querySelector(`#matches-label`);
 		
 		//Update total count label
-		if (matches_label_el) {
+		if (matches_label_el)
 			matches_label_el.innerHTML = `Occurrences (${String.formatNumber(this.matches.length)})`;
-		}
 		
 		//2. Append new results only (Streaming UI)
 		//Calculate the starting index for these new results within the main array
@@ -60,17 +62,32 @@ ve.ScriptManager.FindAndReplace = class {
 		
 		for (let i = 0; i < new_results.length; i++) {
 			let global_index = start_index + i;
-			let local_entry_el = document.createElement("div");
+			let is_new_file = false;
+			let local_entry_el = document.createElement("span");
+			let local_file_el;
+			let local_file_name = path.resolve(new_results[i].file)
+				.replace(path.resolve(this._folder), "");
 			
+			//1. Create file entry
+			if (!files_obj[new_results[i].file]) {
+				files_obj[new_results[i].file] = document.createElement("div");
+					local_file_el = files_obj[new_results[i].file];
+					local_file_el.className = "match-file";
+					local_file_el.innerHTML = `<span id = "file-submatches"></span>`;
+				is_new_file = true;
+			}
+			local_file_el = files_obj[new_results[i].file];
+			
+			//2. Create match entry
 			local_entry_el.className = (this.selected_index === global_index) ? "match-entry selected" : "match-entry";
-			local_entry_el.innerHTML = `${new_results[i].file}:${new_results[i].line}`;
-			local_entry_el.title = new_results[i].match; //Tooltip for full line
+			local_entry_el.innerHTML = `${(is_new_file) ? `${local_file_name}: Line(s) ` : ""}<span class = "line">${new_results[i].line}</span>`;
+				local_entry_el.title = new_results[i].match; //Tooltip for full line
 			
-			//Add click event for manual selection
+			//3. Add onclick handler
 			local_entry_el.onclick = () => {
 				//Clear previous selection visually
 				let prev_selected = matches_container_el.querySelector(".match-entry.selected");
-				if (prev_selected) prev_selected.classList.remove("selected");
+					if (prev_selected) prev_selected.classList.remove("selected");
 				
 				this.selected_index = global_index;
 				local_entry_el.classList.add("selected");
@@ -100,8 +117,19 @@ ve.ScriptManager.FindAndReplace = class {
 				}
 			};
 			
-			matches_container_el.appendChild(local_entry_el);
+			local_file_el.querySelector(`#file-submatches`).appendChild(local_entry_el);
 		}
+		
+		//Push files_obj to element
+		Object.iterate(files_obj, (local_key, local_value) => {
+			let all_local_matches_els = local_value.querySelectorAll(`.match-entry`);
+			let file_submatches_el = local_value.querySelector(`#file-submatches`);
+			
+			if (all_local_matches_els.length <= 8)
+				file_submatches_el.classList.add("disable-nesting");
+			
+			matches_container_el.appendChild(local_value);
+		});
 	}
 	
 	/**
@@ -154,6 +182,7 @@ ve.ScriptManager.FindAndReplace = class {
 		let stats = { scanned: 0 };
 		
 		//Start Async Traversal
+		this._folder = root_path;
 		await this._traverse(root_path, pattern, replace_string, stats, callbacks);
 		
 		this.is_searching = false;
@@ -417,7 +446,7 @@ ve.ScriptManager.prototype._openFindAndReplace = function () {
 							status_el.innerHTML = `Scanning .. (${String.formatNumber(count)} files)`;
 						},
 						onfinish: () => {
-							status_el.innerHTML = `Search complete. Found ${String.formatNumber(local_far.matches.length)} matches in ${String.formatNumber(local_far.getFiles(local_far.matches).length)} file(s).`;
+							status_el.innerHTML = `Search complete in <kbd>${current_folder}</kbd>. Found ${String.formatNumber(local_far.matches.length)} matches in ${String.formatNumber(local_far.getFiles(local_far.matches).length)} file(s).`;
 							
 							//Auto-select first match if exists
 							if (local_far.matches.length > 0 && local_far.selected_index === -1) {
