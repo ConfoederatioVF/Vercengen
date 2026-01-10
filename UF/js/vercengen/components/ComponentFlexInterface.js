@@ -202,8 +202,8 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 			let next_percentage = (new_next_size / parent_total_size) * 100;
 			
 			//Apply styles as percentages
-			prev.style.flex = `0 0 ${prev_percentage}%`;
-			next.style.flex = `0 0 ${next_percentage}%`;
+			prev.style.flex = `1 0 ${prev_percentage}%`;
+			next.style.flex = `1 0 ${next_percentage}%`;
 		};
 		
 		let _onmouseup = () => {

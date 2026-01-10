@@ -553,6 +553,8 @@ ve.ScriptManager = class extends ve.Component {
 		
 		//Declare local instance variables
 		let set_value_loop = setInterval(() => {
+			this.scene_blockly.show();
+			
 			if (this.scene_monaco?.editor) try {
 				//Set new code value
 				if (!this.scene_blockly._hidden) {
@@ -566,8 +568,6 @@ ve.ScriptManager = class extends ve.Component {
 				delete this.scene_monaco.to_binding_fire_silently;
 				this.fireFromBinding();
 				clearInterval(set_value_loop);
-				
-				this.scene_blockly.show();
 			} catch (e) {
 				clearInterval(set_value_loop);
 				
