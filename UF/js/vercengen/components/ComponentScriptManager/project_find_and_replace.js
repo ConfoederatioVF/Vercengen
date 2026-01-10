@@ -522,6 +522,7 @@ ve.ScriptManager.prototype._openFindAndReplace = function () {
 		name: "Find and Replace",
 		width: "30rem",
 		can_rename: false,
+		do_not_wrap: true,
 		
 		onuserchange: (v) => {
 			if (v.close) {
@@ -529,4 +530,5 @@ ve.ScriptManager.prototype._openFindAndReplace = function () {
 			}
 		}
 	});
+	//this.find_and_replace_window.element.classList.add("replace")
 };

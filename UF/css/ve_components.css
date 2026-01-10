@@ -208,6 +208,8 @@
 
 /* -- ve.Interface -- */
 [component="ve-interface"] {
+    height: 100%;
+    
     summary#name {
         padding-bottom: calc(var(--padding)*0.5);
     }

@@ -15,6 +15,10 @@
         background-color: var(--hover-colour);
         cursor: pointer;
     }
+    #feature-body > [component] {
+        padding-bottom: var(--cell-padding);
+        padding-top: var(--cell-padding);
+    }
 }
 
 /* -- ve.Modal -- */

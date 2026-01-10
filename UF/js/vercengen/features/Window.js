@@ -13,7 +13,7 @@
  *   - `.x=HTML.mouse_x`: {@link function}|{@link number} - If the type is a function, it must return a number.
  *   - `.y=HTML.mouse_y`: {@link function}|{@link number} - If the type is a function, it must return a number.
  *   -
- *   - `.do_not_wrap=false`: {@link boolean} - Whether to disable wrapping in an always open ve.Interface.
+ *   - `.do_not_wrap=false`: {@link boolean} - Whether to disable wrapping in an always open {@link ve.Interface}.
  *   - `.id`: {@link string}
  *   - `.mode="window"`: {@link string} - Either 'static_ui'/'static_window'/'window'.
  *   - `.name=""`: {@link string} - Auto-resolves to 'Window' instead if `.can_rename=true`.
@@ -340,7 +340,7 @@ ve.Window = class extends ve.Feature {
 					local_value.element.id = local_key;
 					feature_body_el.appendChild(local_value.element);
 				}
-				if (local_value.name === undefined || local_value.name === "")
+				if (ve.registry.automatic_naming && (local_value.name === undefined || local_value.name === ""))
 					local_value.name = local_key;
 			});
 		}
