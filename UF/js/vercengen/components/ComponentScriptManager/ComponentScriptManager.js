@@ -231,16 +231,7 @@ ve.ScriptManager = class extends ve.Component {
 					this.v = local_data;
 					
 					//Load proper syntax highlighting
-					if (file_path.endsWith(".css")) {
-						monaco.editor.setModelLanguage(model_obj, "css");
-					} else if (file_path.endsWith(".htm") || file_path.endsWith(".html")) {
-						monaco.editor.setModelLanguage(model_obj, "html");
-					} else if (file_path.endsWith(".js") || file_path.endsWith(".ts")) {
-						monaco.editor.setModelLanguage(model_obj, "javascript");
-					} else if (file_path.endsWith(".json")) {
-						monaco.editor.setModelLanguage(model_obj, "json");
-					}
-					
+					ve.ScriptManager._loadFileExtension.call(this, path.extname(this._file_path));
 					this.fireToBinding();
 				} catch (e) {}
 			},
