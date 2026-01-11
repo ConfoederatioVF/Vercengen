@@ -218,15 +218,26 @@ ve.ScriptManager = class extends ve.Component {
 					limit: () => (path.resolve(this.leftbar_file_explorer.v) !== this._settings.project_folder)
 				})
 			},
+			folder_components_obj: { //[WIP] - Implement context menu to exclude/include folders
+				context_menu: new ve.Button(() => {
+					
+				}, {
+					name: "<icon>more_vert</icon>",
+					tooltip: "Edit Properties",
+					style: {
+						paddingBottom: `var(--cell-padding)`,
+						paddingTop: `var(--cell-padding)`
+					}
+				})
+			},
 			load_function: (arg0_data, arg1_file_path) => {
 				//Convert from parameters
 				let local_data = arg0_data;
 				let file_path = arg1_file_path;
 				
 				//Declare local instance variables
-				let model_obj = this.scene_monaco.editor.getModel();
-				
 				this._file_path = file_path;
+				
 				try {
 					this.v = local_data;
 					

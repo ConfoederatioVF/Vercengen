@@ -55,7 +55,7 @@ ve.FileExplorer = class extends ve.Component {
 			
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
-		options.file_components_obj = (options.file_components_obj) ? options.file_components_obj : {
+		options.file_components_obj = {
 			select: new ve.Toggle(false, {
 				off_name: `<icon>check_box_outline_blank</icon>`,
 				on_name: `<icon>check_box</icon>`,
@@ -65,11 +65,12 @@ ve.FileExplorer = class extends ve.Component {
 				style: {
 					zIndex: 99
 				},
-			})
+			}),
+			...options.file_components_obj
 		};
 		options.file_icon = (options.file_icon) ? options.file_icon : "<icon>description</icon>";
 		options.file_options = (options.file_options) ? options.file_options : {};
-		options.folder_components_obj = (options.folder_components_obj) ? options.folder_components_obj : {
+		options.folder_components_obj = {
 			select: new ve.Toggle(false, {
 				off_name: `<icon>check_box_outline_blank</icon>`,
 				on_name: `<icon>indeterminate_check_box</icon>`,
@@ -79,7 +80,8 @@ ve.FileExplorer = class extends ve.Component {
 				style: {
 					zIndex: 99
 				},
-			})
+			}),
+			...options.folder_components_obj
 		};
 		options.folder_icon = (options.folder_icon) ? options.folder_icon : "<icon>folder</icon>";
 		options.folder_options = (options.folder_options) ? options.folder_options : {};

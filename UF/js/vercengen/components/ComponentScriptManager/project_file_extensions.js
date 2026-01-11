@@ -21,6 +21,7 @@ ve.ScriptManager._loadFileExtension = function (arg0_file_extension) {
 		".md": "markdown",
 		".markdown": "markdown",
 		".mdx": "mdx",
+		".txt": "markdown",
 		
 		//Programming Languages
 		".c": "c",
@@ -125,6 +126,7 @@ ve.ScriptManager._loadFileExtension = function (arg0_file_extension) {
 	let model_obj = this.scene_monaco.editor.getModel();
 	
 	//Set new syntax highlighting
+	if (file_extension === "") file_extension = ".txt";
 	if (file_extension_obj[file_extension])
 		monaco.editor.setModelLanguage(model_obj, file_extension_obj[file_extension]);
 };
