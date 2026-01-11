@@ -210,6 +210,7 @@ ve.ScriptManager = class extends ve.Component {
 					let new_folder_path = path.resolve(this.leftbar_file_explorer.v);
 					
 					this._settings.project_folder = new_folder_path;
+					ve.ScriptManager._indexDocumentation.call(this, this.leftbar_status_el);
 					veToast(`Changed project folder to ${new_folder_path}`);
 				}, { 
 					name: "<icon>gite</icon>",
@@ -218,12 +219,28 @@ ve.ScriptManager = class extends ve.Component {
 				})
 			},
 			load_function: (arg0_data, arg1_file_path) => {
+				//Convert from parameters
 				let local_data = arg0_data;
 				let file_path = arg1_file_path;
+				
+				//Declare local instance variables
+				let model_obj = this.scene_monaco.editor.getModel();
 				
 				this._file_path = file_path;
 				try {
 					this.v = local_data;
+					
+					//Load proper syntax highlighting
+					if (file_path.endsWith(".css")) {
+						monaco.editor.setModelLanguage(model_obj, "css");
+					} else if (file_path.endsWith(".htm") || file_path.endsWith(".html")) {
+						monaco.editor.setModelLanguage(model_obj, "html");
+					} else if (file_path.endsWith(".js") || file_path.endsWith(".ts")) {
+						monaco.editor.setModelLanguage(model_obj, "javascript");
+					} else if (file_path.endsWith(".json")) {
+						monaco.editor.setModelLanguage(model_obj, "json");
+					}
+					
 					this.fireToBinding();
 				} catch (e) {}
 			},
@@ -236,6 +253,9 @@ ve.ScriptManager = class extends ve.Component {
 			}
 		});
 		this.leftbar_file_explorer.bind(this.leftbar_el);
+		this.leftbar_status_el = document.createElement("div");
+			this.leftbar_status_el.id = "leftbar-status";
+			this.leftbar_el.appendChild(this.leftbar_status_el);
 		this.scene_el = document.createElement("div");
 			this.scene_el.id = "scene";
 		this.scene_blockly = new ve.ScriptManagerBlockly();

@@ -73,6 +73,52 @@
 		}
 	};
 	
+	File.getAllFiles = async function (arg0_folder_path) {
+		const folder_path = arg0_folder_path;
+		
+		try {
+			// Get all entries in the current directory (files and folders)
+			// We do NOT use recursive: true here to ensure we get Dirent objects
+			const entries = await fs.promises.readdir(folder_path, { withFileTypes: true });
+			
+			// Map each entry to a promise
+			const paths = await Promise.all(
+				entries.map(async (entry) => {
+					const fullPath = path.join(folder_path, entry.name);
+					
+					// If it's a directory, recurse into it
+					if (entry.isDirectory()) {
+						return await File.getAllFiles(fullPath);
+					}
+					
+					// If it's a file, return the path
+					return fullPath;
+				}),
+			);
+			
+			// .flat() converts the nested arrays from recursion into a single-level array
+			return paths.flat();
+		} catch (err) {
+			console.error(`File.getAllFiles: Error reading directory ${folder_path}:`, err);
+			throw err;
+		}
+	};
+	
+	File.getAllFilesSync = function (arg0_folder_path) {
+		//Convert from parameters
+		let folder_path = arg0_folder_path;
+		
+		//Declare local instance variables
+		let all_files = fs.readdirSync(folder_path, {
+			recursive: true,
+			withFileTypes: true
+		});
+		
+		//Return statement
+		return all_files.filter((entry) => entry.isFile())
+			.map((entry) => path.join(entry.path, entry.name));
+	};
+	
 	/**
 	 * Whether the selected file path is a valid drive.
 	 * 
