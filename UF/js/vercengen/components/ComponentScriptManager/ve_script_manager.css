@@ -71,6 +71,9 @@
             padding-bottom: 0;
             padding-top: 0;
         }
+        #leftbar-status {
+            margin-top: var(--padding);
+        }
     }
     #scene {
         display: flex;
