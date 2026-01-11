@@ -121,8 +121,6 @@ ve.ScriptManager = class extends ve.Component {
 			"krtheme": "krTheme",
 			"monoindustrial": "monoindustrial"
 		};
-		this.id = Class.generateRandomID(ve.ScriptManager);
-		this.options = options;
 		this._settings = {
 			is_vercengen_script_manager_settings: true,
 			
@@ -141,6 +139,9 @@ ve.ScriptManager = class extends ve.Component {
 			theme: "theme-default",
 			view_file_explorer: true
 		};
+		this.config = {};
+		this.id = Class.generateRandomID(ve.ScriptManager);
+		this.options = options;
 		
 		let scriptmanager_settings = ve.registry.settings.ScriptManager;
 		
@@ -204,6 +205,19 @@ ve.ScriptManager = class extends ve.Component {
 		
 		this.leftbar_el = document.createElement("div");
 		this.leftbar_el.id = "leftbar";
+		
+		let file_components_obj = {
+			context_menu: new ve.Button(() => {
+				
+			}, {
+				name: "<icon>more_vert</icon>",
+				tooltip: "Edit Properties",
+				style: {
+					paddingBottom: `var(--cell-padding)`,
+					paddingTop: `var(--cell-padding)`
+				}
+			})
+		};
 		this.leftbar_file_explorer = new ve.FileExplorer((this.options.folder_path) ? this.options.folder_path : process.cwd(), {
 			actions_components_obj: {
 				set_project_folder: new ve.Button(() => {
@@ -218,17 +232,11 @@ ve.ScriptManager = class extends ve.Component {
 					limit: () => (path.resolve(this.leftbar_file_explorer.v) !== this._settings.project_folder)
 				})
 			},
+			file_components_obj: {
+				...file_components_obj
+			},
 			folder_components_obj: { //[WIP] - Implement context menu to exclude/include folders
-				context_menu: new ve.Button(() => {
-					
-				}, {
-					name: "<icon>more_vert</icon>",
-					tooltip: "Edit Properties",
-					style: {
-						paddingBottom: `var(--cell-padding)`,
-						paddingTop: `var(--cell-padding)`
-					}
-				})
+				...file_components_obj
 			},
 			load_function: (arg0_data, arg1_file_path) => {
 				//Convert from parameters
@@ -252,7 +260,9 @@ ve.ScriptManager = class extends ve.Component {
 				
 				//Return statement
 				return this.scene_monaco.v;
-			}
+			},
+			
+			onchange: (v, e) => ve.ScriptManager._drawFileExplorer.call(this, v, e)
 		});
 		this.leftbar_file_explorer.bind(this.leftbar_el);
 		this.leftbar_status_el = document.createElement("div");
