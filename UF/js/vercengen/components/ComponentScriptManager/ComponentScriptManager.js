@@ -179,7 +179,7 @@ ve.ScriptManager = class extends ve.Component {
 						local_object_inspector.element.innerHTML.length > 10000 && 
 						this._settings.log_large_objects_in_console === false
 					) {
-						veConfirm(`Object to be logged exceeds 10k characters. Are you sure you want to view it?`, {
+						veConfirm(loc("ve.registry.localisation.ScriptManager_object_to_be_logged", 10000/1000), {
 							special_function: () => local_object_inspector.bind(local_msg_el)
 						});
 					} else {
@@ -505,6 +505,7 @@ ve.ScriptManager = class extends ve.Component {
 					})
 				}, {
 					can_rename: false,
+					do_not_wrap: true,
 					name: loc("ve.registry.localisation.ScriptManager_console"),
 					width: "40rem"
 				});

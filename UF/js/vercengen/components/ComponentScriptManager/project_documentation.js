@@ -1,3 +1,17 @@
+/**
+ * Index documentation in the currently selected folder for the project.
+ * - Method of: {@link ve.ScriptManager}
+ * 
+ * @alias _indexDocumentation
+ * @memberof ve.Component.ve.ScriptManager
+ * 
+ * @param {HTMLElement} arg0_element
+ * @param {Object} [arg1_options]
+ *  @param {number} [arg1_options.max_file_size=512000] - The maximum file size that documentation should be loaded for.
+ *  
+ * @returns {Promise<void>}
+ * @private
+ */
 ve.ScriptManager._indexDocumentation = async function (arg0_element, arg1_options) {
 	//Convert from parameters
 	let element = (arg0_element) ? arg0_element : document.createElement("div");

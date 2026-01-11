@@ -76,6 +76,7 @@ ve.registry.localisation = {
 	ScriptManager_no_project: "No Project",
 	ScriptManager_none: "None",
 	ScriptManager_note: "Note:",
+	ScriptManager_object_to_be_logged: "Object to be logged exceeds £1£k characters. Are you sure you want to view it?",
 	ScriptManager_keybinds: "Keybinds",
 	ScriptManager_prints_help_information: "Prints help information.",
 	ScriptManager_run: "Run",
