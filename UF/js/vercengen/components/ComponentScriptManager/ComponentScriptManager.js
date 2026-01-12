@@ -139,7 +139,9 @@ ve.ScriptManager = class extends ve.Component {
 			theme: "theme-default",
 			view_file_explorer: true
 		};
-		this.config = {};
+		this.config = {
+			files: {}
+		};
 		this.id = Class.generateRandomID(ve.ScriptManager);
 		this.options = options;
 		
@@ -207,8 +209,43 @@ ve.ScriptManager = class extends ve.Component {
 		this.leftbar_el.id = "leftbar";
 		
 		let file_components_obj = {
-			context_menu: new ve.Button(() => {
+			context_menu: new ve.Button((v, e) => {
+				let local_hierarchy_datatype = e.owners[e.owners.length - 2];
 				
+				let local_file_path = local_hierarchy_datatype.element.getAttribute("data-path");
+				
+				if (this.file_context_menu) this.file_context_menu.close();
+				this.file_context_menu = new ve.ContextMenu({
+					mark_directory_as_excluded: new ve.Button(() => {
+						if (!this.config.files[local_file_path]) this.config.files[local_file_path] = {};
+						let local_file_config = this.config.files[local_file_path];
+							local_file_config.mode = "excluded";
+						ve.ScriptManager._drawFileExplorer.call(this, this.leftbar_file_explorer.v, this.leftbar_file_explorer);
+						ve.ScriptManager.saveConfig.call(this);
+					}, {
+						name: "Mark Directory as Excluded",
+						style: {
+							textAlign: "left",
+							whiteSpace: "nowrap"
+						}
+					}),
+					mark_directory_as_source: new ve.Button(() => {
+						if (!this.config.files[local_file_path]) this.config.files[local_file_path] = {};
+						let local_file_config = this.config.files[local_file_path];
+							delete local_file_config.mode;
+						ve.ScriptManager._drawFileExplorer.call(this, this.leftbar_file_explorer.v, this.leftbar_file_explorer);
+						ve.ScriptManager.saveConfig.call(this);
+					}, {
+						name: "Mark Directory as Source",
+						style: {
+							textAlign: "left",
+							whiteSpace: "nowrap"
+						}
+					})
+				}, {
+					id: "ScriptManager_file_context_menu",
+					width: "20rem"
+				});
 			}, {
 				name: "<icon>more_vert</icon>",
 				tooltip: "Edit Properties",

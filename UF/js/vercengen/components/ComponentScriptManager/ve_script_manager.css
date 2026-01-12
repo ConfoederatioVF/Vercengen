@@ -135,6 +135,14 @@ text.blocklyText {
     font-family: var(--body-font-family);
 }
 
+/* -- File Explorer -- */
+[component="ve-script-manager"] [component="ve-file-explorer"] {
+    [component="ve-hierarchy-datatype"][data-mode="excluded"]
+        .nst-content > [component="ve-html"] > icon:first-child {
+            color: orange;
+        }
+}
+
 /* -- Find and Replace -- */
 #status-label kbd {
     font-family: var(--monospace-font-family);

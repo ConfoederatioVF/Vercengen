@@ -487,6 +487,9 @@ ve.FileExplorer = class extends ve.Component {
 				hierarchy_obj[local_full_path] = new ve.HierarchyDatatype(
 					{
 						folder_icon: new ve.HTML(this.options.folder_icon, {
+							attributes: {
+								"data-folder-icon": true
+							},
 							tooltip: `/${all_files_in_directory[i].name}/`
 						}),
 						actions_menu: new ve.RawInterface({
@@ -543,6 +546,9 @@ ve.FileExplorer = class extends ve.Component {
 				hierarchy_obj[local_full_path] = new ve.HierarchyDatatype(
 					{
 						file_icon: new ve.HTML(this.options.file_icon, {
+							attributes: {
+								"data-file-icon": true
+							},
 							style: { opacity: 0.6 },
 							tooltip: all_files_in_directory[i].name
 						}),
