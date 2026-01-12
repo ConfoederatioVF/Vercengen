@@ -589,7 +589,7 @@ ve.ScriptManager = class extends ve.Component {
 			fs.existsSync(path.join(this.leftbar_file_explorer.v, ".ve-sm"))
 		) {
 			if (this._settings.project_folder === "none") this._settings.project_folder = this.leftbar_file_explorer.v;
-			ve.ScriptManager.loadConfig.call(this);
+			ve.ScriptManager._loadConfig.call(this);
 		}
 		
 		ve.ScriptManager.instances.push(this);

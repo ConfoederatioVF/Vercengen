@@ -24,7 +24,7 @@
 		}
 	};
 	
-	ve.ScriptManager.loadConfig = function () {
+	ve.ScriptManager._loadConfig = function () {
 		if (this._settings.project_folder === "none") return; //Internal guard clause if project folder is not set
 		
 		//Declare local instance variables
@@ -41,7 +41,7 @@
 		}
 	};
 	
-	ve.ScriptManager.saveConfig = function () {
+	ve.ScriptManager._saveConfig = function () {
 		if (this._settings.project_folder === "none") return; //Internal guard clause if project folder is not set
 		
 		//Declare local instance variables
@@ -62,10 +62,14 @@
 		//Declare local instance variables
 		if (!this.config.files[file_path]) this.config.files[file_path] = {};
 		let local_file_config = this.config.files[file_path];
-			if (mode === "default") delete local_file_config.mode;
+			if (mode !== "default") {
+				local_file_config.mode = mode;
+			} else {
+				delete local_file_config.mode;
+			}
 		
 		//Call update functions
 		ve.ScriptManager._drawFileExplorer.call(this, this.leftbar_file_explorer.v, this.leftbar_file_explorer);
-		ve.ScriptManager.saveConfig.call(this);
+		ve.ScriptManager._saveConfig.call(this);
 	};
 }
