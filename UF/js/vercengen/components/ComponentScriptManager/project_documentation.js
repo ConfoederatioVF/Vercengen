@@ -18,6 +18,13 @@ ve.ScriptManager._indexDocumentation = async function (arg0_element, arg1_option
 	let options = (arg1_options) ? arg1_options : {};
 	
 	//Initialise options
+	if (!options.excluded_paths) options.excluded_paths = [];
+		if (this.config.files)
+			Object.iterate(this.config.files, (local_key, local_value) => {
+				if (local_value.mode === "excluded")
+					options.excluded_paths.push(local_key);
+			});
+		console.log(options.excluded_paths);
 	options.max_file_size = Math.returnSafeNumber(options.max_file_size, 500*1024); //Maximum file size at 500KB
 	
 	//Declare local instance variables
@@ -46,7 +53,9 @@ ve.ScriptManager._indexDocumentation = async function (arg0_element, arg1_option
 	
 	//Iterate over all_files and check their extname for js/ts and document them
 	element.innerHTML = `Indexing files in project ..`;
-	let all_files = await File.getAllFiles(current_folder);
+	let all_files = await File.getAllFiles(current_folder, { 
+		excluded_paths: options.excluded_paths 
+	});
 	
 	for (let i = 0; i < all_files.length; i++) try {
 		if (all_files[i].endsWith(".js") || all_files[i].endsWith(".ts")) {

@@ -33,7 +33,7 @@
 		let project_config_path = path.join(project_folder, ".ve-sm");
 		
 		//Parse config
-		if (project_folder && fs.existsSync(project_config_path)))
+		if (project_folder && fs.existsSync(project_config_path))
 			this.config = JSON.parse(fs.readFileSync(project_config_path, "utf8"));
 		if (this.config) {
 			ve.ScriptManager._drawFileExplorer.call(this, this.leftbar_file_explorer.v, this.leftbar_file_explorer);
@@ -51,5 +51,6 @@
 		
 		//Save this.config to base project folder if possible
 		fs.writeFileSync(project_config_path, JSON.stringify(this.config));
+		ve.ScriptManager._indexDocumentation.call(this, this.leftbar_status_el);
 	};
 }

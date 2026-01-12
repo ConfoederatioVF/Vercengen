@@ -73,33 +73,45 @@
 		}
 	};
 	
-	File.getAllFiles = async function (arg0_folder_path) {
-		const folder_path = arg0_folder_path;
+	File.getAllFiles = async function (arg0_folder_path, arg1_options) {
+		const options = arg1_options || {};
+		// Normalize the starting path to an absolute path
+		const root_path = path.resolve(arg0_folder_path);
+		
+		// Pre-resolve all excluded paths to absolute paths for reliable comparison
+		const excluded_paths = (options.excluded_paths || []).map((p) =>
+			path.resolve(p),
+		);
 		
 		try {
-			// Get all entries in the current directory (files and folders)
-			// We do NOT use recursive: true here to ensure we get Dirent objects
-			const entries = await fs.promises.readdir(folder_path, { withFileTypes: true });
+			const entries = await fs.promises.readdir(root_path, {
+				withFileTypes: true,
+			});
 			
-			// Map each entry to a promise
 			const paths = await Promise.all(
 				entries.map(async (entry) => {
-					const fullPath = path.join(folder_path, entry.name);
+					const fullPath = path.resolve(root_path, entry.name);
 					
-					// If it's a directory, recurse into it
-					if (entry.isDirectory()) {
-						return await File.getAllFiles(fullPath);
+					// Check if the current full path is in the excluded list
+					if (excluded_paths.includes(fullPath)) {
+						return [];
 					}
 					
-					// If it's a file, return the path
+					if (entry.isDirectory()) {
+						// Pass the options down to the recursive call
+						return await File.getAllFiles(fullPath, options);
+					}
+					
 					return fullPath;
 				}),
 			);
 			
-			// .flat() converts the nested arrays from recursion into a single-level array
 			return paths.flat();
 		} catch (err) {
-			console.error(`File.getAllFiles: Error reading directory ${folder_path}:`, err);
+			console.error(
+				`File.getAllFiles: Error reading directory ${root_path}:`,
+				err,
+			);
 			throw err;
 		}
 	};
