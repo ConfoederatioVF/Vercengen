@@ -10,7 +10,6 @@
 		
 		//Detect file paths via data-path attribute and check against folder data to draw icons/classes
 		let all_hierarchy_datatypes = component_obj.element.querySelectorAll(`[component="ve-hierarchy-datatype"][data-path]`);
-		console.log(value, component_obj);
 		
 		for (let i = 0; i < all_hierarchy_datatypes.length; i++) {
 			let local_instance_el = all_hierarchy_datatypes[i].instance.element;
