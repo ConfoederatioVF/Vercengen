@@ -24,7 +24,6 @@ ve.ScriptManager._indexDocumentation = async function (arg0_element, arg1_option
 				if (local_value.mode === "excluded")
 					options.excluded_paths.push(local_key);
 			});
-		console.log(options.excluded_paths);
 	options.max_file_size = Math.returnSafeNumber(options.max_file_size, 500*1024); //Maximum file size at 500KB
 	
 	//Declare local instance variables
@@ -81,5 +80,5 @@ ve.ScriptManager._indexDocumentation = async function (arg0_element, arg1_option
 	} catch (e) {
 		console.error(e);
 	}
-	element.innerHTML = `Indexed ${String.formatNumber(all_files.length)} file(s).`;
+	element.innerHTML = `Parsed documentation for ${String.formatNumber(all_files.length)} file(s).`;
 };

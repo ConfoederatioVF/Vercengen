@@ -338,20 +338,23 @@ global.path = require("path");
 			"UF/js/vercengen/engine",
 			"UF/js/vercengen/engine/Demo.js",
 			"UF/js/vercengen/components",
-			
+			//ve.DatavisSuite
 			"UF/js/vercengen/components/ComponentDatavisSuite/ComponentDatavisSuite.js",
 			"UF/js/vercengen/components/ComponentDatavisSuite/framework",
 			"UF/js/vercengen/components/ComponentDatavisSuite/ui",
+			//ve.FileExplorer
 			"UF/js/vercengen/components/ComponentFileExplorer/file_operations_ui.js",
+			//ve.ScriptManager
 			"UF/js/vercengen/components/ComponentScriptManager/ComponentCodemirror",
+			"!UF/libraries/monaco/",
+			"UF/js/vercengen/components/ComponentScriptManager/blockly/blockly_toolbox.js",
+			"UF/js/vercengen/components/ComponentScriptManager/monaco/monaco_startup.js",
+			"UF/js/vercengen/components/ComponentScriptManager/core",
 			
 			"UF/js/vercengen/features",
 			
 			//Localisation
 			"UF/js/vercengen/vercengen_localisation.js",
-			"!UF/libraries/monaco/",
-			"UF/js/vercengen/components/ComponentScriptManager/blockly/blockly_toolbox.js",
-			"UF/js/vercengen/components/ComponentScriptManager/monaco/monaco_startup.js",
 		] : [];
 			load_patterns = load_patterns.concat(options.load_files);
 		
