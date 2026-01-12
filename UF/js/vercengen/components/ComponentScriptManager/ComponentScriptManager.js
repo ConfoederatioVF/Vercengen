@@ -592,6 +592,11 @@ ve.ScriptManager = class extends ve.Component {
 		this.from_binding_fire_silently = true;
 		this.v = value;
 		delete this.from_binding_fire_silently;
+		if (fs.existsSync(path.join(this.leftbar_file_explorer.v, ".ve-sm"))) {
+			if (this._settings.project_folder === "none") this._settings.project_folder = this.leftbar_file_explorer.v;
+			ve.ScriptManager.loadConfig.call(this);
+		}
+		
 		ve.ScriptManager.instances.push(this);
 	}
 	
