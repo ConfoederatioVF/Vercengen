@@ -217,27 +217,19 @@ ve.ScriptManager = class extends ve.Component {
 				
 				if (this.file_context_menu) this.file_context_menu.close();
 				this.file_context_menu = new ve.ContextMenu({
-					mark_directory_as_excluded: new ve.Button(() => {
-						if (!this.config.files[local_file_path]) this.config.files[local_file_path] = {};
-						let local_file_config = this.config.files[local_file_path];
-							local_file_config.mode = "excluded";
-						ve.ScriptManager._drawFileExplorer.call(this, this.leftbar_file_explorer.v, this.leftbar_file_explorer);
-						ve.ScriptManager.saveConfig.call(this);
+					mark_source_as_excluded: new ve.Button(() => {
+						ve.ScriptManager._setSourceAsMode.call(this, local_file_path, "excluded");
 					}, {
-						name: "Mark Directory as Excluded",
+						name: "Mark Source as Excluded",
 						style: {
 							textAlign: "left",
 							whiteSpace: "nowrap"
 						}
 					}),
-					mark_directory_as_source: new ve.Button(() => {
-						if (!this.config.files[local_file_path]) this.config.files[local_file_path] = {};
-						let local_file_config = this.config.files[local_file_path];
-							delete local_file_config.mode;
-						ve.ScriptManager._drawFileExplorer.call(this, this.leftbar_file_explorer.v, this.leftbar_file_explorer);
-						ve.ScriptManager.saveConfig.call(this);
+					mark_source_as_included: new ve.Button(() => {
+						ve.ScriptManager._setSourceAsMode.call(this, local_file_path, "default");
 					}, {
-						name: "Mark Directory as Source",
+						name: "Mark Source as Included",
 						style: {
 							textAlign: "left",
 							whiteSpace: "nowrap"

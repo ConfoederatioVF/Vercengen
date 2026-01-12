@@ -53,4 +53,19 @@
 		fs.writeFileSync(project_config_path, JSON.stringify(this.config));
 		ve.ScriptManager._indexDocumentation.call(this, this.leftbar_status_el);
 	};
+	
+	ve.ScriptManager._setSourceAsMode = function (arg0_file_path, arg1_mode) {
+		//Convert from parameters
+		let file_path = arg0_file_path;
+		let mode = (arg1_mode) ? arg1_mode : "default";
+		
+		//Declare local instance variables
+		if (!this.config.files[file_path]) this.config.files[file_path] = {};
+		let local_file_config = this.config.files[file_path];
+			if (mode === "default") delete local_file_config.mode;
+		
+		//Call update functions
+		ve.ScriptManager._drawFileExplorer.call(this, this.leftbar_file_explorer.v, this.leftbar_file_explorer);
+		ve.ScriptManager.saveConfig.call(this);
+	};
 }
