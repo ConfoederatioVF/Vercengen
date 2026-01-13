@@ -280,7 +280,13 @@ ve.FileExplorer = class extends ve.Component {
 		let previous_folder_path = path.join(this.value, "..");
 		
 		hierarchy_obj.file_path = new ve.HierarchyDatatype({
-			information: new ve.HTML(() => this.v)
+			information: new ve.HTML(() => this.v, {
+				style: {
+					whiteSpace: "break-spaces",
+					wordBreak: "break-all",
+					width: "100%"
+				}
+			})
 		}, { disabled: true });
 		if (!this.options.disable_actions)
 			hierarchy_obj.selection = new ve.HierarchyDatatype({

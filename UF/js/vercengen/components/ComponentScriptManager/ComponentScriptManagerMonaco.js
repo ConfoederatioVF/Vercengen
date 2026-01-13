@@ -40,6 +40,7 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 			this.element.setAttribute("component", "ve-script-manager-monaco");
 			HTML.setAttributesObject(this.element, options.attributes);
 		
+		let computed_style_obj = window.getComputedStyle(this.element);
 		this.options = options;
 		this._pending_value = (value === null || value === undefined) ? "" : value.toString();
 		this._theme = (options.theme) ? options.theme : "nord";
@@ -55,12 +56,20 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 					value: this._pending_value,
 					language: "javascript",
 					theme: "vs-dark", // Placeholder, we set the real theme immediately after
-					automaticLayout: true,
-					fontSize: 14,
-					minimap: { enabled: true },
-					contextmenu: true,
-					formatOnPaste: false,
+					
 					autoIndent: "advanced",
+					automaticLayout: true,
+					contextmenu: true,
+					detectIndentation: false,
+					fixedOverflowWidgets: true,
+					fontFamily: computed_style_obj.getPropertyValue("--monospace-font-family"),
+					fontLigatures: true,
+					fontSize: 14,
+					formatOnPaste: false,
+					insertSpaces: true,
+					minimap: { enabled: true },
+					tabSize: 2,
+					
 					...this.options.monaco_options
 				});
 				
