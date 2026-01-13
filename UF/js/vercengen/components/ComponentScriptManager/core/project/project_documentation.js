@@ -21,6 +21,7 @@
 		
 		//Initialise options
 		if (!options.excluded_paths) options.excluded_paths = [];
+		if (!this._settings.index_documentation) return;
 		if (this.config.files)
 			Object.iterate(this.config.files, (local_key, local_value) => {
 				if (local_value.mode === "excluded")

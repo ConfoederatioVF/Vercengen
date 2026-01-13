@@ -395,49 +395,58 @@ ve.ScriptManager = class extends ve.Component {
 			settings: new ve.Button(() => {
 				if (this.settings_window) this.settings_window.close();
 				this.settings_window = new ve.Window({
-					monaco_settings: this.scene_monaco.drawOptionsInterface(),
-					
-					autosave_projects: new ve.Toggle(this._settings.autosave_projects, {
-						name: "Autosave projects",
-						onuserchange: (v) => this._settings.autosave_projects = v
-					}),
-					index_documentation: new ve.Toggle(this._settings.index_documentation, {
-						name: "Index documentation",
-						onuserchange: (v) => this._settings.index_documentation = v
-					}),
-					log_large_objects_in_console: new ve.Toggle(this._settings.log_large_objects_in_console, {
-						name: "Log large objects in console without confirmation",
-						onuserchange: (v) => this._settings.log_large_objects_in_console = v
-					}),
-					manual_synchronisation: new ve.Toggle(this._settings.manual_synchronisation, {
-						name: "Manual synchronisation",
-						onuserchange: (v) => this._settings.manual_synchronisation = v
-					}),
-					background: new ve.Text(this._settings.background_image, {
-						name: "Background",
-						onuserchange: (v) => {
-							if (v.isURL()) v = `url(${v})`;
-							
-							this._settings.background_image = v;
-							this.loadSettings({ background_image: this._settings.background_image });
-						},
-						style: {
-							'input[type="text"]': { maxWidth: "20rem" }
-						}
-					}),
-					scene_height: new ve.Number(Math.returnSafeNumber(this._settings.scene_height, 0), {
-						name: "Scene height (px)",
-						min: 0,
-						onuserchange: (v) => {
-							if (v === 0) {
-								delete this.options.style.height;
-							} else {
-								this.options.style.height = `${v}px`;
+					appearance: new ve.Interface({
+						background: new ve.Text(this._settings.background_image, {
+							name: "Background",
+							onuserchange: (v) => {
+								if (v.isURL()) v = `url(${v})`;
+								
+								this._settings.background_image = v;
+								this.loadSettings({ background_image: this._settings.background_image });
+							},
+							style: {
+								'input[type="text"]': { maxWidth: "20rem" }
 							}
-							this._settings.scene_height = v;
-							this._drawHeight();
-						}
+						}),
+						scene_height: new ve.Number(Math.returnSafeNumber(this._settings.scene_height, 0), {
+							name: "Scene height (px)",
+							min: 0,
+							onuserchange: (v) => {
+								if (v === 0) {
+									delete this.options.style.height;
+								} else {
+									this.options.style.height = `${v}px`;
+								}
+								this._settings.scene_height = v;
+								this._drawHeight();
+							}
+						}),
+					}, { name: "Appearance" }),
+					monaco_settings: this.scene_monaco.drawOptionsInterface({
+						name: "Editor (Code)"
 					}),
+					features: new ve.Interface({
+						autosave_projects: new ve.Toggle(this._settings.autosave_projects, {
+							name: "Autosave projects",
+							onuserchange: (v) => this._settings.autosave_projects = v
+						}),
+						index_documentation: new ve.Toggle(this._settings.index_documentation, {
+							name: "Index documentation",
+							onuserchange: (v) => {
+								this._settings.index_documentation = v;
+								if (v) ve.ScriptManager._indexDocumentation.call(this, this.leftbar_status_el);
+							}
+						}),
+						log_large_objects_in_console: new ve.Toggle(this._settings.log_large_objects_in_console, {
+							name: "Log large objects in console without confirmation",
+							onuserchange: (v) => this._settings.log_large_objects_in_console = v
+						}),
+						manual_synchronisation: new ve.Toggle(this._settings.manual_synchronisation, {
+							name: "Manual synchronisation",
+							onuserchange: (v) => this._settings.manual_synchronisation = v
+						}),
+					}, { name: "Features" }),
+					
 					actions_bar: new ve.RawInterface({
 						load_settings: new ve.File(undefined, {
 							name: loc("ve.registry.localisation.ScriptManager_load_settings"),
