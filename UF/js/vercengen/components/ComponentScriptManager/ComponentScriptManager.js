@@ -765,11 +765,12 @@ ve.ScriptManager = class extends ve.Component {
 		let scriptmanager_settings = ve.registry.settings.ScriptManager;
 		let settings_apply_loop = setInterval(() => {
 			try {
-				if (settings_obj.background_image)
+				if (settings_obj.background_image !== undefined)
 					if (settings_obj.background_image.length !== 0) {
 						this.element.setAttribute("data-background-image", settings_obj.background_image);
 						this.element.style.setProperty("--ve-sm-background-image", settings_obj.background_image);
 					} else {
+						console.log("Removing!");
 						this.element.style.removeProperty("--ve-sm-background-image");
 						this.element.removeAttribute("data-background-image");
 					}
