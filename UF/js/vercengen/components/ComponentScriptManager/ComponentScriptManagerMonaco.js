@@ -16,6 +16,7 @@
  * - `.v`: {@link string}
  *
  * ##### Methods:
+ * - <span color=00ffff>{@link ve.ScriptManagerMonaco.setOptions|setOptions}</span>(arg0_options:{@link Object})
  * - <span color=00ffff>{@link ve.ScriptManagerMonaco.setTheme|setTheme}</span>(arg0_theme_name:{@link string})
  *
  * @augments ve.Component
@@ -62,7 +63,7 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 					contextmenu: true,
 					detectIndentation: false,
 					fixedOverflowWidgets: true,
-					fontFamily: computed_style_obj.getPropertyValue("--monospace-font-family"),
+					fontFamily: computed_style_obj.getPropertyValue("--monospace-font-family").replace(/"/gm, ""),
 					fontLigatures: true,
 					fontSize: 14,
 					formatOnPaste: false,
@@ -156,6 +157,13 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 		this.fireFromBinding();
 	}
 	
+	/**
+	 * Exports the current value to {@link ve.ScriptManagerBlockly}.
+	 * - Method of: {@link ve.ScriptManagerMonaco}
+	 * 
+	 * @param {boolean} [arg0_force_export=false]
+	 * @private
+	 */
 	_exportToBlockly (arg0_force_export) {
 		//Convert from parameters
 		let force_export = arg0_force_export;
@@ -183,6 +191,97 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 					}
 				}
 			} catch (e) { console.warn(e); }
+	}
+	
+	/**
+	 * Sets an option for the current code interface and pushes it to the parent {@link ve.ScriptManager}.
+	 * - Method of: {@link ve.ScriptManagerMonaco}
+	 * 
+	 * @param {string} arg0_option_key
+	 * @param {any} arg1_value
+	 * @private
+	 */
+	_setOption (arg0_option_key, arg1_value) {
+		//Convert from parameters
+		let option_key = arg0_option_key;
+		let value = arg1_value;
+		
+		//Declare local instance variables
+		let settings_obj = this.options?.script_manager?._settings;
+		
+		//Try to update the present option
+		if (settings_obj) {
+			if (!settings_obj.monaco) settings_obj.monaco = {};
+			settings_obj.monaco[option_key] = value;
+		}
+		this.setOptions({ [option_key]: value });
+	}
+	
+	/**
+	 * Returns the current options interface with the ability to update the current symbol and export it to `this.options.script_manager._settings`.
+	 * - Method of: {@link ve.ScriptManagerMonaco}
+	 * 
+	 * @param {Object} [arg0_options]
+	 *  @param {string} [arg0_options.name="Code Editor"]
+	 * 
+	 * @returns {ve.Interface}
+	 */
+	drawOptionsInterface (arg0_options) {
+		//Convert from parameters
+		let options = (arg0_options) ? arg0_options : {};
+		
+		//Declare local instance variables
+		let current_options = this.editor.getOptions();
+		let getMonacoOption = (arg0_key) => 
+			current_options.get(monaco.editor.EditorOption[arg0_key]);
+		
+		//Return statement
+		return new ve.Interface({
+			appearance: new ve.Interface({
+				font_family: new ve.Text(getMonacoOption("fontFamily"), {
+					name: "Font Family",
+					onuserchange: (v) => this._setOption("fontFamily", v)
+				}),
+				font_ligatures: new ve.Toggle(getMonacoOption("fontLigatures"), {
+					name: "Font Ligatures",
+					onuserchange: (v) => this._setOption("fontLigatures", v)
+				}),
+				font_size: new ve.Number(getMonacoOption("fontSize"), {
+					name: "Font Size",
+					onuserchange: (v) => this._setOption("fontSize", v)
+				}),
+				minimap: new ve.Toggle(getMonacoOption("minimap"), {
+					name: "Show Minimap",
+					onuserchange: (v) => this._setOption("minimap", v)
+				})
+			}, { name: "Appearance" }),
+			behaviour: new ve.Interface({
+				insert_spaces: new ve.Toggle(getMonacoOption("insertSpaces"), {
+					name: "Insert Spaces",
+					onuserchange: (v) => this._setOption("insertSpaces", v)
+				}),
+				tab_size: new ve.Number(getMonacoOption("tabSize"), {
+					name: "Tab Size",
+					onuserchange: (v) => this._setOption("tabSize", v)
+				})
+			}, { name: "Behaviour" })
+		}, {
+			name: (options.name) ? options.name : "Code Editor"
+		});
+	}
+	
+	/**
+	 * Update behaviour/symbol options for Monaco.
+	 * - Method of: {@link ve.ScriptManagerMonaco}
+	 * 
+	 * @param {Object} arg0_options
+	 */
+	setOptions (arg0_options) {
+		//Convert from parameters
+		let options = (arg0_options) ? arg0_options : {};
+		
+		//Set options for Monaco
+		this.editor.updateOptions(options);
 	}
 	
 	/**

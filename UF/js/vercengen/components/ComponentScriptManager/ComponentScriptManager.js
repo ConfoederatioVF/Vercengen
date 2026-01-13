@@ -395,6 +395,8 @@ ve.ScriptManager = class extends ve.Component {
 			settings: new ve.Button(() => {
 				if (this.settings_window) this.settings_window.close();
 				this.settings_window = new ve.Window({
+					monaco_settings: this.scene_monaco.drawOptionsInterface(),
+					
 					autosave_projects: new ve.Toggle(this._settings.autosave_projects, {
 						name: "Autosave projects",
 						onuserchange: (v) => this._settings.autosave_projects = v
@@ -776,6 +778,11 @@ ve.ScriptManager = class extends ve.Component {
 					this.setTheme(settings_obj.theme);
 				if (settings_obj.view_file_explorer !== undefined)
 					this.leftbar_file_explorer.element.style.display = (settings_obj.view_file_explorer) ? "block" : "none";
+				
+				//Monaco Settings
+				if (settings_obj.monaco)
+					this.scene_monaco.setOptions(settings_obj.monaco);
+				
 				clearInterval(settings_apply_loop);
 			} catch (e) {}
 		}, 100);
