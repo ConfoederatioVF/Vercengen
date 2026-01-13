@@ -41,7 +41,8 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 			this.element.setAttribute("component", "ve-script-manager-monaco");
 			HTML.setAttributesObject(this.element, options.attributes);
 		
-		let computed_style_obj = window.getComputedStyle(this.element);
+		let computed_style_obj = window.getComputedStyle(document.body);
+		let default_font_family = computed_style_obj.getPropertyValue("--monospace-font-family").replace(/"/gm, "");
 		this.options = options;
 		this._default_options = {
 			autoIndent: "advanced",
@@ -49,13 +50,14 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 			contextmenu: true,
 			detectIndentation: false,
 			fixedOverflowWidgets: true,
-			fontFamily: computed_style_obj.getPropertyValue("--monospace-font-family").replace(/"/gm, ""),
+			fontFamily: default_font_family,
 			fontLigatures: true,
 			fontSize: 14,
 			formatOnPaste: false,
 			insertSpaces: true,
 			minimap: { enabled: true },
-			tabSize: 2
+			tabSize: 2,
+			wordWrap: "on"
 		};
 		this._pending_value = (value === null || value === undefined) ? "" : value.toString();
 		this._theme = (options.theme) ? options.theme : "nord";
@@ -250,9 +252,16 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 					name: "Font Size",
 					onuserchange: (v) => this._setOption("fontSize", v)
 				}),
-				minimap: new ve.Toggle(getMonacoOption("minimap"), {
+				minimap: new ve.Toggle((getMonacoOption("minimap.enabled")) ? getMonacoOption("minimap.enabled") : true, {
 					name: "Show Minimap",
-					onuserchange: (v) => this._setOption("minimap", v)
+					onuserchange: (v) => {
+						this._setOption("minimap.enabled", v);
+						this.setOptions({ minimap: { enabled: v } });
+					}
+				}),
+				word_wrap: new ve.Toggle((getMonacoOption("wordWrap") === "on"), {
+					name: "Word Wrap",
+					onuserchange: (v) => this._setOption("wordwrap", (v) ? "on" : "off")
 				})
 			}, { name: "Appearance" }),
 			behaviour: new ve.Interface({
@@ -330,6 +339,12 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 	setOptions (arg0_options) {
 		//Convert from parameters
 		let options = (arg0_options) ? arg0_options : {};
+		
+		//Initialise options bindings
+		if (options["minimap.enabled"] !== undefined) {
+			if (!options.minimap) options.minimap = {};
+			options.minimap.enabled = options["minimap.enabled"];
+		}
 		
 		//Set options for Monaco
 		this.editor.updateOptions(options);

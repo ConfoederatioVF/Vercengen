@@ -202,8 +202,16 @@ ve.ScriptManager.FindAndReplace = class {
 				let all_files = await fs.promises.readdir(current_path);
 				
 				for (let local_file of all_files) {
+					let continue_search = false;
+					let file_path = path.join(current_path, local_file);
+					
 					if (this.cancel_search) return;
-					if (this.ignore_files.includes(local_file)) continue;
+					for (let i = 0; i < this.ignore_files.length; i++)
+						if (file_path.includes(this.ignore_files[i])) {
+							continue_search = true;
+							break;
+						}
+					if (continue_search) continue;
 					
 					//Recursion
 					await this._traverse(path.join(current_path, local_file), pattern, replace_string, stats, callbacks);

@@ -96,23 +96,22 @@
             display: none;
         }
     }
+    #scene [component="ve-script-manager-blockly"], #scene [component="ve-script-manager-monaco"] {
+        box-sizing: border-box;
+    }
     #scene[data-selected-view="blockly"] [component="ve-script-manager-blockly"] {
         border: var(--cell-padding) solid var(--accent-tertiary-colour);
         border-left: 0 solid transparent;
         border-top: 0 solid transparent;
-        box-sizing: border-box;
     }
     #scene[data-selected-view="monaco"] [component="ve-script-manager-monaco"] {
         border: var(--cell-padding) solid var(--accent-tertiary-colour);
-        box-sizing: border-box;
     }
     #scene[data-blockly-change="true"] [component="ve-script-manager-monaco"] {
         border: var(--cell-padding) solid rgba(255, 255, 0, 0.5);
-        box-sizing: border-box;
     }
     #scene[data-monaco-change="true"] [component="ve-script-manager-blockly"] {
         border: var(--cell-padding) solid rgba(255, 255, 0, 0.5);
-        box-sizing: border-box;
     }
     
     #scene-monaco {
@@ -134,6 +133,32 @@
         }
     }
 }
+[component="ve-script-manager"][data-background-image] .monaco-editor {
+    --vscode-editor-background: transparent !important;
+    --vscode-editorGutter-background: transparent !important;
+    
+    .decorationsOverviewRuler { opacity: 0.9; }
+    .minimap { opacity: 0.8 !important; }
+    .view-overlays .current-line {
+        background-color: var(--hover-colour);
+    }
+}
+[component="ve-script-manager"][data-background-image] .blocklyWorkspace rect.blocklyMainBackground {
+    fill-opacity: 0;
+}
+[component="ve-script-manager"][data-background-image]:before {
+    content: " ";
+    height: 100%;
+    left: 0;
+    opacity: 0.5;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: -1;
+    
+    background: var(--ve-sm-background-image);
+    background-size: cover !important;
+}
 [component="ve-script-manager"]:has(#file-name[data-is-saved="false"])
     [component="ve-script-manager-monaco"] {
         border-left: var(--cell-padding) solid rgba(240, 60, 60, 0.5);   
@@ -150,7 +175,10 @@
     padding: 0;
     position: relative;
     width: 100%; /* -- Updated to 100% to fill the flex item -- */
-    
+
+    .blocklySvg {
+        background-color: transparent;
+    }
     .blocklyToolboxDiv {
         padding-bottom: var(--padding);
     }

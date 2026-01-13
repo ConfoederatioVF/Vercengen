@@ -413,6 +413,18 @@ ve.ScriptManager = class extends ve.Component {
 						name: "Manual synchronisation",
 						onuserchange: (v) => this._settings.manual_synchronisation = v
 					}),
+					background: new ve.Text(this._settings.background_image, {
+						name: "Background",
+						onuserchange: (v) => {
+							if (v.isURL()) v = `url(${v})`;
+							
+							this._settings.background_image = v;
+							this.loadSettings({ background_image: this._settings.background_image });
+						},
+						style: {
+							'input[type="text"]': { maxWidth: "20rem" }
+						}
+					}),
 					scene_height: new ve.Number(Math.returnSafeNumber(this._settings.scene_height, 0), {
 						name: "Scene height (px)",
 						min: 0,
@@ -753,6 +765,14 @@ ve.ScriptManager = class extends ve.Component {
 		let scriptmanager_settings = ve.registry.settings.ScriptManager;
 		let settings_apply_loop = setInterval(() => {
 			try {
+				if (settings_obj.background_image)
+					if (settings_obj.background_image.length !== 0) {
+						this.element.setAttribute("data-background-image", settings_obj.background_image);
+						this.element.style.setProperty("--ve-sm-background-image", settings_obj.background_image);
+					} else {
+						this.element.style.removeProperty("--ve-sm-background-image");
+						this.element.removeAttribute("data-background-image");
+					}
 				if (settings_obj.project_folder)
 					settings_obj.project_folder = (fs.existsSync(settings_obj.project_folder) && fs.statSync(settings_obj.project_folder).isDirectory()) ?
 						settings_obj.project_folder : "none";
