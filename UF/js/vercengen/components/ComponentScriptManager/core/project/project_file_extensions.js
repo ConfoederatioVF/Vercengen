@@ -1,5 +1,5 @@
 //Initialise functions
-{
+{ //[WIP] - Refactor logic at a later date to not have redundant file extension maps
 	ve.ScriptManager._getFileExtension = function (arg0_file_extension) {
 		//Convert from parameters
 		let file_extension = (arg0_file_extension) ? arg0_file_extension : "";
@@ -297,4 +297,3 @@
 		ve.ScriptManager._saveConfig.call(this);
 	};
 }
-
