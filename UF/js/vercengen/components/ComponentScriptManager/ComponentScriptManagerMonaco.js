@@ -43,6 +43,20 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 		
 		let computed_style_obj = window.getComputedStyle(this.element);
 		this.options = options;
+		this._default_options = {
+			autoIndent: "advanced",
+			automaticLayout: true,
+			contextmenu: true,
+			detectIndentation: false,
+			fixedOverflowWidgets: true,
+			fontFamily: computed_style_obj.getPropertyValue("--monospace-font-family").replace(/"/gm, ""),
+			fontLigatures: true,
+			fontSize: 14,
+			formatOnPaste: false,
+			insertSpaces: true,
+			minimap: { enabled: true },
+			tabSize: 2
+		};
 		this._pending_value = (value === null || value === undefined) ? "" : value.toString();
 		this._theme = (options.theme) ? options.theme : "nord";
 		
@@ -58,19 +72,7 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 					language: "javascript",
 					theme: "vs-dark", // Placeholder, we set the real theme immediately after
 					
-					autoIndent: "advanced",
-					automaticLayout: true,
-					contextmenu: true,
-					detectIndentation: false,
-					fixedOverflowWidgets: true,
-					fontFamily: computed_style_obj.getPropertyValue("--monospace-font-family").replace(/"/gm, ""),
-					fontLigatures: true,
-					fontSize: 14,
-					formatOnPaste: false,
-					insertSpaces: true,
-					minimap: { enabled: true },
-					tabSize: 2,
-					
+					...this._default_options,
 					...this.options.monaco_options
 				});
 				
@@ -222,6 +224,7 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 	 * - Method of: {@link ve.ScriptManagerMonaco}
 	 * 
 	 * @param {Object} [arg0_options]
+	 *  @param {boolean} [arg0_options.do_not_cache=false]
 	 *  @param {string} [arg0_options.name="Code Editor"]
 	 * 
 	 * @returns {ve.Interface}
@@ -231,12 +234,9 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 		let options = (arg0_options) ? arg0_options : {};
 		
 		//Declare local instance variables
-		let current_options = this.editor.getOptions();
-		let getMonacoOption = (arg0_key) => 
-			current_options.get(monaco.editor.EditorOption[arg0_key]);
-		
-		//Return statement
-		return new ve.Interface({
+		let current_options = this.editor.getRawOptions();
+		let getMonacoOption = (arg0_key) => current_options[arg0_key];
+		let new_interface = new ve.Interface({
 			appearance: new ve.Interface({
 				font_family: new ve.Text(getMonacoOption("fontFamily"), {
 					name: "Font Family",
@@ -264,10 +264,61 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 					name: "Tab Size",
 					onuserchange: (v) => this._setOption("tabSize", v)
 				})
-			}, { name: "Behaviour" })
+			}, { name: "Behaviour" }),
+			reset_monaco_settings: new ve.Button(() => {
+				//Declare local instance variables
+				let computed_style_obj = window.getComputedStyle(this.element);
+				let settings_obj = this.options?.script_manager?._settings;
+				
+				//Update the present option if possible
+				if (settings_obj)
+					settings_obj.monaco = {};
+				this._default_options.fontFamily = computed_style_obj.getPropertyValue("--monospace-font-family").replace(/"/gm, "");
+				this.refresh();
+				setTimeout(() => {
+					let new_interface = this.drawOptionsInterface({
+						...options,
+						do_not_cache: true
+					});
+					
+					//Swap out interface
+					this.options_interface.element.innerHTML = "";
+					this.options_interface.element.replaceWith(new_interface.element);
+					this.options_interface.element = new_interface.element;
+					this.options_interface.v = new_interface.components_obj;
+				}, 100);
+			}, { name: "Reset Code Editor Settings" })
 		}, {
 			name: (options.name) ? options.name : "Code Editor"
 		});
+		if (!options.do_not_cache)
+			this.options_interface = new_interface;
+		
+		//Return statement
+		return new_interface;
+	}
+	
+	refresh () {
+		//Declare local instance variables
+		let computed_style_obj = window.getComputedStyle(this.element);
+		let current_value = this.editor.getValue();
+		let view_state = this.editor.saveViewState();
+		
+		//Dispose the current editor and refresh it
+		this.editor.dispose();
+		this.editor = monaco.editor.create(this.element, {
+			value: current_value,
+			language: "javascript",
+			theme: "vs-dark", // Placeholder, we set the real theme immediately after
+			
+			...this._default_options,
+			...this.options.monaco_options
+		});
+		
+		//Apply current theme; restore view state
+		if (this._theme)
+			this.setTheme(this._theme);
+		this.editor.restoreViewState(view_state);
 	}
 	
 	/**
