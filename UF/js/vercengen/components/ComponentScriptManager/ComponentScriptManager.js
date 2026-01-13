@@ -806,7 +806,7 @@ ve.ScriptManager = class extends ve.Component {
 				if (settings_obj.theme)
 					this.setTheme(settings_obj.theme);
 				if (settings_obj.view_file_explorer !== undefined)
-					this.leftbar_file_explorer.element.style.display = (settings_obj.view_file_explorer) ? "block" : "none";
+					this.leftbar_el.style.display = (settings_obj.view_file_explorer) ? "block" : "none";
 				
 				//Monaco Settings
 				if (settings_obj.monaco)
