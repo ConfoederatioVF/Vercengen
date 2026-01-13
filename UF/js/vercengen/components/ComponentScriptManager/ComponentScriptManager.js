@@ -16,6 +16,7 @@
  *   - `.folder_path=process.cwd()`: {@link string}
  *   - `.save_extension=[".*"]`: {@link Array}<{@link string}>
  * 	 - `.settings`: {@link Object}
+ * 	   - `.autosave_projects=true`: {@link boolean}
  * 	   - `.display_load_errors=false`: {@link boolean}
  * 	   - `.monaco_theme="nord"`: {@link string}
  * 	   - `.index_documentation=true`: {@link boolean}
@@ -29,6 +30,7 @@
  * ##### Instance:
  * - `.console_el`: {@link HTMLElement}
  *   - `.print`: {@link function}(arg0_message:{@link string}, arg1_type:{@link string}) - arg1_type is either 'message'/'error'.
+ * - `._file_path`: {@link string} - The file path currently opened.
  * - `.leftbar_file_explorer`: {@link ve.FileExplorer}
  * - `.scene_blockly`: {@link ve.ScriptManagerBlockly}
  * - `.scene_monaco`: {@link ve.ScriptManagerMonaco}
@@ -122,6 +124,7 @@ ve.ScriptManager = class extends ve.Component {
 			"krtheme": "krTheme",
 			"monoindustrial": "monoindustrial"
 		};
+		this._selected_view = "monaco";
 		this._settings = {
 			is_vercengen_script_manager_settings: true,
 			
@@ -129,6 +132,7 @@ ve.ScriptManager = class extends ve.Component {
 			project_folder: "none",
 			
 			//Settings
+			autosave_projects: true,
 			index_documentation: true,
 			log_large_objects_in_console: false,
 			manual_synchronisation: true,
@@ -202,9 +206,7 @@ ve.ScriptManager = class extends ve.Component {
 			});
 		
 		this.container_el = document.createElement("div");
-		this.container_el.id = "container";
-		this.container_el.style.display = "flex";
-		this.container_el.style.flexDirection = "row";
+			this.container_el.id = "container";
 		
 		this.leftbar_el = document.createElement("div");
 		this.leftbar_el.id = "leftbar";
@@ -292,7 +294,7 @@ ve.ScriptManager = class extends ve.Component {
 				return this.scene_monaco.v;
 			},
 			
-			onchange: (v, e) => ve.ScriptManager._drawFileExplorer.call(this, v, e)
+			onrefresh: (v, e) => ve.ScriptManager._drawFileExplorer.call(this, v, e)
 		});
 		this.leftbar_file_explorer.bind(this.leftbar_el);
 		this.leftbar_status_el = document.createElement("div");
@@ -300,13 +302,45 @@ ve.ScriptManager = class extends ve.Component {
 			this.leftbar_el.appendChild(this.leftbar_status_el);
 		this.scene_el = document.createElement("div");
 			this.scene_el.id = "scene";
-		this.scene_blockly = new ve.ScriptManagerBlockly();
+		this.scene_blockly = new ve.ScriptManagerBlockly(undefined, {
+			script_manager: this,
+			
+			onload: (v, e) => {
+				e.element.addEventListener("click", (e) => {
+					if (this._selected_view && this._selected_view === "monaco")
+						if (this._settings.manual_synchronisation && this._monaco_change)
+							ve.ScriptManager._synchroniseViews.call(this, "monaco");
+					this.scene_el.setAttribute("data-selected-view", "blockly");
+					this._selected_view = "blockly";
+				});
+			},
+			onuserchange: (v, e) => {
+				this._blockly_change = true;
+			}
+		});
 		this.scene_blockly_el = this.scene_blockly.element;
 			this.scene_blockly_el.id = "scene-blockly";
 		
 		this.scene_monaco = new ve.ScriptManagerMonaco(undefined, {
 			script_manager: this,
-			theme: this._settings.monaco_theme
+			theme: this._settings.monaco_theme,
+			
+			onload: (v, e) => {
+				e.element.addEventListener("click", (e) => {
+					if (this._selected_view && this._selected_view === "blockly")
+						if (this._settings.manual_synchronisation && this._blockly_change)
+							ve.ScriptManager._synchroniseViews.call(this, "blockly");
+					this.scene_el.setAttribute("data-selected-view", "monaco");
+					this._selected_view = "monaco";
+				});
+			},
+			onuserchange: (v, e) => {
+				console.trace();
+				console.log(v, e);
+				this._monaco_change = true;
+				if (this._settings.autosave_projects)
+					ve.ScriptManager._autosave.call(this);
+			}
 		});
 			this.scene_monaco_initialisation_loop = setInterval(() => {
 				try {
@@ -354,13 +388,17 @@ ve.ScriptManager = class extends ve.Component {
 					//Project Header
 					`${(!options.do_not_display_project_name) ? `<div id = "project-name"><b>${(this._settings.project_folder !== "none") ? this._settings.project_folder : loc("ve.registry.localisation.ScriptManager_no_project")}</b></div>` : ""}`,
 					//File Header
-					`${(!options.do_not_display_file_name) ? `- <span id = "file-name">${(this._file_path) ? this._file_path : loc("ve.registry.localisation.ScriptManager_none")}</span>` : ""}`
+					`${(!options.do_not_display_file_name) ? `- <span id = "file-name" data-is-saved="${this._is_file_saved}">${(this._file_path) ? this._file_path : loc("ve.registry.localisation.ScriptManager_none")}</span>` : ""}`
 				].join("");
 			},
 			{ style: { marginRight: "1rem", overflow: "clip", width: "19rem" } }),
 			settings: new ve.Button(() => {
 				if (this.settings_window) this.settings_window.close();
 				this.settings_window = new ve.Window({
+					autosave_projects: new ve.Toggle(this._settings.autosave_projects, {
+						name: "Autosave projects",
+						onuserchange: (v) => this._settings.autosave_projects = v
+					}),
 					index_documentation: new ve.Toggle(this._settings.index_documentation, {
 						name: "Index documentation",
 						onuserchange: (v) => this._settings.index_documentation = v
@@ -577,6 +615,11 @@ ve.ScriptManager = class extends ve.Component {
 		this.scriptmanager_initialisation_loop = setInterval(() => {
 			this._drawHeight();
 			clearInterval(this.scriptmanager_initialisation_loop);
+		}, 100);
+		
+		this._is_file_saved = false;
+		this.logic_loop = setInterval(() => {
+			ve.ScriptManager._projectLogicLoop.call(this);
 		}, 100);
 		
 		//Populate element and initialise handlers

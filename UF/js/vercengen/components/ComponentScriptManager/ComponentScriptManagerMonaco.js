@@ -95,23 +95,8 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 				
 				// 4. Handle value changes and sync to Blockly
 				this.editor.onDidChangeModelContent(() => {
-					try {
-						if (!this.to_binding_fire_silently) {
-							let manager_el = this.element.closest(`[component="ve-script-manager"]`);
-							let blockly_el = (manager_el) ?
-								manager_el.querySelector(`[component="ve-script-manager-blockly"]`) :
-								undefined;
-							
-							if (blockly_el && blockly_el.instance) {
-								let blockly_obj = blockly_el.instance;
-								
-								blockly_obj.to_binding_fire_silently = true;
-								blockly_obj.v = this.editor.getValue();
-							}
-							
-							this.fireToBinding();
-						}
-					} catch (e) { console.warn(e); }
+					this._exportToBlockly();
+					this.fireToBinding();
 				});
 				
 				//Clear pending
@@ -148,6 +133,7 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 		//Convert from parameters
 		let value = (arg0_value === null || arg0_value === undefined) ? "" : String(arg0_value);
 		
+		this.do_not_fire_to_binding = true;
 		if (!this.editor) {
 			this._pending_value = value;
 		} else {
@@ -156,8 +142,38 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 				this.editor.setValue(value);
 			}
 		}
+		delete this.do_not_fire_to_binding;
 		
 		this.fireFromBinding();
+	}
+	
+	_exportToBlockly (arg0_force_export) {
+		//Convert from parameters
+		let force_export = arg0_force_export;
+		
+		//Declare local instance variables
+		let should_export = false;
+			if (this.options.script_manager && !this.options.script_manager._settings.manual_synchronisation)
+				should_export = true;
+			if (force_export) should_export = true;
+		
+		//Only export if should_export is true
+		if (should_export)
+			try {
+				if (!this.to_binding_fire_silently) {
+					let manager_el = this.element.closest(`[component="ve-script-manager"]`);
+					let blockly_el = (manager_el) ?
+						manager_el.querySelector(`[component="ve-script-manager-blockly"]`) :
+						undefined;
+					
+					if (blockly_el && blockly_el.instance) {
+						let blockly_obj = blockly_el.instance;
+						
+						blockly_obj.to_binding_fire_silently = true;
+						blockly_obj.v = this.editor.getValue();
+					}
+				}
+			} catch (e) { console.warn(e); }
 	}
 	
 	/**

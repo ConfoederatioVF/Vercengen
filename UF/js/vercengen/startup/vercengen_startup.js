@@ -164,9 +164,9 @@ global.path = require("path");
 	 * @returns {Array<string>} The final, ordered list of file paths.
 	 */
 	ve.getImportFiles = function (patterns) { //[WIP] - Refactor from AI
-		const base = process.cwd();
-		const finalFiles = [];
-		const handledPaths = new Set(); // Tracks files that have already been placed.
+		let base = process.cwd();
+		let finalFiles = [];
+		let handledPaths = new Set(); // Tracks files that have already been placed.
 		const excludedPaths = new Set(); // Tracks files explicitly excluded by `!`.
 		
 		// Process patterns in reverse order (from last to first).
@@ -182,7 +182,7 @@ global.path = require("path");
 			if (pattern.includes("*")) {
 				files = ve.getWildcardsInFolder(base, pattern);
 			} else {
-				const absolutePath = path.resolve(base, pattern);
+				let absolutePath = path.resolve(base, pattern);
 				if (fs.existsSync(absolutePath)) {
 					// Use your original, RECURSIVE function for directories.
 					if (fs.statSync(absolutePath).isDirectory()) {

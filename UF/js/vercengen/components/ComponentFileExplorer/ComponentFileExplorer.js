@@ -16,6 +16,7 @@
  *   - `.folder_options`: {@link Object}
  *   - `.name`: {@link string}
  *   - `.navigation_only=false`: {@link boolean}
+ *   - `.onrefresh`: {@link function}(v:{@link ve.FileExplorer.v}, arg1_e:{@link ve.FileExplorer})
  *   - 
  *   - `.load_function`: {@link function}(arg0_data:{@link string}, arg1_file_path:{@link string}) - Automatically loads the text content of a valid extension into this function.
  *   - `.save_extension`: {@link Array}<{@link string}>|{@link string} - The save dot extension that files can be loaded from. `.*` refers to all file extensions.
@@ -133,6 +134,18 @@ ve.FileExplorer = class extends ve.Component {
 		this.name = this.options.name;
 		this.value = value;
 		this.refresh();
+		
+		this.logic_loop = setInterval(() => {
+			let current_files = fs.readdirSync(this.v).join("");
+			
+			if (this._checksum === undefined) {
+				this._checksum = current_files;
+			} else if (current_files !== this._checksum) {
+				this.refresh();
+				this._checksum = current_files;
+				this.fireFromBinding();
+			}
+		}, 100);
 	}
 	
 	/**
@@ -584,7 +597,13 @@ ve.FileExplorer = class extends ve.Component {
 								name: `<icon>sync_arrow_down</icon>`,
 								tooltip: loc("ve.registry.localisation.FileExplorer_load_save_file"),
 								limit: () => this.options.load_function && (this.options.save_extension === undefined || this.options.save_extension.includes(path.extname(local_full_path)) || this.options.save_extension.includes(".*")),
-								style: { padding: `var(--cell-padding)` }
+								style: {
+									"#name icon": { 
+										justifyContent: "normal",
+										transform: "translateX(0.25rem)"
+									},
+									padding: `var(--cell-padding)` 
+								}
 							}),
 							...Object.fromEntries(
 								Object.entries(this.options.file_components_obj).map(([local_key, local_component]) => {
@@ -622,6 +641,8 @@ ve.FileExplorer = class extends ve.Component {
 		setTimeout(() => {
 			this.hierarchy.setOwner(this.owner, [this.owner]);
 		});
+		if (this.options.onrefresh)
+			this.options.onrefresh(this.v, this);
 	}
 	
 	/**

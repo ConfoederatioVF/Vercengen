@@ -5,9 +5,6 @@
 		let value = arg0_value;
 		let component_obj = arg1_component_obj;
 		
-		//Redraw file explorer first
-		component_obj.refresh();
-		
 		//Detect file paths via data-path attribute and check against folder data to draw icons/classes
 		let all_hierarchy_datatypes = component_obj.element.querySelectorAll(`[component="ve-hierarchy-datatype"][data-path]`);
 		

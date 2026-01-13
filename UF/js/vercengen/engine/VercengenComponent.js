@@ -153,7 +153,7 @@ ve.Component = class {
 			//.onload handler
 			if (this.options.onload)
 				setTimeout(() => {
-					this.options.onload(this);
+					this.options.onload(this.v, this);
 				}, 100);
 			
 			//KEEP AT BOTTOM! - Feature/UI handlers
@@ -304,7 +304,7 @@ ve.Component = class {
 		let variable_string = this.to_binding;
 		
 		//Internal guard clause if this.do_not_fire_to_binding is active
-		if (this.do_not_fire_to_binding) return;
+		if (this.do_not_fire_to_binding || this.to_binding_fire_silently) return;
 		this.from_binding_fire_silently = true;
 		
 		//Internal guard clause if this.to_binding is not defined
@@ -503,6 +503,8 @@ ve.Component = class {
 		//Clear element first if available
 		if (typeof this.clear === "function")
 			this.clear();
+		if (this.logic_loop !== undefined)
+			clearInterval(this.logic_loop);
 		
 		//Iterate over l instances in child_class_obj.instances if available
 		if (child_class_obj.instances && this.id)

@@ -34,6 +34,7 @@ canvas, iframe { user-select: none; }
     
     --accent-primary-colour: rgba(200, 40, 40);
     --accent-secondary-colour: rgba(240, 60, 60);
+    --accent-tertiary-colour: rgba(255, 255, 255, 0.15);
     --bg-primary-colour: rgba(0, 0, 0, 0.85);
     --bg-secondary-colour: rgba(35, 35, 35);
     --hover-colour: rgba(255, 255, 255, 0.3);

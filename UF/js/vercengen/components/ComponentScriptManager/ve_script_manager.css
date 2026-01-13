@@ -55,6 +55,10 @@
     background-color: var(--accent-primary-colour);
 }
 [component="ve-script-manager"] {
+    #container {
+        display: flex;
+        flex-direction: row;
+    }
     #leftbar {
         padding-top: var(--cell-padding);
         
@@ -92,6 +96,25 @@
             display: none;
         }
     }
+    #scene[data-selected-view="blockly"] [component="ve-script-manager-blockly"] {
+        border: var(--cell-padding) solid var(--accent-tertiary-colour);
+        border-left: 0 solid transparent;
+        border-top: 0 solid transparent;
+        box-sizing: border-box;
+    }
+    #scene[data-selected-view="monaco"] [component="ve-script-manager-monaco"] {
+        border: var(--cell-padding) solid var(--accent-tertiary-colour);
+        box-sizing: border-box;
+    }
+    #scene[data-blockly-change="true"] [component="ve-script-manager-monaco"] {
+        border: var(--cell-padding) solid rgba(255, 255, 0, 0.5);
+        box-sizing: border-box;
+    }
+    #scene[data-monaco-change="true"] [component="ve-script-manager-blockly"] {
+        border: var(--cell-padding) solid rgba(255, 255, 0, 0.5);
+        box-sizing: border-box;
+    }
+    
     #scene-monaco {
         height: 100%;
     }
@@ -103,8 +126,22 @@
         [component="ve-button"] {
             margin-right: calc(var(--cell-padding)*2);
         }
+        #file-name[data-is-saved="false"] {
+            font-style: oblique;
+        }
+        #file-name[data-is-saved="false"]:after {
+            content: "*";
+        }
     }
 }
+[component="ve-script-manager"]:has(#file-name[data-is-saved="false"])
+    [component="ve-script-manager-monaco"] {
+        border-left: var(--cell-padding) solid rgba(240, 60, 60, 0.5);   
+    }
+[component="ve-script-manager"]:has(#file-name[data-is-saved="true"])
+    [component="ve-script-manager-monaco"] {
+        border-left: var(--cell-padding) solid rgba(60, 240, 60, 0.5);
+    }
 [component="ve-script-manager-blockly"] {
     display: block;
     height: 100%;

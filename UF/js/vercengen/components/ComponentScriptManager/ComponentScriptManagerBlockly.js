@@ -9,6 +9,7 @@
  * ##### Constructor:
  * - `arg0_value`: {@link string} - The code to input into the present Blockly viewer.
  * - `arg1_options`: {@link Object}
+ *   - `.script_manager`: {@link ve.ScriptManager}
  *
  * ##### Instance:
  * - `.workspace`: {@link Blockly.Workspace}
@@ -72,29 +73,9 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		
 		//Call after Blockly initialization
 		this.interceptBlocklyTransforms();
-		this.workspace.addChangeListener((e) => {
-			let blockly_value = Blockly.JavaScript.workspaceToCode(Blockly.mainWorkspace);
-			
-			if (!this.to_binding_fire_silently)
-				try {
-					//Traverse up to the ScriptManager container, then search down for Monaco
-					let manager_el = this.element.closest(`[component="ve-script-manager"]`);
-					let monaco_el = (manager_el) ?
-						manager_el.querySelector(`[component="ve-script-manager-monaco"]`) :
-						undefined;
-					
-					if (monaco_el && monaco_el.instance) {
-						let monaco_obj = monaco_el.instance;
-						
-						console.trace(`Monaco is being set via here!`)
-						
-						monaco_obj.to_binding_fire_silently = true;
-						monaco_obj.v = blockly_value;
-						delete monaco_obj.to_binding_fire_silently;
-						
-						this.fireToBinding();
-					}
-				} catch (e) { console.error(e); }
+		this.workspace.addChangeListener(() => {
+			this._exportToMonaco();
+			this.fireToBinding(); 
 		});
 		
 		this.fixBlocklyScaling();
@@ -136,6 +117,39 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		js2blocks.parseCode(value);
 		setTimeout(() => delete this.to_binding_fire_silently, 100);
 		this.fireFromBinding();
+	}
+	
+	_exportToMonaco (arg0_force_export) {
+		//Convert from parameters
+		let force_export = arg0_force_export;
+		
+		try {
+			//Declare local instance variables
+			let blockly_value = Blockly.JavaScript.workspaceToCode(Blockly.mainWorkspace);
+			let should_export = false;
+			if (this.options.script_manager && !this.options.script_manager._settings.manual_synchronisation)
+				should_export = true;
+			if (force_export) should_export = true;
+			
+			//Only export if should_export is true
+			if (should_export)
+				if (!this.to_binding_fire_silently)
+					try {
+						//Traverse up to the ScriptManager container, then search down for Monaco
+						let manager_el = this.element.closest(`[component="ve-script-manager"]`);
+						let monaco_el = (manager_el) ?
+							manager_el.querySelector(`[component="ve-script-manager-monaco"]`) :
+							undefined;
+						
+						if (monaco_el && monaco_el.instance) {
+							let monaco_obj = monaco_el.instance;
+							
+							monaco_obj.to_binding_fire_silently = true;
+							monaco_obj.v = blockly_value;
+							delete monaco_obj.to_binding_fire_silently;
+						}
+					} catch (e) { console.error(e); }
+		} catch (e) {}
 	}
 	
 	/**
