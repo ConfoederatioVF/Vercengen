@@ -215,10 +215,26 @@ ve.ScriptManager = class extends ve.Component {
 			context_menu: new ve.Button((v, e) => {
 				let local_hierarchy_datatype = e.owners[e.owners.length - 2];
 				
+				let default_file_extension = "";
+				let is_file = local_hierarchy_datatype.element.getAttribute("data-file");
 				let local_file_path = local_hierarchy_datatype.element.getAttribute("data-path");
+				let local_file_obj = (this.config.files[local_file_path]) ? 
+					this.config.files[local_file_path] : {};
+				
+				if (is_file)
+					default_file_extension = ve.ScriptManager._getFileExtension(path.extname(local_file_path));
 				
 				if (this.file_context_menu) this.file_context_menu.close();
 				this.file_context_menu = new ve.ContextMenu({
+					override_file_type: new ve.Select(ve.ScriptManager._getFileExtensions({ return_select_obj: true }), {
+						name: "Mark as File Type",
+						limit: () => is_file,
+						selected: (local_file_obj.type) ? local_file_obj.type : default_file_extension,
+						
+						onuserchange: (v) => {
+							ve.ScriptManager._setFileExtension.call(this, local_file_path, v);
+						}
+					}),
 					mark_source_as_excluded: new ve.Button(() => {
 						ve.ScriptManager._setSourceAsMode.call(this, local_file_path, "excluded");
 					}, {
