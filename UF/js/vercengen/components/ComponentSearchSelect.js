@@ -1,7 +1,7 @@
 /**
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  * 
- * Search select/filter component used as a raw interface pool with a searchbar in which users can look up matching items with selected 'data-' attributes.
+ * Search select/filter component used as a raw interface pool with a searchbar in which users can look up matching items with selected 'data-' attributes. Elements with the attribute `ve-display=true` will always be shown.
  * - Functional binding: <span color=00ffff>veSearchSelect</span>().
  * 
  * ##### Constructor:
@@ -12,6 +12,7 @@
  *   - `.hide_filter=false`: {@link boolean} - Whether to hide the filter tool.
  *   - `.filter_names`: {@link Object}
  *     - `<attribute_key>`: {@link string}
+ *   - `.search_keys=["name"]`: {@link Array}<{@link string}>
  *     
  * ##### Instance:
  * - `.components_obj`: {@link Object}<{@link ve.Component}>
@@ -38,6 +39,7 @@ ve.SearchSelect = class extends ve.Component {
 			
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
+		options.search_keys = (options.search_keys) ? options.search_keys : ["name"];
 		options.style = {
 			padding: 0,
 			...options.style
@@ -189,11 +191,20 @@ ve.SearchSelect = class extends ve.Component {
 			for (let i = 0; i < all_search_select_els.length; i++)
 				all_search_select_els[i].style.display = (this.options.display) ? this.options.display : "inline";
 		} else {
-			
+			//Iterate over all search_select_els
 			for (let i = 0; i < all_search_select_els.length; i++) {
+				let has_valid_substring = false;
 				let show_element = false;
 				
-				if (all_search_select_els[i].instance.name.toLowerCase().trim().indexOf(this.search_value.toLowerCase().trim()) !== -1) {
+				//Iterate over all this.options.search_keys to assess has_valid_substring
+				for (let x = 0; x < this.options.search_keys.length; x++)
+					if (all_search_select_els[i].instance[this.options.search_keys[x]].toLowerCase().trim().indexOf(this.search_value.toLowerCase().trim()) !== -1) {
+						has_valid_substring = true;
+						break;
+					}
+				
+				//If it has a valid substring, look for valid attributes
+				if (has_valid_substring) {
 					//Check if element has data- attribute in filters
 					let has_valid_attribute = false;
 					
@@ -209,6 +220,8 @@ ve.SearchSelect = class extends ve.Component {
 					if (has_valid_attribute)
 						show_element = true;
 				}
+				if (all_search_select_els[i].getAttribute("ve-display"))
+					show_element = true;
 				
 				if (show_element || all_search_select_els[i]?.instance?.options?.disabled === true) {
 					all_search_select_els[i].style.display = (this.options.display) ? this.options.display : "inline";
