@@ -8,3 +8,4 @@
     font-family: var(--body-font-family) !important;
     position: absolute;
 }
+.monaco-editor-background { background-color: transparent !important; }

@@ -55,6 +55,8 @@
     background-color: var(--accent-primary-colour);
 }
 [component="ve-script-manager"] {
+    --ve-script-manager-bg-opacity: 0;
+    
     #container {
         display: flex;
         flex-direction: row;
@@ -134,8 +136,11 @@
     }
 }
 [component="ve-script-manager"][data-background-image] .monaco-editor {
-    --vscode-editor-background: transparent !important;
-    --vscode-editorGutter-background: transparent !important;
+    --vscode-editor-background: color-mix(in srgb, var(--ve-sm-background-colour), transparent calc(100% - var(--ve-sm-background-opacity))) !important;
+    --vscode-editorGutter-background: color-mix(in srgb, 
+        var(--ve-sm-background-colour), 
+        transparent calc(100% - var(--ve-sm-background-opacity)*1.5)
+    ) !important;
     
     .decorationsOverviewRuler { opacity: 0.9; }
     .minimap { opacity: 0.8 !important; }
@@ -177,7 +182,7 @@
     width: 100%; /* -- Updated to 100% to fill the flex item -- */
 
     .blocklySvg {
-        background-color: transparent;
+        background-color: color-mix(in srgb, var(--ve-sm-background-colour), transparent calc(100% - var(--ve-sm-background-opacity)));
     }
     .blocklyToolboxDiv {
         padding-bottom: var(--padding);

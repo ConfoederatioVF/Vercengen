@@ -424,6 +424,21 @@ ve.ScriptManager = class extends ve.Component {
 								'input[type="text"]': { maxWidth: "20rem" }
 							}
 						}),
+						background_colour: new ve.Colour(this._settings.background_colour, {
+							name: "Background Colour",
+							onuserchange: (v, e) => {
+								this._settings.background_colour = e.getHex();
+								this.loadSettings({ background_colour: this._settings.background_colour });
+							}
+						}),
+						background_opacity: new ve.Range(Math.returnSafeNumber(this._settings.background_opacity, 0.5), {
+							name: "Background Opacity",
+							onuserchange: (v) => {
+								this._settings.background_opacity = v;
+								this.loadSettings({ background_opacity: this._settings.background_opacity });
+							}
+						}),
+						
 						scene_height: new ve.Number(Math.returnSafeNumber(this._settings.scene_height, 0), {
 							name: "Scene height (px)",
 							min: 0,
@@ -790,6 +805,13 @@ ve.ScriptManager = class extends ve.Component {
 		let scriptmanager_settings = ve.registry.settings.ScriptManager;
 		let settings_apply_loop = setInterval(() => {
 			try {
+				if (settings_obj.background_colour !== undefined)
+					this.element.style.setProperty("--ve-sm-background-colour", settings_obj.background_colour);
+				if (settings_obj.background_opacity !== undefined) {
+					this.element.style.setProperty("--ve-sm-background-opacity", `${settings_obj.background_opacity*100}%`);
+				} else {
+					this.element.style.setProperty("--ve-sm-background-opacity", "50%");
+				}
 				if (settings_obj.background_image !== undefined)
 					if (settings_obj.background_image.length !== 0) {
 						this.element.setAttribute("data-background-image", settings_obj.background_image);

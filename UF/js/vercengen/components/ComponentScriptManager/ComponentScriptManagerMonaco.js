@@ -57,7 +57,8 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 			insertSpaces: true,
 			minimap: { enabled: true },
 			tabSize: 2,
-			wordWrap: "on"
+			wordWrap: "bounded",
+			wordWrapColumn: 120
 		};
 		this._pending_value = (value === null || value === undefined) ? "" : value.toString();
 		this._theme = (options.theme) ? options.theme : "nord";
@@ -259,9 +260,14 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 						this.setOptions({ minimap: { enabled: v } });
 					}
 				}),
-				word_wrap: new ve.Toggle((getMonacoOption("wordWrap") === "on"), {
+				word_wrap: new ve.Toggle((getMonacoOption("wordWrap") === "bounded"), {
 					name: "Word Wrap",
-					onuserchange: (v) => this._setOption("wordwrap", (v) ? "on" : "off")
+					onuserchange: (v) => this._setOption("wordWrap", (v) ? "bounded" : "off")
+				}),
+				word_wrap_column: new ve.Number(Math.returnSafeNumber(getMonacoOption("wordWrapColumn"), 120), {
+					name: "Word Wrap Column",
+					min: 1,
+					onuserchange: (v) => this._setOption("wordWrapColumn", v)
 				})
 			}, { name: "Appearance" }),
 			behaviour: new ve.Interface({
