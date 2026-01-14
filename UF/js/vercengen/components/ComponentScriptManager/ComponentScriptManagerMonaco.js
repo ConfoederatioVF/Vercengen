@@ -313,6 +313,10 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 		return new_interface;
 	}
 	
+	/**
+	 * Refreshes the current Monaco display. Used for resetting all cached options.
+	 * - Method of: {@link ve.ScriptManagerMonaco}
+	 */
 	refresh () {
 		//Declare local instance variables
 		let computed_style_obj = window.getComputedStyle(this.element);

@@ -225,10 +225,7 @@ ve.ScriptManager.FindAndReplace = class {
 				
 				await this._processFile(current_path, pattern, replace_string, callbacks);
 			}
-		} catch (e) {
-			//Permission errors or locked files are common, just log and continue
-			//console.warn(`Skipping ${current_path}: ${e.message}`);
-		}
+		} catch (e) {}
 	}
 	
 	async _processFile (arg0_file_path, arg1_pattern, arg2_replace_string, arg3_callbacks) {

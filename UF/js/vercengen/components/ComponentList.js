@@ -7,6 +7,7 @@
  * ##### Constructor:
  * - `arg0_value`: {@link Array}<{@link ve.Component}>
  * - `arg1_options`: {@link Object}
+ *   - `.do_not_allow_insertion`: {@link boolean}
  *   - `.do_not_display_info_button=false`: {@link boolean}
  *   - `.max`: {@link number} - The maximum number of elements in the array.
  *   - `.min=0`: {@link number} - The minimum number of elements in the array.
@@ -48,11 +49,13 @@ ve.List = class extends ve.Component {
 			this.components_el = document.createElement("div");
 				this.components_el.id = "component-body";
 				this.element.appendChild(this.components_el);
-			this.add_item_button = new ve.Button(() => {
-				this.addItem();
-				this.fireToBinding();
-			}, { name: "<icon>add</icon>", tooltip: "Add Item" });
-			this.add_item_button.bind(this.element);
+			if (!options.do_not_allow_insertion) {
+				this.add_item_button = new ve.Button(() => {
+					this.addItem();
+					this.fireToBinding();
+				}, { name: "<icon>add</icon>", tooltip: "Add Item" });
+				this.add_item_button.bind(this.element);
+			}
 		this.options = options;
 		this.shift_positions = 1;
 		this.value = Array.toArray(value);
@@ -223,7 +226,11 @@ ve.List = class extends ve.Component {
 						this.value.splice(i, 0, global[`ve${this.class_name}`](this.placeholder));
 						this.draw();
 						this.fireToBinding();
-					}, { name: "<icon>first_page</icon>", tooltip: loc("ve.registry.localisation.List_insert_item_after") }),
+					}, { 
+						name: "<icon>first_page</icon>",
+						limit: () => (!this.options.do_not_allow_insertion),
+						tooltip: loc("ve.registry.localisation.List_insert_item_after")
+					}),
 					insert_after_button: new ve.Button(() => {
 						if (this.options.max && this.value.length >= this.options.max) {
 							veToast(`<icon>warning</icon> ${loc("ve.registry.localisation.List_error_max_items_reached", String.formatNumber(this.options.max))}`);
@@ -233,7 +240,11 @@ ve.List = class extends ve.Component {
 						this.value.splice(i + 1, 0, global[`ve${this.class_name}`](this.placeholder));
 						this.draw();
 						this.fireToBinding();
-					}, { name: "<icon>last_page</icon>", tooltip: loc("ve.registry.localisation.List_insert_item_after") }),
+					}, { 
+						name: "<icon>last_page</icon>",
+						limit: () => (!this.options.do_not_allow_insertion),
+						tooltip: loc("ve.registry.localisation.List_insert_item_after") 
+					}),
 					delete_button: new ve.Button(() => {
 						if (this.options.ondelete)
 							this.options.ondelete(this.v[i]);

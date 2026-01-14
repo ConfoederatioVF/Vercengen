@@ -351,8 +351,6 @@ ve.ScriptManager = class extends ve.Component {
 				});
 			},
 			onuserchange: (v, e) => {
-				console.trace();
-				console.log(v, e);
 				this._monaco_change = true;
 				if (this._settings.autosave_projects)
 					ve.ScriptManager._autosave.call(this);

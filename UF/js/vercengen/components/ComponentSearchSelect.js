@@ -12,6 +12,7 @@
  *   - `.hide_filter=false`: {@link boolean} - Whether to hide the filter tool.
  *   - `.filter_names`: {@link Object}
  *     - `<attribute_key>`: {@link string}
+ *   - `.search_select_els`: {@link function} | {@link Array}<{@link HTMLElement}> - The function that returns the search select elements in question, usually `document.querySelectorAll`.  
  *   - `.search_keys=["name"]`: {@link Array}<{@link string}>
  *     
  * ##### Instance:
@@ -22,6 +23,7 @@
  * - `.v`: {@link this.components_obj} - Accessor. The current components_obj mounted to ve.SearchSelect.
  * 
  * ##### Methods:
+ * - <span color=00ffff>{@link ve.SearchSelect.getComponentElements|getComponentElements}</span>() | {@link Array}<{@link HTMLElement}>
  * - <span color=00ffff>{@link ve.SearchSelect.updateSearchFilter|updateSearchFilter}</span>()
  * 
  * @augments ve.Component
@@ -105,16 +107,18 @@ ve.SearchSelect = class extends ve.Component {
 				let all_unique_attributes = [];
 				
 				//Add checkbox context menu based on data- attributes
-				Object.iterate(this.components_obj, (local_key, local_value) => {
+				let all_component_els = this.getComponentElements();
+				
+				//Iterate over all_component_els
+				for (let i = 0; i < all_component_els.length; i++)
 					//Iterate over all local_value.element.attributes
-					for (let i = 0; i < local_value.element.attributes.length; i++) {
-						let local_attribute = local_value.element.attributes[i].nodeName;
+					for (let x = 0; x < all_component_els[i].attributes.length; x++) {
+						let local_attribute = all_component_els[i].attributes[x].nodeName;
 						
 						if (local_attribute.startsWith("data-"))
 							if (!all_unique_attributes.includes(local_attribute))
 								all_unique_attributes.push(local_attribute);
 					}
-				});
 				all_unique_attributes.sort();
 				
 				//Iterate over all_unique_attributes, add to filter context menu
@@ -168,9 +172,32 @@ ve.SearchSelect = class extends ve.Component {
 		});
 		searchbar_interface.bind(this.element);
 		
+		//Populate this.element from this.components_obj
 		Object.iterate(this.components_obj, (local_key, local_value) =>
 			this.element.appendChild(local_value.element));
 		this.fireFromBinding();
+	}
+	
+	/**
+	 * Returns all actual component elements.
+	 * - Method of: {@link ve.SearchSelect}
+	 * 
+	 * @alias getComponentElements
+	 * @memberof ve.Component.ve.SearchSelect
+	 * 
+	 * @returns {HTMLElement[]}
+	 */
+	getComponentElements () {
+		//Internal guard clause if this.options.search_select_els is defined
+		if (this.options.search_select_els) return this.options.search_select_els();
+		
+		//Declare local instance variables
+		let all_search_select_els = [];
+			Object.iterate(this.components_obj, (local_key, local_value) =>
+				all_search_select_els.push(local_value.element));
+		
+		//Return statement
+		return all_search_select_els;
 	}
 	
 	/**
@@ -182,9 +209,7 @@ ve.SearchSelect = class extends ve.Component {
 	 */
 	updateSearchFilter () {
 		//Declare local instance variables
-		let all_search_select_els = [];
-			Object.iterate(this.components_obj, (local_key, local_value) =>
-				all_search_select_els.push(local_value.element));
+		let all_search_select_els = this.getComponentElements();
 		
 		//If name and filters are nothing, restore visibility to all hidden results
 		if (this.search_value.length === 0 && Object.keys(this.filters).length === 0) {
@@ -198,10 +223,11 @@ ve.SearchSelect = class extends ve.Component {
 				
 				//Iterate over all this.options.search_keys to assess has_valid_substring
 				for (let x = 0; x < this.options.search_keys.length; x++)
-					if (all_search_select_els[i].instance[this.options.search_keys[x]].toLowerCase().trim().indexOf(this.search_value.toLowerCase().trim()) !== -1) {
-						has_valid_substring = true;
-						break;
-					}
+					if (all_search_select_els[i].instance)
+						if (all_search_select_els[i].instance[this.options.search_keys[x]].toLowerCase().trim().indexOf(this.search_value.toLowerCase().trim()) !== -1) {
+							has_valid_substring = true;
+							break;
+						}
 				
 				//If it has a valid substring, look for valid attributes
 				if (has_valid_substring) {
