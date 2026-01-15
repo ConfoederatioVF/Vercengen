@@ -223,11 +223,14 @@ ve.SearchSelect = class extends ve.Component {
 				
 				//Iterate over all this.options.search_keys to assess has_valid_substring
 				for (let x = 0; x < this.options.search_keys.length; x++)
-					if (all_search_select_els[i].instance)
+					if (all_search_select_els[i].instance) try {
 						if (all_search_select_els[i].instance[this.options.search_keys[x]].toLowerCase().trim().indexOf(this.search_value.toLowerCase().trim()) !== -1) {
 							has_valid_substring = true;
 							break;
 						}
+					} catch (e) {
+						console.error(`Could not find ${this.options.search_keys[x]}, Instance:`, all_search_select_els[i].instance, e);
+					}
 				
 				//If it has a valid substring, look for valid attributes
 				if (has_valid_substring) {

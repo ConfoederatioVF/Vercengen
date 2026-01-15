@@ -272,7 +272,7 @@ ve.ScriptManager = class extends ve.Component {
 					let new_folder_path = path.resolve(this.leftbar_file_explorer.v);
 					
 					this._settings.project_folder = new_folder_path;
-					ve.ScriptManager._indexDocumentation.call(this, this.leftbar_status_el);
+					ve.ScriptManager._indexDocumentation.call(this, this.bottombar_status_el);
 					veToast(`Changed project folder to ${new_folder_path}`);
 				}, { 
 					name: "<icon>gite</icon>",
@@ -291,16 +291,8 @@ ve.ScriptManager = class extends ve.Component {
 				let local_data = arg0_data;
 				let file_path = arg1_file_path;
 				
-				//Declare local instance variables
-				this._file_path = file_path;
-				
-				try {
-					this.v = local_data;
-					
-					//Load proper syntax highlighting
-					ve.ScriptManager._loadFileExtension.call(this, path.extname(this._file_path));
-					this.fireToBinding();
-				} catch (e) {}
+				//Load file if possible
+				this.loadFile(file_path, local_data);
 			},
 			save_extension: (this.options.save_extension) ? this.options.save_extension : [".*"],
 			save_function: (arg0_save_name) => {
@@ -313,9 +305,6 @@ ve.ScriptManager = class extends ve.Component {
 			onrefresh: (v, e) => ve.ScriptManager._drawFileExplorer.call(this, v, e)
 		});
 		this.leftbar_file_explorer.bind(this.leftbar_el);
-		this.leftbar_status_el = document.createElement("div");
-			this.leftbar_status_el.id = "leftbar-status";
-			this.leftbar_el.appendChild(this.leftbar_status_el);
 		this.scene_el = document.createElement("div");
 			this.scene_el.id = "scene";
 		this.scene_blockly = new ve.ScriptManagerBlockly(undefined, {
@@ -463,7 +452,7 @@ ve.ScriptManager = class extends ve.Component {
 							name: "Index documentation",
 							onuserchange: (v) => {
 								this._settings.index_documentation = v;
-								if (v) ve.ScriptManager._indexDocumentation.call(this, this.leftbar_status_el);
+								if (v) ve.ScriptManager._indexDocumentation.call(this, this.bottombar_status_el);
 							}
 						}),
 						log_large_objects_in_console: new ve.Toggle(this._settings.log_large_objects_in_console, {
@@ -657,11 +646,25 @@ ve.ScriptManager = class extends ve.Component {
 		});
 		this.topbar_interface.bind(this.topbar_el);
 		
+		this.bottombar_el = document.createElement("div");
+		this.bottombar_el.id = "bottombar";
+		
+		this.bottombar_status_el = document.createElement("div");
+		this.bottombar_status_el.id = "bottombar-status";
+		this.bottombar_el.appendChild(this.bottombar_status_el);
+		
+		this.bottombar_obj = new ve.ScriptManager.UI_Bottombar(undefined, {
+			script_manager: this
+		});
+		this.bottombar_el.appendChild(this.bottombar_obj.element);
+		
 		//Layer 1. Append topbar
 		this.element.appendChild(this.topbar_el);
 		//Layer 2. Append leftbar and scene
 		this.container_el.append(this.leftbar_el, this.scene_el);
 		this.element.appendChild(this.container_el);
+		//Layer 3. Append bottombar
+		this.element.appendChild(this.bottombar_el);
 		
 		//Initialisation loop for ScriptManager to ensure all requisite elements are loaded first
 		this.scriptmanager_initialisation_loop = setInterval(() => {
@@ -777,6 +780,27 @@ ve.ScriptManager = class extends ve.Component {
 		}
 	}
 	
+	loadFile (arg0_file_path, arg1_file_data) {
+		//Convert from parameters
+		let file_path = path.resolve(arg0_file_path);
+		let file_data = arg1_file_data;
+		
+		if (!fs.existsSync(file_path)) return; //Internal guard clause if file path doesn't exist
+		
+		//Declare local instance variables
+		try {
+			let actual_file_data = (file_data) ? file_data : fs.readFileSync(file_path, "utf8");
+			
+			this._file_path = file_path;
+			this.v = actual_file_data;
+			
+			//Load proper syntax highlighting; bottombar
+			ve.ScriptManager._loadFileExtension.call(this, path.extname(this._file_path));
+			this.bottombar_obj.addFile(this._file_path);
+			this.fireToBinding();
+		} catch (e) {}
+	}
+	
 	/**
 	 * Loads a new settings object and refreshes the present Component to display them, then sets {@link this._settings}.
 	 * - Method of: {@link ve.ScriptManager}
@@ -788,6 +812,7 @@ ve.ScriptManager = class extends ve.Component {
 	 *  @param {string} [arg0_settings.project_folder]
 	 *  @param {string} [arg0_settings.monaco_theme] - One of the default Monaco themes or a custom JSON theme name.
 	 *  @param {boolean} [arg0_settings.hide_blockly]
+	 *  @param {number} [arg0_settings.scene_height]
 	 *  @param {theme} [arg0_settings.theme] - Either 'theme-default'/'theme-light'
 	 *  @param {boolean} [arg0_settings.view_file_explorer] - Whether to show the file explorer.
 	 * @param {boolean} arg1_loaded
@@ -838,6 +863,11 @@ ve.ScriptManager = class extends ve.Component {
 						};
 						this.scene_blockly.show();
 					}
+				}
+				if (settings_obj.scene_height) {
+					if (!this.options.style) this.options.style = {};
+					this.options.style.height = `${settings_obj.scene_height}px`;
+					this._drawHeight();
 				}
 				if (settings_obj.theme)
 					this.setTheme(settings_obj.theme);

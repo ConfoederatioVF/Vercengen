@@ -7,7 +7,7 @@
  * ##### Constructor:
  * - `arg0_value`: {@link Array}<{@link ve.Component}>
  * - `arg1_options`: {@link Object}
- *   - `.do_not_allow_insertion`: {@link boolean}
+ *   - `.do_not_allow_insertion=false`: {@link boolean}
  *   - `.do_not_display_info_button=false`: {@link boolean}
  *   - `.max`: {@link number} - The maximum number of elements in the array.
  *   - `.min=0`: {@link number} - The minimum number of elements in the array.
@@ -60,13 +60,15 @@ ve.List = class extends ve.Component {
 		this.shift_positions = 1;
 		this.value = Array.toArray(value);
 		
-		try {
-			this.class_name = structuredClone(this.value[0].class_name);
-		} catch (e) { 
-			console.error(`Class name could not be found for:`, this.value[0], e);
+		if (!this.options.do_not_allow_insertion) {
+			try {
+				this.class_name = structuredClone(this.value[0].class_name);
+			} catch (e) {
+				console.error(`Class name could not be found for:`, this.value[0], e);
+			}
+			this.placeholder = structuredClone(this.value[0].v);
+			this.overlay_window = undefined;
 		}
-		this.placeholder = structuredClone(this.value[0].v);
-		this.overlay_window = undefined;
 		
 		if (!this.options.do_not_display_info_button) {
 			this.info_button = new ve.Button(() => {}, { 
@@ -263,7 +265,9 @@ ve.List = class extends ve.Component {
 				this.overlay_window = new ve.Window(overlay_interface, {
 					can_rename: false,
 					name: "Edit Item",
-					y: HTML.mouse_y + all_component_els[i].offsetHeight
+					y: (HTML.mouse_y < window.innerHeight/2) ? 
+						HTML.mouse_y + all_component_els[i].offsetHeight :
+						HTML.mouse_y - all_component_els[i].offsetHeight
 				});
 			});
 		}

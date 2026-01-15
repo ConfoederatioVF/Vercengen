@@ -77,9 +77,6 @@
             padding-bottom: 0;
             padding-top: 0;
         }
-        #leftbar-status {
-            margin-top: var(--padding);
-        }
     }
     #scene {
         display: flex;
@@ -203,6 +200,22 @@
 }
 text.blocklyText {
     font-family: var(--body-font-family);
+}
+
+/* -- Bottombar -- */
+[component="ve-script-manager"] #bottombar {
+    display: flex;
+    
+    [data-is-selected="true"] {
+        font-weight: 700;
+    }
+    #bottombar-status {
+        margin-top: var(--padding);
+        width: 20rem;
+    }
+    #ui-bottombar {
+        margin-left: var(--cell-padding);
+    }
 }
 
 /* -- File Explorer -- */

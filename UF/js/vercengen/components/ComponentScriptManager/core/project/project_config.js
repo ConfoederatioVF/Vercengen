@@ -34,7 +34,7 @@
 			this.config = JSON.parse(fs.readFileSync(project_config_path, "utf8"));
 		if (this.config) {
 			ve.ScriptManager._drawFileExplorer.call(this, this.leftbar_file_explorer.v, this.leftbar_file_explorer);
-			ve.ScriptManager._indexDocumentation.call(this, this.leftbar_status_el);
+			ve.ScriptManager._indexDocumentation.call(this, this.bottombar_status_el);
 		}
 	};
 	
@@ -48,7 +48,7 @@
 		
 		//Save this.config to base project folder if possible
 		fs.writeFileSync(project_config_path, JSON.stringify(this.config));
-		ve.ScriptManager._indexDocumentation.call(this, this.leftbar_status_el);
+		ve.ScriptManager._indexDocumentation.call(this, this.bottombar_status_el);
 	};
 	
 	ve.ScriptManager._setSourceAsMode = function (arg0_file_path, arg1_mode) {

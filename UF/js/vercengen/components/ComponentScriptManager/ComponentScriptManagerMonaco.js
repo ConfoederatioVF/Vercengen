@@ -270,7 +270,7 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 					onuserchange: (v) => this._setOption("wordWrapColumn", v)
 				})
 			}, { name: "Appearance" }),
-			behaviour: new ve.Interface({
+			indentation: new ve.Interface({
 				insert_spaces: new ve.Toggle(getMonacoOption("insertSpaces"), {
 					name: "Insert Spaces",
 					onuserchange: (v) => this._setOption("insertSpaces", v)
@@ -279,7 +279,7 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 					name: "Tab Size",
 					onuserchange: (v) => this._setOption("tabSize", v)
 				})
-			}, { name: "Behaviour" }),
+			}, { name: "Indentation" }),
 			reset_monaco_settings: new ve.Button(() => {
 				//Declare local instance variables
 				let computed_style_obj = window.getComputedStyle(this.element);
