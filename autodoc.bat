@@ -1,5 +1,5 @@
 @echo off
 echo Generating documentation...
-npx jsdoc -c jsdoc.json
+call npx jsdoc -c jsdoc.json > docs/latest.log
 echo Documentation generated successfully!
 pause

@@ -1,8 +1,15 @@
 /**
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Creates a bottombar UI with a bound `.element` that can easily be attached to a parent {@link ve.ScriptManager}.
+ * 
  * ##### Constructor:
  * - `arg0_value`: {@link Array}<{@link string}> - The array of currently opened file paths.
  * - `arg1_options`: {@link Object}
  *   - `.script_manager`: {@link ve.ScriptManager}
+ * 
+ * ##### Instance:
+ * - `.v`: {@link Array}<{@link string}>
  */
 ve.ScriptManager.UI_Bottombar = class extends ve.Component {
   constructor (arg0_value, arg1_options) {
@@ -26,11 +33,29 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
     delete this.from_binding_fire_silently;
   }
 
+  /**
+   * Fetches the current value of the component.
+   * - Accessor of: {@link ve.ScriptManager.UI_Bottombar}
+   * 
+   * @alias v
+	 * @memberof ve.Component.ve.ScriptManager.UI_Bottombar
+	 *
+	 * @type {string[]}
+   */
   get v () {
     //Return statement
     return this.value;
   }
 
+  /**
+   * Sets the current value of the component.
+   * - Accessor of: {@link ve.ScriptManager.UI_Bottombar}
+   * 
+   * @alias v
+	 * @memberof ve.Component.ve.ScriptManager.UI_Bottombar
+	 *
+	 * @param {string} arg0_value
+   */
   set v (arg0_value) {
     //Convert from parameters
     let value = (arg0_value) ? arg0_value : [];
@@ -151,6 +176,15 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
     this.fireFromBinding();
   }
   
+  /**
+   * Adds a given file to the present bottombar.
+   * - Method of: {@link ve.ScriptManager.UI_Bottombar}
+   * 
+   * @alias addFile
+   * @memberof ve.Component.ve.ScriptManager.UI_Bottombar
+   * 
+   * @param {string} arg0_file_path
+   */
   addFile (arg0_file_path) {
     //Convert from parameters
     let file_path = (arg0_file_path) ? path.resolve(arg0_file_path) : "";
