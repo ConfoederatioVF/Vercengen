@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Home - Documentation</title>
+    <title>ve.ScriptManager.UI_Bottombar - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,138 +32,1621 @@
 
 <div id="main">
     
+    <h1 class="page-title">ve.ScriptManager.UI_Bottombar</h1>
+    
 
     
 
 
 
+
+<section>
+
+<header>
     
-
-
-
-
-
-
-
-
-
-    
-
-
-    <section class="readme">
-        <article><img src = "https://raw.githubusercontent.com/Confoederatio/Vercengen/refs/heads/main/gfx/vercengen_logo.png">
-<span style = "display: flex;">
-    <span>UI ⊆ State.</span>
-    <span style = "margin-left: auto; order: 99; padding: 0;"><small>(<u>UI is a subset of state</u>).</small></span>
-</span>
-<br>
-<h2 id="less-is-more.">Less Is More.</h2>
-<p>Vercengen is a software engine built to halve your work by eliminating frontend redundancy. Instead, UIs are declared as variable types in your data structures with immediate reflection and directional control.</p>
-<p>All interfaces are split into <b><a href = "ve.Component.html">Components</a></b>, which represent user-facing inputs and displays, and <b><a href = "ve.Feature.html">Features</a></b>, which encapsulate Components; UI is rendered in <i>de facto</i> immediate mode. Everything in Vercengen is in service of the developer: there exists no build process, auto-documentation, first-class Undo/Redo, immediate-mode CSS-in-JS, associated util libraries, variable theming, and inline documentation for usage.</p>
-<p><strong>Batteries Included:</strong> Unlike other frameworks, a default features and components library is included out-of-the-box, and can be modified as needed.</p>
-<h2 id="dataflow%3A">Dataflow:</h2>
-<p>Vercengen provides directional bindings for your data, without the risk of race conditions, as the program and user agent can never be the same.</p>
+        <h2>
+            <span class="ancestors"><a href="ve.html">ve</a><a href="ve.Component.html">.Component</a><a href="ve.Component.ve.ScriptManager.html">.ve.ScriptManager</a>.</span>
+        
+        ve.ScriptManager.UI_Bottombar
+        </h2>
+        
+            <div class="class-description"><p>Refer to <span color = "yellow"><a href="ve.Component.html">ve.Component</a></span> for methods or fields inherited from this Component's parent such as <code>.options.attributes</code> or <code>.element</code>.</p>
+<p>Creates a bottombar UI with a bound <code>.element</code> that can easily be attached to a parent ve.ScriptManager.</p>
+<h5 id="constructor%3A">Constructor:</h5>
 <ul>
-<li><code>.binding</code>: string, UI &lt;-&gt; State, fires <code>.onchange(v, e)</code> Event.</li>
-<li><code>.from_binding</code>: string, UI &lt;- State, fires <code>.onprogramchange(v, e)</code> Event.</li>
-<li><code>.to_binding</code>: string, UI -&gt; State, fires <code>.onuserchange(v, e)</code> Event.</li>
+<li><code>arg0_value</code>: <a href="Array.html">Array</a>&lt;string&gt; - The array of currently opened file paths.</li>
+<li><code>arg1_options</code>: <a href="Object.html">Object</a>
+<ul>
+<li><code>.script_manager</code>: ve.ScriptManager</li>
 </ul>
-<p><code>global</code>, <code>this</code>, and <code>window</code> are all acceptable prefixes for binding strings, and a reflection engine automatically ensures directional synchronisation. <code>v</code> contains the value, and <code>e</code> the referenced <a href = "ve.Component.html">ve.Component</a>.</p>
-<h2 id="examples%3A">Examples:</h2>
-<p>Example: Separately updating counters.</p>
-<p>Vercengen (10 lines):</p>
-<pre class="prettyprint source lang-js"><code>Counter = class extends ve.Class { constructor () {
-	super();
-	this.count = veNumber(0, { name: &quot;Counter:&quot; });
-	this.dec_btn = veButton(() => this.count.v--, {
-		name: &quot;Decrement&quot; });
-	this.inc_btn = veButton(() => this.count.v++, {
-		name: &quot;Increment&quot; });
-} }; 
-new Counter().open(&quot;instance&quot;, { name: &quot;Counter 1&quot; });
-new Counter().open(&quot;instance&quot;, { name: &quot;Counter 2&quot; });
-</code></pre>
-<p>Example: WYSIWYG Word Editor.</p>
-<p>Vercengen (4 lines):</p>
-<pre class="prettyprint source lang-js"><code>word_editor = veWindow({
-  file_explorer: veFileExplorer(__dirname, { y: 0 }),
-  text_editor: veWordProcessor(&quot;Hello world.&quot;, { y: 0 })
-}, { name: &quot;Word Editor&quot;, width: &quot;40rem&quot; });
-</code></pre>
-<p>Example: Nested Bindings with Delay.</p>
-<p>Vercengen (15 lines):</p>
-<pre class="prettyprint source lang-js"><code>ColourPicker = class extends ve.Class { constructor () {
-	super();
-	this.interface = veInterface({
-		colour: veColour([255, 255, 255], {
-			binding: &quot;this.colour&quot; }),
-		opacity: veRange(1, {
-			binding: &quot;this.opacity&quot; })
-	});
-	
-	//Wait 1 second
-	setTimeout(() => {
-		this.colour = [0, 0, 0]; //Alias binding, immediately reflected
-		this.interface.opacity.v = 0.5; //Native binding
-	}, 1000);
-} };
-</code></pre>
-<h2 id="extensibility%3A">Extensibility:</h2>
-<p>Need to import a third-party component? Boilerplate for Vercengen is minimal:</p>
-<pre class="prettyprint source lang-js"><code>ve.CustomComponent = class extends ve.Component {
-  constructor (arg0_value, arg1_options) {
-    this.element; //Must export this.element, any user-driven changes should call this.fireToBinding();
-    this.value = arg0_value;
-  }
-  
-  get v () { //Returns the value stored in the component
-    return this.value;
-  }
-  set v (arg0_value) { //Sets the value stored in the component
-    this.value = arg0_value;
-    this.fireFromBinding();
-  }
-};
-</code></pre>
-<h2 id="getting-started%3A">Getting Started:</h2>
-<p>Vercengen is currently native to <strong>Electron</strong>/<strong>Node.js</strong> with better support planned for in-browser versions via a single-file CDN. Bootstrapping a Vercengen app requires the following steps.</p>
-<p>Running Vercengen in the browser means that certain components (i.e. FileExplorer, ScriptManager) will not be presently operable, and you may have to make manual adjustments as such.</p>
-<ol>
-<li><a href="https://github.com/Confoederatio/Vercengen/">Download</a> the current UF folder and drop it into your root directory.</li>
-<li>Ensure you have the following dependencies installed for the full feature set in your <code>package.json</code> file:<pre class="prettyprint source lang-json"><code> &quot;devDependencies&quot;: {
-   &quot;acorn&quot;: &quot;^5.0.3&quot;,
-   &quot;acorn-dynamic-import&quot;: &quot;^2.0.2&quot;,
-   &quot;acorn-jsx-walk&quot;: &quot;^1.0.1&quot;,
-   &quot;file-saver&quot;: &quot;^1.3.3&quot;,
-   &quot;imports-loader&quot;: &quot;^0.7.1&quot;,
-   &quot;better-docs&quot;: &quot;^2.7.3&quot;,
-   &quot;electron&quot;: &quot;^38.1.2&quot;,
-   &quot;jsdoc&quot;: &quot;^4.0.5&quot;,
-   &quot;minami&quot;: &quot;^1.2.3&quot;,
-   &quot;node-blockly&quot;: &quot;https://github.com/JC-Orozco/node-blockly.git&quot;,
-   &quot;snapsvg&quot;: &quot;^0.5.1&quot;,
-   &quot;taffydb&quot;: &quot;^2.7.3&quot;
- }
-</code></pre>
 </li>
-<li>Run <code>npm install</code> in your root directory.</li>
-<li>In your <code>index.html</code>, add the following script tag:<pre class="prettyprint source lang-js"><code>&lt;script src = &quot;./UF/js/vercengen/startup/vercengen_startup.js&quot; type = &quot;text/javascript&quot;>&lt;/script>
-</code></pre>
-</li>
-<li>Customise your load directories/files. Patterns accept wildcards (*), exclusions (!), and folders/file paths. Last match wins.<pre class="prettyprint source lang-js"><code>ve.start({ load_files: [
-  &quot;core/&quot;,
-  &quot;!core/startup.js&quot;
-]});
-</code></pre>
-</li>
-</ol>
-<p>But if that's too much work for you, fork our <a href="https://github.com/Confoederatio/Vercengen/">bootstrap repository</a> instead.</p>
-<hr>
-<p><small>CTD. Generated with Vercengen/Autodoc.</small><br>
-<a href = "https://confoederatio.org/">Confoederatio</a> | <a href = "https://confoederatiodocs.info/">Confoederatio Docs</a></p></article>
-    </section>
+</ul>
+<h5 id="instance%3A">Instance:</h5>
+<ul>
+<li><code>.v</code>: <a href="Array.html">Array</a>&lt;string&gt;</li>
+</ul></div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+<div class="section-method">
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="ve.ScriptManager.UI_Bottombar"><span class="type-signature"></span>new ve.ScriptManager.UI_Bottombar<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
 
 
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_components_ComponentScriptManager_core_project_project_bottombar.js.html">vercengen/components/ComponentScriptManager/core/project/project_bottombar.js</a>, <a href="vercengen_components_ComponentScriptManager_core_project_project_bottombar.js.html#line18">line 18</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="ve.Component.html">ve.Component</a></li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="from_binding"><span class="type-signature"></span>from_binding<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Internal <code>.from_binding</code> setter for handling .options.from_binding. Accepts a string literal that is then parsed to a variable reference.</p>
+<p><code>.to_binding</code> counterparts are manually handled child-side.</p>
+<ul>
+<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#from_binding">ve.Component#from_binding</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line362">line 362</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="limit"><span class="type-signature"></span>limit<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Tests the current this.limit by calling this.limit_function(this.v, <a href="this.html">this</a>). Otherwise resolves to true if no <code>.options.limit</code> is set.</p>
+<ul>
+<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#limit">ve.Component#limit</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line180">line 180</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="name"><span class="type-signature"></span>name<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Returns the visual name of the present <a href="ve.Component.html">ve.Component</a>,</p>
+<ul>
+<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#name">ve.Component#name</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line221">line 221</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="addFile"><span class="type-signature"></span>addFile<span class="signature">(arg0_file_path)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Adds a given file to the present bottombar.</p>
+<ul>
+<li>Method of: <a href="ve.ScriptManager.UI_Bottombar.html">ve.ScriptManager.UI_Bottombar</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_components_ComponentScriptManager_core_project_project_bottombar.js.html">vercengen/components/ComponentScriptManager/core/project/project_bottombar.js</a>, <a href="vercengen_components_ComponentScriptManager_core_project_project_bottombar.js.html#line192">line 192</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arg0_file_path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="draw"><span class="type-signature"></span>draw<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Draws the current bottombar component as it is.</p>
+<ul>
+<li>Method of: <a href="ve.ScriptManager.UI_Bottombar.html">ve.ScriptManager.UI_Bottombar</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_components_ComponentScriptManager_core_project_project_bottombar.js.html">vercengen/components/ComponentScriptManager/core/project/project_bottombar.js</a>, <a href="vercengen_components_ComponentScriptManager_core_project_project_bottombar.js.html#line222">line 222</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="saveToConfig"><span class="type-signature"></span>saveToConfig<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Saves the current bottombar to the ve.ScriptManager <code>.config</code> variable.</p>
+<ul>
+<li>Method of: <a href="ve.ScriptManager.UI_Bottombar.html">ve.ScriptManager.UI_Bottombar</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_components_ComponentScriptManager_core_project_project_bottombar.js.html">vercengen/components/ComponentScriptManager/core/project/project_bottombar.js</a>, <a href="vercengen_components_ComponentScriptManager_core_project_project_bottombar.js.html#line242">line 242</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="addComponent"><span class="type-signature"></span>addComponent<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Adds the current component to this.parent_el should it exist.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#addComponent">ve.Component#addComponent</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line470">line 470</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="bind"><span class="type-signature"></span>bind<span class="signature">(arg0_container_el)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Manually binds/mounts the present <span color="yellow"><a href="ve.Component.html">ve.Component</a></span> into the visual DOM.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#bind">ve.Component#bind</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line487">line 487</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arg0_container_el</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>HTMLElement</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="fireFromBinding"><span class="type-signature"></span>fireFromBinding<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Pseudo-setter from binding. Fires only upon program-driven changes to .v directly, which means that this has to be monitored manually component-side in set v(). This should always come last in set v().</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#fireFromBinding">ve.Component#fireFromBinding</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line264">line 264</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="fireToBinding"><span class="type-signature"></span>fireToBinding<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Pseudo-setter to binding. Fires only upon user-driven changes, which means that this has to be monitored manually component-side.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#fireToBinding">ve.Component#fireToBinding</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line301">line 301</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="remove"><span class="type-signature"></span>remove<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Removes the component/element from the DOM.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#remove">ve.Component#remove</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line499">line 499</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="removeComponent"><span class="type-signature"></span>removeComponent<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Removes the current component from this.parent_el should it exist.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#removeComponent">ve.Component#removeComponent</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line526">line 526</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="setOwner"><span class="type-signature"></span>setOwner<span class="signature">(arg0_value, arg1_owner_array)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Sets the root parent and ownership tree. Influences this.parent_el, this.owner, this.owners.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#setOwner">ve.Component#setOwner</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line445">line 445</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arg0_value</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>arg1_owner_array</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="setValueFromObject"><span class="type-signature"></span>setValueFromObject<span class="signature">(arg0_object, arg1_object)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Destructures Object values and transfers them into the <code>.v</code> instance fields of each Vercengen component.</p>
+<ul>
+<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="ve.Component.html#setValueFromObject">ve.Component#setValueFromObject</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line542">line 542</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arg0_object</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code><a href="Object.html">Object</a></code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>The Vercengen object to transfer to.</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>arg1_object</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code><a href="Object.html">Object</a></code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>The other object to transfer from.</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

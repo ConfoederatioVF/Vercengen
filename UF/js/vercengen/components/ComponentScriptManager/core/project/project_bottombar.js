@@ -10,6 +10,10 @@
  * 
  * ##### Instance:
  * - `.v`: {@link Array}<{@link string}>
+ * 
+ * @augments ve.Component
+ * @memberof ve.Component.ve.ScriptManager
+ * @type {ve.ScriptManager.UI_Bottombar}
  */
 ve.ScriptManager.UI_Bottombar = class extends ve.Component {
   constructor (arg0_value, arg1_options) {
@@ -38,7 +42,7 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
    * - Accessor of: {@link ve.ScriptManager.UI_Bottombar}
    * 
    * @alias v
-	 * @memberof ve.Component.ve.ScriptManager.UI_Bottombar
+	 * @memberof ve.ScriptManager.UI_Bottombar
 	 *
 	 * @type {string[]}
    */
@@ -52,7 +56,7 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
    * - Accessor of: {@link ve.ScriptManager.UI_Bottombar}
    * 
    * @alias v
-	 * @memberof ve.Component.ve.ScriptManager.UI_Bottombar
+	 * @memberof ve.ScriptManager.UI_Bottombar
 	 *
 	 * @param {string} arg0_value
    */
@@ -181,7 +185,7 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
    * - Method of: {@link ve.ScriptManager.UI_Bottombar}
    * 
    * @alias addFile
-   * @memberof ve.Component.ve.ScriptManager.UI_Bottombar
+   * @memberof ve.Component.ve.ScriptManager.ve.ScriptManager.UI_Bottombar
    * 
    * @param {string} arg0_file_path
    */
@@ -213,7 +217,7 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
    * - Method of: {@link ve.ScriptManager.UI_Bottombar}
    * 
    * @alias draw
-   * @memberof ve.Component.ve.ScriptManager.UI_Bottombar
+   * @memberof ve.Component.ve.ScriptManager.ve.ScriptManager.UI_Bottombar
    */
   draw () {
     //Iterate over all elements in list_obj.v
@@ -233,7 +237,7 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
    * - Method of: {@link ve.ScriptManager.UI_Bottombar}
    * 
    * @alias saveToConfig
-	 * @memberof ve.Component.ve.ScriptManager.UI_Bottombar
+	 * @memberof ve.Component.ve.ScriptManager.ve.ScriptManager.UI_Bottombar
    */
   saveToConfig () {
     //Set to ve.ScriptManager.config if possible
