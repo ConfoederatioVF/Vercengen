@@ -174,7 +174,15 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
     }
   }
   
+  /**
+   * Draws the current bottombar component as it is.
+   * - Method of: {@link ve.ScriptManager.UI_Bottombar}
+   * 
+   * @alias draw
+   * @memberof ve.Component.ve.ScriptManager.UI_Bottombar
+   */
   draw () {
+    //Iterate over all elements in list_obj.v
     for (let i = 0; i < this.list_obj.v.length; i++) {
       let local_el = this.list_obj.v[i].element.querySelector("button[data-file-path]");
       
@@ -186,6 +194,13 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
     }
   }
 
+  /**
+   * Saves the current bottombar to the {@link ve.ScriptManager} `.config` variable.
+   * - Method of: {@link ve.ScriptManager.UI_Bottombar}
+   * 
+   * @alias saveToConfig
+	 * @memberof ve.Component.ve.ScriptManager.UI_Bottombar
+   */
   saveToConfig () {
     //Set to ve.ScriptManager.config if possible
     if (this.options.script_manager) {
