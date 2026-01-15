@@ -82,7 +82,13 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
       search_keys: ["_name"],
       style: {
         alignItems: "baseline",
-        display: "flex"
+        display: "flex",
+        
+        '[component="ve-datalist"]': {
+          width: "100%",
+          
+          'input[list]': { width: "calc(100% - var(--padding))" }
+        }
       }
     });
 

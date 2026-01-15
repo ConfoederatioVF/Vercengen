@@ -63,7 +63,7 @@ Default **Features** (9):
 - Confirm, ContextMenu, Modal, Navbar, PageMenuWindow, Scene, Toast, Tooltip, Window
 
 Default **Components** (44):
-- Button, Checkbox, Colour, Datalist, DatavisSuite, Date, DateLength, File, FileExplorer, FlexInterface, Graph, GraphLegend, GraphText, HTML, Hierarchy, HierarchyDatatype, Interface, List, Map, MultiTag, NodeEditor, NodeEditorDatatype, Number, ObjectInspector, PageMenu, Password, Radio, Range, RawInterface, RichText, ScriptManager, ScriptManagerBlockly, ScriptManagerCodemirror, SearchSelect, Select, Spreadsheet, Table, Telephone, Text, Time, Toggle, URL, UndoRedo, WordProcessor
+- Button, Checkbox, Colour, Datalist, DatavisSuite, Date, DateLength, File, FileExplorer, FlexInterface, Graph, GraphLegend, GraphText, HTML, Hierarchy, HierarchyDatatype, Interface, List, Map, MultiTag, NodeEditor, NodeEditorDatatype, Number, ObjectInspector, PageMenu, Password, Radio, Range, RawInterface, RichText, ScriptManager, ScriptManagerBlockly, ScriptManagerMonaco, SearchSelect, Select, Spreadsheet, Table, Telephone, Text, Time, Toggle, URL, UndoRedo, WordProcessor
 
 > [!NOTE]
 > A corresponding GIS for ve.Map is available at [Naissance](https://github.com/Confoederatio/Naissance).
