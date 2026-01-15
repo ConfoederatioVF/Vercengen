@@ -96,6 +96,10 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
               } else {
                 this.options.script_manager.v = "";
               }
+              
+            //Update config if possible
+            this.value.splice(local_index, 1);
+            this.saveToConfig();
           });
       }
     });
@@ -143,13 +147,7 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
     this.draw();
     
     //Set to ve.ScriptManager.config if possible
-    if (this.options.script_manager) {
-      let script_manager_obj = this.options.script_manager;
-      
-      script_manager_obj.config.ui_bottombar_value = this.value;
-      if (script_manager_obj._settings.autosave_projects)
-        ve.ScriptManager._saveConfig.call(script_manager_obj);
-    }
+    this.saveToConfig();
     this.fireFromBinding();
   }
   
@@ -185,6 +183,17 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
       } else {
         local_el.removeAttribute("data-is-selected");
       }
+    }
+  }
+
+  saveToConfig () {
+    //Set to ve.ScriptManager.config if possible
+    if (this.options.script_manager) {
+      let script_manager_obj = this.options.script_manager;
+      
+      script_manager_obj.config.ui_bottombar_value = this.value;
+      if (script_manager_obj._settings.autosave_projects)
+        ve.ScriptManager._saveConfig.call(script_manager_obj);
     }
   }
 };
