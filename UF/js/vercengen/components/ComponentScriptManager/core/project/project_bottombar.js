@@ -60,7 +60,8 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
       let local_html_obj = new ve.HTML(local_el, {
         attributes: {
           [`data-file-extension-${path.extname(value[i])}`]: true
-        }
+        },
+        tooltip: `${value[i]}`
       });
         local_html_obj._name = value[i];
 
@@ -72,17 +73,59 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
       do_not_allow_insertion: true,
       do_not_display_info_button: true,
       style: {
+        paddingTop: 0,
+        
         "#component-body": { display: "flex" }
+      },
+
+      //Make sure that when a file is deleted from the bottombar, it updates the ScriptManager properly
+      ondelete: (v) => {
+        let local_el = v.element.querySelector("button[data-file-path]");
+
+        if (local_el)
+          //Wait 1 tick since the bottombar needs to be updated by .loadFile() first
+          setTimeout(() => {
+            let local_file_path = local_el.getAttribute("data-file-path");
+            let local_index = this.v.indexOf(local_file_path);
+            
+            if (this.options.script_manager && this.options.script_manager._file_path === local_file_path)
+              if (this.v[local_index - 1]) {
+                this.options.script_manager.loadFile(this.v[local_index - 1]);
+              } else if (this.v[local_index + 1]) {
+                this.options.script_manager.loadFile(this.v[local_index + 1]);
+              } else {
+                this.options.script_manager.v = "";
+              }
+          });
       }
     });
+    
+    let file_extensions_obj = ve.ScriptManager._getFileExtensions({ return_select_obj: true });
     this.search_select_obj = new ve.SearchSelect({
       list_obj: this.list_obj
     }, {
+      filter_names: (v) => {
+        if (v.startsWith("data-file-extension-")) {
+          let local_file_extension = ve.ScriptManager._getFileExtension(v.replace("data-file-extension-", ""));
+          let local_file_extension_obj = file_extensions_obj[local_file_extension];
+          
+          //Return statement
+          if (local_file_extension_obj?.name) {
+            return local_file_extension_obj.name;
+          } else {
+            return local_file_extension;
+          }
+        } else {
+          //Return statement
+          return v;
+        }
+      },
       search_select_els: () => this.list_obj.element.querySelectorAll(`[component="ve-html"]`),
       search_keys: ["_name"],
       style: {
-        alignItems: "baseline",
+        alignItems: "flex-start",
         display: "flex",
+        marginTop: "var(--padding)",
         
         '[component="ve-datalist"]': {
           width: "100%",
@@ -98,6 +141,15 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
     this.element.innerHTML = "";
     this.search_select_obj.bind(this.element);
     this.draw();
+    
+    //Set to ve.ScriptManager.config if possible
+    if (this.options.script_manager) {
+      let script_manager_obj = this.options.script_manager;
+      
+      script_manager_obj.config.ui_bottombar_value = this.value;
+      if (script_manager_obj._settings.autosave_projects)
+        ve.ScriptManager._saveConfig.call(script_manager_obj);
+    }
     this.fireFromBinding();
   }
   

@@ -8,9 +8,9 @@
  * - `arg0_components_obj`: {@link Object}<{@link ve.Component}> - The individual items to append to the current search select field.
  * - `arg1_options`: {@link Object}
  *   - `.display="inline"`: {@link string}
- *   - `.header_components_obj`: {@link Object}>{@link ve.Component}
+ *   - `.header_components_obj`: {@link Object}<{@link ve.Component}>
  *   - `.hide_filter=false`: {@link boolean} - Whether to hide the filter tool.
- *   - `.filter_names`: {@link Object}
+ *   - `.filter_names`: {@link function}(arg0_attribute_key:{@link string})|{@link Object}
  *     - `<attribute_key>`: {@link string}
  *   - `.search_select_els`: {@link function} | {@link Array}<{@link HTMLElement}> - The function that returns the search select elements in question, usually `document.querySelectorAll`.  
  *   - `.search_keys=["name"]`: {@link Array}<{@link string}>
@@ -127,8 +127,11 @@ ve.SearchSelect = class extends ve.Component {
 				for (let i = 0; i < all_unique_attributes.length; i++) {
 					let local_name = all_unique_attributes[i];
 						if (this.options?.filter_names)
-							if (this.options.filter_names[all_unique_attributes[i]])
+							if (typeof this.options.filter_names === "function") { 
+								local_name = this.options.filter_names(local_name);
+							} else {
 								local_name = this.options.filter_names[all_unique_attributes[i]];
+							}
 					
 					checkbox_components_obj[all_unique_attributes[i]] = new ve.Checkbox(this.filters[all_unique_attributes[i]], {
 						name: local_name,

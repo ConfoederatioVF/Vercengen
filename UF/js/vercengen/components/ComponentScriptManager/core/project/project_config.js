@@ -35,11 +35,27 @@
 		if (this.config) {
 			ve.ScriptManager._drawFileExplorer.call(this, this.leftbar_file_explorer.v, this.leftbar_file_explorer);
 			ve.ScriptManager._indexDocumentation.call(this, this.bottombar_status_el);
+			
+			//Attempt to load the starting file; bottombar if possible
+			if (this.config._file_path)
+				if (fs.existsSync(this.config._file_path))
+					this.loadFile(this.config._file_path, undefined, true);
+			if (this.config.ui_bottombar_value) {
+				//Iterate over this.config.ui_bottombar_value to ensure that only extant files exist
+				for (let i = this.config.ui_bottombar_value.length - 1; i >= 0; i--)
+					if (!fs.existsSync(this.config.ui_bottombar_value[i]))
+						this.config.ui_bottombar_value.splice(i, 1);
+				this.bottombar_obj.v = this.config.ui_bottombar_value;
+			}
 		}
 	};
 	
 	ve.ScriptManager._saveConfig = function () {
 		if (this._settings.project_folder === "none") return; //Internal guard clause if project folder is not set
+		
+		//Initialise config
+		if (this._file_path)
+			this.config._file_path = this._file_path;
 		
 		//Declare local instance variables
 		let project_folder = this._settings.project_folder;

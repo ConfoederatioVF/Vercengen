@@ -248,7 +248,7 @@ ve.List = class extends ve.Component {
 						tooltip: loc("ve.registry.localisation.List_insert_item_after") 
 					}),
 					delete_button: new ve.Button(() => {
-						if (this.options.ondelete)
+						if (this.options.ondelete !== undefined)
 							this.options.ondelete(this.v[i]);
 						
 						this.deleteItem(i);

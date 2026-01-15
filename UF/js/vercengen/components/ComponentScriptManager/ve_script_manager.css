@@ -3,7 +3,7 @@
     border: 1px solid black;
     border-radius: var(--cell-padding);
     --bg-primary-colour: rgba(255, 255, 255, 0.7);
-    --bg-secondary-colour: rgb(235, 235, 235);
+    --bg-secondary-colour: rgb(215, 215, 215);
     --body-colour: rgba(0, 0, 0, 0.83);
     --header-colour: rgba(0, 0, 0, 0.83);
     
@@ -206,12 +206,21 @@ text.blocklyText {
 [component="ve-script-manager"] #bottombar {
     display: flex;
     
+    [component="ve-horizontal-list"] #component-body {
+        flex-wrap: wrap;
+    }
+    [component="ve-html"]:has([data-file-path]) {
+        flex: 0 0 auto;
+        padding-top: 0;
+    }
     [data-is-selected="true"] {
+        border-top: var(--cell-padding) solid var(--accent-primary-colour);
         font-weight: 700;
+        padding-top: 1px;
     }
     #bottombar-status {
         margin-top: var(--padding);
-        width: 20rem;
+        min-width: calc(20rem + var(--padding));
     }
     #ui-bottombar {
         margin-left: var(--cell-padding);

@@ -6,6 +6,8 @@ html, head, body {
 b { font-weight: 700; }
 canvas, iframe { user-select: none; }
 
+.tippy-box { max-width: fit-content !important; }
+
 .ve.overlay {
     pointer-events: none;
     position: fixed;

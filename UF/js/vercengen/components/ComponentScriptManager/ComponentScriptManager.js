@@ -297,6 +297,7 @@ ve.ScriptManager = class extends ve.Component {
 			save_extension: (this.options.save_extension) ? this.options.save_extension : [".*"],
 			save_function: (arg0_save_name) => {
 				this._file_path = arg0_save_name;
+				this.bottombar_obj.addFile(this._file_path);
 				
 				//Return statement
 				return this.scene_monaco.v;
@@ -780,10 +781,11 @@ ve.ScriptManager = class extends ve.Component {
 		}
 	}
 	
-	loadFile (arg0_file_path, arg1_file_data) {
+	loadFile (arg0_file_path, arg1_file_data, arg2_do_not_add_to_bottombar) {
 		//Convert from parameters
 		let file_path = path.resolve(arg0_file_path);
 		let file_data = arg1_file_data;
+		let do_not_add_to_bottombar = arg2_do_not_add_to_bottombar;
 		
 		if (!fs.existsSync(file_path)) return; //Internal guard clause if file path doesn't exist
 		
@@ -796,7 +798,8 @@ ve.ScriptManager = class extends ve.Component {
 			
 			//Load proper syntax highlighting; bottombar
 			ve.ScriptManager._loadFileExtension.call(this, path.extname(this._file_path));
-			this.bottombar_obj.addFile(this._file_path);
+			if (!do_not_add_to_bottombar)
+				this.bottombar_obj.addFile(this._file_path);
 			this.fireToBinding();
 		} catch (e) {}
 	}
