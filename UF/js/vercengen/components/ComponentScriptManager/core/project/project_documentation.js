@@ -90,5 +90,12 @@
 			console.error(e);
 		}
 		element.innerHTML = `Parsed documentation for ${String.formatNumber(all_files.length)} file(s).`;
+    let index_documentation_button_el = document.createElement("button");
+      index_documentation_button_el.classList.add("refresh-button");
+      index_documentation_button_el.innerHTML = "Refresh";
+      
+      index_documentation_button_el.addEventListener("click", () => 
+        ve.ScriptManager._indexDocumentation.call(this, element, options));
+    element.appendChild(index_documentation_button_el);
 	};
 }

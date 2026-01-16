@@ -101,6 +101,7 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
     this.list_obj = new ve.List(components_array, {
       do_not_allow_insertion: true,
       do_not_display_info_button: true,
+      split_rows: false,
       style: {
         paddingTop: 0,
         

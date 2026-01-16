@@ -13,6 +13,7 @@
  *   - `.min=0`: {@link number} - The minimum number of elements in the array.
  *   - `.ondelete`: {@link function}(arg0_component_obj:{@link ve.Component})
  *   - `.options`: {@link Object} - The `.options` field to pass onto elements in the array.
+ *   - `.split_rows=true`: {@link boolean} - Whether to split item rows onto separate lines.
  *   
  * ##### Instance:
  * - `.v`: {@link Array}<{@link ve.Component}>
@@ -29,6 +30,9 @@ ve.List = class extends ve.Component {
 		let value = arg0_value;
 		let options = (arg1_options) ? arg1_options : {};
 			super(options);
+
+    //Initialise options
+    if (options.split_rows === undefined) options.split_rows = true;
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");
@@ -176,86 +180,100 @@ ve.List = class extends ve.Component {
 		let all_component_els = this.components_el.querySelectorAll(`[component]`);
 		
 		for (let i = 0; i < all_component_els.length; i++) {
-			let overlay_interface = new ve.Interface({
-				shift_bar: new ve.RawInterface({
-					shift_left_button: new ve.Button(() => {
-						let shift_positions = overlay_interface.shift_bar.shift_positions.v;
-						
-						let new_index = Math.max(i - shift_positions, 0);
-						
-						this.value = Array.moveElement(this.value, i, new_index);
-						this.draw();
-						this.fireToBinding();
-						i = new_index;
-					}, {
-						name: "<icon>chevron_left</icon>",
-						tooltip: loc("ve.registry.localisation.List_shift_left")
-					}),
-					shift_positions: new ve.Number(this.shift_positions, {
-						min: 1,
-						name: loc("ve.registry.localisation.List_shift"),
-						onuserchange: (v) => this.shift_positions = v,
-						style: {
-							marginLeft: `calc(var(--padding)*0.5)`,
-							marginRight: `calc(var(--padding)*0.5)`,
-							whiteSpace: "nowrap",
-							"input": {
-								textAlign: "center"
-							}
-						}
-					}),
-					shift_right_button: new ve.Button(() => {
-						let shift_positions = overlay_interface.shift_bar.shift_positions.v;
-						
-						let new_index = Math.min(i + shift_positions, this.value.length - 1);
-						
-						this.value = Array.moveElement(this.value, i, new_index);
-						this.draw();
-						this.fireToBinding();
-						i = new_index;
-					}, {
-						name: "<icon>chevron_right</icon>",
-						tooltip: loc("ve.registry.localisation.List_shift_right")
-					})
-				}, { style: { alignItems: "center", display: "flex", justifyContent: "center" } }),
-				actions_bar: new ve.RawInterface({
-					insert_before_button: new ve.Button(() => {
-						if (this.options.max && this.value.length >= this.options.max) {
-							veToast(`<icon>warning</icon> ${loc("ve.registry.localisation.List_error_max_items_reached", String.formatNumber(this.options.max))}`);
-							return;
-						}
-						
-						this.value.splice(i, 0, global[`ve${this.class_name}`](this.placeholder));
-						this.draw();
-						this.fireToBinding();
-					}, { 
-						name: "<icon>first_page</icon>",
-						limit: () => (!this.options.do_not_allow_insertion),
-						tooltip: loc("ve.registry.localisation.List_insert_item_after")
-					}),
-					insert_after_button: new ve.Button(() => {
-						if (this.options.max && this.value.length >= this.options.max) {
-							veToast(`<icon>warning</icon> ${loc("ve.registry.localisation.List_error_max_items_reached", String.formatNumber(this.options.max))}`);
-							return;
-						}
-						
-						this.value.splice(i + 1, 0, global[`ve${this.class_name}`](this.placeholder));
-						this.draw();
-						this.fireToBinding();
-					}, { 
-						name: "<icon>last_page</icon>",
-						limit: () => (!this.options.do_not_allow_insertion),
-						tooltip: loc("ve.registry.localisation.List_insert_item_after") 
-					}),
-					delete_button: new ve.Button(() => {
-						if (this.options.ondelete !== undefined)
-							this.options.ondelete(this.v[i]);
-						
-						this.deleteItem(i);
-						if (this.overlay_window) this.overlay_window.close();
-						this.fireToBinding();
-					}, { name: "<icon>delete</icon>", tooltip: loc("ve.registry.localisation.List_delete_item") }),
-				}, { style: { alignItems: "center", display: "flex", justifyContent: "center" } })
+      let shift_bar_obj = new ve.RawInterface({
+        shift_left_button: new ve.Button(() => {
+          let shift_positions = this.shift_positions;
+          
+          let new_index = Math.max(i - shift_positions, 0);
+          
+          this.value = Array.moveElement(this.value, i, new_index);
+          this.draw();
+          this.fireToBinding();
+          i = new_index;
+        }, {
+          name: "<icon>chevron_left</icon>",
+          tooltip: loc("ve.registry.localisation.List_shift_left")
+        }),
+        shift_positions: new ve.Number(this.shift_positions, {
+          min: 1,
+          name: loc("ve.registry.localisation.List_shift"),
+          onuserchange: (v) => this.shift_positions = v,
+          style: {
+            marginLeft: `calc(var(--padding)*0.5)`,
+            marginRight: `calc(var(--padding)*0.5)`,
+            whiteSpace: "nowrap",
+            "input": {
+              textAlign: "center"
+            }
+          }
+        }),
+        shift_right_button: new ve.Button(() => {
+          let shift_positions = this.shift_positions;
+          
+          let new_index = Math.min(i + shift_positions, this.value.length - 1);
+          
+          this.value = Array.moveElement(this.value, i, new_index);
+          this.draw();
+          this.fireToBinding();
+          i = new_index;
+        }, {
+          name: "<icon>chevron_right</icon>",
+          tooltip: loc("ve.registry.localisation.List_shift_right")
+        })
+      }, { style: { alignItems: "center", display: "flex", justifyContent: "center" } });
+      let actions_bar_obj = new ve.RawInterface({
+        insert_before_button: new ve.Button(() => {
+          if (this.options.max && this.value.length >= this.options.max) {
+            veToast(`<icon>warning</icon> ${loc("ve.registry.localisation.List_error_max_items_reached", String.formatNumber(this.options.max))}`);
+            return;
+          }
+          
+          this.value.splice(i, 0, global[`ve${this.class_name}`](this.placeholder));
+          this.draw();
+          this.fireToBinding();
+        }, { 
+          name: "<icon>first_page</icon>",
+          limit: () => (!this.options.do_not_allow_insertion),
+          tooltip: loc("ve.registry.localisation.List_insert_item_after")
+        }),
+        insert_after_button: new ve.Button(() => {
+          if (this.options.max && this.value.length >= this.options.max) {
+            veToast(`<icon>warning</icon> ${loc("ve.registry.localisation.List_error_max_items_reached", String.formatNumber(this.options.max))}`);
+            return;
+          }
+          
+          this.value.splice(i + 1, 0, global[`ve${this.class_name}`](this.placeholder));
+          this.draw();
+          this.fireToBinding();
+        }, { 
+          name: "<icon>last_page</icon>",
+          limit: () => (!this.options.do_not_allow_insertion),
+          tooltip: loc("ve.registry.localisation.List_insert_item_after") 
+        }),
+        delete_button: new ve.Button(() => {
+          if (this.options.ondelete !== undefined)
+            this.options.ondelete(this.v[i]);
+          
+          this.deleteItem(i);
+          if (this.overlay_window) this.overlay_window.close();
+          this.fireToBinding();
+        }, { name: "<icon>delete</icon>", tooltip: loc("ve.registry.localisation.List_delete_item") }),
+      }, { style: { alignItems: "center", display: "flex", justifyContent: "center" } });
+
+			let overlay_interface = (this.options.split_rows) ? new ve.Interface({
+				shift_bar_obj: shift_bar_obj,
+        actions_bar_obj: actions_bar_obj
+			}, {
+				is_folder: false
+			}) : new ve.Interface({
+        actions_bar_obj: new ve.RawInterface({
+          ...shift_bar_obj.components_obj,
+          ...actions_bar_obj.components_obj
+        }, {
+          style: {
+            display: "flex"
+          }
+        })
 			}, {
 				is_folder: false
 			});
@@ -265,6 +283,7 @@ ve.List = class extends ve.Component {
 				this.overlay_window = new ve.Window(overlay_interface, {
 					can_rename: false,
 					name: "Edit Item",
+          width: (this.options.split_row) ? "12rem" : "14rem",
 					y: (HTML.mouse_y < window.innerHeight/2) ? 
 						HTML.mouse_y + all_component_els[i].offsetHeight :
 						HTML.mouse_y - all_component_els[i].offsetHeight

@@ -124,6 +124,9 @@
         [component="ve-button"] {
             margin-right: calc(var(--cell-padding)*2);
         }
+        #file-name {
+          overflow-wrap: anywhere;
+        }
         #file-name[data-is-saved="false"] {
             font-style: oblique;
         }
@@ -221,6 +224,10 @@ text.blocklyText {
     #bottombar-status {
         margin-top: var(--padding);
         min-width: calc(20rem + var(--padding));
+
+        .refresh-button {
+          margin-left: var(--padding);
+        }
     }
     #ui-bottombar {
         margin-left: var(--cell-padding);

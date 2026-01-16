@@ -576,7 +576,7 @@ ve.FileExplorer = class extends ve.Component {
 								ve.FileExplorer.rename(local_full_path, () => this.refresh());
 							}, {
 								name: `<icon>drive_file_rename_outline</icon>`,
-								limit: () => (this.options.navigation_only && this.options?.save_extension.includes(path.extname(local_full_path))) || !this.options.navigation_only,
+								limit: () => (this.options.navigation_only && this.options?.save_extension?.includes(path.extname(local_full_path))) || !this.options.navigation_only,
 								tooltip: loc("ve.registry.localisation.FileExplorer_rename"),
 								style: { padding: `var(--cell-padding)` }
 							}),

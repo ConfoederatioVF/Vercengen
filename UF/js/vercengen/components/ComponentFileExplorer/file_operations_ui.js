@@ -105,7 +105,7 @@ global.stream_promises = require("stream/promises");
 				}
 			} catch (e) {
 				let local_error_div = document.createElement("div");
-					local_error_div.innerHTML = `<div class = "error">ERROR: ${e}</div>`;
+					local_error_div.innerHTML = `<div class = "error">ERROR: ${e.stack}</div>`;
 				dialog_window.html.element.appendChild(local_error_div);
 			}
 			
@@ -261,7 +261,7 @@ global.stream_promises = require("stream/promises");
 				}
 			} catch (e) {
 				let local_error_div = document.createElement("div");
-					local_error_div.innerHTML = `<div class = "error">ERROR: ${e}</div>`;
+					local_error_div.innerHTML = `<div class = "error">ERROR: ${e.stack}</div>`;
 				dialog_window.html.element.appendChild(local_error_div);
 			}
 			
