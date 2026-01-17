@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>ve.Number - Documentation</title>
+    <title>vercengen/components/ComponentScriptManager/ui/UI_Bottombar.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,1683 +32,271 @@
 
 <div id="main">
     
-    <h1 class="page-title">ve.Number</h1>
+    <h1 class="page-title">vercengen/components/ComponentScriptManager/ui/UI_Bottombar.js</h1>
     
 
     
 
 
 
-
-<section>
-
-<header>
     
-        <h2>
-            <span class="ancestors"><a href="ve.html">ve</a><a href="ve.Component.html">.Component</a>.</span>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Refer to &lt;span color = "yellow">{@link ve.Component}&lt;/span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Creates a bottombar UI with a bound `.element` that can easily be attached to a parent {@link ve.ScriptManager}.
+ * 
+ * ##### Constructor:
+ * - `arg0_value`: {@link Array}&lt;{@link string}> - The array of currently opened file paths.
+ * - `arg1_options`: {@link Object}
+ *   - `.script_manager`: {@link ve.ScriptManager}
+ * 
+ * ##### Instance:
+ * - `.v`: {@link Array}&lt;{@link string}>
+ * 
+ * @augments ve.Component
+ * @memberof ve.Component.ve.ScriptManager
+ * @type {ve.ScriptManager.UI_Bottombar}
+ */
+ve.ScriptManager.UI_Bottombar = class extends ve.Component {
+  constructor (arg0_value, arg1_options) {
+    //Convert from parameters
+    let value = (arg0_value) ? arg0_value : [];
+    let options = (arg1_options) ? arg1_options : {};
+      super(options);
+    
+    //Initialise options
+    if (!options.file_paths) options.file_paths = [];
+    
+    //Declare local instance variables
+    this.element = document.createElement("div");
+      this.element.id = "ui-bottombar";
+      this.element.instance = this;
+    this.options = options;
+    this.value = options.file_paths;
+
+    this.from_binding_fire_silently = true;
+    this.v = value;
+    delete this.from_binding_fire_silently;
+  }
+
+  /**
+   * Fetches the current value of the component.
+   * - Accessor of: {@link ve.ScriptManager.UI_Bottombar}
+   * 
+   * @alias v
+	 * @memberof ve.ScriptManager.UI_Bottombar
+	 *
+	 * @type {string[]}
+   */
+  get v () {
+    //Return statement
+    return this.value;
+  }
+
+  /**
+   * Sets the current value of the component.
+   * - Accessor of: {@link ve.ScriptManager.UI_Bottombar}
+   * 
+   * @alias v
+	 * @memberof ve.ScriptManager.UI_Bottombar
+	 *
+	 * @param {string} arg0_value
+   */
+  set v (arg0_value) {
+    //Convert from parameters
+    let value = (arg0_value) ? arg0_value : [];
+    if (value.length === 0) { 
+      this.element.innerHTML = "";
+      return;
+    }
+
+    //Declare local instance variables
+    let components_array = [];
+
+    //Iterate over all value file_paths; create button per file
+    for (let i = 0; i &lt; value.length; i++) {
+      value[i] = path.resolve(value[i]);
+      
+      let local_el = document.createElement("button");
+        local_el.id = value[i];
+        local_el.setAttribute("data-file-path", value[i]);
+        local_el.innerHTML = path.basename(value[i]);
         
-        ve.Number
-        </h2>
+        //Load file upon click
+        local_el.addEventListener("click", (e) => {
+          if (this.options.script_manager)
+            if (this.options.script_manager._file_path !== value[i])
+              this.options.script_manager.loadFile(value[i]);
+        });
+      let local_html_obj = new ve.HTML(local_el, {
+        attributes: {
+          [`data-file-extension-${path.extname(value[i])}`]: true
+        },
+        tooltip: `${value[i]}`
+      });
+        local_html_obj._name = value[i];
+
+      //Push local_html_obj to components_array
+      components_array.push(local_html_obj);
+    }
+
+    this.list_obj = new ve.List(components_array, {
+      do_not_allow_insertion: true,
+      do_not_display_info_button: true,
+      split_rows: false,
+      style: {
+        paddingTop: 0,
         
-            <div class="class-description"><p>Refer to <span color = "yellow"><a href="ve.Component.html">ve.Component</a></span> for methods or fields inherited from this Component's parent such as <code>.options.attributes</code> or <code>.element</code>.</p>
-<p>Represents a number input that can be set by the user.</p>
-<ul>
-<li>Functional binding: <span color=00ffff>veNumber</span>().</li>
-</ul>
-<h5 id="constructor%3A">Constructor:</h5>
-<ul>
-<li><code>arg0_value=0</code>: <a href="Array.html">Array</a>&lt;number&gt;|number</li>
-<li><code>arg1_options</code>: <a href="Object.html">Object</a>
-<ul>
-<li><code>.disabled=false</code>: boolean</li>
-<li><code>.max</code>: number</li>
-<li><code>.min</code>: number</li>
-<li><code>.step</code>: number</li>
-</ul>
-</li>
-</ul>
-<h5 id="instance%3A">Instance:</h5>
-<ul>
-<li><code>.v</code>: number</li>
-</ul>
-<h5 id="methods%3A">Methods:</h5>
-<ul>
-<li><span color=00ffff>toString</span>() | string</li>
-<li><span color=00ffff>valueOf</span>() | number</li>
-</ul></div>
+        "#component-body": { display: "flex" }
+      },
+
+      //Make sure that when a file is deleted from the bottombar, it updates the ScriptManager properly
+      ondelete: (v) => {
+        let local_el = v.element.querySelector("button[data-file-path]");
+
+        if (local_el)
+          //Wait 1 tick since the bottombar needs to be updated by .loadFile() first
+          setTimeout(() => {
+            let local_file_path = local_el.getAttribute("data-file-path");
+            let local_index = this.v.indexOf(local_file_path);
+            
+            if (this.options.script_manager &amp;&amp; this.options.script_manager._file_path === local_file_path)
+              if (this.v[local_index - 1]) {
+                this.options.script_manager.loadFile(this.v[local_index - 1]);
+              } else if (this.v[local_index + 1]) {
+                this.options.script_manager.loadFile(this.v[local_index + 1]);
+              } else {
+                this.options.script_manager.v = "";
+              }
+              
+            //Update config if possible
+            this.value.splice(local_index, 1);
+            this.saveToConfig();
+          });
+      }
+    });
+    
+    let file_extensions_obj = ve.ScriptManager._getFileExtensions({ return_select_obj: true });
+    this.search_select_obj = new ve.SearchSelect({
+      list_obj: this.list_obj
+    }, {
+      filter_names: (v) => {
+        if (v.startsWith("data-file-extension-")) {
+          let local_file_extension = ve.ScriptManager._getFileExtension(v.replace("data-file-extension-", ""));
+          let local_file_extension_obj = file_extensions_obj[local_file_extension];
+          
+          //Return statement
+          if (local_file_extension_obj?.name) {
+            return local_file_extension_obj.name;
+          } else {
+            return local_file_extension;
+          }
+        } else {
+          //Return statement
+          return v;
+        }
+      },
+      search_select_els: () => this.list_obj.element.querySelectorAll(`[component="ve-html"]`),
+      search_keys: ["_name"],
+      style: {
+        alignItems: "flex-start",
+        display: "flex",
+        marginTop: "var(--padding)",
         
-    
-</header>
+        '[component="ve-datalist"]': {
+          width: "100%",
+          
+          'input[list]': { width: "calc(100% - var(--padding))" }
+        }
+      }
+    });
 
-<article>
-    <div class="container-overview">
+    //Refresh this.element
+    this.value = value;
     
+    this.element.innerHTML = "";
+    this.search_select_obj.bind(this.element);
+    this.draw();
+    
+    //Set to ve.ScriptManager.config if possible
+    this.saveToConfig();
+    this.fireFromBinding();
+  }
+  
+  /**
+   * Adds a given file to the present bottombar.
+   * - Method of: {@link ve.ScriptManager.UI_Bottombar}
+   * 
+   * @alias addFile
+   * @memberof ve.Component.ve.ScriptManager.ve.ScriptManager.UI_Bottombar
+   * 
+   * @param {string} arg0_file_path
+   */
+  addFile (arg0_file_path) {
+    //Convert from parameters
+    let file_path = (arg0_file_path) ? path.resolve(arg0_file_path) : "";
+    
+    //Declare local instance variables
+    if (this.value.length === 0) {
+      this.v = [file_path];
+    } else {
+      let actual_value = [];
+      
+      //Iterate over this.list_obj.v; make sure file path is unique
+      for (let i = 0; i &lt; this.list_obj.v.length; i++) {
+        let local_el = this.list_obj.v[i].element.querySelector("button[data-file-path]");
         
-<div class="section-method">
-
-    
-    <h2>Constructor</h2>
-    
-
-    <h4 class="name" id="ve.Number"><span class="type-signature"></span>new ve.Number<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentNumber.js.html">vercengen/components/ComponentNumber.js</a>, <a href="vercengen_components_ComponentNumber.js.html#line26">line 26</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-    
-    </div>
-
-    
-        <h3 class="subsection-title">Extends</h3>
-
-        
-
-
-    <ul>
-        <li><a href="ve.Component.html">ve.Component</a></li>
-    </ul>
-
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="v"><span class="type-signature"></span>v<span class="type-signature"> :number|<a href="Array.html">Array</a>.&lt;number></span></h4>
-
-
-
-
-<div class="description">
-    <p>Returns the present number stored by the component.</p>
-<ul>
-<li>Accessor of: ve.Number</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentNumber.js.html">vercengen/components/ComponentNumber.js</a>, <a href="vercengen_components_ComponentNumber.js.html#line84">line 84</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code>number</code></span>
-|
-
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;number></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="v"><span class="type-signature"></span>v<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Sets the number stored by the component.</p>
-<ul>
-<li>Accessor of: ve.Number</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentNumber.js.html">vercengen/components/ComponentNumber.js</a>, <a href="vercengen_components_ComponentNumber.js.html#line109">line 109</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="from_binding"><span class="type-signature"></span>from_binding<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Internal <code>.from_binding</code> setter for handling .options.from_binding. Accepts a string literal that is then parsed to a variable reference.</p>
-<p><code>.to_binding</code> counterparts are manually handled child-side.</p>
-<ul>
-<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#from_binding">ve.Component#from_binding</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line362">line 362</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="limit"><span class="type-signature"></span>limit<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Tests the current this.limit by calling this.limit_function(this.v, <a href="this.html">this</a>). Otherwise resolves to true if no <code>.options.limit</code> is set.</p>
-<ul>
-<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#limit">ve.Component#limit</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line180">line 180</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="name"><span class="type-signature"></span>name<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Returns the visual name of the present <a href="ve.Component.html">ve.Component</a>,</p>
-<ul>
-<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#name">ve.Component#name</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line221">line 221</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="toString"><span class="type-signature"></span>toString<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Converts the present number to a string.</p>
-<ul>
-<li>Method of: ve.Number</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentNumber.js.html">vercengen/components/ComponentNumber.js</a>, <a href="vercengen_components_ComponentNumber.js.html#line150">line 150</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>string</code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="valueOf"><span class="type-signature"></span>valueOf<span class="signature">()</span><span class="type-signature"> &rarr; {number}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Converts the present value to a number.</p>
-<ul>
-<li>Method of: ve.Number</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentNumber.js.html">vercengen/components/ComponentNumber.js</a>, <a href="vercengen_components_ComponentNumber.js.html#line163">line 163</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>number</code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="addComponent"><span class="type-signature"></span>addComponent<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Adds the current component to this.parent_el should it exist.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#addComponent">ve.Component#addComponent</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line470">line 470</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="bind"><span class="type-signature"></span>bind<span class="signature">(arg0_container_el)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Manually binds/mounts the present <span color="yellow"><a href="ve.Component.html">ve.Component</a></span> into the visual DOM.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#bind">ve.Component#bind</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line487">line 487</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_container_el</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>HTMLElement</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="fireFromBinding"><span class="type-signature"></span>fireFromBinding<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Pseudo-setter from binding. Fires only upon program-driven changes to .v directly, which means that this has to be monitored manually component-side in set v(). This should always come last in set v().</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#fireFromBinding">ve.Component#fireFromBinding</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line264">line 264</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="fireToBinding"><span class="type-signature"></span>fireToBinding<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Pseudo-setter to binding. Fires only upon user-driven changes, which means that this has to be monitored manually component-side.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#fireToBinding">ve.Component#fireToBinding</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line301">line 301</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="remove"><span class="type-signature"></span>remove<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Removes the component/element from the DOM.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#remove">ve.Component#remove</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line499">line 499</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="removeComponent"><span class="type-signature"></span>removeComponent<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Removes the current component from this.parent_el should it exist.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#removeComponent">ve.Component#removeComponent</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line526">line 526</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="setOwner"><span class="type-signature"></span>setOwner<span class="signature">(arg0_value, arg1_owner_array)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Sets the root parent and ownership tree. Influences this.parent_el, this.owner, this.owners.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#setOwner">ve.Component#setOwner</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line445">line 445</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_value</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_owner_array</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="setValueFromObject"><span class="type-signature"></span>setValueFromObject<span class="signature">(arg0_object, arg1_object)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Destructures Object values and transfers them into the <code>.v</code> instance fields of each Vercengen component.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#setValueFromObject">ve.Component#setValueFromObject</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line542">line 542</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_object</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>The Vercengen object to transfer to.</p>
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_object</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>The other object to transfer from.</p>
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+        actual_value.push(local_el.getAttribute("data-file-path"));
+      }
+      if (!actual_value.includes(file_path))
+        actual_value.push(file_path);
+      
+      this.v = actual_value;
+    }
+  }
+  
+  /**
+   * Draws the current bottombar component as it is.
+   * - Method of: {@link ve.ScriptManager.UI_Bottombar}
+   * 
+   * @alias draw
+   * @memberof ve.Component.ve.ScriptManager.ve.ScriptManager.UI_Bottombar
+   */
+  draw () {
+    //Iterate over all elements in list_obj.v
+    for (let i = 0; i &lt; this.list_obj.v.length; i++) {
+      let local_el = this.list_obj.v[i].element.querySelector("button[data-file-path]");
+      
+      if (local_el.getAttribute("data-file-path") === this.options.script_manager._file_path) {
+        local_el.setAttribute("data-is-selected", "true");
+      } else {
+        local_el.removeAttribute("data-is-selected");
+      }
+    }
+  }
+
+  /**
+   * Saves the current bottombar to the {@link ve.ScriptManager} `.config` variable.
+   * - Method of: {@link ve.ScriptManager.UI_Bottombar}
+   * 
+   * @alias saveToConfig
+	 * @memberof ve.Component.ve.ScriptManager.ve.ScriptManager.UI_Bottombar
+   */
+  saveToConfig () {
+    //Set to ve.ScriptManager.config if possible
+    if (this.options.script_manager) {
+      let script_manager_obj = this.options.script_manager;
+      
+      script_manager_obj.config.ui_bottombar_value = this.value;
+      if (script_manager_obj._settings.autosave_projects)
+        ve.ScriptManager._saveConfig.call(script_manager_obj);
+    }
+  }
+};</code></pre>
+        </article>
+    </section>
 
 
 
