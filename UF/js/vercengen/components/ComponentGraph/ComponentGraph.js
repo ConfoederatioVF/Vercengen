@@ -21,6 +21,8 @@
  *   - `.x`: {@link number}
  *   - `.y`: {@link number}
  * 
+ * @augments ve.Component
+ * @memberof ve.Component
  * @type {ve.Graph}
  */
 ve.Graph = class extends ve.Component {
@@ -47,6 +49,23 @@ ve.Graph = class extends ve.Component {
 		delete this.from_binding_fire_silently;
 	}
 	
+	get v () {
+		//Return statement
+		return this.value;
+	}
+	
+	set v (arg0_value) {
+		//Convert from parameters
+		let value = (arg0_value) ? arg0_value : {};
+		
+		//Initialise value
+		this.value = value;
+		
+		if (!this.value.series) this.value.series = {};
+		if (!this.value.type) this.value.type = "line_chart";
+		this.draw();
+	}
+	
 	_getAxisStyle () {
 		//Declare local instance variables
 		let root_style = window.getComputedStyle(document.body);
@@ -69,6 +88,57 @@ ve.Graph = class extends ve.Component {
 			fontFamily: (this.options?.title?.textStyle?.fontFamily) ?
 				this.options.title.textStyle.fontFamily : root_style.getPropertyValue("--header-font-family")
 		};
+	}
+	
+	addSeries (arg0_series_obj, arg1_options) { //[WIP] - Finish function body
+		//Convert from parameters
+		let series_obj = arg0_series_obj;
+		let options = (arg1_options) ? arg1_options : {};
+		
+		if (series_obj === undefined) return; //Internal guard clause if series_obj is undefined
+		if (series_obj.coords === undefined) return; //Internal guard clause if series_obj.coords is undefined
+		
+		//Declare local instance variables
+		let series_key = (options.key) ? 
+			options.key : Object.generateRandomID(this.value.series);
+		let return_obj = {};
+		
+		if (options.table_obj) {
+			let series_values = options.table_obj.getRangeValue(series_obj.coords, { 
+				return_raw_values: true 
+			});
+			
+			if (!series_obj.pivot || series_obj.pivot === "column") {
+				return_obj.labels = [];
+				
+				//Iterate over all series_values to fetch needed labels
+				for (let i = 0; i < series_values.length; i++) {
+					return_obj.labels.push(series_values[i][0]);
+					series_values[i].splice(0, 1);
+				}
+			} else {
+				return_obj.labels = [];
+				
+				//Iterate over all series_values in the header to fetch needed labels
+				for (let i = 0; i < series_values[0].length; i++)
+					return_obj.labels.push(series_values[0][i]);
+				series_values.splice(0, 1);
+			}
+			
+			return_obj.origin = series_obj.coords[0];
+			return_obj.value = series_values;
+		} else { //[WIP] - Implement this .pivot mode later
+			
+		}
+		
+		//Set new series and draw
+		this.value.series[series_key] = return_obj;
+		this.draw();
+		
+		console.log(`Output series_obj:`, return_obj);
+		
+		//Return statement
+		return this.value.series[series_key];
 	}
 	
 	draw () { //[WIP] - Finish function body
@@ -125,7 +195,7 @@ ve.Graph = class extends ve.Component {
 			if (this.value.series)
 				Object.iterate(this.value.series, (local_key, local_value) => {
 					let local_data = local_value.value;
-							
+					
 					//Create new this.chart_options.series
 					for (let i = 0; i < local_data.length; i++)
 						this.chart_options.series.push({
@@ -145,73 +215,5 @@ ve.Graph = class extends ve.Component {
 		}
 		
 		this.chart.resize();
-	}
-	
-	get v () {
-		//Return statement
-		return this.value;
-	}
-	
-	set v (arg0_value) {
-		//Convert from parameters
-		let value = (arg0_value) ? arg0_value : {};
-		
-		//Initialise value
-		this.value = value;
-		
-		if (!this.value.series) this.value.series = {};
-		if (!this.value.type) this.value.type = "line_chart";
-		this.draw();
-	}
-	
-	addSeries (arg0_series_obj, arg1_options) { //[WIP] - Finish function body
-		//Convert from parameters
-		let series_obj = arg0_series_obj;
-		let options = (arg1_options) ? arg1_options : {};
-		
-		if (series_obj === undefined) return; //Internal guard clause if series_obj is undefined
-		if (series_obj.coords === undefined) return; //Internal guard clause if series_obj.coords is undefined
-		
-		//Declare local instance variables
-		let series_key = (options.key) ? 
-			options.key : Object.generateRandomID(this.value.series);
-		let return_obj = {};
-		
-		if (options.table_obj) {
-			let series_values = options.table_obj.getRangeValue(series_obj.coords, { 
-				return_raw_values: true 
-			});
-			
-			if (!series_obj.pivot || series_obj.pivot === "column") {
-				return_obj.labels = [];
-				
-				//Iterate over all series_values to fetch needed labels
-				for (let i = 0; i < series_values.length; i++) {
-					return_obj.labels.push(series_values[i][0]);
-					series_values[i].splice(0, 1);
-				}
-			} else {
-				return_obj.labels = [];
-				
-				//Iterate over all series_values in the header to fetch needed labels
-				for (let i = 0; i < series_values[0].length; i++)
-					return_obj.labels.push(series_values[0][i]);
-				series_values.splice(0, 1);
-			}
-			
-			return_obj.origin = series_obj.coords[0];
-			return_obj.value = series_values;
-		} else { //[WIP] - Implement this .pivot mode later
-			
-		}
-		
-		//Set new series and draw
-		this.value.series[series_key] = return_obj;
-		this.draw();
-		
-		console.log(`Output series_obj:`, return_obj);
-		
-		//Return statement
-		return this.value.series[series_key];
 	}
 };

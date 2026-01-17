@@ -197,7 +197,7 @@ ve.ScriptManager.FindAndReplace = class {
 	 * - Method of: {@link ve.ScriptManager.FindAndReplace}
 	 *
 	 * @alias draw
-	 * @memberof ve.Component.ve.ScriptManager.FindAndReplace
+	 * @memberof ve.Component.ve.ScriptManager.ve.ScriptManager.FindAndReplace
 	 * 
 	 * @param {HTMLElement} arg0_element - The container element.
 	 * @param {Array} arg1_new_results - Array of new matches to append.
@@ -313,7 +313,7 @@ ve.ScriptManager.FindAndReplace = class {
 	 * - Method of: {@link ve.ScriptManager.FindAndReplace}
 	 * 
 	 * @alias execute
-	 * @memberof ve.Component.ve.ScriptManager.FindAndReplace
+	 * @memberof ve.Component.ve.ScriptManager.ve.ScriptManager.FindAndReplace
 	 * 
 	 * @param {string} arg0_root_path
 	 * @param {string} arg1_search_string
@@ -379,7 +379,7 @@ ve.ScriptManager.FindAndReplace = class {
 	 * - Method of: {@link ve.ScriptManager.FindAndReplace}
 	 * 
 	 * @alias getFiles
-	 * @memberof ve.Component.ve.ScriptManager.FindAndReplace
+	 * @memberof ve.Component.ve.ScriptManager.ve.ScriptManager.FindAndReplace
 	 * 
 	 * @param {string[]} arg0_matches
 	 * 
