@@ -42,8 +42,8 @@
 		monaco.languages.typescript.javascriptDefaults.setCompilerOptions(compiler_options);
 		monaco.languages.typescript.typescriptDefaults.setCompilerOptions(compiler_options);
 		let current_call_id = this._indexDocumentationCallID;
-		let current_folder = (this._settings.project_folder !== "none") ?
-			this._settings.project_folder : this.leftbar_file_explorer.v;
+		let current_folder = (this.config.project_folder !== "none") ?
+			this.config.project_folder : this.leftbar_file_explorer.v;
 		let shouldAbort = () => (current_call_id !== this._indexDocumentationCallID);
 		
 		//Clear cached documentation if applicable

@@ -11,6 +11,7 @@
  * - `arg0_value`: {@link string} - The code to load into the present ve.ScriptManager.
  * - `arg1_options`: {@link Object}
  *   - `.do_not_auto_detect_project=false`: {@link boolean} - Whether to attempt to read from the base `.ve-sm` file upon initialisation.
+ *   - `.do_not_cache_file_explorer=false`: {@link boolean} - Whether the file directory should remain the same as when last opened.
  *   - `.do_not_display_file_name=false`: {@link boolean}
  *   - `.do_not_display_project_name=false`: {@link boolean}
  *   - `.folder_path=process.cwd()`: {@link string}
@@ -24,7 +25,6 @@
  * 	   - `.manual_synchronisation`: {@link true}
  * 	   - `.scene_height=0`: {@link number} - The scene height of the main workspace in px.
  * 	   - `.theme="theme-default"`: {@link string} - Either 'theme-default'/'theme-light'
- * 	   - `.project_folder="none"`: {@link string}
  * 	   - `.view_file_explorer=true`: {@link boolean}
  *
  * ##### Instance:
@@ -68,62 +68,7 @@ ve.ScriptManager = class extends ve.Component {
 		if (options.style === undefined) options.style = {};
 		
 		//Declare local instance variables
-		this._monaco_themes = {
-			"active4d": "Active4D",
-			"all-hallows-eve": "All Hallows Eve",
-			"amy": "Amy",
-			"birds-of-paradise": "Birds of Paradise",
-			"blackboard": "Blackboard",
-			"brilliance-black": "Brilliance Black",
-			"brilliance-dull": "Brilliance Dull",
-			"chrome-devtools": "Chrome DevTools",
-			"clouds-midnight": "Clouds Midnight",
-			"clouds": "Clouds",
-			"cobalt": "Cobalt",
-			"cobalt2": "Cobalt2",
-			"dawn": "Dawn",
-			"dominion-day": "Dominion Day",
-			"dracula": "Dracula",
-			"dreamweaver": "Dreamweaver",
-			"eiffel": "Eiffel",
-			"espresso-libre": "Espresso Libre",
-			"github-dark": "GitHub Dark",
-			"github-light": "GitHub Light",
-			"github": "GitHub",
-			"idle": "IDLE",
-			"katzenmilch": "Katzenmilch",
-			"kuroir-theme": "Kuroir Theme",
-			"lazy": "LAZY",
-			"magicwb--amiga-": "MagicWB (Amiga)",
-			"merbivore-soft": "Merbivore Soft",
-			"merbivore": "Merbivore",
-			"monokai-bright": "Monokai Bright",
-			"monokai": "Monokai",
-			"night-owl": "Night Owl",
-			"nord": "Nord",
-			"oceanic-next": "Oceanic Next",
-			"pastels-on-dark": "Pastels on Dark",
-			"slush-and-poppies": "Slush and Poppies",
-			"solarised-dark": "Solarized-dark",
-			"solarised-light": "Solarized-light",
-			"spacecadet": "SpaceCadet",
-			"sunburst": "Sunburst",
-			"textmate--mac-classic-": "Textmate (Mac Classic)",
-			"tomorrow-night-blue": "Tomorrow-Night-Blue",
-			"tomorrow-night-bright": "Tomorrow-Night-Bright",
-			"tomorrow-night-eighties": "Tomorrow-Night-Eighties",
-			"tomorrow-night": "Tomorrow-Night",
-			"tomorrow": "Tomorrow",
-			"twilight": "Twilight",
-			"upstream-sunburst": "Upstream Sunburst",
-			"vibrant-ink": "Vibrant Ink",
-			"xcode-default": "Xcode_default",
-			"zenburnesque": "Zenburnesque",
-			"iplastic": "iPlastic",
-			"idlefingers": "idleFingers",
-			"krtheme": "krTheme",
-			"monoindustrial": "monoindustrial"
-		};
+		this._monaco_themes = ve.ScriptManager._getMonacoThemes();
 		this._selected_view = "monaco";
 		this._settings = {
 			is_vercengen_script_manager_settings: true,
@@ -231,9 +176,7 @@ ve.ScriptManager = class extends ve.Component {
 						limit: () => is_file,
 						selected: (local_file_obj.type) ? local_file_obj.type : default_file_extension,
 						
-						onuserchange: (v) => {
-							ve.ScriptManager._setFileExtension.call(this, local_file_path, v);
-						}
+						onuserchange: (v) => ve.ScriptManager._setFileExtension.call(this, local_file_path, v)
 					}),
 					mark_source_as_excluded: new ve.Button(() => {
 						ve.ScriptManager._setSourceAsMode.call(this, local_file_path, "excluded");
@@ -271,13 +214,14 @@ ve.ScriptManager = class extends ve.Component {
 				set_project_folder: new ve.Button(() => {
 					let new_folder_path = path.resolve(this.leftbar_file_explorer.v);
 					
-					this._settings.project_folder = new_folder_path;
+					this.config.project_folder = new_folder_path;
 					ve.ScriptManager._indexDocumentation.call(this, this.bottombar_status_el);
+          ve.ScriptManager._saveConfig.call(this);
 					veToast(`Changed project folder to ${new_folder_path}`);
 				}, { 
 					name: "<icon>gite</icon>",
 					tooltip: "Set as Project Folder",
-					limit: () => (path.resolve(this.leftbar_file_explorer.v) !== this._settings.project_folder)
+					limit: () => (path.resolve(this.leftbar_file_explorer.v) !== this.config.project_folder)
 				})
 			},
 			file_components_obj: {
@@ -303,7 +247,11 @@ ve.ScriptManager = class extends ve.Component {
 				return this.scene_monaco.v;
 			},
 			
-			onrefresh: (v, e) => ve.ScriptManager._drawFileExplorer.call(this, v, e)
+			onrefresh: (v, e) => ve.ScriptManager._drawFileExplorer.call(this, v, e),
+      onuserchange: (v) => {
+        this.config._leftbar_file_explorer_path = v;
+        ve.ScriptManager._saveConfig.call(this);
+      }
 		});
 		this.leftbar_file_explorer.bind(this.leftbar_el);
 		this.scene_el = document.createElement("div");
@@ -390,7 +338,7 @@ ve.ScriptManager = class extends ve.Component {
 					//ScriptManager .name
 					`<span id = "name">${this.name}</span>`,
 					//Project Header
-					`${(!options.do_not_display_project_name) ? `<div id = "project-name"><b>${(this._settings.project_folder !== "none") ? this._settings.project_folder : loc("ve.registry.localisation.ScriptManager_no_project")}</b></div>` : ""}`,
+					`${(!options.do_not_display_project_name) ? `<div id = "project-name"><b>${(this.config.project_folder && this.config.project_folder !== "none") ? this.config.project_folder : loc("ve.registry.localisation.ScriptManager_no_project")}</b></div>` : ""}`,
 					//File Header
 					`${(!options.do_not_display_file_name) ? `- <span id = "file-name" data-is-saved="${this._is_file_saved}">${(this._file_path) ? this._file_path : loc("ve.registry.localisation.ScriptManager_none")}</span>` : ""}`
 				].join("");
@@ -687,8 +635,8 @@ ve.ScriptManager = class extends ve.Component {
 		if (!this.options.do_not_auto_detect_project && 
 			fs.existsSync(path.join(this.leftbar_file_explorer.v, ".ve-sm"))
 		) {
-			if (this._settings.project_folder === "none") this._settings.project_folder = this.leftbar_file_explorer.v;
-			ve.ScriptManager._loadConfig.call(this);
+			if (this.config.project_folder === "none") this.config.project_folder = this.leftbar_file_explorer.v;
+			ve.ScriptManager._loadConfig.call(this, this.options.folder_path);
 		}
 		
 		ve.ScriptManager.instances.push(this);
