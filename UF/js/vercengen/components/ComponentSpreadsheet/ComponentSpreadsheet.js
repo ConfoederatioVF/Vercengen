@@ -366,7 +366,11 @@ ve.Spreadsheet = class extends ve.Component {
 	 * @returns {string[]}
 	 */
 	getSheetNames () {
-		return this.iframe_el.contentWindow.getSheetNames();
+    try {
+		  return this.iframe_el.contentWindow.getSheetNames();
+    } catch (e) {
+      return [];
+    }
 	}
 	
 	/**
