@@ -7,8 +7,8 @@
  * ##### Constructor:
  * - `arg0_value`: {@link number}
  * - `arg1_options`: {@link Object}
- *   - `.disabled=false`: {@link boolean}
  *   - `.disable_number_input=false`: {@link boolean}
+ *   - `.disabled=false`: {@link boolean}
  *   - `.max=1`: {@link number}
  *   - `.min=0`: {@link number}
  *   - `.step=0.01`: {@link number}

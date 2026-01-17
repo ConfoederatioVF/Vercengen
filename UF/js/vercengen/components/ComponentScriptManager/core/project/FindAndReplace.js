@@ -1,3 +1,19 @@
+/**
+ * Internal sub-component of <span color = "yellow">{@link ve.ScriptManager}</span>.
+ * 
+ * ##### Constructor:
+ * - `arg0_options`; {@link Object}
+ *   - `.ignore_files=[]`: {@link Array}<{@link string}>
+ *     
+ * ##### Instance:
+ * - `.cancel_search`: {@link boolean}
+ * - `.is_searching=false`: {@link boolean}
+ * - `.matches=[]`: {@link Array}<{@link string}>
+ * - `.selected_index=-1`: {@link number}
+ * 
+ * @memberof ve.Component.ve.ScriptManager
+ * @type {ve.ScriptManager.FindAndReplace}
+ */
 ve.ScriptManager.FindAndReplace = class {
 	constructor (arg0_options) {
 		//Convert from parameters
@@ -16,8 +32,173 @@ ve.ScriptManager.FindAndReplace = class {
 		this.cancel_search = false;
 	}
 	
+	async _processFile (arg0_file_path, arg1_pattern, arg2_replace_string, arg3_callbacks) {
+		let file_path = arg0_file_path;
+		let pattern = arg1_pattern;
+		let replace_string = arg2_replace_string;
+		let callbacks = arg3_callbacks;
+		
+		try {
+			//Async read
+			let buffer = await fs.promises.readFile(file_path);
+			if (buffer.indexOf(0) !== -1) return; //Binary guard
+			
+			let content = buffer.toString("utf8");
+			let lines = content.split(/\r?\n/);
+			let match_found_in_file = false;
+			let file_matches = [];
+			
+			//Iterate lines
+			lines.forEach((line_content, index) => {
+				//Reset lastIndex to ensure we find the first match on the line
+				pattern.lastIndex = 0;
+				let local_match = pattern.exec(line_content);
+				
+				if (local_match) {
+					match_found_in_file = true;
+					
+					file_matches.push({
+						file: file_path,
+						line: index + 1,
+						match: line_content.trim(),
+						start_column: local_match.index + 1,
+						end_column: local_match.index + 1 + local_match[0].length,
+					});
+				}
+			});
+			
+			//If matches found, notify callback immediately (Streaming)
+			if (match_found_in_file) {
+				if (replace_string !== undefined) {
+					let new_content = content.replace(pattern, replace_string);
+					await fs.promises.writeFile(file_path, new_content, "utf8");
+				} else {
+					if (callbacks.onmatch)
+						callbacks.onmatch(file_matches);
+				}
+			}
+		} catch (e) {
+			console.error(`Error processing ${file_path}: ${e.message}`);
+		}
+	}
+	
+	_recalculateIgnoreFolders () {
+		//Declare local instance variables
+		let new_ignore_files = [];
+		
+		if (this.script_manager_instance) {
+			let files_config = this.script_manager_instance?.config?.files;
+			
+			if (files_config)
+				Object.iterate(files_config, (local_key, local_value) => {
+					if (local_value.mode === "excluded")
+						new_ignore_files.push(local_key);
+				});
+		}
+		this.ignore_files = new_ignore_files;
+	}
+	
+	_replaceInFile (arg0_file_path, arg1_pattern, arg2_line_number, arg3_replace_string) {
+		//Convert from parameters
+		let file_path = arg0_file_path;
+		let pattern = arg1_pattern;
+		let line_number = arg2_line_number;
+		let replace_string = arg3_replace_string;
+		
+		try {
+			let content = fs.readFileSync(file_path, "utf8");
+			let lines = content.split(/\r?\n/);
+			
+			let target_line = lines[line_number - 1];
+			pattern.lastIndex = 0;
+			
+			if (pattern.test(target_line)) {
+				//Reset lastIndex again because .test() advanced it
+				pattern.lastIndex = 0;
+				
+				lines[line_number - 1] = target_line.replace(pattern, replace_string);
+				fs.writeFileSync(file_path, lines.join("\n"), "utf8");
+				
+				//Return statement
+				return true;
+			}
+		} catch (e) { console.error(e); }
+		
+		//Return statement
+		return false;
+	}
+	
+	_restoreContent () {
+		//Declare local instance variables
+		let monaco_obj = this.script_manager_instance.scene_monaco.editor;
+		
+		//Restore selection after loading file
+		if (this._saved_file_content) {
+			this.script_manager_instance.v = this._saved_file_content;
+			setTimeout(() => {
+				if (this._saved_file_position)
+					monaco_obj.setPosition(this._saved_file_position);
+				if (!this._saved_file_selection.isEmpty())
+					monaco_obj.setSelection(this._saved_file_selection);
+				
+				delete this._saved_file_content;
+				delete this._saved_file_position;
+				delete this._saved_file_selection;
+			});
+		}
+	}
+	
+	async _traverse (arg0_current_path, arg1_pattern, arg2_replace_string, arg3_stats, arg4_callbacks) {
+		//Check cancellation
+		if (this.cancel_search) return;
+		
+		let current_path = arg0_current_path;
+		let pattern = arg1_pattern;
+		let replace_string = arg2_replace_string;
+		let stats = arg3_stats;
+		let callbacks = arg4_callbacks;
+		
+		try {
+			//Use fs.promises for async file ops
+			let file_stat = await fs.promises.stat(current_path);
+			
+			if (file_stat.isDirectory()) {
+				let all_files = await fs.promises.readdir(current_path);
+				
+				for (let local_file of all_files) {
+					let continue_search = false;
+					let file_path = path.join(current_path, local_file);
+					
+					if (this.cancel_search) return;
+					for (let i = 0; i < this.ignore_files.length; i++)
+						if (file_path.includes(this.ignore_files[i])) {
+							continue_search = true;
+							break;
+						}
+					if (continue_search) continue;
+					
+					//Recursion
+					await this._traverse(path.join(current_path, local_file), pattern, replace_string, stats, callbacks);
+				}
+			} else if (file_stat.isFile()) {
+				stats.scanned++;
+				
+				//Throttle progress updates to UI (every 10 files) to save performance
+				if (stats.scanned % 10 === 0 && callbacks.onprogress)
+					callbacks.onprogress(stats.scanned);
+				
+				await this._processFile(current_path, pattern, replace_string, callbacks);
+			}
+		} catch (e) {}
+	}
+	
 	/**
 	 * Draws the container or appends results.
+	 * - Method of: {@link ve.ScriptManager.FindAndReplace}
+	 *
+	 * @alias draw
+	 * @memberof ve.Component.ve.ScriptManager.FindAndReplace
+	 * 
 	 * @param {HTMLElement} arg0_element - The container element.
 	 * @param {Array} arg1_new_results - Array of new matches to append.
 	 * @param {Boolean} arg2_reset - If true, clears the list and redraws the container structure.
@@ -128,8 +309,17 @@ ve.ScriptManager.FindAndReplace = class {
 	}
 	
 	/**
-	 * Async execution of Find (and optionally Replace All).
-	 * Streaming results are returned via callbacks.
+	 * Async execution of Find (and optionally Replace All). Streaming results are returned via callbacks.
+	 * - Method of: {@link ve.ScriptManager.FindAndReplace}
+	 * 
+	 * @alias execute
+	 * @memberof ve.Component.ve.ScriptManager.FindAndReplace
+	 * 
+	 * @param {string} arg0_root_path
+	 * @param {string} arg1_search_string
+	 * @param {string} arg2_replace_string
+	 * @param {Object} [arg3_options]
+	 * @param {{onmatch: function, onfinish: function, onprogress: function}} [arg4_callbacks] - Callback object/map.
 	 */
 	async execute (arg0_root_path, arg1_search_string, arg2_replace_string, arg3_options, arg4_callbacks) {
 		//Convert from parameters
@@ -139,8 +329,8 @@ ve.ScriptManager.FindAndReplace = class {
 		let options = (arg3_options) ? arg3_options : {};
 		let callbacks = (arg4_callbacks) ? arg4_callbacks : {
 			onmatch: () => {},
+			onfinish: () => {},
 			onprogress: () => {},
-			onfinish: () => {}
 		};
 		
 		//Handle cancellation
@@ -184,100 +374,17 @@ ve.ScriptManager.FindAndReplace = class {
 		if (callbacks.onfinish) callbacks.onfinish();
 	}
 	
-	async _traverse (arg0_current_path, arg1_pattern, arg2_replace_string, arg3_stats, arg4_callbacks) {
-		//Check cancellation
-		if (this.cancel_search) return;
-		
-		let current_path = arg0_current_path;
-		let pattern = arg1_pattern;
-		let replace_string = arg2_replace_string;
-		let stats = arg3_stats;
-		let callbacks = arg4_callbacks;
-		
-		try {
-			//Use fs.promises for async file ops
-			let file_stat = await fs.promises.stat(current_path);
-			
-			if (file_stat.isDirectory()) {
-				let all_files = await fs.promises.readdir(current_path);
-				
-				for (let local_file of all_files) {
-					let continue_search = false;
-					let file_path = path.join(current_path, local_file);
-					
-					if (this.cancel_search) return;
-					for (let i = 0; i < this.ignore_files.length; i++)
-						if (file_path.includes(this.ignore_files[i])) {
-							continue_search = true;
-							break;
-						}
-					if (continue_search) continue;
-					
-					//Recursion
-					await this._traverse(path.join(current_path, local_file), pattern, replace_string, stats, callbacks);
-				}
-			} else if (file_stat.isFile()) {
-				stats.scanned++;
-				
-				//Throttle progress updates to UI (every 10 files) to save performance
-				if (stats.scanned % 10 === 0 && callbacks.onprogress)
-					callbacks.onprogress(stats.scanned);
-				
-				await this._processFile(current_path, pattern, replace_string, callbacks);
-			}
-		} catch (e) {}
-	}
-	
-	async _processFile (arg0_file_path, arg1_pattern, arg2_replace_string, arg3_callbacks) {
-		let file_path = arg0_file_path;
-		let pattern = arg1_pattern;
-		let replace_string = arg2_replace_string;
-		let callbacks = arg3_callbacks;
-		
-		try {
-			//Async read
-			let buffer = await fs.promises.readFile(file_path);
-			if (buffer.indexOf(0) !== -1) return; //Binary guard
-			
-			let content = buffer.toString("utf8");
-			let lines = content.split(/\r?\n/);
-			let match_found_in_file = false;
-			let file_matches = [];
-			
-			//Iterate lines
-			lines.forEach((line_content, index) => {
-				//Reset lastIndex to ensure we find the first match on the line
-				pattern.lastIndex = 0;
-				let local_match = pattern.exec(line_content);
-				
-				if (local_match) {
-					match_found_in_file = true;
-					
-					file_matches.push({
-						file: file_path,
-						line: index + 1,
-						match: line_content.trim(),
-						start_column: local_match.index + 1,
-						end_column: local_match.index + 1 + local_match[0].length,
-					});
-				}
-			});
-			
-			//If matches found, notify callback immediately (Streaming)
-			if (match_found_in_file) {
-				if (replace_string !== undefined) {
-					let new_content = content.replace(pattern, replace_string);
-					await fs.promises.writeFile(file_path, new_content, "utf8");
-				} else {
-					if (callbacks.onmatch)
-						callbacks.onmatch(file_matches);
-				}
-			}
-		} catch (e) {
-			console.error(`Error processing ${file_path}: ${e.message}`);
-		}
-	}
-	
+	/**
+	 * Returns all file paths which match the given patterns.
+	 * - Method of: {@link ve.ScriptManager.FindAndReplace}
+	 * 
+	 * @alias getFiles
+	 * @memberof ve.Component.ve.ScriptManager.FindAndReplace
+	 * 
+	 * @param {string[]} arg0_matches
+	 * 
+	 * @returns {string[]}
+	 */
 	getFiles (arg0_matches) {
 		//Convert from parameters
 		let matches = (arg0_matches) ? arg0_matches : [];
@@ -292,72 +399,6 @@ ve.ScriptManager.FindAndReplace = class {
 		
 		//Return statement
 		return all_files;
-	}
-	
-	_recalculateIgnoreFolders () {
-		//Declare local instance variables
-		let new_ignore_files = [];
-		
-		if (this.script_manager_instance) {
-			let files_config = this.script_manager_instance?.config?.files;
-			
-			if (files_config)
-				Object.iterate(files_config, (local_key, local_value) => {
-					if (local_value.mode === "excluded")
-						new_ignore_files.push(local_key);
-				});
-		}
-		this.ignore_files = new_ignore_files;
-	}
-	
-	_replaceInFile (arg0_file_path, arg1_pattern, arg2_line_number, arg3_replace_string) {
-		//Convert from parameters
-		let file_path = arg0_file_path;
-		let pattern = arg1_pattern;
-		let line_number = arg2_line_number;
-		let replace_string = arg3_replace_string;
-		
-		try {
-			let content = fs.readFileSync(file_path, "utf8");
-			let lines = content.split(/\r?\n/);
-			
-			let target_line = lines[line_number - 1];
-			pattern.lastIndex = 0;
-			
-			if (pattern.test(target_line)) {
-				//Reset lastIndex again because .test() advanced it
-				pattern.lastIndex = 0;
-				
-				lines[line_number - 1] = target_line.replace(pattern, replace_string);
-				fs.writeFileSync(file_path, lines.join("\n"), "utf8");
-				
-				//Return statement
-				return true;
-			}
-		} catch (e) { console.error(e); }
-		
-		//Return statement
-		return false;
-	}
-	
-	_restoreContent () {
-		//Declare local instance variables
-		let monaco_obj = this.script_manager_instance.scene_monaco.editor;
-		
-		//Restore selection after loading file
-		if (this._saved_file_content) {
-			this.script_manager_instance.v = this._saved_file_content;
-			setTimeout(() => {
-				if (this._saved_file_position)
-					monaco_obj.setPosition(this._saved_file_position);
-				if (!this._saved_file_selection.isEmpty())
-					monaco_obj.setSelection(this._saved_file_selection);
-				
-				delete this._saved_file_content;
-				delete this._saved_file_position;
-				delete this._saved_file_selection;
-			});
-		}
 	}
 };
 
