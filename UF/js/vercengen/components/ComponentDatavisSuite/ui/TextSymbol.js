@@ -109,6 +109,7 @@ ve.DatavisSuite.TextSymbol = class extends ve.Component {
 			}),
 			text_shadow_colour: new ve.Colour((value.textShadowColor) ? value.textShadowColor : "#000000", {
 				name: "Text Shadow Colour",
+				is_rgba: true,
 				onuserchange: (v, e) => this.value.textShadowColor = e.getHex()
 			}),
 			text_shadow_offset_x: new ve.Number(Math.returnSafeNumber(value.textShadowOffsetX), {
