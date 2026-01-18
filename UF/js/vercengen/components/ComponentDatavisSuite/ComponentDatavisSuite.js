@@ -494,9 +494,11 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			}),
 			
 			symbol: new ve.Interface({
-				stroke_colour: new ve.Colour([255, 255, 255], {
+				stroke_colour: new ve.Colour([255, 255, 255, 1], {
+					is_rgba: true,
 					onuserchange: (v, e) => {
-						
+						series_obj.symbol.color = e.getHex();
+						this.drawGraphs();
 					}
 				})
 			}, {

@@ -131,10 +131,14 @@ ve.Graph = class extends ve.Component {
 			
 		}
 		
+		//Concatenate with .symbol
+		return_obj.symbol = series_obj.symbol;
+		
 		//Set new series and draw
 		this.value.series[series_key] = return_obj;
 		this.draw();
 		
+		console.log(`Input series_obj:`, series_obj);
 		console.log(`Output series_obj:`, return_obj);
 		
 		//Return statement
@@ -147,9 +151,8 @@ ve.Graph = class extends ve.Component {
 		let root_style = window.getComputedStyle(document.body);
 		
 		//this.element.innerHTML = "";
+		this.element.style.position = "absolute";
 		if (has_coords) {
-			this.element.style.position = "absolute";
-			
 			this.element.style.left = (typeof this.x === "number") ? `${this.x}px` : this.x;
 			this.element.style.top = (typeof this.y === "number") ? `${this.y}px` : this.y;
 			
@@ -157,7 +160,7 @@ ve.Graph = class extends ve.Component {
 			this.element.style.width = (typeof this.width === "number") ? `${this.width}px` : this.width;
 		} else {
 			this.element.style.height = "100%";
-			this.element.style.width = "100%";
+			this.element.style.width = `100%`;
 		}
 		
 		//Draw chart
@@ -207,7 +210,8 @@ ve.Graph = class extends ve.Component {
 								color: "transparent"
 							},
 							emphasis: { focus: "series" },
-							stack: local_key
+							stack: local_key,
+							...local_value.symbol
 						});
 				});
 			

@@ -161,8 +161,8 @@ ve.Colour = class extends ve.Component {
 		if (this.options.is_rgba) {
 			this.alpha = input_alpha;
 			if (this.opacity_slider) {
-				// We set .v directly on the child component
-				this.opacity_slider.v = this.alpha;
+				//We set .v directly on the child component
+				this.opacity_slider.v = this.alpha*100;
 			}
 		}
 		
