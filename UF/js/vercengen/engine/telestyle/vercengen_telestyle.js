@@ -90,7 +90,7 @@
 		if (!el) return; //Internal guard clause if element could not be found
 		
 		//Declare local instance variables
-		let mutated_style_obj = structuredClone(style_obj);
+		let mutated_style_obj = style_obj;
 		let { static: staticStyles, dynamic: dynamic_styles } =
 			HTML.splitStaticDynamicTelestyle(mutated_style_obj);
 		let registry = HTML.ve_css_registry;

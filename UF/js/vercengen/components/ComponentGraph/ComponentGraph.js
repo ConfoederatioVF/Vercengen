@@ -176,47 +176,47 @@ ve.Graph = class extends ve.Component {
 			textStyle: this._getTitleStyle()
 		};
 		
-		if (this.options.type === "line_chart" || !this.options.type) {
-			this.chart_options.xAxis = {
-				boundaryGap: false,
-				type: "category",
-				
-				axisLabel: this._getAxisStyle(),
-				axisLine: {
-					lineStyle: this._getAxisStyle()
-				}
-			};
-			this.chart_options.yAxis = {
-				type: "value",
-				
-				axisLabel: this._getAxisStyle(),
-				axisLine: {
-					lineStyle: this._getAxisStyle()
-				}
-			};
+		//if (this.options.type === "line_chart" || !this.options.type) {
+		this.chart_options.xAxis = {
+			boundaryGap: false,
+			type: "category",
 			
-			if (this.value.series)
-				Object.iterate(this.value.series, (local_key, local_value) => {
-					let local_data = local_value.value;
-					
-					//Create new this.chart_options.series
-					for (let i = 0; i < local_data.length; i++)
-						this.chart_options.series.push({
-							name: (local_value.name) ? local_value.name : local_key,
-							data: local_data[i],
-							type: "line",
-							
-							areaStyle: {
-								color: "transparent"
-							},
-							emphasis: { focus: "series" },
-							stack: local_key,
-							...local_value.symbol
-						});
-				});
+			axisLabel: this._getAxisStyle(),
+			axisLine: {
+				lineStyle: this._getAxisStyle()
+			}
+		};
+		this.chart_options.yAxis = {
+			type: "value",
 			
-			this.chart.setOption(this.chart_options);
-		}
+			axisLabel: this._getAxisStyle(),
+			axisLine: {
+				lineStyle: this._getAxisStyle()
+			}
+		};
+		
+		if (this.value.series)
+			Object.iterate(this.value.series, (local_key, local_value) => {
+				let local_data = local_value.value;
+				
+				//Create new this.chart_options.series
+				for (let i = 0; i < local_data.length; i++)
+					this.chart_options.series.push({
+						name: (local_value.name) ? local_value.name : local_key,
+						data: local_data[i],
+						type: "line",
+						
+						areaStyle: {
+							color: "transparent"
+						},
+						emphasis: { focus: "series" },
+						stack: local_key,
+						...local_value.symbol
+					});
+			});
+		
+		this.chart.setOption(this.chart_options);
+		//}
 		
 		this.chart.resize();
 	}

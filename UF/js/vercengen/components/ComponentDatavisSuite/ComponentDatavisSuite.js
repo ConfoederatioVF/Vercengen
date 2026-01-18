@@ -154,8 +154,8 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			
 			Object.iterate(this.graphs, (local_key, local_value) => { //[WIP] - Finish population function
 				if (local_value instanceof ve.Graph) {
-					let graph_name = (local_value?.options?.symbol?.title?.text) ?
-						local_value.options.symbol.title.text : "New Graph"
+					let graph_name = (local_value?.options?.title?.text) ?
+						local_value.options.title.text : "New Graph"
 					
 					hierarchy_obj[local_key] = new ve.HierarchyDatatype({
 						icon: new ve.HTML("<icon>show_chart</icon>"),
@@ -423,6 +423,28 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		//Close this.graph_window if already open
 		if (this.graph_window) this.graph_window.close();
 		
+		//Declare local instance variables
+		let graph_interface_obj = new ve.RawInterface({}, {
+			onload: (v, e) => {
+				setInterval(() => {
+					if (!document.body.contains(e.element)) return;
+					Object.iterate(this.graphs, (local_key, local_value) => {
+						local_value.chart.resize({
+							height: Math.returnSafeNumber(local_value.options.height, e.element.offsetHeight),
+							width: Math.returnSafeNumber(local_value.options.width, e.element.offsetWidth)
+						})
+					});
+				}, 100);
+			},
+			style: {
+				height: "100%",
+				width: "100%",
+				
+				overflow: "hidden",
+				position: "relative"
+			}
+		});
+		
 		//Open this.graph_window with controls on the left and visualisation on the right
 		this.graph_window = new ve.Window({
 			container: new ve.FlexInterface({
@@ -431,14 +453,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 						scrollbarWidth: "thin"
 					}
 				}),
-				graph: new ve.RawInterface({}, {
-					style: {
-						height: "100%",
-						width: "100%",
-						
-						overflow: "hidden"
-					}
-				})
+				graph: graph_interface_obj
 			}, {
 				onuserchange: (v, e) => {
 					this.drawGraphs(true);
@@ -494,7 +509,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			}),
 			
 			symbol: new ve.Interface({
-				stroke_colour: new ve.Colour([255, 255, 255, 1], {
+				stroke_colour: new ve.Colour((series_obj.symbol.color) ? series_obj.symbol.color : [255, 255, 255, 1], {
 					is_rgba: true,
 					onuserchange: (v, e) => {
 						series_obj.symbol.color = e.getHex();
