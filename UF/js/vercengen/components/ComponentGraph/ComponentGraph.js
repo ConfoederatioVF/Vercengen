@@ -35,6 +35,10 @@ ve.Graph = class extends ve.Component {
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
 		if (!options.type) options.type = "line_chart";
+		if (!options.xAxis) options.xAxis = {};
+			if (!options.xAxis.symbol) options.xAxis.symbol = {};
+		if (!options.yAxis) options.yAxis = {};
+			if (!options.yAxis.symbol) options.yAxis.symbol = {};
 			
 		//Declare local instance variables
 		this.element = document.createElement("div");
@@ -184,7 +188,8 @@ ve.Graph = class extends ve.Component {
 			axisLabel: this._getAxisStyle(),
 			axisLine: {
 				lineStyle: this._getAxisStyle()
-			}
+			},
+			...this.options.xAxis.symbol
 		};
 		this.chart_options.yAxis = {
 			type: "value",
@@ -192,7 +197,8 @@ ve.Graph = class extends ve.Component {
 			axisLabel: this._getAxisStyle(),
 			axisLine: {
 				lineStyle: this._getAxisStyle()
-			}
+			},
+			...this.options.yAxis.symbol
 		};
 		
 		if (this.value.series)

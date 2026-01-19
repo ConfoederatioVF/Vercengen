@@ -10,6 +10,7 @@
 	
 	/**
 	 * Adds a getter/setter to a given variable string with a root object.
+	 * @alias Object.addGetterSetter
 	 * 
 	 * @param {Object} arg0_object
 	 * @param {string} arg1_variable_string
@@ -142,6 +143,7 @@
 	
 	/**
 	 * Generates and returns a random unique ID given a specific object.
+	 * @alias Object.generateRandomID
 	 * 
 	 * @param {Object} arg0_object
 	 * 
@@ -171,6 +173,7 @@
 	
 	/**
 	 * Fetches a given value with a root object and variable string.
+	 * @alias Object.getValue
 	 * 
 	 * @param {Object} arg0_object
 	 * @param {string} arg1_variable_string
@@ -189,6 +192,7 @@
 		
 	/**
 	 * Iterates over an object, with similar conventions to other Object static methods.
+	 * @alias Object.iterate
 	 *
 	 * @param {Object} arg0_object
 	 * @param {function(arg0_local_key, arg1_local_value, arg2_index)|function(arg0_local_value)} arg1_function
@@ -257,6 +261,7 @@
 	
 	/**
 	 * Sets a given value with a root object and variable string.
+	 * @alias Object.setValue
 	 * 
 	 * @param {Object} arg0_object
 	 * @param {string} arg1_variable_string

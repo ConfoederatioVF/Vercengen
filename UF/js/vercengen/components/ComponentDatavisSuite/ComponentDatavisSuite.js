@@ -211,10 +211,18 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 								this.assigned_series_list = assigned_series_list;
 							
 							this.edit_graph_window = new ve.Window({ //Add series using ve.List<ve.Datalist>
-								assigned_series: assigned_series_list
+								assigned_series: assigned_series_list,
+								x_axis_name: new ve.Text((local_value.options?.xAxis?.symbol?.name) ? local_value.options?.xAxis?.symbol?.name : "", {
+									name: "X Axis Name",
+									onuserchange: (v) => {
+										local_value.options.xAxis.symbol.name = v;
+										local_value.draw();
+									}
+								})
 							}, {
 								name: `Edit ${graph_name}`,
 								can_rename: false,
+								do_not_wrap: true,
 								width: "30rem"
 							});
 						}, {
