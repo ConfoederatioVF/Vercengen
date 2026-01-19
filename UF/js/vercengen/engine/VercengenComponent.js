@@ -456,7 +456,8 @@ ve.Component = class {
 			owner_array.push(this);
 			
 			Object.iterate(this.components_obj, (local_key, local_value) => {
-				local_value.setOwner(value, owner_array);
+				if (local_value.setOwner)
+					local_value.setOwner(value, owner_array);
 			});
 		}
 	}

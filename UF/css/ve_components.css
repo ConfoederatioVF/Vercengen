@@ -126,6 +126,8 @@
 /* -- ve.Datalist -- */
 [component="ve-datalist"] input {
     min-width: calc(var(--default-width)/2);
+    
+    #name { margin-right: var(--cell-padding); }
 }
 
 /* -- ve.Date -- */
@@ -263,6 +265,11 @@
     > #name {
         margin-right: var(--padding);
     }
+}
+
+/* -- ve.Number -- */
+[component="ve-number"] {
+    [component="ve-horizontal-list"] { padding: 0; }
 }
 
 /* -- ve.ObjectInspector -- */
@@ -417,6 +424,8 @@
 /* -- ve.Text -- */
 [component="ve-text"] input {
     min-width: calc(var(--default-width)/2);
+    
+    [component="ve-horizontal-list"] { padding: 0; }
 }
 
 /* -- ve.Time -- */

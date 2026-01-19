@@ -212,13 +212,14 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 							
 							this.edit_graph_window = new ve.Window({ //Add series using ve.List<ve.Datalist>
 								assigned_series: assigned_series_list,
-								x_axis_name: new ve.Text((local_value.options?.xAxis?.symbol?.name) ? local_value.options?.xAxis?.symbol?.name : "", {
-									name: "X Axis Name",
+								x_axis_symbol: new ve.DatavisSuite.XAxisSymbol(local_value.options?.xAxis?.symbol, {
+									datavis_suite_obj: this,
+									graph_obj: local_value,
 									onuserchange: (v) => {
-										local_value.options.xAxis.symbol.name = v;
-										local_value.draw();
+										local_value.options.xAxis.symbol = v;
+										this.drawGraphs(true);
 									}
-								})
+								}).interface
 							}, {
 								name: `Edit ${graph_name}`,
 								can_rename: false,
@@ -405,6 +406,19 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		
 		//Return statement
 		return return_obj;
+	}
+	
+	getSeriesData (arg0_series_id) {
+		//Convert from parameters
+		let series_id = arg0_series_id;
+		
+		//Declare local instance variables
+		let series_obj = (typeof series_id !== "object") ? this.series[series_id] : series_id;
+		
+		//Return statement
+		return this.table_obj.getRangeValue(series_obj.coords, {
+			return_raw_values: true
+		});
 	}
 	
 	getSeriesName (arg0_series_obj) {
