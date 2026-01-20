@@ -6,8 +6,6 @@
  * If you need a loop, call `async run()` multiple times instead.
  * - Functional binding: <span color=00ffff>veNodeEditor</span>().
  * 
- * [WIP] - Settings remain to be concretely implemented.
- * 
  * ##### Constructor:
  * - `arg0_value`: {@link Object} - The JSON object for the Maptalks instance attached to the current NodeEditor, including properties data.
  * - `arg1_options`: {@link Object}
@@ -15,6 +13,7 @@
  *   - `.category_types`: {@link Object}
  *     - `<category_key>`: {@link Object}
  *       - `.colour`: {@link Array}<{@link number}, {@link number}, {@link number}>|{@link string} - Either a hex/RGB value.
+ *   - `.distributed_compute=false`: {@link boolean} - [WIP] - Whether to multithread/multicore tasks.
  *   - `.exclude_all=false`: {@link boolean} - Whether to exclude the default 'All' category at the start.
  *   - `.node_types`: {@link Object}
  *     - `<node_key>`: {@link Object} - Current valid types for `.input_parameters` and `.output_type` include 'any'/'number[]'/'string[]'/'boolean'/'number'/'script'/'string'.
@@ -64,7 +63,7 @@
  * @memberof ve.Component
  * @type {ve.NodeEditor}
  */
-ve.NodeEditor = class extends ve.Component {
+ve.NodeEditor = class extends ve.Component { //[WIP] - Settings remain to be concretely implemented.
 	/**
 	 * @type {ve.NodeEditor[]}
 	 */

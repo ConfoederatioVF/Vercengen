@@ -319,6 +319,9 @@ ve.Table = class extends ve.Component {
 
 //Functional binding
 
+/**
+ * {@returns ve.Table}
+ */
 veTable = function () {
 	//Return statement
 	return new ve.Table(...arguments);

@@ -8,8 +8,10 @@
  * ##### Constructor:
  * - `arg0_value`: {@link Object}|{@link Array} - The object to edit.
  * - `arg1_options`: {@link Object}
- *   - `.collapsed_depth=1`: {@link number} - The depth at which folders start collapsing automatically.
- *   - `.show_icons=true`: {@link boolean} - Whether to show type icons.
+ *   - `.auto_collapse_depth=1`: {@link number} - The depth at which folders start collapsing automatically.
+ *   - `.do_not_allow_deletion=false`: {@link boolean}
+ *   - `.do_not_allow_insertion=false`: {@link boolean}
+ *   - `.do_not_display_icons=false`: {@link boolean} - Whether to show type icons.
  *
  * ##### Instance:
  * - `.hierarchy`: {@link ve.Hierarchy} - The internal hierarchy component.
@@ -22,7 +24,7 @@
  * @memberof ve.Component
  * @type {ve.ObjectEditor}
  */
-ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later date, move .collapsed_depth > .auto_collapse_depth, .show_icons > .do_not_display_icons, add .do_not_allow_deletion, .do_not_allow_insertion
+ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later date.
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : {};
@@ -31,8 +33,10 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
-		options.collapsed_depth = (options.collapsed_depth !== undefined) ? options.collapsed_depth : 1;
-		options.show_icons = (options.show_icons !== undefined) ? options.show_icons : true;
+		options.auto_collapse_depth = Math.returnSafeNumber(options.auto_collapse_depth, 1);
+		options.do_not_display_icons = (options.do_not_display_icons !== undefined) ? options.do_not_display_icons : false;
+		options.do_not_allow_deletion = (options.do_not_allow_deletion !== undefined) ? options.do_not_allow_deletion : false;
+		options.do_not_allow_insertion = (options.do_not_allow_insertion !== undefined) ? options.do_not_allow_insertion : false;
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");
@@ -110,7 +114,8 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 			number: { name: "Number" },
 			boolean: { name: "Boolean" },
 			object: { name: "Object" },
-			array: { name: "Array" }
+			array: { name: "Array" },
+			null: { name: "Null" }
 		}, {
 			style: { width: "100%", marginBottom: "var(--cell-padding)" }
 		});
@@ -135,6 +140,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 				case "boolean": new_value = false; break;
 				case "object": new_value = {}; break;
 				case "array": new_value = []; break;
+				case "null": new_value = null; break;
 			}
 			
 			if (is_array) target_obj.push(new_value);
@@ -146,11 +152,10 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 			
 		}, { name: "Add Item", style: { width: "100%" } });
 		
-		let win = new ve.Window(modal_components, {
-			name: (is_array) ? "Add to Array" : "Add Property",
-			width: "300px",
-			height: "auto",
-			can_minimize: false
+		if (this.modal_window) this.modal_window.close();
+		this.modal_window = new ve.Window(modal_components, {
+			name: (is_array) ? "Add Element to Array" : "Add Variable",
+			can_rename: false
 		});
 	}
 	
@@ -171,7 +176,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		let components_obj = {};
 		
 		// 1. Icon (Order 0)
-		if (this.options.show_icons) {
+		if (!this.options.do_not_display_icons) {
 			let icon_name = "help_outline";
 			switch(type) {
 				case "object": icon_name = "data_object"; break;
@@ -179,6 +184,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 				case "string": icon_name = "short_text"; break;
 				case "number": icon_name = "123"; break;
 				case "boolean": icon_name = "toggle_on"; break;
+				case "null": icon_name = "do_not_disturb_on"; break;
 			}
 			
 			components_obj.icon = new ve.HTML(`<icon>${icon_name}</icon>`, {
@@ -226,13 +232,12 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		});
 		
 		// 4. Value Input (Order 3)
-		// No marginLeft: auto here. It sits right next to the separator.
 		
 		if (!is_group) {
 			if (type === "string") {
 				components_obj.input = new ve.Text(current_data, {
 					onuserchange: (v) => { parent_object[current_key] = v; this.fireToBinding(); },
-					style: { order: 3, flex: "1 1 auto" } // Flex allows it to take available space if needed
+					style: { order: 3, flex: "1 1 auto" }
 				});
 			} else if (type === "number") {
 				components_obj.input = new ve.Number(current_data, {
@@ -247,6 +252,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 					style: { order: 3 }
 				});
 			} else {
+				// Null or other types
 				components_obj.input = new ve.HTML(`<span style="opacity:0.5">${String(current_data)}</span>`, {
 					style: { order: 3 }
 				});
@@ -257,6 +263,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 				this._openAddModal(current_data);
 			}, {
 				name: "<icon>add</icon>",
+				limit: () => (!this.options.do_not_allow_insertion),
 				tooltip: "Add Item...",
 				style: { order: 3 }
 			});
@@ -278,6 +285,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 			});
 		}, {
 			name: "<icon>delete</icon>",
+			limit: () => (!this.options.do_not_allow_deletion),
 			tooltip: "Delete",
 			style: {
 				order: 4,
@@ -298,7 +306,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		return new ve.HierarchyDatatype(components_obj, {
 			name: (typeof current_key === "string") ? current_key : current_key.toString(),
 			type: is_group ? "group" : "item",
-			is_collapsed: (depth >= this.options.collapsed_depth),
+			is_collapsed: (depth >= this.options.auto_collapse_depth),
 			
 			// Metadata for reordering
 			data_container: parent_object,
@@ -361,6 +369,13 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		this.fireToBinding();
 	}
 	
+	/**
+	 * Refreshes the given {@link ve.ObjectEditor} to be in sync with the JSON object passed in.
+	 * - Method of: {@link ve.ObjectEditor}
+	 * 
+	 * @alias refresh
+	 * @memberof ve.Component.ve.ObjectEditor
+	 */
 	refresh () {
 		this.element.innerHTML = "";
 		
@@ -370,7 +385,11 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 				this._openAddModal(this.value);
 			}, {
 				name: "<icon>playlist_add</icon>",
-				tooltip: "Add Property to Root"
+				tooltip: "Add Variable"
+			}),
+			information: new ve.Button(() => {}, {
+				name: "<icon>info</icon>",
+				tooltip: "Key names are on the left, and are text entries with the exception of arrays. Values are located to the right."
 			})
 		}, {
 			disabled: true,
@@ -381,7 +400,8 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 			}
 		});
 		
-		let hierarchy_obj = { actions_bar: actions_bar };
+		let hierarchy_obj = (!this.options.do_not_allow_insertion) ? 
+			{ actions_bar: actions_bar } : {};
 		
 		if (this.value && typeof this.value === "object") {
 			Object.keys(this.value).forEach((key) => {
