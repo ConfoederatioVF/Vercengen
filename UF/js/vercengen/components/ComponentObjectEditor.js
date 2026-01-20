@@ -1,7 +1,7 @@
 /**
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  *
- * A recursive editor for JavaScript Objects, Arrays, and Primitives.
+ * A recursive editor for JavaScript Objects, Arrays, and primitives.
  * Allows adding and editing specific types: String, Number, Boolean, Object, and Array.
  * - Functional binding: <span color=00ffff>veObjectEditor</span>().
  *
@@ -22,7 +22,7 @@
  * @memberof ve.Component
  * @type {ve.ObjectEditor}
  */
-ve.ObjectEditor = class extends ve.Component {
+ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later date.
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : {};
@@ -80,9 +80,7 @@ ve.ObjectEditor = class extends ve.Component {
 		let modal_components = {};
 		
 		// Info Text
-		modal_components.info = new ve.HTML((is_array) ?
-			"Select the type of item to push to the array." :
-			"Define the key name and value type.");
+		modal_components.info = new ve.HTML((is_array) ? "Select the type of item to push to the array." : "Define the key name and value type.");
 		
 		// Key Input (Only add this key if it is NOT an array)
 		if (!is_array) {
