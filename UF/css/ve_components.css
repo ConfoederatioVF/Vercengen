@@ -216,6 +216,11 @@
     width: 100%;
 }
 
+/* -- ve.Hierarchy -- */
+[component="ve-hierarchy"] {
+    overflow: clip;
+}
+
 /* -- ve.Interface -- */
 [component="ve-interface"] {
     height: 100%;
@@ -269,6 +274,18 @@
 /* -- ve.Number -- */
 [component="ve-number"] {
     [component="ve-horizontal-list"] { padding: 0; }
+}
+
+/* -- ve.ObjectEditor -- */
+[component="ve-object-editor"] {
+    [component="ve-hierarchy-datatype"]:not(.actions-bar) .nst-content {
+        [component="ve-button"]:nth-child(1 of [component="ve-button"]) {
+            margin-left: auto;
+        }
+        [component="ve-text"]:nth-child(1 of [component="ve-text"]) {
+            display: none;
+        }
+    }
 }
 
 /* -- ve.ObjectInspector -- */
