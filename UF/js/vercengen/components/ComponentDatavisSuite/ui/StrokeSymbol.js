@@ -115,7 +115,11 @@ ve.DatavisSuite.StrokeSymbol = class extends ve.Component {
 				})
 			}, { name: "Stroke Shadow" })
 		}, {
-			name: (this.options.name) ? this.options.name : "Stroke Symbol"
+			name: (this.options.name) ? this.options.name : "Stroke Symbol",
+			onuserchange: (v, e) => {
+				delete this.do_not_fire_to_binding;
+				this.fireToBinding();
+			}
 		});
 		this.interface.bind(this.element);
 		this.value = value;

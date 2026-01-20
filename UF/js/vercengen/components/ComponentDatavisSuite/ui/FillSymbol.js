@@ -83,7 +83,11 @@ ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Refactor to 
 				onuserchange: (v) => this.value.shadowOffsetY = v
 			})
 		}, {
-			name: (this.options.name) ? this.options.name : "Fill Symbol"
+			name: (this.options.name) ? this.options.name : "Fill Symbol",
+			onuserchange: (v, e) => {
+				delete this.do_not_fire_to_binding;
+				this.fireToBinding();
+			}
 		});
 		this.interface.bind(this.element);
 		this.value = value;

@@ -134,10 +134,556 @@ ve.DatavisSuite.XAxisSymbol = class extends ve.Component {
 			...data_series,
 			
 			axis_label: new ve.Interface({
+				show: new ve.Toggle(this.value.axisLabel?.show, {
+					name: "Show Axis Label",
+					onuserchange: (v) => {
+						if (!this.value.axisLabel) this.value.axisLabel = {};
+						this.value.axisLabel = v;
+					}
+				}),
 				
+				align_max_label: new ve.Select({
+					left: { name: "Left" },
+					center: { name: "Centre" },
+					right: { name: "Right" },
+					none: { name: "None" }
+				}, {
+					name: "Align Max Label",
+					onuserchange: (v) => {
+						if (!this.value.axisLabel) this.value.axisLabel = {};
+						if (v !== "none") {
+							this.value.axisLabel.alignMaxLabel = v;
+						} else {
+							this.value.axisLabel.alignMaxLabel = null;
+						}
+					}
+				}),
+				align_min_label: new ve.Select({
+					left: { name: "Left" },
+					center: { name: "Centre" },
+					right: { name: "Right" },
+					none: { name: "None" }
+				}, {
+					name: "Align Min Label",
+					onuserchange: (v) => {
+						if (!this.value.axisLabel) this.value.axisLabel = {};
+						if (v !== "none") {
+							this.value.axisLabel.alignMaxLabel = v;
+						} else {
+							this.value.axisLabel.alignMaxLabel = null;
+						}
+					}
+				}),
+				custom_values: new ve.Number((value.axisLabel?.customValues) ? value.axisLabel.customValues : [0], {
+					name: "Custom Values",
+					onuserchange: (v) => {
+						if (!this.value.axisLabel) this.value.axisLabel = {};
+						this.value.axisLabel.customValues = v;
+					}
+				}),
+				formatter: new ve.Text((value.axisLabel?.formatter) ? value.axisLabel.formatter : "", {
+					name: "Formatter",
+					tooltip: `Valid variables include {extraZ}, {index}, {value}, as well as time variables (i.e. {YYYY}) for 'time' axis.`,
+					onuserchange: (v) => {
+						if (!this.value.axisLabel) this.value.axisLabel = {};
+						this.value.axisLabel.formatter = v;
+					}
+				}),
+				hide_overlap: new ve.Toggle((value.axisLabel?.hideOverlap !== undefined) ? value.axisLabel.hideOverlap : false, {
+					name: "Hide Overlap",
+					onuserchange: (v) => {
+						if (!this.value.axisLabel) this.value.axisLabel = {};
+						this.value.axisLabel.hideOverlap = v;
+					}
+				}),
+				inside: new ve.Toggle((value.axisLabel?.inside !== undefined) ? value.axisLabel.inside : false, {
+					name: "Inside",
+					onuserchange: (v) => {
+						if (!this.value.axisLabel) this.value.axisLabel = {};
+						this.value.axisLabel.inside = v;
+					}
+				}),
+				interval: new ve.Text((value.axisLabel?.interval !== undefined) ? value.axisLabel.interval : "auto", {
+					name: "Interval",
+					onuserchange: (v) => {
+						if (!this.value.axisLabel) this.value.axisLabel = {};
+						if (!isNaN(parseFloat(v))) v = parseFloat(v);
+						this.value.axisLabel.interval = v;
+					}
+				}),
+				margin: new ve.Number(Math.returnSafeNumber(value.axisLabel?.margin, 8), {
+					name: "Margin",
+					onuserchange: (v) => {
+						if (!this.value.axisLabel) this.value.axisLabel = {};
+						this.value.axisLabel.margin = v;
+					}
+				}),
+				rotate: new ve.Number(Math.returnSafeNumber(value.axisLabel?.rotate, 0), {
+					name: "Rotate",
+					onuserchange: (v) => {
+						if (!this.value.axisLabel) this.value.axisLabel = {};
+						this.value.axisLabel.rotate = v;
+					}
+				}),
+				show_max_label: new ve.Toggle(value.axisLabel?.showMaxLabel, {
+					name: "Show Max Label",
+					onuserchange: (v) => {
+						if (!this.value.axisLabel) this.value.axisLabel = {};
+						this.value.axisLabel.showMaxLabel = v;
+					}
+				}),
+				show_min_label: new ve.Toggle(value.axisLabel?.showMinLabel, {
+					name: "Show Min Label",
+					onuserchange: (v) => {
+						if (!this.value.axisLabel) this.value.axisLabel = {};
+						this.value.axisLabel.showMinLabel = v;
+					}
+				}),
+				label_symbol: new ve.DatavisSuite.LabelSymbol(value.axisLabel, {
+					name: "Label Symbol",
+					onuserchange: (v, e) => {
+						if (!this.value.axisLabel) this.value.axisLabel = {};
+						this.value.axisLabel = {
+							...this.value.axisLabel,
+							...e.value
+						};
+					}
+				}),
+				stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.axisLabel, {
+					name: "Stroke Symbol",
+					onuserchange: (v, e) => {
+						if (!this.value.axisLabel) this.value.axisLabel = {};
+						this.value.axisLabel = {
+							...this.value.axisLabel,
+							...e.value
+						};
+					}
+				})
 			}, {
 				name: "Axis Label"
-			})
+			}),
+			axis_line: new ve.Interface({
+				show: new ve.Toggle(value.axisLine?.show, {
+					name: "Show",
+					onuserchange: (v, e) => {
+						if (!this.value.axisLine) this.value.axisLine = {};
+						this.value.axisLine.show = v;
+					}
+				}),
+				
+				on_zero: new ve.Toggle(value.axisLine?.onZero, {
+					name: "On Zero",
+					onuserchange: (v) => {
+						if (!this.value.axisLine) this.value.axisLine = {};
+						this.value.axisLine.onZero = v;
+					}
+				}),
+				on_zero_axis_index: new ve.Number(Math.returnSafeNumber(value.axisLine?.onZeroAxisIndex), {
+					name: "On Zero Axis Index",
+					onuserchange: (v) => {
+						if (!this.value.axisLine) this.value.axisLine = {};
+						this.value.axisLine.onZeroAxisIndex = v;
+					}
+				}),
+				stroke_symbol: new ve.DatavisSuite.StrokeSymbol(Math.returnSafeNumber(value.axisLine?.lineStyle), {
+					name: "Stroke Symbol",
+					onuserchange: (v) => {
+						if (!this.value.axisLine) this.value.axisLine = {};
+						this.value.axisLine.lineStyle = v;
+					}
+				}),
+				symbol: new ve.Select({
+					"none-none": { name: "None, None" },
+					"arrow-arrow": { name: "Arrow, Arrow" },
+					"arrow-none": { name: "Arrow, None" },
+					"none-arrow": { name: "None, Arrow" }
+				}, {
+					selected: (value.axisLine?.symbol) ? value.axisLine.symbol.join("-") : "none-none",
+					onuserchange: (v) => {
+						if (!this.value.axisLine) this.value.axisLine = {};
+						this.value.axisLine.symbol = v.split("-");
+					}
+				}),
+				symbol_size: new ve.RawInterface({
+					symbol_size_x: new ve.Number(Math.returnSafeNumber(value.axisLine?.symbolSize?.[0]), {
+						name: "X"
+					}),
+					symbol_size_y: new ve.Number(Math.returnSafeNumber(value.axisLine?.symbolSize?.[1]), {
+						name: "Y"
+					})
+				}, { 
+					name: "Symbol Size",
+					onuserchange: (v) => {
+						if (!this.value.axisLine) this.value.axisLine = {};
+						this.value.axisLine.symbolSize = [v.symbol_size_x.v, v.symbol_size_y.v];
+					}
+				}),
+				symbol_offset: new ve.RawInterface({
+					symbol_offset_x: new ve.Number(Math.returnSafeNumber(value.axisLine?.symbolOffset?.[0]), {
+						name: "X"
+					}),
+					symbol_offset_y: new ve.Number(Math.returnSafeNumber(value.axisLine?.symbolOffset?.[1]), {
+						name: "Y"
+					})
+				}, {
+					name: "Symbol Offset",
+					onuserchange: (v) => {
+						if (!this.value.axisLine) this.value.axisLine = {};
+						this.value.axisLine.symbolOffset = [v.symbol_offset_x.v, v.symbol_offset_y.v];
+					}
+				})
+			}, {
+				name: "Axis Line"
+			}),
+			axis_pointer: new ve.Interface({
+				show: new ve.Toggle(value.axisPointer?.show, {
+					name: "Show",
+					onuserchange: (v) => {
+						if (!this.value.axisPointer) this.value.axisPointer = {};
+						this.value.axisPointer.show = v;
+					}
+				}),
+				label_symbol: new ve.DatavisSuite.LabelSymbol(value.axisPointer?.label, {
+					name: "Label Symbol",
+					onuserchange: (v) => {
+						if (!this.value.axisPointer) this.value.axisPointer = {};
+						this.value.axisPointer.label = v;
+					}
+				}),
+				on_hover_emphasis: new ve.Toggle(value.axisPointer?.triggerEmphasis, {
+					name: "Onhover Emphasis",
+					onuserchange: (v) => {
+						if (!this.value.axisPointer) this.value.axisPointer = {};
+						this.value.axisPointer.triggerEmphasis = v;
+					}
+				}),
+				on_hover_tooltip: new ve.Toggle(value.axisPointer?.triggerTooltip, {
+					name: "Onhover Tooltip",
+					onuserchange: (v) => {
+						if (!this.value.axisPointer) this.value.axisPointer = {};
+						this.value.axisPointer.triggerTooltip = v;
+					}
+				}),
+				shadow_blur: new ve.Number(Math.returnSafeNumber(value.axisPointer?.shadowStyle?.shadowBlur, 0), {
+					name: "Shadow Blur",
+					onuserchange: (v) => {
+						if (!this.value.axisPointer) this.value.axisPointer = {};
+						if (!this.value.axisPointer.shadowStyle) this.value.axisPointer.shadowStyle = {};
+						this.value.axisPointer.shadowStyle.shadowBlur = v;
+					}
+				}),
+				shadow_colour: new ve.Colour((value.axisPointer?.shadowStyle?.shadowColor) ? value.axisPointer.shadowStyle.shadowColor : "#000", {
+					name: "Shadow Colour",
+					onuserchange: (v) => {
+						if (!this.value.axisPointer) this.value.axisPointer = {};
+						if (!this.value.axisPointer.shadowStyle) this.value.axisPointer.shadowStyle = {};
+						this.value.axisPointer.shadowStyle.shadowColor = v;
+					}
+				}),
+				shadow_offset_x: new ve.Number(Math.returnSafeNumber(value.axisPointer?.shadowStyle?.shadowOffsetX), {
+					name: "Shadow Offset X",
+					onuserchange: (v) => {
+						if (!this.value.axisPointer) this.value.axisPointer = {};
+						if (!this.value.axisPointer.shadowStyle) this.value.axisPointer.shadowStyle = {};
+						this.value.axisPointer.shadowStyle.shadowOffsetX = v;
+					}
+				}),
+				shadow_offset_y: new ve.Number(Math.returnSafeNumber(value.axisPointer?.shadowStyle?.shadowOffsetY), {
+					name: "Shadow Offset Y",
+					onuserchange: (v) => {
+						if (!this.value.axisPointer) this.value.axisPointer = {};
+						if (!this.value.axisPointer.shadowStyle) this.value.axisPointer.shadowStyle = {};
+						this.value.axisPointer.shadowStyle.shadowOffsetY = v;
+					}
+				}),
+				snap_to: new ve.Toggle(value.axisPointer?.shadowStyle?.snap, {
+					name: "Snap To",
+					onuserchange: (v) => {
+						if (!this.value.axisPointer) this.value.axisPointer = {};
+						this.value.axisPointer.snap = v;
+					}
+				}),
+				status: new ve.Toggle(value.axisPointer?.status, {
+					name: "Status",
+					onuserchange: (v) => {
+						if (!this.value.axisPointer) this.value.axisPointer = {};
+						this.value.axisPointer.status = v;
+					}
+				}),
+				stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.axisPointer?.lineStyle, {
+					name: "Stroke Symbol",
+					onuserchange: (v) => {
+						if (!this.value.axisPointer) this.value.axisPointer = {};
+						this.value.axisPointer.lineStyle = v;
+					}
+				}),
+				type: new ve.Select({
+					line: { name: "Line" },
+					shadow: { name: "Shadow" },
+					none: { name: "None" }
+				}, {
+					name: "Type",
+					onuserchange: (v) => {
+						if (!this.value.axisPointer) this.value.axisPointer = {};
+						this.value.axisPointer.type = v;
+					}
+				}),
+				value: new ve.Number(Math.returnSafeNumber(this.value?.axisPointer?.value), {
+					name: "Value",
+					onuserchange: (v) => {
+						if (!this.value.axisPointer) this.value.axisPointer = {};
+						this.value.axisPointer.value = v;
+					}
+				}),
+				z_index: new ve.Number(Math.returnSafeNumber(this.value?.axisPointer?.z), {
+					name: "Z-Index",
+					onuserchange: (v) => {
+						if (!this.value.axisPointer) this.value.axisPointer = {};
+						this.value.axisPointer.z = v;
+					}
+				})
+			}, {
+				name: "Axis Pointer"
+			}),
+			axis_tick: new ve.Interface({
+				show: new ve.Toggle(this.value?.axisTick?.show, {
+					name: "Show",
+					onuserchange: (v) => {
+						if (!this.value.axisTick) this.value.axisTick = {};
+						this.value.axisTick.show = v;
+					}
+				}),
+				align_with_label: new ve.Toggle(this.value?.axisTick?.alignWithLabel, {
+					name: "Align with Label",
+					onuserchange: (v) => {
+						if (!this.value.axisTick) this.value.axisTick = {};
+						this.value.axisTick.alignWithLabel = v;
+					}
+				}),
+				custom_values: new ve.Number((this.value?.axisTick?.customValues) ? this.value.axisTick.customValues : [0], {
+					name: "Custom Values",
+					onuserchange: (v) => {
+						if (!this.value.axisTick) this.value.axisTick = {};
+						this.values.axisTick.customValues = v;
+					}
+				}),
+				inside: new ve.Toggle(this.value?.axisTick?.inside, {
+					name: "Inside",
+					onuserchange: (v) => {
+						if (!this.value.axisTick) this.value.axisTick = {};
+						this.value.axisTick.inside = v;
+					}
+				}),
+				interval: new ve.Text((value.axisTick?.interval !== undefined) ? value.axisTick.interval : "auto", {
+					name: "Interval",
+					onuserchange: (v) => {
+						if (!this.value.axisTick) this.value.axisTick = {};
+						if (!isNaN(parseFloat(v))) v = parseFloat(v);
+						this.value.axisTick.interval = v;
+					}
+				}),
+				length: new ve.Number(Math.returnSafeNumber(value.axisTick?.length, 5), {
+					name: "Length",
+					onuserchange: (v) => {
+						if (!this.value.axisTick) this.value.axisTick = {};
+						this.value.axisTick.length = v;
+					}
+				}),
+				stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.axisTick?.lineStyle, {
+					name: "Stroke Symbol",
+					onuserchange: (v) => {
+						if (!this.value.axisTick) this.value.axisTick = {};
+						this.value.axisTick.lineStyle = v;
+					}
+				}),
+				minor_split_line: new ve.Interface({
+					show: new ve.Toggle(value.axisTick?.minorSplitLine, {
+						name: "Show",
+						onuserchange: (v) => {
+							if (!this.value.axisTick) this.value.axisTick = {};
+							if (!this.value.axisTick.minorSplitLine) this.value.axisTick.minorSplitLine = {};
+							this.value.axisTick.minorSplitLine.show = v;
+						}
+					}),
+					stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.axisTick?.minorSplitLine?.lineStyle, {
+						name: "Stroke Symbol",
+						onuserchange: (v) => {
+							if (!this.value.axisTick) this.value.axisTick = {};
+							if (!this.value.axisTick.minorSplitLine) this.value.axisTick.minorSplitLine = {};
+							this.value.axisTick.minorSplitLine.lineStyle = v;
+						}
+					})
+				}, { name: "Minor Split Line" }),
+				minor_tick: new ve.Interface({
+					show: new ve.Toggle(value.axisTick?.minorTick, {
+						name: "Show",
+						onuserchange: (v) => {
+							if (!this.value.axisTick) this.value.axisTick = {};
+							if (!this.value.axisTick.minorTick) this.value.axisTick.minorTick = {};
+							this.value.axisTick.minorTick.show = v;
+						}
+					}),
+					
+					length: new ve.Number(Math.returnSafeNumber(value.axisTick?.minorTick?.length, 3), {
+						name: "Length",
+						onuserchange: (v) => {
+							if (!this.value.axisTick) this.value.axisTick = {};
+							if (!this.value.axisTick.minorTick) this.value.axisTick.minorTick = {};
+							this.value.axisTick.minorTick.length = v;
+						}
+					}),
+					split_number: new ve.Number(Math.returnSafeNumber(value.axisTick?.minorTick?.splitNumber, 5), {
+						name: "Length",
+						onuserchange: (v) => {
+							if (!this.value.axisTick) this.value.axisTick = {};
+							if (!this.value.axisTick.minorTick) this.value.axisTick.minorTick = {};
+							this.value.axisTick.minorTick.splitNumber = v;
+						}
+					}),
+					stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.axisTick?.minorTick?.lineStyle, {
+						name: "Stroke Symbol",
+						onuserchange: (v) => {
+							if (!this.value.axisTick) this.value.axisTick = {};
+							if (!this.value.axisTick.minorTick) this.value.axisTick.minorTick = {};
+							this.value.axisTick.minorTick.lineStyle = v;
+						}
+					})
+				}, { name: "Minor Split Line" })
+			}, {
+				name: "Axis Tick"
+			}),
+			
+			move_overlap: new ve.Select({
+				auto: { name: "Auto" },
+				"true": { name: "True" },
+				"false": { name: "False" }
+			}, {
+				name: "Move Overlap",
+				onuserchange: (v) => {
+					if (!this.value.breakLabelLayout) this.value.breakLabelLayout = {};
+					if (v === "true") v = true;
+					if (v === "false") v = false;
+					this.value.breakLabelLayout.moveOverlap = v;
+				}
+			}),
+			split_area: new ve.Interface({
+				show: new ve.Toggle(value?.splitArea?.show, {
+					name: "Show",
+					onuserchange: (v) => {
+						if (!this.value.splitArea) this.value.splitArea = {};
+						this.value.splitArea.show = v;
+					}
+				}),
+				fill_symbol: new ve.DatavisSuite.FillSymbol(value?.splitArea?.areaStyle, {
+					name: "Fill Symbol",
+					onuserchange: (v) => {
+						if (!this.value.splitArea) this.value.splitArea = {};
+						this.value.splitArea.areaStyle = v;
+					}
+				}),
+				interval: new ve.Text((value.splitArea?.interval !== undefined) ? value.splitArea.interval : "auto", {
+					name: "Interval",
+					onuserchange: (v) => {
+						if (!this.value.splitArea) this.value.splitArea = {};
+						if (!isNaN(parseFloat(v))) v = parseFloat(v);
+						this.value.splitArea.interval = v;
+					}
+				}),
+			}, { name: "Split Area" }),
+			split_line: new ve.Interface({
+				show: new ve.Toggle(value?.splitLine?.show, {
+					name: "Show",
+					onuserchange: (v) => {
+						if (!this.value.splitLine) this.value.splitLine = {};
+						this.value.splitLine.show = v;
+					}
+				}),
+				
+				interval: new ve.Text((value.splitLine?.interval !== undefined) ? value.splitLine.interval : "auto", {
+					name: "Interval",
+					onuserchange: (v) => {
+						if (!this.value.splitLine) this.value.splitLine = {};
+						if (!isNaN(parseFloat(v))) v = parseFloat(v);
+						this.value.splitLine.interval = v;
+					}
+				}),
+				show_max_line: new ve.Toggle(value.splitLine?.interval, {
+					name: "Show Max Line",
+					onuserchange: (v) => {
+						if (!this.value.splitLine) this.value.splitLine = {};
+						this.value.splitLine.interval = v;
+					}
+				}),
+				show_min_line: new ve.Toggle(value.splitLine?.interval, {
+					name: "Show Min Line",
+					onuserchange: (v) => {
+						if (!this.value.splitLine) this.value.splitLine = {};
+						this.value.splitLine.interval = v;
+					}
+				}),
+				stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.splitLine?.lineStyle, {
+					name: "Stroke Symbol",
+					onuserchange: (v) => {
+						if (!this.value.splitLine) this.value.splitLine = {};
+						this.value.splitLine.strokeSymbol = v;
+					}
+				})
+			}, { name: "Split Line" }),
+			
+			break_area: new ve.Interface({
+				show: new ve.Toggle(value?.breakArea?.show, {
+					name: "Show",
+					onuserchange: (v) => {
+						if (!this.value.breakArea) this.value.breakArea = {};
+						this.value.breakArea.show = v;
+					}
+				}),
+				expand_on_click: new ve.Toggle(value?.breakArea?.expandOnClick, {
+					name: "Expand On Click",
+					onuserchange: (v) => {
+						if (!this.value.breakArea) this.value.breakArea = {};
+						this.value.breakArea.expandOnClick = v;
+					}
+				}),
+				point_symbol: new ve.DatavisSuite.PointSymbol(value?.breakArea?.itemStyle, {
+					name: "Point Symbol",
+					onuserchange: (v) => {
+						if (!this.value.breakArea) this.value.breakArea = {};
+						this.value.breakArea.itemStyle = v;
+					}
+				}),
+				zigzag_amplitude: new ve.Number(Math.returnSafeNumber(value?.breakArea?.zigzagAmplitude, 4), {
+					name: "Zigzag Amplitude",
+					onuserchange: (v) => {
+						if (!this.value.breakArea) this.value.breakArea = {};
+						this.value.breakArea.zigzagAmplitude = v;
+					}
+				}),
+				zigzag_max_span: new ve.Number(Math.returnSafeNumber(value?.breakArea?.zigzagMaxSpan, 4), {
+					name: "Zigzag Max Span",
+					onuserchange: (v) => {
+						if (!this.value.breakArea) this.value.breakArea = {};
+						this.value.breakArea.zigzagMaxSpan = v;
+					}
+				}),
+				zigzag_min_span: new ve.Number(Math.returnSafeNumber(value?.breakArea?.zigzagMinSpan, 4), {
+					name: "Zigzag Min Span",
+					onuserchange: (v) => {
+						if (!this.value.breakArea) this.value.breakArea = {};
+						this.value.breakArea.zigzagMinSpan = v;
+					}
+				}),
+				zigzag_z_index: new ve.Number(Math.returnSafeNumber(value?.breakArea?.zigzagZIndex, 100), {
+					name: "Zigzag Z-Index",
+					onuserchange: (v) => {
+						if (!this.value.breakArea) this.value.breakArea = {};
+						this.value.breakArea.zigzagZ = v;
+					}
+				})
+			}, { name: "Break Area" }),
+			breaks: new ve.Interface({
+				
+			}, { name: "Breaks" })
 		}, { 
 			name: (this.options.name) ? this.options.name : "X Axis Symbol",
 			onuserchange: (v, e) => {

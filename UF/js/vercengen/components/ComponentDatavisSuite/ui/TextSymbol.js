@@ -125,7 +125,11 @@ ve.DatavisSuite.TextSymbol = class extends ve.Component {
 				onuserchange: (v) => this.value.width = v
 			})
 		}, {
-			name: (this.options.name) ? this.options.name : "Text Symbol"
+			name: (this.options.name) ? this.options.name : "Text Symbol",
+			onuserchange: (v, e) => {
+				delete this.do_not_fire_to_binding;
+				this.fireToBinding();
+			}
 		});
 		this.interface.bind(this.element);
 		this.value = value;

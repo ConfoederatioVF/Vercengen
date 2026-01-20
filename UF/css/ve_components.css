@@ -124,9 +124,8 @@
 }
 
 /* -- ve.Datalist -- */
-[component="ve-datalist"] input {
-    min-width: calc(var(--default-width)/2);
-    
+[component="ve-datalist"] {
+    input { min-width: calc(var(--default-width)/2); }
     #name { margin-right: var(--cell-padding); }
 }
 
@@ -422,10 +421,9 @@
 }
 
 /* -- ve.Text -- */
-[component="ve-text"] input {
-    min-width: calc(var(--default-width)/2);
-    
+[component="ve-text"] {
     [component="ve-horizontal-list"] { padding: 0; }
+    input { min-width: calc(var(--default-width)/2); }
 }
 
 /* -- ve.Time -- */
