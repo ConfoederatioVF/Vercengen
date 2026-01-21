@@ -8,9 +8,9 @@
  * - `arg1_options`: {@link Object}
  *   - `.datavis_suite_obj`: {@link ve.DatavisSuite} - The DatavisSuite that the X Axis Symbol is attached to.
  *   - `.graph_obj`: {@link ve.Graph} - The graph to bind the given symbol to.
- *   - `.name="X Axis Symbol"`: {@link string}
+ *   - `.name="<X/Y/Z> Axis Symbol"`: {@link string}
  */
-ve.DatavisSuite.XAxisSymbol = class extends ve.Component {
+ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : {};
@@ -43,6 +43,23 @@ ve.DatavisSuite.XAxisSymbol = class extends ve.Component {
 		
 		//Declare local instance variables
 		let data_series = {};
+		let position_obj = new ve.Select({
+			top: { name: "Top" },
+			bottom: { name: "Bottom" }
+		}, {
+			name: "Position",
+			selected: (this.value.position) ? this.value.position : "bottom",
+			onuserchange: (v) => this.value.position = v
+		});
+			if (this.options.axis_type === "y")
+				position_obj = new ve.Select({
+					left: { name: "Left" },
+					right: { name: "Right" }
+				}, {
+					name: "Position",
+					selected: (this.value.position) ? this.value.position : "left",
+					onuserchange: (v) => this.value.position = v
+				})
 		
 		if (this.options.datavis_suite_obj) {
 			let datavis_suite_obj = this.options.datavis_suite_obj;
@@ -97,24 +114,6 @@ ve.DatavisSuite.XAxisSymbol = class extends ve.Component {
 			name_rotate: new ve.Number(Math.returnSafeNumber(value.nameRotate, 0), {
 				name: "Name Rotate",
 				onuserchange: (v) => this.value.nameRotate = v
-			}),
-			name_truncate: new ve.Interface({
-				ellipsis: new ve.Text((value?.nameTruncate?.ellipsis) ? value?.nameTruncate?.ellipsis : "...", {
-					name: "Ellipsis",
-					onuserchange: (v) => {
-						if (!this.value.nameTruncate) this.value.nameTruncate = {};
-						this.value.nameTruncate.ellipsis = v;
-					}
-				}),
-				max_width: new ve.Number(Math.returnSafeNumber(value?.nameTruncate?.maxWidth, -1), {
-					name: "Max Width",
-					onuserchange: (v) => {
-						if (!this.value.nameTruncate) this.value.nameTruncate = {};
-						this.value.nameTruncate.maxWidth = (v > 0) ? v : undefined;
-					}
-				})
-			}, {
-				name: "Name Truncate"
 			}),
 			type: new ve.Select({
 				value: { name: "Value" },
@@ -329,6 +328,7 @@ ve.DatavisSuite.XAxisSymbol = class extends ve.Component {
 					name: "Symbol Offset",
 					onuserchange: (v) => {
 						if (!this.value.axisLine) this.value.axisLine = {};
+						if (v.symbol_offset_x.v === 0 && v.symbol_offset_y.v === 0) return;
 						this.value.axisLine.symbolOffset = [v.symbol_offset_x.v, v.symbol_offset_y.v];
 					}
 				})
@@ -552,84 +552,6 @@ ve.DatavisSuite.XAxisSymbol = class extends ve.Component {
 			}, {
 				name: "Axis Tick"
 			}),
-			
-			move_overlap: new ve.Select({
-				auto: { name: "Auto" },
-				"true": { name: "True" },
-				"false": { name: "False" }
-			}, {
-				name: "Move Overlap",
-				onuserchange: (v) => {
-					if (!this.value.breakLabelLayout) this.value.breakLabelLayout = {};
-					if (v === "true") v = true;
-					if (v === "false") v = false;
-					this.value.breakLabelLayout.moveOverlap = v;
-				}
-			}),
-			split_area: new ve.Interface({
-				show: new ve.Toggle(value?.splitArea?.show, {
-					name: "Show",
-					onuserchange: (v) => {
-						if (!this.value.splitArea) this.value.splitArea = {};
-						this.value.splitArea.show = v;
-					}
-				}),
-				fill_symbol: new ve.DatavisSuite.FillSymbol(value?.splitArea?.areaStyle, {
-					name: "Fill Symbol",
-					onuserchange: (v) => {
-						if (!this.value.splitArea) this.value.splitArea = {};
-						this.value.splitArea.areaStyle = v;
-					}
-				}),
-				interval: new ve.Text((value.splitArea?.interval !== undefined) ? value.splitArea.interval : "auto", {
-					name: "Interval",
-					onuserchange: (v) => {
-						if (!this.value.splitArea) this.value.splitArea = {};
-						if (!isNaN(parseFloat(v))) v = parseFloat(v);
-						this.value.splitArea.interval = v;
-					}
-				}),
-			}, { name: "Split Area" }),
-			split_line: new ve.Interface({
-				show: new ve.Toggle(value?.splitLine?.show, {
-					name: "Show",
-					onuserchange: (v) => {
-						if (!this.value.splitLine) this.value.splitLine = {};
-						this.value.splitLine.show = v;
-					}
-				}),
-				
-				interval: new ve.Text((value.splitLine?.interval !== undefined) ? value.splitLine.interval : "auto", {
-					name: "Interval",
-					onuserchange: (v) => {
-						if (!this.value.splitLine) this.value.splitLine = {};
-						if (!isNaN(parseFloat(v))) v = parseFloat(v);
-						this.value.splitLine.interval = v;
-					}
-				}),
-				show_max_line: new ve.Toggle(value.splitLine?.interval, {
-					name: "Show Max Line",
-					onuserchange: (v) => {
-						if (!this.value.splitLine) this.value.splitLine = {};
-						this.value.splitLine.interval = v;
-					}
-				}),
-				show_min_line: new ve.Toggle(value.splitLine?.interval, {
-					name: "Show Min Line",
-					onuserchange: (v) => {
-						if (!this.value.splitLine) this.value.splitLine = {};
-						this.value.splitLine.interval = v;
-					}
-				}),
-				stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.splitLine?.lineStyle, {
-					name: "Stroke Symbol",
-					onuserchange: (v) => {
-						if (!this.value.splitLine) this.value.splitLine = {};
-						this.value.splitLine.strokeSymbol = v;
-					}
-				})
-			}, { name: "Split Line" }),
-			
 			break_area: new ve.Interface({
 				show: new ve.Toggle(value?.breakArea?.show, {
 					name: "Show",
@@ -706,7 +628,318 @@ ve.DatavisSuite.XAxisSymbol = class extends ve.Component {
 						}
 					}
 				})
-			}, { name: "Breaks" })
+			}, { name: "Breaks" }),
+			name_truncate: new ve.Interface({
+				ellipsis: new ve.Text((value?.nameTruncate?.ellipsis) ? value?.nameTruncate?.ellipsis : "...", {
+					name: "Ellipsis",
+					onuserchange: (v) => {
+						if (!this.value.nameTruncate) this.value.nameTruncate = {};
+						this.value.nameTruncate.ellipsis = v;
+					}
+				}),
+				max_width: new ve.Number(Math.returnSafeNumber(value?.nameTruncate?.maxWidth, -1), {
+					name: "Max Width",
+					onuserchange: (v) => {
+						if (!this.value.nameTruncate) this.value.nameTruncate = {};
+						this.value.nameTruncate.maxWidth = (v > 0) ? v : undefined;
+					}
+				})
+			}, {
+				name: "Name Truncate"
+			}),
+			overlap: new ve.Interface({
+				move_overlap: new ve.Select({
+					auto: { name: "Auto" },
+					"true": { name: "True" },
+					"false": { name: "False" }
+				}, {
+					name: "Move Overlap",
+					onuserchange: (v) => {
+						if (!this.value.breakLabelLayout) this.value.breakLabelLayout = {};
+						if (v === "true") v = true;
+						if (v === "false") v = false;
+						this.value.breakLabelLayout.moveOverlap = v;
+					}
+				}),
+			}, { name: "Overlap" }),
+			split_area: new ve.Interface({
+				show: new ve.Toggle(value?.splitArea?.show, {
+					name: "Show",
+					onuserchange: (v) => {
+						if (!this.value.splitArea) this.value.splitArea = {};
+						this.value.splitArea.show = v;
+					}
+				}),
+				fill_symbol: new ve.DatavisSuite.FillSymbol(value?.splitArea?.areaStyle, {
+					name: "Fill Symbol",
+					onuserchange: (v) => {
+						if (!this.value.splitArea) this.value.splitArea = {};
+						this.value.splitArea.areaStyle = v;
+					}
+				}),
+				interval: new ve.Text((value.splitArea?.interval !== undefined) ? value.splitArea.interval : "auto", {
+					name: "Interval",
+					onuserchange: (v) => {
+						if (!this.value.splitArea) this.value.splitArea = {};
+						if (!isNaN(parseFloat(v))) v = parseFloat(v);
+						this.value.splitArea.interval = v;
+					}
+				}),
+			}, { name: "Split Area" }),
+			split_line: new ve.Interface({
+				show: new ve.Toggle(value?.splitLine?.show, {
+					name: "Show",
+					onuserchange: (v) => {
+						if (!this.value.splitLine) this.value.splitLine = {};
+						this.value.splitLine.show = v;
+					}
+				}),
+				
+				interval: new ve.Text((value.splitLine?.interval !== undefined) ? value.splitLine.interval : "auto", {
+					name: "Interval",
+					onuserchange: (v) => {
+						if (!this.value.splitLine) this.value.splitLine = {};
+						if (!isNaN(parseFloat(v))) v = parseFloat(v);
+						this.value.splitLine.interval = v;
+					}
+				}),
+				show_max_line: new ve.Toggle(value.splitLine?.interval, {
+					name: "Show Max Line",
+					onuserchange: (v) => {
+						if (!this.value.splitLine) this.value.splitLine = {};
+						this.value.splitLine.interval = v;
+					}
+				}),
+				show_min_line: new ve.Toggle(value.splitLine?.interval, {
+					name: "Show Min Line",
+					onuserchange: (v) => {
+						if (!this.value.splitLine) this.value.splitLine = {};
+						this.value.splitLine.interval = v;
+					}
+				}),
+				stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.splitLine?.lineStyle, {
+					name: "Stroke Symbol",
+					onuserchange: (v) => {
+						if (!this.value.splitLine) this.value.splitLine = {};
+						this.value.splitLine.strokeSymbol = v;
+					}
+				})
+			}, { name: "Split Line" }),
+			
+			advanced_styling: new ve.Interface({
+				align_ticks: new ve.Toggle(value.alignTicks, {
+					name: "Align Ticks",
+					onuserchange: (v) => this.value.alignTicks = v
+				}),
+				boundary_gap: new ve.Toggle(value.boundaryGap, {
+					name: "Boundary Gap",
+					onuserchange: (v) => this.value.boundaryGap = v
+				}),
+				boundary_gap_array: new ve.RawInterface({
+					boundary_gap_array_x: new ve.Text(value.boundaryGap?.[0]),
+					boundary_gap_array_y: new ve.Text(value.boundaryGap?.[1])
+				}, {
+					name: "Boundary Gap X, Y",
+					onuserchange: (v) => this.value.boundaryGap = [v.boundary_gap_array_x.v, v.boundary_gap_array_y.v]
+				}),
+				grid_index: new ve.Number(Math.returnSafeNumber(value.gridIndex), {
+					name: "Grid Index",
+					onuserchange: (v) => this.value.gridIndex = v
+				}),
+				interactive: new ve.Toggle(value.interactive, {
+					name: "Interactive",
+					onuserchange: (v) => this.value.interactive = v
+				}),
+				interval: new ve.Number(Math.returnSafeNumber(value.interval), {
+					name: "Interval",
+					onuserchange: (v) => this.value.interval = v
+				}),
+				inverse: new ve.Toggle(value.inverse, {
+					name: "Inverse",
+					onuserchange: (v) => this.value.inverse = v
+				}),
+				log_base: new ve.Number(Math.returnSafeNumber(value.logBase, 10), {
+					name: "Log Base",
+					onuserchange: (v) => this.value.logBase = v
+				}),
+				jitter: new ve.Toggle(value.jitter, {
+					name: "Jitter",
+					onuserchange: (v) => this.value.jitter = v,
+					tooltip: "Applicable only to Scatterplot."
+				}),
+				jitter_margin: new ve.Number(Math.returnSafeNumber(value.jitterMargin, 2), {
+					name: "Jitter Margin",
+					onuserchange: (v) => this.value.jitterMargin = v,
+					tooltip: "Applicable only to Scatterplot."
+				}),
+				jitter_overlap: new ve.Toggle(value.jitterOverlap, {
+					name: "Jitter Overlap",
+					onuserchange: (v) => this.value.jitterOverlap = v,
+					tooltip: "Applicable only to Scatterplot."
+				}),
+				max: new ve.Text(value.max, {
+					name: "Max",
+					onuserchange: (v) => {
+						if (!isNaN(parseFloat(v))) v = parseFloat(v);
+						this.value.max = v;
+					}
+				}),
+				max_interval: new ve.Number(Math.returnSafeNumber(value.maxInterval), {
+					name: "Max Interval",
+					onuserchange: (v) => this.value.maxInterval = v
+				}),
+				min: new ve.Text(value.min, {
+					name: "Min",
+					onuserchange: (v) => {
+						if (!isNaN(parseFloat(v))) v = parseFloat(v);
+						this.value.min = v;
+					}
+				}),
+				min_interval: new ve.Number(Math.returnSafeNumber(value.minInterval), {
+					name: "Min Interval",
+					onuserchange: (v) => this.value.minInterval = v
+				}),
+				offset: new ve.Number(Math.returnSafeNumber(value.offset), {
+					name: "Offset",
+					onuserchange: (v) => this.value.offset = v
+				}),
+				scale: new ve.Toggle(value.scale, {
+					name: "Scale",
+					onuserchange: (v) => this.value.scale = v
+				}),
+				silent: new ve.Toggle(value.silent, {
+					name: "Silent",
+					onuserchange: (v) => this.value.silent = v
+				}),
+				split_number: new ve.Number(Math.returnSafeNumber(value.splitNumber, 5), {
+					name: "Split Number",
+					onuserchange: (v) => this.value.splitNumber = v
+				}),
+				start_value: new ve.Number(Math.returnSafeNumber(value.startValue, 0), {
+					name: "Start Value",
+					onuserchange: (v) => this.value.startValue = v
+				}),
+				text_symbol: new ve.DatavisSuite.TextSymbol(value.nameTextStyle, {
+					name: "Text Symbol",
+					onuserchange: (v) => this.value.nameTextStyle = v
+				}),
+				z_index: new ve.Number(Math.returnSafeNumber(value.z), {
+					name: "Z-Index",
+					onuserchange: (v) => this.value.z = v
+				}),
+			}, { name: "Styling (Advanced)" }),
+			tooltip: new ve.Interface({
+				label_symbol: new ve.DatavisSuite.LabelSymbol(value?.tooltip?.textStyle, {
+					name: "Label Symbol",
+					onuserchange: (v) => {
+						if (!this.value.tooltip) this.value.tooltip = {};
+						this.value.tooltip.textStyle = v;
+					}
+				}),
+				tooltip_symbol: new ve.DatavisSuite.TooltipSymbol(value.tooltip, {
+					name: "Tooltip Symbol",
+					onuserchange: (v) => {
+						if (!this.value.tooltip) this.value.tooltip = {};
+						this.value.tooltip = {
+							...this.value.tooltip,
+							...v
+						};
+					}
+				})
+			}, { name: "Tooltip" }),
+			animation: new ve.Interface({
+				delay: new ve.Number(Math.returnSafeNumber(value.animationDelay), {
+					name: "Delay",
+					onuserchange: (v) => this.value.animationDelay = v
+				}),
+				delay_update: new ve.Number(Math.returnSafeNumber(value.animationDelayUpdate, 300), {
+					name: "Delay Update",
+					onuserchange: (v) => this.value.animationDelayUpdate = v
+				}),
+				duration: new ve.Number(Math.returnSafeNumber(value.animationDuration, 1000), {
+					name: "Duration",
+					onuserchange: (v) => this.value.animationDuration = v
+				}),
+				duration_update: new ve.Number(Math.returnSafeNumber(value.animationDurationUpdate, 300), {
+					name: "Duration Update",
+					onuserchange: (v) => this.value.animationDurationUpdate = v
+				}),
+				easing: new ve.Select({
+					linear: { name: "Linear" },
+					quadraticIn: { name: "Quadratic In" },
+					quadraticOut: { name: "Quadratic Out" },
+					quadraticInOut: { name: "Quadratic In Out" },
+					cubicIn: { name: "Cubic In" },
+					cubicOut: { name: "Cubic Out" },
+					cubicInOut: { name: "Cubic In Out" },
+					quarticIn: { name: "Quartic In" },
+					quarticOut: { name: "Quartic Out" },
+					quarticInOut: { name: "Quartic In Out" },
+					quinticIn: { name: "Quintic In" },
+					quinticOut: { name: "Quintic Out" },
+					quinticInOut: { name: "Quintic In Out" },
+					sinusoidalIn: { name: "Sinusoidal In" },
+					sinusoidalOut: { name: "Sinusoidal Out" },
+					sinusoidalInOut: { name: "Sinusoidal In Out" },
+					exponentialIn: { name: "Exponential In" },
+					exponentialOut: { name: "Exponential Out" },
+					exponentialInOut: { name: "Exponential In Out" },
+					circularIn: { name: "Circular In" },
+					circularOut: { name: "Circular Out" },
+					circularInOut: { name: "Circular In Out" },
+					elasticIn: { name: "Elastic In" },
+					elasticOut: { name: "Elastic Out" },
+					elasticInOut: { name: "Elastic In Out" },
+					backIn: { name: "Back In" },
+					backOut: { name: "Back Out" },
+					backInOut: { name: "Back In Out" },
+					bounceIn: { name: "Bounce In" },
+					bounceOut: { name: "Bounce Out" },
+					bounceInOut: { name: "Bounce In Out" }
+				}, {
+					name: "Easing",
+					selected: (this.value.animationEasing) ? this.value.animationEasing : "cubicOut",
+					onuserchange: (v) => this.value.animationEasing = v
+				}),
+				easing_update: new ve.Select({
+					linear: { name: "Linear" },
+					quadraticIn: { name: "Quadratic In" },
+					quadraticOut: { name: "Quadratic Out" },
+					quadraticInOut: { name: "Quadratic In Out" },
+					cubicIn: { name: "Cubic In" },
+					cubicOut: { name: "Cubic Out" },
+					cubicInOut: { name: "Cubic In Out" },
+					quarticIn: { name: "Quartic In" },
+					quarticOut: { name: "Quartic Out" },
+					quarticInOut: { name: "Quartic In Out" },
+					quinticIn: { name: "Quintic In" },
+					quinticOut: { name: "Quintic Out" },
+					quinticInOut: { name: "Quintic In Out" },
+					sinusoidalIn: { name: "Sinusoidal In" },
+					sinusoidalOut: { name: "Sinusoidal Out" },
+					sinusoidalInOut: { name: "Sinusoidal In Out" },
+					exponentialIn: { name: "Exponential In" },
+					exponentialOut: { name: "Exponential Out" },
+					exponentialInOut: { name: "Exponential In Out" },
+					circularIn: { name: "Circular In" },
+					circularOut: { name: "Circular Out" },
+					circularInOut: { name: "Circular In Out" },
+					elasticIn: { name: "Elastic In" },
+					elasticOut: { name: "Elastic Out" },
+					elasticInOut: { name: "Elastic In Out" },
+					backIn: { name: "Back In" },
+					backOut: { name: "Back Out" },
+					backInOut: { name: "Back In Out" },
+					bounceIn: { name: "Bounce In" },
+					bounceOut: { name: "Bounce Out" },
+					bounceInOut: { name: "Bounce In Out" }
+				}, {
+					name: "Easing Update",
+					selected: (this.value.animationEasingUpdate) ? this.value.animationEasingUpdate : "cubicOut",
+					onuserchange: (v) => this.value.animationEasingUpdate = v
+				})
+			}, { name: "Animation" }),
+			position: position_obj
 		}, { 
 			name: (this.options.name) ? this.options.name : "X Axis Symbol",
 			onuserchange: (v, e) => {
@@ -717,7 +950,10 @@ ve.DatavisSuite.XAxisSymbol = class extends ve.Component {
 				}
 				delete this.do_not_fire_to_binding;
 				this.fireToBinding();
-			}
+			},
+			style: this.options.style,
+			x: this.options.x,
+			y: this.options.y
 		});
 		this.interface.bind(this.element);
 		this.value = value;

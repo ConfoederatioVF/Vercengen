@@ -211,19 +211,59 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 								this.assigned_series_list = assigned_series_list;
 							
 							this.edit_graph_window = new ve.Window({ //Add series using ve.List<ve.Datalist>
-								assigned_series: assigned_series_list,
-								x_axis_symbol: new ve.DatavisSuite.XAxisSymbol(local_value.options?.xAxis?.symbol, {
-									datavis_suite_obj: this,
-									graph_obj: local_value,
-									onuserchange: (v) => {
-										local_value.options.xAxis.symbol = v;
-										this.drawGraphs(true);
-									}
-								}).interface
+								interface: new ve.RawInterface({
+									assigned_series: assigned_series_list,
+									
+									axis_symbols: new ve.Interface({
+										x_axis_symbol: new ve.DatavisSuite.AxisSymbol(local_value.options?.xAxis?.symbol, {
+											axis_type: "x",
+											datavis_suite_obj: this,
+											graph_obj: local_value,
+											name: "X Axis Symbol",
+											style: { padding: 0 },
+											x: 0,
+											y: 0,
+											
+											onuserchange: (v) => {
+												local_value.options.xAxis.symbol = v;
+												this.drawGraphs(true);
+											}
+										}).interface,
+										y_axis_symbol: new ve.DatavisSuite.AxisSymbol(local_value.options?.yAxis?.symbol, {
+											axis_type: "y",
+											datavis_suite_obj: this,
+											graph_obj: local_value,
+											name: "Y Axis Symbol",
+											style: { padding: 0 },
+											x: 1,
+											y: 0,
+											
+											onuserchange: (v) => {
+												local_value.options.yAxis.symbol = v;
+												this.drawGraphs(true);
+											},
+										}).interface
+									}, {
+										name: "Axis Symbols"
+									}),
+									tooltip_symbol: new ve.DatavisSuite.TooltipSymbol(local_value.options?.tooltip, {
+										name: "Tooltip Symbol",
+										onuserchange: (v) => {
+											local_value.options.tooltip = v;
+											this.drawGraphs(true);
+										}
+									}).interface,
+									text_symbol: new ve.DatavisSuite.TextSymbol(local_value.options?.textStyle, {
+										name: "Text Symbol",
+										onuserchange: (v) => {
+											local_value.options.textStyle = v;
+											this.drawGraphs(true);
+										}
+									}).interface
+								})
 							}, {
 								name: `Edit ${graph_name}`,
 								can_rename: false,
-								do_not_wrap: true,
 								width: "30rem"
 							});
 						}, {
