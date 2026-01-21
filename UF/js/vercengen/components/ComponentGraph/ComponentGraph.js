@@ -25,7 +25,7 @@
  * @memberof ve.Component
  * @type {ve.Graph}
  */
-ve.Graph = class extends ve.Component {
+ve.Graph = class extends ve.Component { //[WIP] - Remove private _get functions to make things more straightforwards
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : {};

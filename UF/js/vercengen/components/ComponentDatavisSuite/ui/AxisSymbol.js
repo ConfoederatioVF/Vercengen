@@ -128,7 +128,10 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 			
 			data: new ve.Text((value.data) ? value.data : [""], {
 				name: "Axis Ticks",
-				onuserchange: (v) => this.value.data = v
+				onuserchange: (v) => {
+					console.log("this.value.data", v);
+					this.value.data = v;
+				}
 			}),
 			...data_series,
 			

@@ -9,6 +9,7 @@
  * - `arg1_options`: {@link Object}
  *   - `.disabled=false`: {@link boolean}
  *   - `.length`: {@link number}
+ *   - `.list_options`: {@link Object} - Options for {@link ve.List} if an array.
  *   - `.max`: {@link number}
  *   - `.min`: {@link number}
  * 
@@ -113,7 +114,7 @@ ve.Text = class extends ve.Component {
 			
 			for (let i = 0; i < value.length; i++)
 				all_components.push(new ve.Text(value[i]));
-			this.list_component = new ve.List(all_components, this.options);
+			this.list_component = new ve.List(all_components, this.options.list_options);
 			
 			//Set value and refresh
 			this.value = value;
