@@ -281,6 +281,19 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 												local_value.options.yAxis.symbol = v;
 												this.drawGraphs(true);
 											},
+										}).interface,
+										polar_axis_symbol: new ve.DatavisSuite.AxisSymbol_Polar(local_value.options?.polar?.symbol, {
+											datavis_suite_obj: this,
+											graph_obj: local_value,
+											name: "Polar Axis Symbol",
+											style: { padding: 0 },
+											x: 0,
+											y: 1,
+											
+											onuserchange: (v) => {
+												local_value.options.polar.symbol = v;
+												this.drawGraphs(true);
+											}
 										}).interface
 									}, {
 										name: "Axis Symbols"
@@ -289,6 +302,13 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 										name: "Text Symbol",
 										onuserchange: (v) => {
 											local_value.options.textStyle = v;
+											this.drawGraphs(true);
+										}
+									}).interface,
+									title_symbol: new ve.DatavisSuite.TitleSymbol(local_value.options?.title, {
+										name: "Title Symbol",
+										onuserchange: (v) => {
+											local_value.options.title = v;
 											this.drawGraphs(true);
 										}
 									}).interface,

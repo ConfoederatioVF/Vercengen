@@ -35,6 +35,9 @@ ve.Graph = class extends ve.Component {
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
 		if (!options.type) options.type = "line_chart";
+		
+		if (!options.polar) options.polar = {};
+			if (!options.polar.symbol) options.polar.symbol = {};
 		if (!options.xAxis) options.xAxis = {};
 			if (!options.xAxis.symbol) options.xAxis.symbol = {};
 		if (!options.yAxis) options.yAxis = {};
