@@ -108,7 +108,8 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				})
 			}, {
 				style: {
-					display: "flex"
+					display: "flex",
+					flex: 1
 				}
 			})
 		};
@@ -118,10 +119,20 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 	}
 	
 	get v () {
+		//Declare local instance variables
+		let graphs_obj = {};
+		
+		//Iterate over all graphs, populate graphs_obj
+		Object.iterate(this.graphs, (local_key, local_value) => 
+			graphs_obj[local_key] = {
+				value: local_value.v,
+				options: local_value.options
+			});
+		
 		//Return statement
 		return {
 			data_scripts: this.data_scripts,
-			graphs: this.graphs,
+			graphs: graphs_obj,
 			series: this.series,
 			table_value: this.table_value
 		};
@@ -135,7 +146,9 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		
 		//Declare local instance variables
 		this.data_scripts = (value.data_scripts) ? value.data_scripts : {};
-		this.graphs = (value.graphs) ? value.graphs : {};
+		this.graphs = {};
+			if (value.graphs)
+				Object.iterate(value.graphs, (local_key, local_value) => this.graphs[local_key] = new ve.Graph(local_value.value, local_value.options));
 		this.series = (value.series) ? value.series : {};
 		this.table_value = (value.table_value) ? value.table_value : {};
 		
