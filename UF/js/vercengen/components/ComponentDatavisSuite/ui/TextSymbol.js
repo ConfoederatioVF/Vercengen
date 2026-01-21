@@ -67,7 +67,7 @@ ve.DatavisSuite.TextSymbol = class extends ve.Component {
 				onuserchange: (v) => this.value.fontWeight = v,
 				selected: (value.fontWeight) ? value.fontWeight : "normal"
 			}),
-			height: new ve.Number(Math.returnSafeNumber(value.height, 12), {
+			_height: new ve.Number(Math.returnSafeNumber(value.height, 12), {
 				name: "Height",
 				onuserchange: (v) => this.value.height = v
 			}),
@@ -120,7 +120,7 @@ ve.DatavisSuite.TextSymbol = class extends ve.Component {
 				name: "Shadow Offset Y",
 				onuserchange: (v) => this.value.textShadowOffsetY = v
 			}),
-			width: new ve.Number(Math.returnSafeNumber(value.width, 0), {
+			_width: new ve.Number(Math.returnSafeNumber(value.width, 0), {
 				name: "Width",
 				onuserchange: (v) => this.value.width = v
 			})

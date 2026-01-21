@@ -307,11 +307,11 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 									}).interface,
 									title_symbol: new ve.DatavisSuite.TitleSymbol(local_value.options?.title, {
 										name: "Title Symbol",
-										onuserchange: (v) => {
+										onuserchange: (v, e) => {
 											local_value.options.title = v;
 											this.drawGraphs(true);
 										}
-									}).interface,
+									}),
 									tooltip_symbol: new ve.DatavisSuite.TooltipSymbol(local_value.options?.tooltip, {
 										name: "Tooltip Symbol",
 										onuserchange: (v) => {

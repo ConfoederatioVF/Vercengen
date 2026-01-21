@@ -49,7 +49,7 @@ ve.DatavisSuite.TooltipSymbol = class extends ve.Component {
 				name: "Always Show Content",
 				onuserchange: (v) => this.value.alwaysShowContent = v
 			}),
-			class_name: new ve.Text(value.className, {
+			_class_name: new ve.Text(value.className, {
 				name: "Class Name",
 				onuserchange: (v) => this.value.className = v
 			}),

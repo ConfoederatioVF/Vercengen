@@ -93,7 +93,8 @@ ve.Graph = class extends ve.Component {
 			color: (this.options?.title?.textStyle?.color) ?
 				this.options.title.textStyle.color : root_style.getPropertyValue("--header-colour"),
 			fontFamily: (this.options?.title?.textStyle?.fontFamily) ?
-				this.options.title.textStyle.fontFamily : root_style.getPropertyValue("--header-font-family")
+				this.options.title.textStyle.fontFamily : root_style.getPropertyValue("--header-font-family"),
+			...this.options?.title
 		};
 	}
 	
