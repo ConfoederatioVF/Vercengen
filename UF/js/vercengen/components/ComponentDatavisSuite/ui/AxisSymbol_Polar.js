@@ -88,7 +88,7 @@ ve.DatavisSuite.AxisSymbol_Polar = class extends ve.Component {
 						if (!this.value.tooltip) this.value.tooltip = {};
 						this.value.tooltip.textStyle = v;
 					}
-				}),
+				}).interface,
 				tooltip_symbol: new ve.DatavisSuite.TooltipSymbol(value.tooltip, {
 					name: "Tooltip",
 					onuserchange: (v) => {
@@ -98,7 +98,7 @@ ve.DatavisSuite.AxisSymbol_Polar = class extends ve.Component {
 							...v
 						};
 					}
-				})
+				}).interface
 			}, { name: "Tooltip" })
 		}, {
 			name: (this.options.name) ? this.options.name : "Axis Symbol (Polar)",

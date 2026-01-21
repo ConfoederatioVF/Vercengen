@@ -79,8 +79,8 @@ ve.Graph = class extends ve.Component {
 		
 		//Return statement
 		return {
-			color: (this.options?.textStyle?.color) ?
-				this.options.textStyle.color : root_style.getPropertyValue("--body-colour")
+			color: root_style.getPropertyValue("--body-colour"),
+			...this.options?.textStyle
 		};
 	}
 	
@@ -90,11 +90,9 @@ ve.Graph = class extends ve.Component {
 		
 		//Return statement
 		return {
-			color: (this.options?.title?.textStyle?.color) ?
-				this.options.title.textStyle.color : root_style.getPropertyValue("--header-colour"),
-			fontFamily: (this.options?.title?.textStyle?.fontFamily) ?
-				this.options.title.textStyle.fontFamily : root_style.getPropertyValue("--header-font-family"),
-			...this.options?.title
+			color: root_style.getPropertyValue("--header-colour"),
+			fontFamily: root_style.getPropertyValue("--header-font-family"),
+			...this.options?.title?.symbol?.textStyle
 		};
 	}
 	
@@ -180,8 +178,8 @@ ve.Graph = class extends ve.Component {
 		this.chart_options = {};
 		this.chart_options.series = [];
 		this.chart_options.title = {
-			text: (this.options?.title?.text) ? this.options.title.text : "",
-			textStyle: this._getTitleStyle()
+			textStyle: this._getTitleStyle(),
+			...this.options?.title
 		};
 		
 		//if (this.options.type === "line_chart" || !this.options.type) {

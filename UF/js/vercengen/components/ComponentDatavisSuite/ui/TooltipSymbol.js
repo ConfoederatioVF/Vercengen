@@ -275,8 +275,8 @@ ve.DatavisSuite.TooltipSymbol = class extends ve.Component {
 			}),
 			text_symbol: new ve.DatavisSuite.TextSymbol(value.textStyle, {
 				name: "Text Symbol",
-				onuserchange: (v) => this.value.textSymbol = v
-			})
+				onuserchange: (v) => this.value.textStyle = v
+			}).interface
 		}, { 
 			name: (this.options.name) ? this.options.name : "Tooltip Symbol",
 			onuserchange: (v, e) => {

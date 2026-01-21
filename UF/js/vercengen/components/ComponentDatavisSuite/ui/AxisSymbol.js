@@ -247,7 +247,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 							...e.value
 						};
 					}
-				}),
+				}).interface,
 				stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.axisLabel, {
 					name: "Stroke Symbol",
 					onuserchange: (v, e) => {
@@ -257,7 +257,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 							...e.value
 						};
 					}
-				})
+				}).interface
 			}, {
 				name: "Axis Label"
 			}),
@@ -290,7 +290,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 						if (!this.value.axisLine) this.value.axisLine = {};
 						this.value.axisLine.lineStyle = v;
 					}
-				}),
+				}).interface,
 				symbol: new ve.Select({
 					"none-none": { name: "None, None" },
 					"arrow-arrow": { name: "Arrow, Arrow" },
@@ -349,7 +349,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						this.value.axisPointer.label = v;
 					}
-				}),
+				}).interface,
 				on_hover_emphasis: new ve.Toggle(value.axisPointer?.triggerEmphasis, {
 					name: "Onhover Emphasis",
 					onuserchange: (v) => {
@@ -416,7 +416,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						this.value.axisPointer.lineStyle = v;
 					}
-				}),
+				}).interface,
 				type: new ve.Select({
 					line: { name: "Line" },
 					shadow: { name: "Shadow" },
@@ -495,7 +495,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 						if (!this.value.axisTick) this.value.axisTick = {};
 						this.value.axisTick.lineStyle = v;
 					}
-				}),
+				}).interface,
 				minor_split_line: new ve.Interface({
 					show: new ve.Toggle(value.axisTick?.minorSplitLine, {
 						name: "Show",
@@ -512,7 +512,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 							if (!this.value.axisTick.minorSplitLine) this.value.axisTick.minorSplitLine = {};
 							this.value.axisTick.minorSplitLine.lineStyle = v;
 						}
-					})
+					}).interface
 				}, { name: "Minor Split Line" }),
 				minor_tick: new ve.Interface({
 					show: new ve.Toggle(value.axisTick?.minorTick, {
@@ -547,7 +547,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 							if (!this.value.axisTick.minorTick) this.value.axisTick.minorTick = {};
 							this.value.axisTick.minorTick.lineStyle = v;
 						}
-					})
+					}).interface
 				}, { name: "Minor Split Line" })
 			}, {
 				name: "Axis Tick"
@@ -573,7 +573,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 						if (!this.value.breakArea) this.value.breakArea = {};
 						this.value.breakArea.itemStyle = v;
 					}
-				}),
+				}).interface,
 				zigzag_amplitude: new ve.Number(Math.returnSafeNumber(value?.breakArea?.zigzagAmplitude, 4), {
 					name: "Zigzag Amplitude",
 					onuserchange: (v) => {
@@ -676,7 +676,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 						if (!this.value.splitArea) this.value.splitArea = {};
 						this.value.splitArea.areaStyle = v;
 					}
-				}),
+				}).interface,
 				interval: new ve.Text((value.splitArea?.interval !== undefined) ? value.splitArea.interval : "auto", {
 					name: "Interval",
 					onuserchange: (v) => {
@@ -723,7 +723,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 						if (!this.value.splitLine) this.value.splitLine = {};
 						this.value.splitLine.strokeSymbol = v;
 					}
-				})
+				}).interface
 			}, { name: "Split Line" }),
 			
 			advanced_styling: new ve.Interface({
@@ -822,7 +822,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 				text_symbol: new ve.DatavisSuite.TextSymbol(value.nameTextStyle, {
 					name: "Text Symbol",
 					onuserchange: (v) => this.value.nameTextStyle = v
-				}),
+				}).interface,
 				z_index: new ve.Number(Math.returnSafeNumber(value.z), {
 					name: "Z-Index",
 					onuserchange: (v) => this.value.z = v
@@ -835,7 +835,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 						if (!this.value.tooltip) this.value.tooltip = {};
 						this.value.tooltip.textStyle = v;
 					}
-				}),
+				}).interface,
 				tooltip_symbol: new ve.DatavisSuite.TooltipSymbol(value.tooltip, {
 					name: "Tooltip Symbol",
 					onuserchange: (v) => {
@@ -845,7 +845,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 							...v
 						};
 					}
-				})
+				}).interface
 			}, { name: "Tooltip" }),
 			animation: new ve.Interface({
 				delay: new ve.Number(Math.returnSafeNumber(value.animationDelay), {

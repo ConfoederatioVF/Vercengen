@@ -60,7 +60,7 @@ ve.DatavisSuite.TitleSymbol = class extends ve.Component {
 			title_symbol: new ve.DatavisSuite.TextSymbol(value.textStyle, {
 				name: "Title Symbol",
 				onuserchange: (v) => this.value.textStyle = v
-			}),
+			}).interface,
 			
 			coordinates: new ve.Interface({
 				coord: new ve.RawInterface({
@@ -215,9 +215,9 @@ ve.DatavisSuite.TitleSymbol = class extends ve.Component {
 				})
 			}, { name: "Styling (Advanced)" }),
 			subtitle: new ve.Interface({
-				subtitle: new ve.Text(value.subtitle, {
+				subtitle: new ve.Text(value.subtext, {
 					name: "Subtitle",
-					onuserchange: (v) => this.value.subtitle = v
+					onuserchange: (v) => this.value.subtext = v
 				}),
 				sublink: new ve.URL(value.sublink, {
 					name: "Sublink",
@@ -234,7 +234,7 @@ ve.DatavisSuite.TitleSymbol = class extends ve.Component {
 				subtitle_symbol: new ve.DatavisSuite.TextSymbol(value.subtextStyle, {
 					name: "Subtitle Symbol",
 					onuserchange: (v) => this.value.subtextStyle = v
-				}),
+				}).interface,
 			}, { name: "Subtitle Symbol" }),
 		}, { 
 			name: (this.options.name) ? this.options.name : "Title Symbol",
