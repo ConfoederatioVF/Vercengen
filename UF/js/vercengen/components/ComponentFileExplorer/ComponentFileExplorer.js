@@ -421,7 +421,7 @@ ve.FileExplorer = class extends ve.Component {
 			hierarchy_obj.save_button.element.onclick = () => {
 				let local_modal = new ve.Window({
 					html: new ve.HTML(loc("ve.registry.localisation.FileExplorer_save_file_as")),
-					new_file_name: new ve.Text(`autosave${(this.options.save_extension[0]) ? this.options.save_extension[0] : ""}`, { name: " " }),
+					new_file_name: new ve.Text(`autosave${(this.options?.save_extension?.[0]) ? this.options.save_extension[0] : ""}`, { name: " " }),
 					confirm_button: new ve.Button((e) => {
 						let save_file_name = path.join(this.v, local_modal.new_file_name.v);
 						

@@ -87,7 +87,11 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 						maxHeight: "50rem",
 						overflowY: "auto"
 					},
-					x: 0, y: 0
+					x: 0, y: 0,
+					
+					load_function: (arg0_value) => this.v = arg0_value,
+					save_extension: ".ve-ds",
+					save_function: () => this.v
 				}),
 				table: new ve.Spreadsheet(this.table_value, {
 					dark_mode: this.options.dark_mode,
@@ -98,6 +102,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					x: 1, y: 0,
 					
 					onuserchange: (v) => {
+						this.table_value = v;
 						this.drawGraphs();
 					}
 				})
@@ -125,6 +130,28 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : {};
+			if (typeof value === "string") value = JSON.parse(value);
+			console.log(value)
+		
+		//Declare local instance variables
+		this.data_scripts = (value.data_scripts) ? value.data_scripts : {};
+		this.graphs = (value.graphs) ? value.graphs : {};
+		this.series = (value.series) ? value.series : {};
+		this.table_value = (value.table_value) ? value.table_value : {};
+		
+		//1. Load data into the spreadsheet component
+		//This will trigger the 'setData' logic in the Spreadsheet component to handle Univer initialization
+		if (this.table_obj)
+			this.table_obj.v = this.table_value;
+		
+		//2. Re-draw any active graphs based on the new data
+		this.drawGraphs();
+		
+		//3. Update management windows if they are currently open
+		if (this.series_window)
+			this.drawEditSeriesHierarchy();
+		if (this.graph_window)
+			this.drawEditGraph();
 	}
 	
 	drawEditGraph () {
@@ -246,6 +273,13 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 									}, {
 										name: "Axis Symbols"
 									}),
+									text_symbol: new ve.DatavisSuite.TextSymbol(local_value.options?.textStyle, {
+										name: "Text Symbol",
+										onuserchange: (v) => {
+											local_value.options.textStyle = v;
+											this.drawGraphs(true);
+										}
+									}).interface,
 									tooltip_symbol: new ve.DatavisSuite.TooltipSymbol(local_value.options?.tooltip, {
 										name: "Tooltip Symbol",
 										onuserchange: (v) => {
@@ -253,13 +287,6 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 											this.drawGraphs(true);
 										}
 									}).interface,
-									text_symbol: new ve.DatavisSuite.TextSymbol(local_value.options?.textStyle, {
-										name: "Text Symbol",
-										onuserchange: (v) => {
-											local_value.options.textStyle = v;
-											this.drawGraphs(true);
-										}
-									}).interface
 								})
 							}, {
 								name: `Edit ${graph_name}`,
