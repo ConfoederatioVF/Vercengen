@@ -121,8 +121,8 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		});
 		
 		modal_components.confirm_btn = new ve.Button(() => {
-			let selected_type = win.components_obj.type_select.v;
-			let new_key = (is_array) ? target_obj.length : win.components_obj.key_name.v;
+			let selected_type = this.modal_window.components_obj.type_select.v;
+			let new_key = (is_array) ? target_obj.length : this.modal_window.components_obj.key_name.v;
 			
 			if (!is_array && !new_key) {
 				new ve.Toast("Please enter a property name.");
@@ -146,7 +146,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 			if (is_array) target_obj.push(new_value);
 			else target_obj[new_key] = new_value;
 			
-			win.remove();
+			this.modal_window.close();
 			this.refresh();
 			this.fireToBinding();
 			

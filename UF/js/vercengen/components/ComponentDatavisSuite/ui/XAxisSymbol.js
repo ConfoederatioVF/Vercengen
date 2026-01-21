@@ -682,7 +682,26 @@ ve.DatavisSuite.XAxisSymbol = class extends ve.Component {
 				})
 			}, { name: "Break Area" }),
 			breaks: new ve.Interface({
-				
+				break_editor: new ve.List([], {
+					placeholder: new ve.ObjectEditor({
+						gap: 0,
+						end: 0,
+						is_expanded: false,
+						start: 0
+					}),
+					onuserchange: (v) => {
+						if (v.length === 0) {
+							delete this.value.breaks;
+						} else {
+							//Iterate over all v components, set all_breaks
+							let all_breaks = [];
+							
+							for (let i = 0; i < v.length; i++)
+								all_breaks.push(v[i].v);
+							this.value.breaks = all_breaks;
+						}
+					}
+				})
 			}, { name: "Breaks" })
 		}, { 
 			name: (this.options.name) ? this.options.name : "X Axis Symbol",

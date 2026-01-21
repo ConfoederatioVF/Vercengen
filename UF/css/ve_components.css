@@ -126,7 +126,7 @@
 /* -- ve.Datalist -- */
 [component="ve-datalist"] {
     input { min-width: calc(var(--default-width)/2); }
-    #name { margin-right: var(--cell-padding); }
+    input[list] { margin-left: var(--padding); }
 }
 
 /* -- ve.Date -- */
