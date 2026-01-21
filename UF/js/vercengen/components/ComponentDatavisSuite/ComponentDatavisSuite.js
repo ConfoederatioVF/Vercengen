@@ -142,7 +142,6 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : {};
 			if (typeof value === "string") value = JSON.parse(value);
-			console.log(value)
 		
 		//Declare local instance variables
 		this.data_scripts = (value.data_scripts) ? value.data_scripts : {};
