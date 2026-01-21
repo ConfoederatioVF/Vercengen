@@ -11,7 +11,10 @@
  *   - `.auto_collapse_depth=1`: {@link number} - The depth at which folders start collapsing automatically.
  *   - `.do_not_allow_deletion=false`: {@link boolean}
  *   - `.do_not_allow_insertion=false`: {@link boolean}
+ *   - `.do_not_allow_key_change=false`: {@link boolean}
+ *   - `.do_not_allow_type_change=false`: {@link boolean}
  *   - `.do_not_display_icons=false`: {@link boolean} - Whether to show type icons.
+ *   - `.preserve_structure=false`: {@link boolean} - Whether to only allow changes to primitives, and not to the data structure itself.
  *
  * ##### Instance:
  * - `.hierarchy`: {@link ve.Hierarchy} - The internal hierarchy component.
@@ -24,19 +27,28 @@
  * @memberof ve.Component
  * @type {ve.ObjectEditor}
  */
-ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later date.
+ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later date. Fix documentation.
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : {};
 		let options = (arg1_options) ? arg1_options : {};
-		super(options);
+			super(options);
 		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
 		options.auto_collapse_depth = Math.returnSafeNumber(options.auto_collapse_depth, 1);
-		options.do_not_display_icons = (options.do_not_display_icons !== undefined) ? options.do_not_display_icons : false;
-		options.do_not_allow_deletion = (options.do_not_allow_deletion !== undefined) ? options.do_not_allow_deletion : false;
-		options.do_not_allow_insertion = (options.do_not_allow_insertion !== undefined) ? options.do_not_allow_insertion : false;
+		
+		//.preserve_structure handling
+		if (options.preserve_structure) {
+			options.do_not_allow_deletion = (options.do_not_allow_deletion === undefined) ? 
+				true : options.do_not_allow_deletion;
+			options.do_not_allow_insertion = (options.do_not_allow_insertion === undefined) ?
+				true : options.do_not_allow_insertion;
+			options.do_not_allow_key_change = (options.do_not_allow_key_change === undefined) ? 
+				true : options.do_not_allow_key_change;
+			options.do_not_allow_type_change = (options.do_not_allow_type_change === undefined) ? 
+				true : options.do_not_allow_type_change;
+		}
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");
@@ -50,9 +62,33 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		this.refresh();
 	}
 	
-	get v () { return this.value; }
+	/**
+	 * Returns the component value to a JSON object.
+	 * - Accessor of: {@link ve.ObjectEditor}
+	 *
+	 * @alias v
+	 * @memberof ve.Component.ve.ObjectEditor
+	 * @type {Object}
+	 */
+	get v () {
+		//Return statement
+		return this.value;
+	}
+	
+	/**
+	 * Sets the new component value to a JSON object.
+	 * - Accessor of: {@link ve.ObjectEditor}
+	 *
+	 * @alias v
+	 * @memberof ve.Component.ve.ObjectEditor
+	 *
+	 * @param {Object} arg0_value
+	 */
 	set v (arg0_value) {
+		//Convert from parameters
 		this.value = arg0_value;
+		
+		//Fire binding
 		this.refresh();
 		this.fireFromBinding();
 	}
@@ -159,6 +195,60 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		});
 	}
 	
+	_openChangeTypeModal (target_obj, key) {
+		let current_val = target_obj[key];
+		let current_type = this._getType(current_val);
+		let modal_components = {};
+		
+		modal_components.info = new ve.HTML(`Change type for <b>${key}</b>.<br><small>Warning: This will reset the value.</small>`);
+		
+		modal_components.type_select = new ve.Select({
+			string: { name: "String", selected: current_type === "string" },
+			number: { name: "Number", selected: current_type === "number" },
+			boolean: { name: "Boolean", selected: current_type === "boolean" },
+			object: { name: "Object", selected: current_type === "object" },
+			array: { name: "Array", selected: current_type === "array" },
+			null: { name: "Null", selected: current_type === "null" }
+		}, {
+			style: { width: "100%", marginBottom: "var(--cell-padding)" }
+		});
+		
+		modal_components.confirm_btn = new ve.Button(() => {
+			let selected_type = this.change_type_window.components_obj.type_select.v;
+			
+			// Don't do anything if type didn't change
+			if (selected_type === current_type) {
+				this.change_type_window.close();
+				return;
+			}
+			
+			let new_value = null;
+			switch (selected_type) {
+				case "string": new_value = ""; break;
+				case "number": new_value = 0; break;
+				case "boolean": new_value = false; break;
+				case "object": new_value = {}; break;
+				case "array": new_value = []; break;
+				case "null": new_value = null; break;
+			}
+			
+			target_obj[key] = new_value;
+			
+			this.change_type_window.close();
+			this.refresh();
+			this.fireToBinding();
+			
+		}, { name: "Change Type", style: { width: "100%" } });
+		
+		if (this.change_type_window) this.change_type_window.close();
+		this.change_type_window = new ve.Window(modal_components, {
+			name: "Change Variable Type",
+			can_rename: false,
+			width: "300px",
+			height: "auto"
+		});
+	}
+	
 	// --- Generator ---
 	
 	_generateRecursive (current_data, current_key, depth, parent_object) {
@@ -186,53 +276,75 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 				case "boolean": icon_name = "toggle_on"; break;
 				case "null": icon_name = "do_not_disturb_on"; break;
 			}
+			let icon_style = {
+				order: 0,
+				marginRight: "0.5rem",
+				opacity: 0.7,
+				display: "flex",
+				alignItems: "center",
+				border: "none",
+				padding: 0
+			};
 			
-			components_obj.icon = new ve.HTML(`<icon>${icon_name}</icon>`, {
-				style: {
-					order: 0,
-					marginRight: "0.5rem",
-					opacity: 0.7,
-					display: "flex",
-					alignItems: "center"
-				},
-				tooltip: type
-			});
+			// Changed to ve.Button to allow clicking to change type
+			if (!this.options.do_not_allow_type_change) {
+				components_obj.icon = new ve.Button((e) => {
+					this._openChangeTypeModal(parent_object, current_key);
+				}, {
+					name: `<icon>${icon_name}</icon>`,
+					
+					attributes: {
+						"data-is-type": true
+					},
+					style: icon_style,
+					tooltip: `${type} (Click to change)`
+				});
+			} else {
+				components_obj.icon = new ve.HTML(`<icon>${icon_name}</icon>`, {
+					attributes: { "data-is-type": true },
+					style: icon_style,
+					tooltip: `${type}`
+				})
+			}
 		}
 		
 		// 2. Key Input (Order 1)
-		if (parent_is_array) {
-			components_obj.key_input = new ve.Number(current_key, {
-				min: 0,
-				max: parent_object.length - 1,
-				onuserchange: (new_index) => {
-					this._moveArrayItem(parent_object, current_key, new_index);
-				},
-				style: {
-					order: 1,
-					width: "3rem",
-					fontWeight: "bold"
-				}
-			});
+		if (!this.options.do_not_allow_key_change) {
+			if (parent_is_array) {
+				components_obj.key_input = new ve.Number(current_key, {
+					min: 0,
+					max: parent_object.length - 1,
+					onuserchange: (new_index) => {
+						this._moveArrayItem(parent_object, current_key, new_index);
+					},
+					style: {
+						width: "3rem"
+					}
+				});
+			} else {
+				components_obj.key_input = new ve.Text(current_key, {
+					onuserchange: (new_key) => {
+						this._renameObjectKey(parent_object, current_key, new_key);
+					},
+					style: {
+						maxWidth: "6rem"
+					}
+				});
+			}
 		} else {
-			components_obj.key_input = new ve.Text(current_key, {
-				onuserchange: (new_key) => {
-					this._renameObjectKey(parent_object, current_key, new_key);
-				},
+			components_obj.key_name = new ve.HTML(current_key, {
 				style: {
-					order: 1,
-					width: "6rem",
-					color: "var(--color-primary)"
+					maxWidth: "4rem"
 				}
-			});
+			})
 		}
 		
 		// 3. Separator (Order 2)
 		components_obj.separator = new ve.HTML("<b>&nbsp;:&nbsp;</b>", {
-			style: { order: 2, opacity: 0.5 }
+			style: { opacity: 0.5 }
 		});
 		
 		// 4. Value Input (Order 3)
-		
 		if (!is_group) {
 			if (type === "string") {
 				components_obj.input = new ve.Text(current_data, {
@@ -372,7 +484,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 	/**
 	 * Refreshes the given {@link ve.ObjectEditor} to be in sync with the JSON object passed in.
 	 * - Method of: {@link ve.ObjectEditor}
-	 * 
+	 *
 	 * @alias refresh
 	 * @memberof ve.Component.ve.ObjectEditor
 	 */
@@ -400,7 +512,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 			}
 		});
 		
-		let hierarchy_obj = (!this.options.do_not_allow_insertion) ? 
+		let hierarchy_obj = (!this.options.do_not_allow_insertion) ?
 			{ actions_bar: actions_bar } : {};
 		
 		if (this.value && typeof this.value === "object") {

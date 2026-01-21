@@ -689,6 +689,10 @@ ve.DatavisSuite.XAxisSymbol = class extends ve.Component {
 						is_expanded: false,
 						start: 0
 					}),
+					options: {
+						do_not_allow_type_change: false,
+						preserve_structure: true
+					},
 					onuserchange: (v) => {
 						if (v.length === 0) {
 							delete this.value.breaks;

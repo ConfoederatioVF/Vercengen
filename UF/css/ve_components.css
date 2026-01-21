@@ -279,7 +279,7 @@
 /* -- ve.ObjectEditor -- */
 [component="ve-object-editor"] {
     [component="ve-hierarchy-datatype"]:not(.actions-bar) .nst-content {
-        [component="ve-button"]:nth-child(1 of [component="ve-button"]) {
+        [component="ve-button"]:nth-child(1 of [component="ve-button"]:not([data-is-type="true"])) {
             margin-left: auto;
         }
         [component="ve-text"]:nth-child(1 of [component="ve-text"]) {
