@@ -34,14 +34,15 @@ ve.Graph = class extends ve.Component { //[WIP] - Flatten all <key_name>.symbol 
 		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
+		if (!options.symbol) options.symbol = {};
+			if (!options.symbol.polar) options.symbol.polar = {};
+			if (!options.symbol.xAxis) options.symbol.xAxis = {};
+				if (options.symbol.xAxis.boundaryGap === undefined) options.symbol.xAxis.boundaryGap = false;
+				if (options.symbol.xAxis.type === undefined) options.symbol.xAxis.type = "category";
+				
+			if (!options.symbol.yAxis) options.symbol.yAxis = {};
+				if (options.symbol.yAxis.type === undefined) options.symbol.yAxis.type = "value";
 		if (!options.type) options.type = "line_chart";
-		
-		if (!options.polar) options.polar = {};
-			if (!options.polar.symbol) options.polar.symbol = {};
-		if (!options.xAxis) options.xAxis = {};
-			if (!options.xAxis.symbol) options.xAxis.symbol = {};
-		if (!options.yAxis) options.yAxis = {};
-			if (!options.yAxis.symbol) options.yAxis.symbol = {};
 			
 		//Declare local instance variables
 		this.element = document.createElement("div");
@@ -71,29 +72,6 @@ ve.Graph = class extends ve.Component { //[WIP] - Flatten all <key_name>.symbol 
 		if (!this.value.series) this.value.series = {};
 		if (!this.value.type) this.value.type = "line_chart";
 		this.draw();
-	}
-	
-	_getAxisStyle () {
-		//Declare local instance variables
-		let root_style = window.getComputedStyle(document.body);
-		
-		//Return statement
-		return {
-			color: root_style.getPropertyValue("--body-colour"),
-			...this.options?.textStyle
-		};
-	}
-	
-	_getTitleStyle () {
-		//Declare local instance variables
-		let root_style = window.getComputedStyle(document.body);
-		
-		//Return statement
-		return {
-			color: root_style.getPropertyValue("--header-colour"),
-			fontFamily: root_style.getPropertyValue("--header-font-family"),
-			...this.options?.title?.symbol?.textStyle
-		};
 	}
 	
 	addSeries (arg0_series_obj, arg1_options) { //[WIP] - Finish function body
@@ -176,32 +154,11 @@ ve.Graph = class extends ve.Component { //[WIP] - Flatten all <key_name>.symbol 
 			useDirtyRect: false
 		});
 		this.chart_options = {};
+			Object.iterate(this.options.symbol, (local_key, local_value) => {
+				if (Object.keys(local_value).length > 0)
+					this.chart_options[local_key] = local_value;
+			});
 		this.chart_options.series = [];
-		this.chart_options.title = {
-			textStyle: this._getTitleStyle(),
-			...this.options?.title
-		};
-		
-		//if (this.options.type === "line_chart" || !this.options.type) {
-		this.chart_options.xAxis = {
-			boundaryGap: false,
-			type: "category",
-			
-			axisLabel: this._getAxisStyle(),
-			axisLine: {
-				lineStyle: this._getAxisStyle()
-			},
-			...this.options.xAxis.symbol
-		};
-		this.chart_options.yAxis = {
-			type: "value",
-			
-			axisLabel: this._getAxisStyle(),
-			axisLine: {
-				lineStyle: this._getAxisStyle()
-			},
-			...this.options.yAxis.symbol
-		};
 		
 		if (this.value.series)
 			Object.iterate(this.value.series, (local_key, local_value) => {
@@ -223,7 +180,11 @@ ve.Graph = class extends ve.Component { //[WIP] - Flatten all <key_name>.symbol 
 					});
 			});
 		
-		this.chart.setOption(this.chart_options);
+		try {
+			this.chart.setOption(this.chart_options);	
+		} catch (e) {
+			console.error(`Echarts options error:`, e, `\n- Options object:`, this.chart_options);
+		}
 		//}
 		
 		this.chart.resize();

@@ -254,7 +254,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 									assigned_series: assigned_series_list,
 									
 									axis_symbols: new ve.Interface({
-										x_axis_symbol: new ve.DatavisSuite.AxisSymbol(local_value.options?.xAxis?.symbol, {
+										x_axis_symbol: new ve.DatavisSuite.AxisSymbol(local_value.options.symbol?.xAxis, {
 											axis_type: "x",
 											datavis_suite_obj: this,
 											graph_obj: local_value,
@@ -264,11 +264,11 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 											y: 0,
 											
 											onuserchange: (v) => {
-												local_value.options.xAxis.symbol = v;
+												local_value.options.symbol.xAxis = v;
 												this.drawGraphs(true);
 											}
 										}).interface,
-										y_axis_symbol: new ve.DatavisSuite.AxisSymbol(local_value.options?.yAxis?.symbol, {
+										y_axis_symbol: new ve.DatavisSuite.AxisSymbol(local_value.options.symbol?.yAxis, {
 											axis_type: "y",
 											datavis_suite_obj: this,
 											graph_obj: local_value,
@@ -278,11 +278,11 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 											y: 0,
 											
 											onuserchange: (v) => {
-												local_value.options.yAxis.symbol = v;
+												local_value.options.symbol.yAxis = v;
 												this.drawGraphs(true);
 											},
 										}).interface,
-										polar_axis_symbol: new ve.DatavisSuite.AxisSymbol_Polar(local_value.options?.polar?.symbol, {
+										polar_axis_symbol: new ve.DatavisSuite.AxisSymbol_Polar(local_value.options.symbol?.polar, {
 											datavis_suite_obj: this,
 											graph_obj: local_value,
 											name: "Polar Axis Symbol",
@@ -291,32 +291,32 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 											y: 1,
 											
 											onuserchange: (v) => {
-												local_value.options.polar.symbol = v;
+												local_value.options.symbol.polar = v;
 												this.drawGraphs(true);
 											}
 										}).interface
 									}, {
 										name: "Axis Symbols"
 									}),
-									text_symbol: new ve.DatavisSuite.TextSymbol(local_value.options?.textStyle, {
+									text_symbol: new ve.DatavisSuite.TextSymbol(local_value.options.symbol?.textStyle, {
 										name: "Text Symbol",
 										onuserchange: (v) => {
-											local_value.options.textStyle = v;
+											local_value.options.symbol.textStyle = v;
 											this.drawGraphs(true);
 										}
 									}).interface,
-									title_symbol: new ve.DatavisSuite.TitleSymbol(local_value.options?.title, {
+									title_symbol: new ve.DatavisSuite.TitleSymbol(local_value.options.symbol?.title, {
 										name: "Title Symbol",
 										onuserchange: (v, e) => {
 											console.log(`tobinding fired for title symbol`, v);
-											local_value.options.title = v;
+											local_value.options.symbol.title = v;
 											this.drawGraphs(true);
 										}
 									}).interface,
-									tooltip_symbol: new ve.DatavisSuite.TooltipSymbol(local_value.options?.tooltip, {
+									tooltip_symbol: new ve.DatavisSuite.TooltipSymbol(local_value.options.symbol?.tooltip, {
 										name: "Tooltip Symbol",
 										onuserchange: (v) => {
-											local_value.options.tooltip = v;
+											local_value.options.symbol.tooltip = v;
 											this.drawGraphs(true);
 										}
 									}).interface,
