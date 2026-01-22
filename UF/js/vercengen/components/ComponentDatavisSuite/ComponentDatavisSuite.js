@@ -1,6 +1,11 @@
 /**
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  * 
+ * DatavisSuite used for visualising data either from a {@link ve.Spreadsheet}, {@link ve.NodeEditor}, or {@link ve.ScriptManager}. Has 1-to-1 GUI bindings with Echarts and visual macro support, please read [Echarts Bindings](https://confoederatiodocs.info/CTD+(Confoederatio%2C+Technical+Division)/Documentation/Technical+(Backend)/External+Dependencies/Echarts/Echarts+Bindings) for more details. Spreadsheets support all Google Sheets and Excel formulas, but inline chart support has been removed in favour of a separate window in which multiple graphs can be composed and analysed.
+ * 
+ * The default file extension is `.ve-ds`.
+ * - Functional binding: <span color=00ffff>veDatavisSuite</span>().
+ * 
  * ##### Constructor:
  * - `arg0_value`: {@link Object}
  *   - `.data_scripts`: {@link Object}
