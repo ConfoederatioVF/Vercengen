@@ -677,16 +677,11 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				}, { name: "Set Series Range" })
 			}),
 			
-			symbol: new ve.Interface({
-				stroke_colour: new ve.Colour((series_obj.symbol.color) ? series_obj.symbol.color : [255, 255, 255, 1], {
-					is_rgba: true,
-					onuserchange: (v, e) => {
-						series_obj.symbol.color = e.getHex();
-						this.drawGraphs();
-					}
-				})
-			}, {
-				name: "Series Symbol"
+			symbol: new ve.DatavisSuite.SeriesSymbol(series_obj.symbol, {
+				onuserchange: (v) => {
+					series_obj.symbol = v;
+					this.drawGraphs();
+				}
 			})
 		}, {
 			name: `Edit ${series_name}`,

@@ -12,6 +12,7 @@
  *   - `.list_options`: {@link Object} - Options for {@link ve.List} if an array.
  *   - `.max`: {@link number}
  *   - `.min`: {@link number}
+ *   - `.parse_number=false`: {@link boolean}
  * 
  * ##### Instance:
  * - `.v`: {@link string}
@@ -79,12 +80,21 @@ ve.Text = class extends ve.Component {
 			//Iterate over this.list_component.v to fetch all_values
 			let all_values = [];
 			
-			for (let i = 0; i < this.list_component.v.length; i++)
-				all_values.push(this.list_component.v[i].v);
+			for (let i = 0; i < this.list_component.v.length; i++) {
+				let local_value = this.list_component.v[i].v;
+				if (this.options.parse_number)
+					if (!isNaN(parseFloat(local_value))) local_value = parseFloat(local_value);
+				all_values.push(local_value);
+			}
 			
 			//Return statement
 			return all_values;
 		} else {
+			let local_value = structuredClone(this.value);
+			
+			if (this.options.parse_number)
+				if (!isNaN(parseFloat(local_value))) local_value = parseFloat(local_value);
+			
 			//Return statement
 			return this.value;
 		}

@@ -15,6 +15,7 @@ ve.DatavisSuite.TooltipSymbol = class extends ve.Component {
 			HTML.setAttributesObject(this.element, options.attributes);
 		this.options = options;
 		this.value = {};
+		
 		this.from_binding_fire_silently = true;
 		this.v = value;
 		delete this.from_binding_fire_silently;
