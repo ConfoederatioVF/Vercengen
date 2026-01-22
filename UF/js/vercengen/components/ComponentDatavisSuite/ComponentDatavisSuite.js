@@ -193,8 +193,8 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			
 			Object.iterate(this.graphs, (local_key, local_value) => { //[WIP] - Finish population function
 				if (local_value instanceof ve.Graph) {
-					let graph_name = (local_value?.options?.title?.text) ?
-						local_value.options.title.text : "New Graph"
+					let graph_name = (local_value?.options?.symbol?.title?.text) ?
+						local_value.options.symbol.title.text : "New Graph"
 					
 					hierarchy_obj[local_key] = new ve.HierarchyDatatype({
 						icon: new ve.HTML("<icon>show_chart</icon>"),
@@ -249,9 +249,45 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 								assigned_series_list.placeholder = series_names;
 								this.assigned_series_list = assigned_series_list;
 							
+							//All default colours handling
+							let all_default_colours = [];
+								if (!local_value.options.symbol.color)
+									local_value.options.symbol.color = ve.Graph.getDefaultColours();
+								if (local_value.options.symbol.color)
+									for (let i = 0; i < local_value.options.symbol.color.length; i++)
+										all_default_colours.push(new ve.Colour(local_value.options.symbol.color[i], {
+											is_rgba: true
+										}));
+							
 							this.edit_graph_window = new ve.Window({ //Add series using ve.List<ve.Datalist>
 								interface: new ve.RawInterface({
 									assigned_series: assigned_series_list,
+									background_colour: new ve.Colour((local_value.options.symbol.backgroundColor) ? local_value.options.symbol.backgroundColor : [0, 0, 0, 0], {
+										name: "Background Colour",
+										is_rgba: true,
+										onuserchange: (v, e) => {
+											local_value.options.symbol.backgroundColor = e.getHex();
+											this.drawGraphs(true);
+										}
+									}),
+									default_colours: new ve.List(all_default_colours, {
+										name: "Default Colours",
+										onuserchange: (v) => {
+											//Declare local instance variables
+											let all_colours = [];
+											
+											//Iterate over all list components
+											for (let i = 0; i < v.length; i++)
+												all_colours.push(v[i].getHex());
+											local_value.options.symbol.color = all_colours;
+											this.drawGraphs(true);
+										},
+										placeholder: new ve.Colour([255, 255, 255, 1]),
+										options: { is_rgba: true },
+										style: {
+											"[component='ve-colour']": { display: "block" }
+										}
+									}),
 									
 									axis_symbols: new ve.Interface({
 										x_axis_symbol: new ve.DatavisSuite.AxisSymbol(local_value.options.symbol?.xAxis, {
@@ -307,8 +343,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 									}).interface,
 									title_symbol: new ve.DatavisSuite.TitleSymbol(local_value.options.symbol?.title, {
 										name: "Title Symbol",
-										onuserchange: (v, e) => {
-											console.log(`tobinding fired for title symbol`, v);
+										onuserchange: (v) => {
 											local_value.options.symbol.title = v;
 											this.drawGraphs(true);
 										}
@@ -317,6 +352,13 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 										name: "Tooltip Symbol",
 										onuserchange: (v) => {
 											local_value.options.symbol.tooltip = v;
+											this.drawGraphs(true);
+										}
+									}).interface,
+									visual_map: new ve.DatavisSuite.VisualMapSymbol(local_value.options.symbol?.visualMap, {
+										name: "Visual Map",
+										onuserchange: (v) => {
+											local_value.options.symbol.visualMap = v;
 											this.drawGraphs(true);
 										}
 									}).interface,
@@ -338,8 +380,8 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 						name: graph_name,
 						name_options: {
 							onuserchange: (v) => {
-								if (!local_value.options.title) local_value.options.title = {};
-									local_value.options.title.text = v;
+								if (!local_value.options.symbol.title) local_value.options.symbol.title = {};
+									local_value.options.symbol.title.text = v;
 								local_value.draw();
 							}
 						}

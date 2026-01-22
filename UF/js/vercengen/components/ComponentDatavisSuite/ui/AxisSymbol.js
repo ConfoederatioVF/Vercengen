@@ -944,13 +944,9 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 			}, { name: "Animation" }),
 			position: position_obj
 		}, { 
-			name: (this.options.name) ? this.options.name : "X Axis Symbol",
-			onuserchange: (v, e) => {
+			name: (this.options.name) ? this.options.name : "Axis Symbol",
+			onuserchange: () => {
 				//Draw graph; fire to binding if possible
-				if (this.options.graph_obj) {
-					this.options.graph_obj.options.xAxis.symbol = this.value;
-					this.options.graph_obj.draw();
-				}
 				delete this.do_not_fire_to_binding;
 				this.fireToBinding();
 			},

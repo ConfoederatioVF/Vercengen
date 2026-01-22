@@ -83,12 +83,12 @@ ve.DatavisSuite.LabelSymbol = class extends ve.Component { //[WIP] - Refactor to
 					selected: (value.fontWeight) ? value.fontWeight : "normal",
 					onuserchange: (v) => this.value.fontWeight = v
 				}),
-				height: new ve.Number(Math.returnSafeNumber(value.height,50), { 
+				_height: new ve.Number(Math.returnSafeNumber(value.height,50), { 
 					min: 0, 
 					name: "Height",
 					onuserchange: (v) => this.value.height = 50
 				}),
-				width: new ve.Number(Math.returnSafeNumber(value.width, 100), { 
+				_width: new ve.Number(Math.returnSafeNumber(value.width, 100), { 
 					min: 0, 
 					name: "Width", 
 					onuserchange: (v) => this.value.width = 100

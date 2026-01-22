@@ -158,6 +158,9 @@ ve.Graph = class extends ve.Component { //[WIP] - Flatten all <key_name>.symbol 
 				if (Object.keys(local_value).length > 0)
 					this.chart_options[local_key] = local_value;
 			});
+			if (!this.chart_options?.polar?.type) delete this.chart_options.polar;
+			if (!this.chart_options?.xAxis?.type) delete this.chart_options.xAxis;
+			if (!this.chart_options?.yAxis?.type) delete this.chart_options.yAxis;
 		this.chart_options.series = [];
 		
 		if (this.value.series)
@@ -188,5 +191,10 @@ ve.Graph = class extends ve.Component { //[WIP] - Flatten all <key_name>.symbol 
 		//}
 		
 		this.chart.resize();
+	}
+	
+	static getDefaultColours () {
+		//Return statement
+		return ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'];
 	}
 };

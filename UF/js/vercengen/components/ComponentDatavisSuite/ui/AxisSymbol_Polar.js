@@ -105,7 +105,7 @@ ve.DatavisSuite.AxisSymbol_Polar = class extends ve.Component {
 			onuserchange: () => {
 				//Draw graph; fire to binding if possible
 				if (this.options.graph_obj) {
-					this.options.graph_obj.options.polar.symbol = this.value;
+					this.options.graph_obj.options.symbol.polar = this.value;
 					this.options.graph_obj.draw();
 				}
 				delete this.do_not_fire_to_binding;
