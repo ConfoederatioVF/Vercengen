@@ -1,8 +1,8 @@
 /**
- * Refer to ve.Component for methods or fields inherited from this Component's parent.
+ * Refer to ve.Component for methods or fields inherited from this Component's
+ * parent such as `.options.attributes` or `.element`.
  *
  * Creates a drag-and-drop Node Editor using Maptalks as a backend.
- * - Functional binding: veNodeEditor().
  */
 ve.NodeEditor = class extends ve.Component {
 	/**
@@ -11,12 +11,10 @@ ve.NodeEditor = class extends ve.Component {
 	static instances = [];
 	
 	constructor(arg0_value, arg1_options) {
-		// Convert from parameters
-		let value = arg0_value;
 		let options = arg1_options ? arg1_options : {};
+		let value = arg0_value;
 		super(options);
 		
-		// Initialise options
 		options.attributes = options.attributes ? options.attributes : {};
 		options.category_types = options.category_types ? options.category_types : {};
 		options.node_types = options.node_types ? options.node_types : {};
@@ -32,12 +30,6 @@ ve.NodeEditor = class extends ve.Component {
 			...options.style,
 		};
 		
-		// Set default categories
-		if (!options.category_types["I/O"])
-			options.category_types["I/O"] = {
-				colour: [50, 50, 50],
-				text_colour: [255, 255, 255],
-			};
 		if (!options.category_types["Config"])
 			options.category_types["Config"] = {
 				colour: [70, 70, 90],
@@ -48,34 +40,67 @@ ve.NodeEditor = class extends ve.Component {
 				colour: [100, 50, 150],
 				text_colour: [255, 255, 255],
 			};
+		if (!options.category_types["I/O"])
+			options.category_types["I/O"] = {
+				colour: [50, 50, 50],
+				text_colour: [255, 255, 255],
+			};
 		
-		// Merge Default DSL (Forse)
 		if (
 			ve.NodeEditor.Forse &&
 			typeof ve.NodeEditor.Forse.getForseObject === "function"
 		) {
 			let forse_data = ve.NodeEditor.Forse.getForseObject();
-			if (forse_data.node_types)
-				options.node_types = { ...forse_data.node_types, ...options.node_types };
 			if (forse_data.category_types)
 				options.category_types = {
 					...forse_data.category_types,
 					...options.category_types,
 				};
+			if (forse_data.node_types)
+				options.node_types = { ...forse_data.node_types, ...options.node_types };
 		}
 		
-		// Merge Built-in Nodes
 		options.node_types = {
 			...options.node_types,
+			ve_config_category: {
+				name: "Node Category",
+				category: "Config",
+				input_parameters: [{ name: "Category", type: "string" }],
+				is_internal: true,
+				output_type: "string",
+				special_function: (val) => {
+					return { value: val };
+				},
+			},
+			ve_config_name: {
+				name: "Node Name",
+				category: "Config",
+				input_parameters: [{ name: "Name", type: "string" }],
+				is_internal: true,
+				output_type: "string",
+				special_function: (val) => {
+					return { value: val };
+				},
+			},
+			ve_config_output_type: {
+				name: "Node Output Type",
+				category: "Config",
+				input_parameters: [{ name: "Type", type: "string" }],
+				is_internal: true,
+				output_type: "string",
+				special_function: (val) => {
+					return { value: val };
+				},
+			},
 			ve_input: {
 				name: "Input",
 				category: "I/O",
-				output_type: "any",
-				is_internal: true,
 				input_parameters: [
 					{ name: "Name", type: "string" },
 					{ name: "Type", type: "string" },
 				],
+				is_internal: true,
+				output_type: "any",
 				special_function: function (p_name, p_type, context_node) {
 					return {
 						value: context_node ? context_node.runtime_value : undefined,
@@ -85,9 +110,9 @@ ve.NodeEditor = class extends ve.Component {
 			ve_output: {
 				name: "Output",
 				category: "I/O",
-				output_type: "any",
-				is_internal: true,
 				input_parameters: [{ name: "Result", type: "any" }],
+				is_internal: true,
+				output_type: "any",
 				special_function: (arg) => {
 					return { value: arg };
 				},
@@ -96,67 +121,27 @@ ve.NodeEditor = class extends ve.Component {
 				name: "Comment",
 				category: "I/O",
 				input_parameters: [],
-				output_type: "none",
 				options: { is_comment: true },
-			},
-			ve_config_name: {
-				name: "Node Name",
-				category: "Config",
-				output_type: "string",
-				is_internal: true,
-				input_parameters: [{ name: "Name", type: "string" }],
-				special_function: (val) => {
-					return { value: val };
-				},
-			},
-			ve_config_category: {
-				name: "Node Category",
-				category: "Config",
-				output_type: "string",
-				is_internal: true,
-				input_parameters: [{ name: "Category", type: "string" }],
-				special_function: (val) => {
-					return { value: val };
-				},
-			},
-			ve_config_output_type: {
-				name: "Node Output Type",
-				category: "Config",
-				output_type: "string",
-				is_internal: true,
-				input_parameters: [{ name: "Type", type: "string" }],
-				special_function: (val) => {
-					return { value: val };
-				},
+				output_type: "none",
 			},
 		};
 		
-		// Declare local instance variables
 		this.element = document.createElement("div");
+		this.element.instance = this;
 		this.element.setAttribute("component", "ve-node-editor");
 		HTML.setAttributesObject(this.element, options.attributes);
-		this.element.instance = this;
 		
 		this.map_el = document.createElement("div");
 		this.map_el.id = "map-container";
 		this.element.appendChild(this.map_el);
 		
-		if (ve.registry.debug_mode) {
-			let debug_button = new ve.Button(() => {
-				console.log(this.getDAGSequence());
-			}, { name: "Debug" });
-			debug_button.bind(this.element);
-		}
-		let run_button = new ve.Button(() => {
-			this.run().then(() => ve.NodeEditorDatatype.draw());
-		}, { name: "Run" });
-		run_button.bind(this.element);
 		this.id = Class.generateRandomID(ve.NodeEditor);
 		this.map = new maptalks.Map(this.map_el, {
 			center: [0, 0],
 			zoom: 14,
 			baseLayer: this.getDefaultBaseLayer(),
 		});
+		
 		this.node_layer = new maptalks.VectorLayer("nodes", [], {
 			hitDetect: true,
 		});
@@ -164,8 +149,8 @@ ve.NodeEditor = class extends ve.Component {
 		this.options = options;
 		
 		this.main = {
-			nodes: [],
 			custom_node_types: {},
+			nodes: [],
 			settings: {
 				display_expressions_with_values: true,
 				display_filters_as_alluvial: true,
@@ -192,9 +177,13 @@ ve.NodeEditor = class extends ve.Component {
 	
 	get v() {
 		return {
-			settings: this.main.settings,
 			custom_node_types: this.main.custom_node_types,
+			map_state: {
+				center: this.map.getCenter().toArray(),
+				zoom: this.map.getZoom(),
+			},
 			nodes: this.main.nodes.map((node) => node.v),
+			settings: this.main.settings,
 		};
 	}
 	
@@ -202,8 +191,12 @@ ve.NodeEditor = class extends ve.Component {
 		let data =
 			typeof arg0_value === "string" ? JSON.parse(arg0_value) : arg0_value;
 		if (!data) return;
-		
 		this.clear();
+		
+		if (data.map_state) {
+			this.map.setCenter(data.map_state.center);
+			this.map.setZoom(data.map_state.zoom);
+		}
 		
 		if (data.custom_node_types) {
 			this.main.custom_node_types = data.custom_node_types;
@@ -249,7 +242,8 @@ ve.NodeEditor = class extends ve.Component {
 						let target_node = ve.NodeEditorDatatype.getNode(target_id);
 						if (target_node) {
 							node.connections.push([target_node, target_index]);
-							if (target_index > 0) target_node.dynamic_values[target_index - 1] = true;
+							if (target_index > 0)
+								target_node.dynamic_values[target_index - 1] = true;
 						}
 					});
 					delete node._serialised_connections;
@@ -264,18 +258,19 @@ ve.NodeEditor = class extends ve.Component {
 	}
 	
 	_connect(arg0_node, arg1_node, arg2_index, arg3_options) {
-		let node = arg0_node;
-		let ot_node = arg1_node;
 		let index = arg2_index;
+		let node = arg0_node;
 		let options = arg3_options ? arg3_options : {};
+		let ot_node = arg1_node;
 		
-		if (node.getConnection(ot_node, index) !== -1)
+		if (node.getConnection(ot_node, index) !== -1) {
 			if (options.toggle_connection) {
 				this._disconnect(node, ot_node, index);
 				return;
 			} else {
 				return;
 			}
+		}
 		
 		node.connections.push([ot_node, index]);
 		let dag_sequence = this.getDAGSequence();
@@ -285,6 +280,7 @@ ve.NodeEditor = class extends ve.Component {
 			veToast(`<icon>warning</icon> Circular dependencies are not allowed.`);
 			return;
 		}
+		
 		if (index > 0) {
 			let input_type = ot_node.value.input_parameters[index - 1].type
 				? ot_node.value.input_parameters[index - 1].type
@@ -304,73 +300,11 @@ ve.NodeEditor = class extends ve.Component {
 		ve.NodeEditorDatatype.draw();
 	}
 	
-	_disconnect(arg0_node, arg1_node, arg2_index) {
-		let node = arg0_node;
-		let ot_node = arg1_node;
-		let index = arg2_index;
-		let node_connection_index = node.getConnection(ot_node, index);
-		
-		if (node_connection_index !== -1) {
-			node.connections.splice(node_connection_index, 1);
-			if (index > 0) ot_node.dynamic_values[index - 1] = undefined;
-			ve.NodeEditorDatatype.draw();
-		}
-	}
-	
-	_select(arg0_node, arg1_index) {
-		let node = arg0_node;
-		let index = arg1_index;
-		let selected_nodes = this.main.user.selected_nodes;
-		
-		{
-			for (let i = selected_nodes.length - 1; i >= 0; i--) {
-				if (
-					selected_nodes[i][0].id === node.id &&
-					selected_nodes[i][1] === index
-				) {
-					this.main.user.selected_nodes.splice(i, 1);
-					ve.NodeEditorDatatype.draw();
-					return;
-				} else if (selected_nodes[i][0].id === node.id) {
-					this.main.user.selected_nodes.splice(i, 1);
-					continue;
-				}
-			}
-			if (selected_nodes.length >= 1)
-				if (selected_nodes[0][1] > 0 && index > 0) return;
-		}
-		
-		selected_nodes.push([node, index]);
-		
-		if (selected_nodes.length >= 2) {
-			this._connect(
-				selected_nodes[0][0],
-				selected_nodes[1][0],
-				selected_nodes[1][1],
-				{
-					toggle_connection: true,
-				},
-			);
-			selected_nodes = [];
-		}
-		this.main.user.selected_nodes = selected_nodes;
-		ve.NodeEditorDatatype.draw();
-	}
-	
-	clear() {
-		for (let i = this.main.nodes.length - 1; i >= 0; i--)
-			this.main.nodes[i].remove();
-		this.main.nodes = [];
-		this.main.user.selected_nodes = [];
-		this.main.variables = {};
-		if (this.node_layer) this.node_layer.clear();
-	}
-	
 	_createCustomExecutionLogic(subgraph) {
-		const parentOptions = this.options;
+		let parent_options = this.options;
 		return async function (...args) {
 			let sub_editor = new ve.NodeEditor(subgraph, {
-				...parentOptions,
+				...parent_options,
 				headless: true,
 				show_internal: true,
 			});
@@ -397,43 +331,39 @@ ve.NodeEditor = class extends ve.Component {
 		};
 	}
 	
+	_disconnect(arg0_node, arg1_node, arg2_index) {
+		let index = arg2_index;
+		let node = arg0_node;
+		let ot_node = arg1_node;
+		let node_connection_index = node.getConnection(ot_node, index);
+		
+		if (node_connection_index !== -1) {
+			node.connections.splice(node_connection_index, 1);
+			if (index > 0) ot_node.dynamic_values[index - 1] = undefined;
+			ve.NodeEditorDatatype.draw();
+		}
+	}
+	
 	_openCustomNodeEditor() {
 		let custom_node_window;
 		let temp_editor = new ve.NodeEditor(
 			{ nodes: [] },
 			{
-				project_folder: this.options.project_folder,
-				node_types: this.options.node_types,
 				category_types: this.options.category_types,
-				show_internal: true, // FIX: Allow config nodes to be seen here
+				node_types: this.options.node_types,
+				project_folder: this.options.project_folder,
+				show_internal: true,
 			},
 		);
 		
 		let save_custom_node = () => {
-			let graph_data = temp_editor.v;
-			let nodes = graph_data.nodes;
-			
-			let meta_name = "New Custom Node";
-			let meta_category = "Custom";
-			let meta_output_type = "any";
-			
-			let n_name = nodes.find((n) => n.key === "ve_config_name");
-			if (n_name && n_name.constant_values[0])
-				meta_name = n_name.constant_values[0];
-			
-			let n_cat = nodes.find((n) => n.key === "ve_config_category");
-			if (n_cat && n_cat.constant_values[0])
-				meta_category = n_cat.constant_values[0];
-			
-			let n_out_type = nodes.find((n) => n.key === "ve_config_output_type");
-			if (n_out_type && n_out_type.constant_values[0])
-				meta_output_type = n_out_type.constant_values[0];
-			
 			let active_input_nodes = temp_editor.main.nodes.filter(
 				(n) => n.value.key === "ve_input",
 			);
-			active_input_nodes.sort((a, b) => a.value.coords.y - b.value.coords.y);
+			let graph_data = temp_editor.v;
+			let nodes = graph_data.nodes;
 			
+			active_input_nodes.sort((a, b) => a.value.coords.y - b.value.coords.y);
 			let inputs = active_input_nodes.map((n, i) => {
 				let param_name =
 					n.constant_values && n.constant_values[0]
@@ -446,6 +376,22 @@ ve.NodeEditor = class extends ve.Component {
 				return { name: param_name, type: param_type };
 			});
 			
+			let meta_category = "Custom";
+			let meta_name = "New Custom Node";
+			let meta_output_type = "any";
+			
+			let n_cat = nodes.find((n) => n.key === "ve_config_category");
+			if (n_cat && n_cat.constant_values[0])
+				meta_category = n_cat.constant_values[0];
+			
+			let n_name = nodes.find((n) => n.key === "ve_config_name");
+			if (n_name && n_name.constant_values[0])
+				meta_name = n_name.constant_values[0];
+			
+			let n_out_type = nodes.find((n) => n.key === "ve_config_output_type");
+			if (n_out_type && n_out_type.constant_values[0])
+				meta_output_type = n_out_type.constant_values[0];
+			
 			let output_node = nodes.find((n) => n.key === "ve_output");
 			if (!output_node) {
 				veToast("Custom Node must have an 'Output' node.");
@@ -453,7 +399,6 @@ ve.NodeEditor = class extends ve.Component {
 			}
 			
 			let node_key = `custom_${Class.generateRandomID(ve.NodeEditor)}`;
-			
 			let custom_definition = {
 				name: meta_name,
 				category: meta_category,
@@ -479,12 +424,8 @@ ve.NodeEditor = class extends ve.Component {
 		let window_contents = new ve.RawInterface(
 			{
 				editor_panel: new ve.RawInterface(
-					{
-						editor: temp_editor,
-					},
-					{
-						style: { width: "100%", height: "calc(100% - 3rem)" },
-					},
+					{ editor: temp_editor },
+					{ style: { width: "100%", height: "calc(100% - 3rem)" } },
 				),
 				controls: new ve.RawInterface(
 					{
@@ -506,67 +447,80 @@ ve.NodeEditor = class extends ve.Component {
 			can_rename: false,
 			onload: () => {
 				setTimeout(() => {
-					temp_editor.main.nodes.push(
-						new ve.NodeEditorDatatype(
+					temp_editor.v = {
+						nodes: [
 							{
 								coords: { x: -400, y: -200 },
 								key: "ve_config_name",
-								...temp_editor.options.node_types["ve_config_name"],
 							},
-							{
-								node_editor: temp_editor,
-								...temp_editor.options.node_types["ve_config_name"].options,
-							},
-						),
-					);
-					
-					temp_editor.main.nodes.push(
-						new ve.NodeEditorDatatype(
 							{
 								coords: { x: -400, y: 0 },
 								key: "ve_config_category",
-								...temp_editor.options.node_types["ve_config_category"],
 							},
-							{
-								node_editor: temp_editor,
-								...temp_editor.options.node_types["ve_config_category"].options,
-							},
-						),
-					);
-					
-					temp_editor.main.nodes.push(
-						new ve.NodeEditorDatatype(
 							{
 								coords: { x: -400, y: 200 },
 								key: "ve_config_output_type",
-								...temp_editor.options.node_types["ve_config_output_type"],
 							},
-							{
-								node_editor: temp_editor,
-								...temp_editor.options.node_types["ve_config_output_type"]
-									.options,
-							},
-						),
-					);
-					
-					temp_editor.main.nodes.push(
-						new ve.NodeEditorDatatype(
 							{
 								coords: { x: 400, y: 0 },
 								key: "ve_output",
-								...temp_editor.options.node_types["ve_output"],
 							},
-							{
-								node_editor: temp_editor,
-								...temp_editor.options.node_types["ve_output"].options,
-							},
-						),
-					);
-					
-					ve.NodeEditorDatatype.draw();
+						],
+					};
 				}, 100);
-			}
+			},
 		});
+	}
+	
+	_select(arg0_node, arg1_index) {
+		let index = arg1_index;
+		let node = arg0_node;
+		let selected_nodes = this.main.user.selected_nodes;
+		
+		for (let i = selected_nodes.length - 1; i >= 0; i--) {
+			if (
+				selected_nodes[i][0].id === node.id &&
+				selected_nodes[i][1] === index
+			) {
+				this.main.user.selected_nodes.splice(i, 1);
+				ve.NodeEditorDatatype.draw();
+				return;
+			} else if (selected_nodes[i][0].id === node.id) {
+				this.main.user.selected_nodes.splice(i, 1);
+				continue;
+			}
+		}
+		
+		if (selected_nodes.length >= 1)
+			if (selected_nodes[0][1] > 0 && index > 0) return;
+		
+		selected_nodes.push([node, index]);
+		
+		if (selected_nodes.length >= 2) {
+			this._connect(
+				selected_nodes[0][0],
+				selected_nodes[1][0],
+				selected_nodes[1][1],
+				{
+					toggle_connection: true,
+				},
+			);
+			selected_nodes = [];
+		}
+		
+		this.main.user.selected_nodes = selected_nodes;
+		ve.NodeEditorDatatype.draw();
+	}
+	
+	clear() {
+		if (this.node_layer) this.node_layer.clear();
+		
+		for (let i = this.main.nodes.length - 1; i >= 0; i--)
+			this.main.nodes[i].remove();
+		
+		this.main.nodes = [];
+		this.main.user.selected_nodes = [];
+		this.main.variables = {};
 	}
 	
 	drawToolbox() {
@@ -575,21 +529,21 @@ ve.NodeEditor = class extends ve.Component {
 		
 		Object.iterate(this.options.node_types, (local_key, local_value) => {
 			if (typeof local_value !== "object" || !local_value) return;
-			// FIX: Hide internal nodes in main editor
 			if (local_value.is_internal && !this.options.show_internal) return;
 			
 			let category = local_value.category || "Uncategorised";
 			if (!unique_categories.includes(category))
 				unique_categories.push(category);
 		});
+		
 		if (unique_categories.length === 0)
 			unique_categories = ["Expressions", "Filters", "I/O", "Custom"];
 		if (!this.options.exclude_all) unique_categories.unshift("All");
 		
 		for (let i = 0; i < unique_categories.length; i++) {
+			let category_key = unique_categories[i];
 			let filter_names_obj = {};
 			let local_search_select_obj = {};
-			let category_key = unique_categories[i];
 			
 			for (let x = 0; x < unique_categories.length; x++)
 				filter_names_obj[
@@ -600,13 +554,12 @@ ve.NodeEditor = class extends ve.Component {
 			
 			Object.iterate(this.options.node_types, (local_key, local_value) => {
 				if (typeof local_value !== "object" || !local_value) return;
-				// FIX: Hide internal nodes in search/list
 				if (local_value.is_internal && !this.options.show_internal) return;
 				
 				let local_category = local_value.category || "Uncategorised";
-				
 				let local_category_options =
 					this.options.category_types[local_category] || {};
+				
 				let local_category_colour = Colour.convertRGBAToHex(
 					local_category_options.colour || [255, 255, 255],
 				);
@@ -615,88 +568,90 @@ ve.NodeEditor = class extends ve.Component {
 				);
 				
 				if (local_category === category_key || category_key === "All")
-					local_search_select_obj[local_key] = new ve.Button(() => {
-						if (local_key === "ve_comment") {
-							let comment_window_components = {
-								text_input: new ve.Text("", { placeholder: "Enter comment..." }),
-							};
+					local_search_select_obj[local_key] = new ve.Button(
+						() => {
+							if (local_key === "ve_comment") {
+								let comment_window_components = {
+									text_input: new ve.Text("", {
+										placeholder: "Enter comment...",
+									}),
+								};
+								
+								comment_window_components.confirm = new ve.Button(
+									(e) => {
+										let comment_text = comment_window_components.text_input.v;
+										this.main.nodes.push(
+											new ve.NodeEditorDatatype(
+												{
+													coords: this._mouse_coords,
+													key: local_key,
+													name: comment_text,
+													...local_value,
+												},
+												{
+													category_options: local_category_options,
+													node_editor: this,
+													...local_value.options,
+												},
+											),
+										);
+										if (this.current_comment_window)
+											this.current_comment_window.close();
+									},
+									{ name: "Place Comment" },
+								);
+								
+								this.current_comment_window = new ve.Window(
+									comment_window_components,
+									{ name: "Add Comment", width: "20rem", height: "auto" },
+								);
+								return;
+							}
 							
-							comment_window_components.confirm = new ve.Button(
-								(e) => {
-									let comment_text = comment_window_components.text_input.v;
-									this.main.nodes.push(
-										new ve.NodeEditorDatatype(
-											{
-												coords: this._mouse_coords,
-												key: local_key,
-												name: comment_text,
-												...local_value,
-											},
-											{
-												category_options: local_category_options,
-												node_editor: this,
-												...local_value.options,
-											},
-										),
-									);
-									
-									if (comment_window_components.confirm.owner) {
-										comment_window_components.confirm.owner.close();
-									} else if (this.current_comment_window) {
-										this.current_comment_window.close();
-									}
-								},
-								{ name: "Place Comment" },
+							this.main.nodes.push(
+								new ve.NodeEditorDatatype(
+									{ coords: this._mouse_coords, key: local_key, ...local_value },
+									{
+										category_options: local_category_options,
+										node_editor: this,
+										...local_value.options,
+									},
+								),
 							);
-							
-							this.current_comment_window = new ve.Window(
-								comment_window_components,
-								{ name: "Add Comment", width: "20rem", height: "auto" },
-							);
-							return;
-						}
-						
-						this.main.nodes.push(
-							new ve.NodeEditorDatatype(
-								{
-									coords: this._mouse_coords,
-									key: local_key,
-									...local_value,
-								},
-								{
-									category_options: local_category_options,
-									node_editor: this,
-									...local_value.options,
-								},
-							),
-						);
-					}, {
-						attributes: {
-							[`data-${local_category
-							.toLowerCase()
-							.replace(/[^a-z0-9]/g, "_")}`]: "true",
 						},
-						name: local_value.name ? local_value.name : local_key,
-						style: {
-							button: {
-								backgroundColor: local_category_colour,
-								color: local_category_text_colour,
+						{
+							attributes: {
+								[`data-${local_category
+								.toLowerCase()
+								.replace(/[^a-z0-9]/g, "_")}`]: "true",
+							},
+							name: local_value.name ? local_value.name : local_key,
+							style: {
+								button: {
+									backgroundColor: local_category_colour,
+									color: local_category_text_colour,
+								},
 							},
 						},
-					});
+					);
 			});
 			
-			if (category_key === "Custom" || category_key === "All") {
+			if (category_key === "Custom" || category_key === "All")
 				local_search_select_obj["create_custom"] = new ve.Button(
 					() => {
 						this._openCustomNodeEditor();
 					},
 					{
 						name: "<icon>add_circle</icon> Create Custom Node",
-						style: { button: { border: "1px dashed var(--body-colour)", display: "block", marginTop: "var(--padding)" } },
+						style: {
+							button: {
+								border: "1px dashed var(--body-colour)",
+								display: "block",
+								marginTop: "var(--padding)",
+							},
+						},
 					},
 				);
-			}
 			
 			page_menu_obj[category_key] = {
 				name: category_key,
@@ -738,6 +693,7 @@ ve.NodeEditor = class extends ve.Component {
 			for (let x = 0; x < nodes[i].connections.length; x++) {
 				let local_target_node = nodes[i].connections[x][0];
 				if (!in_degree.has(local_target_node.id)) continue;
+				
 				if (!adjacency.get(nodes[i].id).has(local_target_node.id)) {
 					adjacency.get(nodes[i].id).add(local_target_node.id);
 					in_degree.set(
@@ -785,6 +741,7 @@ ve.NodeEditor = class extends ve.Component {
 			subdomains: ["a", "b", "c"],
 			repeatWorld: true,
 		});
+		
 		base_layer.getBase64Image = (arg0_image) => {
 			let img = arg0_image;
 			let canvas = this.getCanvas();
@@ -802,10 +759,12 @@ ve.NodeEditor = class extends ve.Component {
 				ctx.save();
 				ctx.strokeStyle = `rgba(255, 255, 255, 0.5)`;
 				ctx.lineWidth = 1;
+				
 				let columns = 8;
 				let rows = 8;
 				let cell_height = canvas.height / rows;
 				let cell_width = canvas.width / columns;
+				
 				for (let i = 0; i <= columns; i++) {
 					let local_x = i * cell_width;
 					ctx.beginPath();
@@ -813,6 +772,7 @@ ve.NodeEditor = class extends ve.Component {
 					ctx.lineTo(local_x, canvas.height);
 					ctx.stroke();
 				}
+				
 				for (let i = 0; i <= rows; i++) {
 					let local_y = i * cell_height;
 					ctx.beginPath();
@@ -822,11 +782,14 @@ ve.NodeEditor = class extends ve.Component {
 				}
 				ctx.restore();
 			}
+			
 			return canvas.toDataURL("image/jpg", 0.7);
 		};
+		
 		base_layer.getTileUrl = function (x, y, z) {
 			return maptalks.TileLayer.prototype.getTileUrl.call(this, x, y, z);
 		};
+		
 		base_layer.on("renderercreate", (e) => {
 			e.renderer.loadTileImage = (arg0_image, arg1_url) => {
 				let img = arg0_image;
@@ -838,32 +801,35 @@ ve.NodeEditor = class extends ve.Component {
 				remote_image.src = url;
 			};
 		});
+		
 		return base_layer;
 	}
-	
-	loadSettings(arg0_settings) {}
 	
 	async run(arg0_preview_mode) {
 		if (this._is_running) return this.main.variables;
 		this._is_running = true;
 		
 		try {
-			let preview_mode = arg0_preview_mode;
 			let dag_sequence = this.getDAGSequence();
+			let preview_mode = arg0_preview_mode;
 			let resolve_arguments = (arg0_node) => {
-				let node = arg0_node;
 				let args = [];
+				let node = arg0_node;
+				
 				for (let i = 0; i < node.value.input_parameters.length; i++) {
 					let local_parameter = node.value.input_parameters[i];
+					
 					if (node.dynamic_values[i]) {
 						let resolved;
 						for (let x = 0; x < ve.NodeEditorDatatype.instances.length; x++) {
 							let source = ve.NodeEditorDatatype.instances[x];
+							if (source.options.node_editor !== this) continue;
 							for (let y = 0; y < source.connections.length; y++) {
 								let target_data = source.connections[y];
-								let target_node = target_data[0];
-								let target_index = target_data[1];
-								if (target_node.id === node.id && target_index === i + 1) {
+								if (
+									target_data[0].id === node.id &&
+									target_data[1] === i + 1
+								) {
 									resolved = this.main.variables[source.id];
 									break;
 								}
@@ -892,23 +858,24 @@ ve.NodeEditor = class extends ve.Component {
 				let layer = dag_sequence[i];
 				
 				if (!preview_mode)
-					for (let x = 0; x < dag_sequence[i].length; x++) {
-						delete dag_sequence[i][x].ui.information.status;
-						dag_sequence[i][x].draw();
+					for (let x = 0; x < layer.length; x++) {
+						delete layer[x].ui.information.status;
+						layer[x].draw();
 					}
 				
 				await Promise.all(
 					layer.map(async (local_node) => {
 						let is_aborted_upstream = false;
-						if (local_node.dynamic_values) {
+						if (local_node.dynamic_values)
 							for (let x = 0; x < local_node.dynamic_values.length; x++) {
-								if (local_node.dynamic_values[x]) {
+								if (local_node.dynamic_values[x])
 									for (
 										let j = 0;
 										j < ve.NodeEditorDatatype.instances.length;
 										j++
 									) {
 										let source = ve.NodeEditorDatatype.instances[j];
+										if (source.options.node_editor !== this) continue;
 										for (let k = 0; k < source.connections.length; k++) {
 											let target_data = source.connections[k];
 											if (
@@ -922,10 +889,8 @@ ve.NodeEditor = class extends ve.Component {
 										}
 										if (is_aborted_upstream) break;
 									}
-								}
 								if (is_aborted_upstream) break;
 							}
-						}
 						
 						if (is_aborted_upstream) {
 							this.main.skipped_nodes.add(local_node.id);
@@ -935,8 +900,8 @@ ve.NodeEditor = class extends ve.Component {
 						}
 						
 						let args = resolve_arguments(local_node);
-						let sf = local_node.value.special_function;
 						let descriptor;
+						let sf = local_node.value.special_function;
 						let value;
 						
 						try {
@@ -965,17 +930,16 @@ ve.NodeEditor = class extends ve.Component {
 								local_node.draw();
 								await descriptor.run();
 								local_node.ui.information.status = "finished";
-								local_node.draw();
 							} else if (!preview_mode) {
 								local_node.ui.information.status = "finished";
-								local_node.draw();
 							}
+							if (!preview_mode) local_node.draw();
 						} catch (e) {
 							console.error(`Node execution failed (${local_node.id})`, e);
 							this.main.skipped_nodes.add(local_node.id);
-							value = undefined;
 							local_node.ui.information.status = "error";
 							if (!preview_mode) local_node.draw();
+							value = undefined;
 						}
 						
 						this.main.variables[local_node.id] = value;
@@ -987,7 +951,6 @@ ve.NodeEditor = class extends ve.Component {
 							descriptor?.display_value !== undefined
 								? descriptor.display_value
 								: value;
-						
 						return value;
 					}),
 				);
@@ -996,11 +959,558 @@ ve.NodeEditor = class extends ve.Component {
 			this._is_running = false;
 		}
 		
-		console.trace(`Run finished.`);
 		return this.main.variables;
 	}
 };
 
+/**
+ * Functional binding for ve.NodeEditor.
+ */
 veNodeEditor = function () {
 	return new ve.NodeEditor(...arguments);
 };
+
+/**
+ * Represents a single node instance within a ve.NodeEditor.
+ */
+ve.NodeEditorDatatype = class extends ve.Component {
+	static instances = [];
+	static types = {
+		"number[]": [],
+		"string[]": [],
+		any: "",
+		boolean: false,
+		number: 0,
+		script: "",
+		string: "",
+	};
+	
+	constructor(arg0_value, arg1_options) {
+		let options = arg1_options ? arg1_options : {};
+		let value = arg0_value;
+		super(options);
+		
+		this.connections = [];
+		this.constant_values = [];
+		this.dynamic_values = [];
+		this.geometries = [];
+		this.id = Class.generateRandomID(ve.NodeEditorDatatype);
+		this.options = options;
+		this.ui = { information: {} };
+		this.value = value ? value : {};
+		
+		if (!this.value.name) this.value.name = this.value.key;
+		
+		this.draw();
+		ve.NodeEditorDatatype.instances.push(this);
+		ve.NodeEditorDatatype.draw();
+	}
+	
+	get v() {
+		let current_coords = this.value.coords;
+		if (this.geometries[0]) {
+			let geo_coords = this.geometries[0].getFirstCoordinate();
+			current_coords = { x: geo_coords.x, y: geo_coords.y };
+		}
+		
+		return {
+			connections: this.connections.map((conn) => [conn[0].id, conn[1]]),
+			constant_values: JSON.parse(JSON.stringify(this.constant_values)),
+			coords: current_coords,
+			id: this.id,
+			key: this.value.key,
+			name: this.value.name,
+			ui: {
+				information: {
+					alluvial_width: this.ui.information.alluvial_width,
+					dag_layer: this.ui.information.dag_layer,
+					value: this.ui.information.value,
+				},
+			},
+		};
+	}
+	
+	set v(arg0_value) {
+		let json =
+			typeof arg0_value === "string" ? JSON.parse(arg0_value) : arg0_value;
+		if (!json) return;
+		
+		this.id = json.id || this.id;
+		this.constant_values = Array.isArray(json.constant_values)
+			? json.constant_values
+			: [];
+		this._serialised_connections = json.connections || [];
+		this.value.coords = json.coords || this.value.coords;
+		this.value.name = json.name || this.value.name;
+		
+		if (json.ui && json.ui.information)
+			this.ui.information = { ...this.ui.information, ...json.ui.information };
+		
+		this.draw();
+	}
+	
+	toJSON() {
+		return this.v;
+	}
+	
+	_render() {
+		let layer = this.options.node_editor.node_layer;
+		for (let i = 0; i < this.geometries.length; i++) {
+			try {
+				this.geometries[i].addTo(layer);
+			} catch (e) {
+				console.warn(e);
+			}
+		}
+	}
+	
+	draw() {
+		let category_options = this.options.category_options || {};
+		let coords = this.value.coords;
+		let is_comment = this.options.is_comment === true;
+		
+		let fill_colour = category_options.colour || [255, 255, 255, 1];
+		fill_colour = Colour.convertRGBAToHex(fill_colour);
+		if (is_comment) fill_colour = "#fff9c4";
+		
+		let marker_symbol = {
+			textFill: "white",
+			textHaloFill: "black",
+			textHaloRadius: 1,
+			textName: "•",
+			textSize: {
+				stops: [
+					[12, 2],
+					[14, 36],
+				],
+			},
+		};
+		
+		let polygon_symbol = {
+			polygonFill: fill_colour,
+			textFaceName: "Karla",
+			textFill: is_comment ? "black" : "white",
+			textHaloFill: is_comment ? "none" : "black",
+			textHaloRadius: is_comment ? 0 : 2,
+			textSize: {
+				stops: [
+					[12, 2],
+					[14, 14],
+				],
+			},
+		};
+		
+		for (let i = 0; i < this.geometries.length; i++) this.geometries[i].remove();
+		this.geometries = [];
+		
+		{
+			let extra_geometries = [];
+			let height = is_comment ? 1200 : 400;
+			let width = 2000;
+			
+			let primary_geometry = new maptalks.Rectangle(coords, width, height, {
+				properties: { id: this.id },
+				symbol: {
+					...polygon_symbol,
+					lineColor: this.isSelected(0) ? "yellow" : "black",
+					polygonOpacity: 0.8,
+					textName: is_comment
+						? this.value.name
+						: `${this.value.name} | ${
+							this.value.output_type ? this.value.output_type : "any"
+						}`,
+					textWrapWidth: is_comment ? 1800 : undefined,
+				},
+			});
+			
+			if (!is_comment) {
+				extra_geometries.push(
+					new maptalks.Marker(
+						Geospatiale.translatePoint(coords, 0, -400 * 0.5),
+						{
+							symbol: marker_symbol,
+						},
+					),
+				);
+				extra_geometries.push(
+					new maptalks.Marker(
+						Geospatiale.translatePoint(coords, 2000, -400 * 0.5),
+						{ symbol: marker_symbol },
+					),
+				);
+			}
+			
+			if (!is_comment && this.ui.information.dag_layer !== undefined) {
+				let sequence_status_colour =
+					{
+						aborted: "rgb(150, 50, 50)",
+						error: "rgb(255, 0, 0)",
+						finished: "rgb(44,108,53)",
+						is_running: "rgb(240, 240, 140)",
+						other: "rgb(25, 25, 25)",
+					}[this.ui.information.status || "other"] || "rgb(25, 25, 25)";
+				
+				extra_geometries.push(
+					new maptalks.Marker(Geospatiale.translatePoint(coords, 2000, 0), {
+						symbol: {
+							...marker_symbol,
+							textFill: sequence_status_colour,
+							textSize: {
+								stops: [
+									[12, 4],
+									[14, 96],
+								],
+							},
+						},
+					}),
+				);
+				extra_geometries.push(
+					new maptalks.Marker(Geospatiale.translatePoint(coords, 2000, 7), {
+						symbol: {
+							...marker_symbol,
+							textFaceName: "Karla",
+							textName: `${this.ui.information.dag_layer}`,
+							textSize: {
+								stops: [
+									[12, 2],
+									[14, 14],
+								],
+							},
+						},
+					}),
+				);
+			}
+			
+			let primary_geometry_collection = new maptalks.GeometryCollection(
+				[primary_geometry, ...extra_geometries],
+				{ draggable: true },
+			);
+			primary_geometry_collection.addEventListener("click", (e) => {
+				this.options.node_editor._select(this, 0);
+			});
+			primary_geometry_collection.addEventListener("contextmenu", (e) => {
+				this.openContextMenu();
+			});
+			
+			this.geometries.push(primary_geometry_collection);
+		}
+		
+		if (!is_comment) {
+			for (let i = 0; i < this.value.input_parameters.length; i++) {
+				let local_parameter = this.value.input_parameters[i];
+				let local_value_name = this.constant_values[i]
+					? ` | ${this.constant_values[i]}`
+					: "";
+				if (this.dynamic_values[i]) local_value_name = "";
+				
+				let local_rect = new maptalks.Rectangle(
+					Geospatiale.translatePoint(coords, 0, -400 * (i + 1)),
+					2000,
+					400,
+					{
+						symbol: {
+							...polygon_symbol,
+							lineColor: this.isSelected(i + 1) ? "yellow" : "black",
+							polygonOpacity: 0.5,
+							textName: `${local_parameter.name} (${local_parameter.type})${local_value_name}`,
+						},
+					},
+				);
+				let local_left_marker = new maptalks.Marker(
+					Geospatiale.translatePoint(coords, 0, -400 * (i + 1) - 400 * 0.5),
+					{
+						symbol: {
+							...marker_symbol,
+							textFill: "rgba(255, 255, 255, 0.5)",
+						},
+					},
+				);
+				
+				let local_geometry_collection = new maptalks.GeometryCollection([
+					local_rect,
+					local_left_marker,
+				]);
+				local_geometry_collection.addEventListener("click", (e) => {
+					this.options.node_editor._select(this, i + 1);
+				});
+				local_geometry_collection.addEventListener("contextmenu", (e) => {
+					this.openContextMenu();
+				});
+				
+				this.geometries.push(local_geometry_collection);
+			}
+		}
+		
+		this._render();
+		this.handleEvents();
+	}
+	
+	getConnection(arg0_node, arg1_index) {
+		let index = Math.returnSafeNumber(arg1_index);
+		let node = arg0_node;
+		
+		for (let i = 0; i < this.connections.length; i++)
+			if (
+				this.connections[i][0].id === node.id &&
+				this.connections[i][1] === index
+			)
+				return i;
+		
+		return -1;
+	}
+	
+	handleEvents() {
+		this.geometries[0].addEventListener("dragend", (e) => {
+			let first_coord = this.geometries[0].getFirstCoordinate();
+			this.value.coords = { x: first_coord.x, y: first_coord.y };
+			ve.NodeEditorDatatype.draw();
+		});
+	}
+	
+	hasConnection(arg0_index) {
+		let index = Math.returnSafeNumber(arg0_index);
+		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++) {
+			let local_node = ve.NodeEditorDatatype.instances[i];
+			for (let x = 0; x < local_node.connections.length; x++)
+				if (
+					local_node.connections[x][0].id === this.id &&
+					local_node.connections[x][1] === index
+				)
+					return true;
+		}
+		return false;
+	}
+	
+	isSelected(arg0_index) {
+		let index = Math.returnSafeNumber(arg0_index);
+		let selected_nodes = this.options.node_editor.main.user.selected_nodes;
+		
+		for (let i = 0; i < selected_nodes.length; i++)
+			if (selected_nodes[i][0].id === this.id && selected_nodes[i][1] === index)
+				return true;
+		
+		return false;
+	}
+	
+	openContextMenu() {
+		let parameter_fields = {};
+		
+		if (this.options.is_comment) {
+			parameter_fields["text"] = new ve.Text(this.value.name, {
+				name: "Comment Text",
+				onuserchange: (v) => {
+					this.value.name = v;
+					ve.NodeEditorDatatype.draw();
+				},
+			});
+		} else {
+			for (let i = 0; i < this.value.input_parameters.length; i++) {
+				let is_actually_disabled = this.dynamic_values[i] !== undefined;
+				let local_parameter = this.value.input_parameters[i];
+				let local_parameter_type = JSON.parse(
+					JSON.stringify(local_parameter.type),
+				);
+				
+				if (ve.NodeEditorDatatype.types[local_parameter_type] === undefined)
+					local_parameter_type = "any";
+				
+				let local_default_value =
+					this.constant_values[i] !== undefined
+						? this.constant_values[i]
+						: ve.NodeEditorDatatype.types[local_parameter_type];
+				
+				let local_parameter_options = {
+					name: local_parameter.name,
+					onuserchange: (v) => {
+						if (!parameter_fields[`${local_parameter.name}_toggle`].v) return;
+						this.constant_values[i] = v;
+						ve.NodeEditorDatatype.draw();
+					},
+					x: 0,
+					y: i,
+				};
+				
+				if (local_parameter_type === "number[]")
+					parameter_fields[local_parameter.name] = new ve.Number(
+						local_default_value,
+						local_parameter_options,
+					);
+				else if (local_parameter_type === "string[]")
+					parameter_fields[local_parameter.name] = new ve.Text(
+						local_default_value,
+						local_parameter_options,
+					);
+				else if (local_parameter_type === "boolean")
+					parameter_fields[local_parameter.name] = new ve.Toggle(
+						local_default_value,
+						local_parameter_options,
+					);
+				else if (local_parameter_type === "number")
+					parameter_fields[local_parameter.name] = new ve.Number(
+						local_default_value,
+						local_parameter_options,
+					);
+				else
+					parameter_fields[local_parameter.name] = new ve.Text(
+						local_default_value,
+						local_parameter_options,
+					);
+				
+				parameter_fields[`${local_parameter.name}_toggle`] = new ve.Toggle(
+					this.constant_values[i] !== undefined && !is_actually_disabled,
+					{
+						off_name: `<icon class = "toggle-icon off">toggle_off</icon> &nbsp; ${
+							is_actually_disabled ? "Is Connected" : "Disabled"
+						}`,
+						on_name: `<icon class = "toggle-icon on">toggle_on</icon> &nbsp; Enabled`,
+						onuserchange: (v) => {
+							if (v === false) {
+								this.constant_values[i] = undefined;
+							} else if (v === true) {
+								if (is_actually_disabled) {
+									this.constant_values[i] = undefined;
+									parameter_fields[`${local_parameter.name}_toggle`].v = false;
+									veToast(
+										`<icon>warning</icon> Constants will not apply while node is connected.`,
+									);
+								} else {
+									this.constant_values[i] =
+										parameter_fields[local_parameter.name].v;
+								}
+							}
+							ve.NodeEditorDatatype.draw();
+						},
+						x: 1,
+						y: i,
+					},
+				);
+			}
+		}
+		
+		if (this.context_menu) this.context_menu.close();
+		this.context_menu = new ve.Window(
+			{
+				...parameter_fields,
+				delete_button: new ve.Button(
+					() => {
+						this.remove();
+					},
+					{ name: `<icon>delete</icon> Delete` },
+				),
+			},
+			{ name: this.value.name, width: "20rem", can_rename: false },
+		);
+	}
+	
+	remove() {
+		let editor = this.options.node_editor;
+		if (editor && editor.main.nodes.includes(this)) {
+			editor.main.nodes.splice(editor.main.nodes.indexOf(this), 1);
+		}
+		
+		for (let i = ve.NodeEditorDatatype.instances.length - 1; i >= 0; i--) {
+			let local_node = ve.NodeEditorDatatype.instances[i];
+			if (local_node.id === this.id) {
+				ve.NodeEditorDatatype.instances.splice(i, 1);
+			} else {
+				for (let x = local_node.connections.length - 1; x >= 0; x--)
+					if (local_node.connections[x][0].id === this.id)
+						local_node.connections.splice(x, 1);
+			}
+		}
+		
+		for (let i = 0; i < this.geometries.length; i++) this.geometries[i].remove();
+		this.geometries = [];
+		
+		if (this.context_menu) this.context_menu.close();
+		ve.NodeEditorDatatype.draw();
+	}
+	
+	static draw() {
+		ve.NodeEditor.instances.forEach((ed) => {
+			if (ed.options.headless || ed._is_running) return;
+			let local_dag_sequence = ed.getDAGSequence();
+			if (!local_dag_sequence) return;
+			
+			for (let x = 0; x < local_dag_sequence.length; x++)
+				for (let y = 0; y < local_dag_sequence[x].length; y++)
+					local_dag_sequence[x][y].ui.information.dag_layer = x;
+			ed.run(true);
+		});
+		
+		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++)
+			ve.NodeEditorDatatype.instances[i].draw();
+		
+		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++) {
+			let local_node = ve.NodeEditorDatatype.instances[i];
+			for (let x = 0; x < local_node.connections.length; x++) {
+				let arc_connector_name = local_node.ui.information.value;
+				let arc_connector_text_symbol =
+					arc_connector_name !== undefined
+						? {
+							textFaceName: "Karla",
+							textFill: "white",
+							textHaloFill: "black",
+							textHaloRadius: 2,
+							textName: arc_connector_name.toString(),
+							textPlacement: "line",
+							textSize: {
+								stops: [
+									[12, 2],
+									[14, 14],
+								],
+							},
+						}
+						: undefined;
+				
+				let local_ot_node = ve.NodeEditorDatatype.getNode(
+					local_node.connections[x][0],
+				);
+				let arc_connector_line = new maptalks.ArcConnectorLine(
+					local_node.geometries[0].getGeometries()[2],
+					local_ot_node.geometries[
+						local_node.connections[x][1]
+						].getGeometries()[1],
+					{
+						arcDegree: 90,
+						arrowPlacement: "vertex-last",
+						arrowStyle: "classic",
+						properties: {
+							from_geometry_id: local_node.id,
+							to_geometry_id: local_ot_node.id,
+						},
+						showOn: "always",
+						symbol: {
+							lineColor: "white",
+							lineWidth: Math.returnSafeNumber(
+								local_node?.ui?.information?.alluvial_width,
+								1,
+							),
+							...arc_connector_text_symbol,
+						},
+					},
+				);
+				
+				arc_connector_line.addTo(local_node.options.node_editor.node_layer);
+				arc_connector_line._showConnect();
+				local_node.geometries.push(arc_connector_line);
+			}
+		}
+	}
+	
+	static getNode(arg0_node_id) {
+		let node_id = arg0_node_id;
+		if (node_id instanceof ve.NodeEditorDatatype) return node_id;
+		
+		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++)
+			if (ve.NodeEditorDatatype.instances[i].id === node_id)
+				return ve.NodeEditorDatatype.instances[i];
+	}
+};
+
+/**
+ * Functional binding for ve.NodeEditorDatatype.
+ */
+veNodeEditorDatatype = function () {
+	return new ve.NodeEditorDatatype(...arguments);
+} 
