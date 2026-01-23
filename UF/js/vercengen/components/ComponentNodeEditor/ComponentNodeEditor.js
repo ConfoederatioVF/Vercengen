@@ -1,8 +1,12 @@
 /**
- * Refer to ve.Component for methods or fields inherited from this Component's
- * parent such as `.options.attributes` or `.element`.
+ * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  *
- * Creates a drag-and-drop Node Editor using Maptalks as a backend.
+ * Creates a drag-and-drop Node Editor using Maptalks as a backend. Nodes are executed from a root node using a parallelised version of Kahn's algorithm, and nodes must form a directed acyclic graph (DAG).
+ * - Functional binding: <span color=00ffff>veNodeEditor</span>().
+ *
+ * @augments ve.Component
+ * @memberof ve.Component
+ * @type {ve.NodeEditor}
  */
 ve.NodeEditor = class extends ve.Component {
 	/**
@@ -11,10 +15,12 @@ ve.NodeEditor = class extends ve.Component {
 	static instances = [];
 	
 	constructor(arg0_value, arg1_options) {
+		//Convert from parameters
 		let options = arg1_options ? arg1_options : {};
 		let value = arg0_value;
 		super(options);
 		
+		//Declare local instance variables
 		options.attributes = options.attributes ? options.attributes : {};
 		options.category_types = options.category_types ? options.category_types : {};
 		options.node_types = options.node_types ? options.node_types : {};
@@ -135,6 +141,24 @@ ve.NodeEditor = class extends ve.Component {
 		this.map_el.id = "map-container";
 		this.element.appendChild(this.map_el);
 		
+		if (ve.registry.debug_mode) {
+			let debug_button = new ve.Button(
+				() => {
+					console.log(this.getDAGSequence());
+				},
+				{ name: "Debug" },
+			);
+			debug_button.bind(this.element);
+		}
+		
+		let run_button = new ve.Button(
+			() => {
+				this.run().then(() => ve.NodeEditorDatatype.draw());
+			},
+			{ name: "Run" },
+		);
+		run_button.bind(this.element);
+		
 		this.id = Class.generateRandomID(ve.NodeEditor);
 		this.map = new maptalks.Map(this.map_el, {
 			center: [0, 0],
@@ -175,7 +199,15 @@ ve.NodeEditor = class extends ve.Component {
 		ve.NodeEditor.instances.push(this);
 	}
 	
+	/**
+	 * Returns the current JSON object from the component.
+	 *
+	 * @alias v
+	 * @memberof ve.Component.ve.NodeEditor
+	 * @type {Object}
+	 */
 	get v() {
+		//Return statement
 		return {
 			custom_node_types: this.main.custom_node_types,
 			map_state: {
@@ -187,9 +219,19 @@ ve.NodeEditor = class extends ve.Component {
 		};
 	}
 	
+	/**
+	 * Sets the current value of the ve.NodeEditor from available JSON.
+	 *
+	 * @alias v
+	 * @memberof ve.Component.ve.NodeEditor
+	 * @param {Object} arg0_value
+	 */
 	set v(arg0_value) {
+		//Convert from parameters
 		let data =
 			typeof arg0_value === "string" ? JSON.parse(arg0_value) : arg0_value;
+		
+		//Declare local instance variables
 		if (!data) return;
 		this.clear();
 		
@@ -218,11 +260,13 @@ ve.NodeEditor = class extends ve.Component {
 				if (definition) {
 					let category_options =
 						this.options.category_types[definition.category] || {};
+					
+					// FIX: Pass ALL data to constructor and remove subsequent .v assignment
+					// This prevents double-draw and ID swapping that breaks hit detection
 					let new_node = new ve.NodeEditorDatatype(
 						{
-							coords: node_data.coords,
-							key: node_data.key,
-							...definition,
+							...definition, // Default properties from type definition
+							...node_data,  // Overwrites from JSON (id, coords, constants, etc.)
 						},
 						{
 							category_options: category_options,
@@ -230,8 +274,12 @@ ve.NodeEditor = class extends ve.Component {
 							...definition.options,
 						},
 					);
-					new_node.v = node_data;
+					// Removed: new_node.v = node_data; <--- This was causing the bug
 					this.main.nodes.push(new_node);
+				} else {
+					console.warn(
+						`Node type '${node_data.key}' not found in registry. Skipping node.`,
+					);
 				}
 			});
 			
@@ -257,12 +305,25 @@ ve.NodeEditor = class extends ve.Component {
 		ve.NodeEditorDatatype.draw();
 	}
 	
+	/**
+	 * Draws a connection between two nodes as a user interaction.
+	 *
+	 * @alias _connect
+	 * @memberof ve.Component.ve.NodeEditor
+	 * @param {ve.NodeEditorDatatype} arg0_node
+	 * @param {ve.NodeEditorDatatype} arg1_node
+	 * @param {number} arg2_index
+	 * @param {Object} [arg3_options]
+	 * @private
+	 */
 	_connect(arg0_node, arg1_node, arg2_index, arg3_options) {
+		//Convert from parameters
 		let index = arg2_index;
 		let node = arg0_node;
 		let options = arg3_options ? arg3_options : {};
 		let ot_node = arg1_node;
 		
+		//Declare local instance variables
 		if (node.getConnection(ot_node, index) !== -1) {
 			if (options.toggle_connection) {
 				this._disconnect(node, ot_node, index);
@@ -300,8 +361,15 @@ ve.NodeEditor = class extends ve.Component {
 		ve.NodeEditorDatatype.draw();
 	}
 	
+	/**
+	 * Generates logic for custom nodes.
+	 * @private
+	 */
 	_createCustomExecutionLogic(subgraph) {
+		//Convert from parameters
 		let parent_options = this.options;
+		
+		//Return statement
 		return async function (...args) {
 			let sub_editor = new ve.NodeEditor(subgraph, {
 				...parent_options,
@@ -331,10 +399,37 @@ ve.NodeEditor = class extends ve.Component {
 		};
 	}
 	
+	/**
+	 * Deletes a custom node definition.
+	 * @private
+	 */
+	_deleteCustomNode(arg0_key) {
+		let key = arg0_key;
+		
+		if (this.main.custom_node_types[key]) {
+			delete this.main.custom_node_types[key];
+			delete this.options.node_types[key];
+			
+			if (this.toolbox_window) {
+				this.toolbox_window.close();
+				this.drawToolbox();
+			}
+			
+			veToast("Custom Node Deleted.");
+		}
+	}
+	
+	/**
+	 * Disconnects two nodes.
+	 * @private
+	 */
 	_disconnect(arg0_node, arg1_node, arg2_index) {
+		//Convert from parameters
 		let index = arg2_index;
 		let node = arg0_node;
 		let ot_node = arg1_node;
+		
+		//Declare local instance variables
 		let node_connection_index = node.getConnection(ot_node, index);
 		
 		if (node_connection_index !== -1) {
@@ -344,7 +439,16 @@ ve.NodeEditor = class extends ve.Component {
 		}
 	}
 	
-	_openCustomNodeEditor() {
+	/**
+	 * Opens custom node editor window. Can optionally edit an existing node.
+	 * @private
+	 * @param {string} [arg0_edit_key] - If provided, edits the existing custom node with this key.
+	 */
+	_openCustomNodeEditor(arg0_edit_key) {
+		//Declare local instance variables
+		let edit_key = arg0_edit_key;
+		let existing_def = edit_key ? this.main.custom_node_types[edit_key] : null;
+		
 		let custom_node_window;
 		let temp_editor = new ve.NodeEditor(
 			{ nodes: [] },
@@ -377,7 +481,7 @@ ve.NodeEditor = class extends ve.Component {
 			});
 			
 			let meta_category = "Custom";
-			let meta_name = "New Custom Node";
+			let meta_name = existing_def ? existing_def.name : "New Custom Node";
 			let meta_output_type = "any";
 			
 			let n_cat = nodes.find((n) => n.key === "ve_config_category");
@@ -398,14 +502,18 @@ ve.NodeEditor = class extends ve.Component {
 				return;
 			}
 			
-			let node_key = `custom_${Class.generateRandomID(ve.NodeEditor)}`;
+			let node_key =
+				edit_key || `custom_${Class.generateRandomID(ve.NodeEditor)}`;
+			
 			let custom_definition = {
 				name: meta_name,
 				category: meta_category,
 				input_parameters: inputs,
 				output_type: meta_output_type,
 				options: {
-					id: Class.generateRandomID(ve.NodeEditorDatatype),
+					id: existing_def
+						? existing_def.options.id
+						: Class.generateRandomID(ve.NodeEditorDatatype),
 					alluvial_scaling: 1,
 					show_alluvial: false,
 				},
@@ -416,9 +524,15 @@ ve.NodeEditor = class extends ve.Component {
 			this.main.custom_node_types[node_key] = custom_definition;
 			this.options.node_types[node_key] = custom_definition;
 			
-			this.drawToolbox();
+			if (this.toolbox_window) {
+				this.toolbox_window.close();
+				this.drawToolbox();
+			}
+			
 			custom_node_window.close();
-			veToast(`Custom Node '${meta_name}' Created.`);
+			veToast(
+				`Custom Node '${meta_name}' ${existing_def ? "Updated" : "Created"}.`,
+			);
 		};
 		
 		let window_contents = new ve.RawInterface(
@@ -430,7 +544,7 @@ ve.NodeEditor = class extends ve.Component {
 				controls: new ve.RawInterface(
 					{
 						save_btn: new ve.Button(save_custom_node, {
-							name: "Save Custom Node",
+							name: existing_def ? "Update Custom Node" : "Save Custom Node",
 							style: { width: "100%", height: "100%" },
 						}),
 					},
@@ -441,40 +555,61 @@ ve.NodeEditor = class extends ve.Component {
 		);
 		
 		custom_node_window = new ve.Window(window_contents, {
-			name: "Create Custom Node",
+			name: existing_def ? `Edit ${existing_def.name}` : "Create Custom Node",
 			width: "80vw",
 			height: "80vh",
 			can_rename: false,
-			onload: () => {
-				setTimeout(() => {
-					temp_editor.v = {
-						nodes: [
-							{
-								coords: { x: -400, y: -200 },
-								key: "ve_config_name",
-							},
-							{
-								coords: { x: -400, y: 0 },
-								key: "ve_config_category",
-							},
-							{
-								coords: { x: -400, y: 200 },
-								key: "ve_config_output_type",
-							},
-							{
-								coords: { x: 400, y: 0 },
-								key: "ve_output",
-							},
-						],
-					};
-				}, 100);
-			},
 		});
+		
+		// Ensure map is ready and interactive before loading nodes
+		setTimeout(() => {
+			if (temp_editor.map) {
+				temp_editor.map.checkSize();
+				// Ensure center is valid to prevent rendering glitches
+				if (existing_def && existing_def.subgraph.map_state) {
+					temp_editor.map.setCenter(existing_def.subgraph.map_state.center);
+					temp_editor.map.setZoom(existing_def.subgraph.map_state.zoom);
+				}
+			}
+			
+			if (existing_def && existing_def.subgraph) {
+				temp_editor.v = existing_def.subgraph;
+			} else {
+				temp_editor.v = {
+					nodes: [
+						{
+							coords: { x: -400, y: -200 },
+							key: "ve_config_name",
+						},
+						{
+							coords: { x: -400, y: 0 },
+							key: "ve_config_category",
+						},
+						{
+							coords: { x: -400, y: 200 },
+							key: "ve_config_output_type",
+						},
+						{
+							coords: { x: 400, y: 0 },
+							key: "ve_output",
+						},
+					],
+				};
+			}
+			ve.NodeEditorDatatype.draw();
+		}, 100);
 	}
 	
+	/**
+	 * Selects a node index.
+	 * @private
+	 */
 	_select(arg0_node, arg1_index) {
+		//Convert from parameters
 		let index = arg1_index;
 		let node = arg0_node;
+		
+		//Declare local instance variables
 		let selected_nodes = this.main.user.selected_nodes;
 		
 		for (let i = selected_nodes.length - 1; i >= 0; i--) {
@@ -512,7 +647,11 @@ ve.NodeEditor = class extends ve.Component {
 		ve.NodeEditorDatatype.draw();
 	}
 	
+	/**
+	 * Clears all nodes.
+	 */
 	clear() {
+		//Declare local instance variables
 		if (this.node_layer) this.node_layer.clear();
 		
 		for (let i = this.main.nodes.length - 1; i >= 0; i--)
@@ -522,7 +661,7 @@ ve.NodeEditor = class extends ve.Component {
 		this.main.user.selected_nodes = [];
 		this.main.variables = {};
 	}
-	
+// ... [Rest of ve.NodeEditor methods]
 	drawToolbox() {
 		let page_menu_obj = {};
 		let unique_categories = [];
@@ -567,8 +706,8 @@ ve.NodeEditor = class extends ve.Component {
 					local_category_options.text_colour || [0, 0, 0],
 				);
 				
-				if (local_category === category_key || category_key === "All")
-					local_search_select_obj[local_key] = new ve.Button(
+				if (local_category === category_key || category_key === "All") {
+					let toolbox_button = new ve.Button(
 						() => {
 							if (local_key === "ve_comment") {
 								let comment_window_components = {
@@ -610,7 +749,11 @@ ve.NodeEditor = class extends ve.Component {
 							
 							this.main.nodes.push(
 								new ve.NodeEditorDatatype(
-									{ coords: this._mouse_coords, key: local_key, ...local_value },
+									{
+										coords: this._mouse_coords,
+										key: local_key,
+										...local_value,
+									},
 									{
 										category_options: local_category_options,
 										node_editor: this,
@@ -634,6 +777,42 @@ ve.NodeEditor = class extends ve.Component {
 							},
 						},
 					);
+					
+					if (
+						local_category === "Custom" &&
+						this.main.custom_node_types[local_key]
+					) {
+						setTimeout(() => {
+							if (toolbox_button.element) {
+								toolbox_button.element.addEventListener("contextmenu", (e) => {
+									e.preventDefault();
+									new ve.ContextMenu(
+										{
+											edit_node: new ve.Button(
+												() => {
+													this._openCustomNodeEditor(local_key);
+												},
+												{ name: "<icon>edit</icon> Edit Node" },
+											),
+											delete_node: new ve.Button(
+												() => {
+													this._deleteCustomNode(local_key);
+												},
+												{ name: "<icon>delete</icon> Delete Node" },
+											),
+										},
+										{
+											x: e.clientX,
+											y: e.clientY,
+										},
+									);
+								});
+							}
+						}, 0);
+					}
+					
+					local_search_select_obj[local_key] = toolbox_button;
+				}
 			});
 			
 			if (category_key === "Custom" || category_key === "All")
@@ -805,6 +984,8 @@ ve.NodeEditor = class extends ve.Component {
 		return base_layer;
 	}
 	
+	loadSettings(arg0_settings) {}
+	
 	async run(arg0_preview_mode) {
 		if (this._is_running) return this.main.variables;
 		this._is_running = true;
@@ -959,6 +1140,7 @@ ve.NodeEditor = class extends ve.Component {
 			this._is_running = false;
 		}
 		
+		console.trace(`Run finished.`);
 		return this.main.variables;
 	}
 };
@@ -987,20 +1169,38 @@ ve.NodeEditorDatatype = class extends ve.Component {
 	
 	constructor(arg0_value, arg1_options) {
 		let options = arg1_options ? arg1_options : {};
-		let value = arg0_value;
+		// FIX: ensure we have a valid value object
+		let value = arg0_value || {};
 		super(options);
 		
 		this.connections = [];
-		this.constant_values = [];
+		// FIX: Load constant_values from value if present
+		this.constant_values = value.constant_values
+			? JSON.parse(JSON.stringify(value.constant_values))
+			: [];
 		this.dynamic_values = [];
 		this.geometries = [];
-		this.id = Class.generateRandomID(ve.NodeEditorDatatype);
+		// FIX: Use ID from value if present
+		this.id = value.id
+			? value.id
+			: Class.generateRandomID(ve.NodeEditorDatatype);
+		
+		// FIX: Load serialised connections for later processing
+		this._serialised_connections = value.connections || [];
+		
 		this.options = options;
 		this.ui = { information: {} };
-		this.value = value ? value : {};
+		
+		// FIX: Load UI state
+		if (value.ui && value.ui.information) {
+			this.ui.information = { ...value.ui.information };
+		}
+		
+		this.value = value;
 		
 		if (!this.value.name) this.value.name = this.value.key;
 		
+		// Draws ONCE with correct ID and data
 		this.draw();
 		ve.NodeEditorDatatype.instances.push(this);
 		ve.NodeEditorDatatype.draw();
@@ -1055,6 +1255,8 @@ ve.NodeEditorDatatype = class extends ve.Component {
 	
 	_render() {
 		let layer = this.options.node_editor.node_layer;
+		if (!layer) return;
+		
 		for (let i = 0; i < this.geometries.length; i++) {
 			try {
 				this.geometries[i].addTo(layer);
@@ -1419,7 +1621,8 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			}
 		}
 		
-		for (let i = 0; i < this.geometries.length; i++) this.geometries[i].remove();
+		for (let i = 0; i < this.geometries.length; i++)
+			this.geometries[i].remove();
 		this.geometries = [];
 		
 		if (this.context_menu) this.context_menu.close();
@@ -1513,4 +1716,4 @@ ve.NodeEditorDatatype = class extends ve.Component {
  */
 veNodeEditorDatatype = function () {
 	return new ve.NodeEditorDatatype(...arguments);
-} 
+};
