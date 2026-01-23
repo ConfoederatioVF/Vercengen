@@ -435,7 +435,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 	
 	static draw() {
 		ve.NodeEditor.instances.forEach((ed) => {
-			// FIX: Added _is_running gate and headless check
 			if (ed.options.headless || ed._is_running) return;
 			
 			let local_dag_sequence = ed.getDAGSequence();
@@ -445,7 +444,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				for (let y = 0; y < local_dag_sequence[x].length; y++)
 					local_dag_sequence[x][y].ui.information.dag_layer = x;
 			
-			// run(true) will now safely set _is_running flag
 			ed.run(true);
 		});
 		

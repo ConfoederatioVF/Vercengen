@@ -71,6 +71,7 @@ ve.NodeEditor = class extends ve.Component {
 				name: "Input",
 				category: "I/O",
 				output_type: "any",
+				is_internal: true,
 				input_parameters: [
 					{ name: "Name", type: "string" },
 					{ name: "Type", type: "string" },
@@ -85,6 +86,7 @@ ve.NodeEditor = class extends ve.Component {
 				name: "Output",
 				category: "I/O",
 				output_type: "any",
+				is_internal: true,
 				input_parameters: [{ name: "Result", type: "any" }],
 				special_function: (arg) => {
 					return { value: arg };
@@ -101,6 +103,7 @@ ve.NodeEditor = class extends ve.Component {
 				name: "Node Name",
 				category: "Config",
 				output_type: "string",
+				is_internal: true,
 				input_parameters: [{ name: "Name", type: "string" }],
 				special_function: (val) => {
 					return { value: val };
@@ -110,6 +113,7 @@ ve.NodeEditor = class extends ve.Component {
 				name: "Node Category",
 				category: "Config",
 				output_type: "string",
+				is_internal: true,
 				input_parameters: [{ name: "Category", type: "string" }],
 				special_function: (val) => {
 					return { value: val };
@@ -119,6 +123,7 @@ ve.NodeEditor = class extends ve.Component {
 				name: "Node Output Type",
 				category: "Config",
 				output_type: "string",
+				is_internal: true,
 				input_parameters: [{ name: "Type", type: "string" }],
 				special_function: (val) => {
 					return { value: val };
@@ -181,8 +186,7 @@ ve.NodeEditor = class extends ve.Component {
 			this._mouse_coords = e.coordinate;
 		});
 		
-		this.value = value;
-		this.v = this.value;
+		this.v = value;
 		ve.NodeEditor.instances.push(this);
 	}
 	
@@ -365,10 +369,10 @@ ve.NodeEditor = class extends ve.Component {
 	_createCustomExecutionLogic(subgraph) {
 		const parentOptions = this.options;
 		return async function (...args) {
-			// FIX: Ensure sub-editors are marked as headless to prevent static draw loops
 			let sub_editor = new ve.NodeEditor(subgraph, {
 				...parentOptions,
 				headless: true,
+				show_internal: true,
 			});
 			
 			let sub_inputs = sub_editor.main.nodes.filter(
@@ -401,6 +405,7 @@ ve.NodeEditor = class extends ve.Component {
 				project_folder: this.options.project_folder,
 				node_types: this.options.node_types,
 				category_types: this.options.category_types,
+				show_internal: true, // FIX: Allow config nodes to be seen here
 			},
 		);
 		
@@ -560,7 +565,7 @@ ve.NodeEditor = class extends ve.Component {
 					
 					ve.NodeEditorDatatype.draw();
 				}, 100);
-			},
+			}
 		});
 	}
 	
@@ -570,6 +575,9 @@ ve.NodeEditor = class extends ve.Component {
 		
 		Object.iterate(this.options.node_types, (local_key, local_value) => {
 			if (typeof local_value !== "object" || !local_value) return;
+			// FIX: Hide internal nodes in main editor
+			if (local_value.is_internal && !this.options.show_internal) return;
+			
 			let category = local_value.category || "Uncategorised";
 			if (!unique_categories.includes(category))
 				unique_categories.push(category);
@@ -592,6 +600,9 @@ ve.NodeEditor = class extends ve.Component {
 			
 			Object.iterate(this.options.node_types, (local_key, local_value) => {
 				if (typeof local_value !== "object" || !local_value) return;
+				// FIX: Hide internal nodes in search/list
+				if (local_value.is_internal && !this.options.show_internal) return;
+				
 				let local_category = local_value.category || "Uncategorised";
 				
 				let local_category_options =
@@ -682,7 +693,7 @@ ve.NodeEditor = class extends ve.Component {
 					},
 					{
 						name: "<icon>add_circle</icon> Create Custom Node",
-						style: { button: { border: "1px dashed white" } },
+						style: { button: { border: "1px dashed var(--body-colour)", display: "block", marginTop: "var(--padding)" } },
 					},
 				);
 			}
@@ -833,7 +844,6 @@ ve.NodeEditor = class extends ve.Component {
 	loadSettings(arg0_settings) {}
 	
 	async run(arg0_preview_mode) {
-		// FIX: Guard against re-entry during async execution
 		if (this._is_running) return this.main.variables;
 		this._is_running = true;
 		
