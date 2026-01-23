@@ -13,7 +13,6 @@
  *   - `.category_types`: {@link Object}
  *     - `<category_key>`: {@link Object}
  *       - `.colour`: {@link Array}<{@link number}, {@link number}, {@link number}>|{@link string} - Either a hex/RGB value.
- *   - `.distributed_compute=false`: {@link boolean} - [WIP] - Whether to multithread/multicore tasks.
  *   - `.exclude_all=false`: {@link boolean} - Whether to exclude the default 'All' category at the start.
  *   - `.node_types`: {@link Object}
  *     - `<node_key>`: {@link Object} - Current valid types for `.input_parameters` and `.output_type` include 'any'/'number[]'/'string[]'/'boolean'/'number'/'script'/'string'.
@@ -27,6 +26,7 @@
  *     - `.output_type="any"`: {@link string} - What the output (return) type is regarded as being. There can only be a single return type per Node, similar to functions in most programming languages.
  *     - `.special_function`: {@link function}(argn_arguments:{@link any}) ¦ {@link Object}
  *       - Returns:
+ *       - `.abort=false`: {@link boolean} - Whether to abort the current node branch from further execution (conditional branching).
  *       - `.alluvial_width=1`: {@link number}
  *       - `.display_value`: {@link string} - The actual display_value to show.
  *       - `.run`: {@link function} - The actual expression to execute upon running it in non-preview mode.
