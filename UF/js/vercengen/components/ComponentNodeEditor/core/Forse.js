@@ -171,6 +171,22 @@ ve.NodeEditor.Forse = class {
 				},
 				
 				//Conditionals (If Statements)
+				if_then: {
+					name: "If Then",
+					category: "Conditionals",
+					input_parameters: [{
+						name: "arg0_boolean",
+						type: "boolean"
+					}],
+					output_type: "boolean",
+					special_function: (arg0_boolean) => {
+						return {
+							abort: (!arg0_boolean),
+							display_value: (arg0_boolean) ? "True" : "False",
+							value: arg0_boolean
+						};
+					}
+				},
 				
 				//Conditionals (Logic)
 				and: {

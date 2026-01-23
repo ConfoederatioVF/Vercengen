@@ -755,8 +755,8 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - Settings remain to be con
 				} else {
 					//Fetch the default for this type
 					let local_parameter_type = JSON.parse(JSON.stringify(local_parameter.type));
-						if (ve.NodeEditorDatatype.types[local_parameter_type] === undefined)
-							local_parameter_type = "any";
+					if (ve.NodeEditorDatatype.types[local_parameter_type] === undefined)
+						local_parameter_type = "any";
 					args.push(ve.NodeEditorDatatype.types[local_parameter_type]);
 				}
 			}
@@ -767,6 +767,7 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - Settings remain to be con
 		
 		//Reset execution context
 		this.main.variables = {};
+		this.main.skipped_nodes = new Set();
 		
 		//Iterate over DAG layers (execute)
 		for (let i = 0; i < dag_sequence.length; i++) {
@@ -779,6 +780,39 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - Settings remain to be con
 				}
 			
 			await Promise.all(layer.map(async (local_node) => {
+				//Check for upstream aborts
+				let is_aborted_upstream = false;
+				
+				//Check input sources for skipped status
+				if (local_node.dynamic_values) {
+					for (let x = 0; x < local_node.dynamic_values.length; x++) {
+						if (local_node.dynamic_values[x]) {
+							//Find the source connected to this input
+							for (let j = 0; j < ve.NodeEditorDatatype.instances.length; j++) {
+								let source = ve.NodeEditorDatatype.instances[j];
+								for (let k = 0; k < source.connections.length; k++) {
+									let target_data = source.connections[k];
+									if (target_data[0].id === local_node.id && target_data[1] === (x + 1)) {
+										if (this.main.skipped_nodes.has(source.id)) {
+											is_aborted_upstream = true;
+										}
+										break;
+									}
+								}
+								if (is_aborted_upstream) break;
+							}
+						}
+						if (is_aborted_upstream) break;
+					}
+				}
+				
+				if (is_aborted_upstream) {
+					this.main.skipped_nodes.add(local_node.id);
+					local_node.ui.information.status = "aborted";
+					if (!preview_mode) local_node.draw();
+					return;
+				}
+				
 				//Declare local instance variables
 				let args = resolve_arguments(local_node);
 				let sf = local_node.value.special_function;
@@ -793,11 +827,19 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - Settings remain to be con
 						descriptor = sf;
 					}
 					
-					//2. Propagate value
+					//2. Check for node-level abort
+					if (descriptor && descriptor.abort === true) {
+						this.main.skipped_nodes.add(local_node.id);
+						local_node.ui.information.status = "aborted";
+						if (!preview_mode) local_node.draw();
+						return;
+					}
+					
+					//3. Propagate value
 					if (descriptor && typeof descriptor === "object")
 						value = descriptor.value;
 					
-					//3. Execute side effects (Non-preview only)
+					//4. Execute side effects (Non-preview only)
 					if (!preview_mode && descriptor && typeof descriptor.run === "function") {
 						local_node.ui.information.status = "is_running";
 						local_node.draw();
@@ -810,12 +852,15 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - Settings remain to be con
 					}
 				} catch (e) {
 					console.error(`Node execution failed (${local_node.id})`, e);
+					this.main.skipped_nodes.add(local_node.id); // Failures also abort branch
 					value = undefined;
+					local_node.ui.information.status = "error";
+					if (!preview_mode) local_node.draw();
 				}
 				
 				this.main.variables[local_node.id] = value;
 				local_node.ui.information.alluvial_width = Math.returnSafeNumber(descriptor?.alluvial_width, 1);
-				local_node.ui.information.value = (descriptor?.display_value !== undefined) ? 
+				local_node.ui.information.value = (descriptor?.display_value !== undefined) ?
 					descriptor.display_value : value;
 				
 				//Return statement
