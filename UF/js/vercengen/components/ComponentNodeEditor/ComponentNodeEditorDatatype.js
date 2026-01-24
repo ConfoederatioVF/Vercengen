@@ -241,49 +241,50 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		}
 		
 		if (!is_comment) {
-			for (let i = 0; i < this.value.input_parameters.length; i++) {
-				let local_parameter = this.value.input_parameters[i];
-				let local_value_name = this.constant_values[i]
-					? ` | ${this.constant_values[i]}`
-					: "";
-				if (this.dynamic_values[i]) local_value_name = "";
-				
-				let local_rect = new maptalks.Rectangle(
-					Geospatiale.translatePoint(coords, 0, -400 * (i + 1)),
-					2000,
-					400,
-					{
-						symbol: {
-							...polygon_symbol,
-							lineColor: this.isSelected(i + 1) ? "yellow" : "black",
-							polygonOpacity: 0.5,
-							textName: `${local_parameter.name} (${local_parameter.type})${local_value_name}`,
+			if (this.value.input_parameters)
+				for (let i = 0; i < this.value.input_parameters.length; i++) {
+					let local_parameter = this.value.input_parameters[i];
+					let local_value_name = this.constant_values[i]
+						? ` | ${this.constant_values[i]}`
+						: "";
+					if (this.dynamic_values[i]) local_value_name = "";
+					
+					let local_rect = new maptalks.Rectangle(
+						Geospatiale.translatePoint(coords, 0, -400 * (i + 1)),
+						2000,
+						400,
+						{
+							symbol: {
+								...polygon_symbol,
+								lineColor: this.isSelected(i + 1) ? "yellow" : "black",
+								polygonOpacity: 0.5,
+								textName: `${local_parameter.name} (${local_parameter.type})${local_value_name}`,
+							},
 						},
-					},
-				);
-				let local_left_marker = new maptalks.Marker(
-					Geospatiale.translatePoint(coords, 0, -400 * (i + 1) - 400 * 0.5),
-					{
-						symbol: {
-							...marker_symbol,
-							textFill: "rgba(255, 255, 255, 0.5)",
+					);
+					let local_left_marker = new maptalks.Marker(
+						Geospatiale.translatePoint(coords, 0, -400 * (i + 1) - 400 * 0.5),
+						{
+							symbol: {
+								...marker_symbol,
+								textFill: "rgba(255, 255, 255, 0.5)",
+							},
 						},
-					},
-				);
-				
-				let local_geometry_collection = new maptalks.GeometryCollection([
-					local_rect,
-					local_left_marker,
-				]);
-				local_geometry_collection.addEventListener("click", (e) => {
-					this.options.node_editor._select(this, i + 1);
-				});
-				local_geometry_collection.addEventListener("contextmenu", (e) => {
-					this.openContextMenu();
-				});
-				
-				this.geometries.push(local_geometry_collection);
-			}
+					);
+					
+					let local_geometry_collection = new maptalks.GeometryCollection([
+						local_rect,
+						local_left_marker,
+					]);
+					local_geometry_collection.addEventListener("click", (e) => {
+						this.options.node_editor._select(this, i + 1);
+					});
+					local_geometry_collection.addEventListener("contextmenu", (e) => {
+						this.openContextMenu();
+					});
+					
+					this.geometries.push(local_geometry_collection);
+				}
 		}
 		
 		this._render();

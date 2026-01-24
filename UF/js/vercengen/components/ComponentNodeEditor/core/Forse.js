@@ -187,6 +187,50 @@ ve.NodeEditor.Forse = class {
 						};
 					}
 				},
+				"false": {
+					name: "False",
+					category: "Conditionals",
+					output_type: "boolean",
+					special_function: () => {
+						return {
+							display_value: "False",
+							value: false
+						};
+					}
+				},
+				"true": {
+					name: "True",
+					category: "Conditionals",
+					output_type: "boolean",
+					special_function: () => {
+						return {
+							display_value: "True",
+							value: true
+						};
+					}
+				},
+				"null": {
+					name: "Null",
+					category: "Conditionals",
+					output_type: "any",
+					special_function: () => {
+						return {
+							display_value: "null",
+							value: null
+						};
+					}
+				},
+				"undefined": {
+					name: "Undefined",
+					category: "Conditionals",
+					output_type: "any",
+					special_function: () => {
+						return {
+							display_value: "undefined",
+							value: undefined
+						};
+					}
+				},
 				
 				//Conditionals (Logic)
 				and: {
@@ -262,9 +306,84 @@ ve.NodeEditor.Forse = class {
 							value: (!is_false)
 						};
 					}
-				}
+				},
 				
 				//Functions
+				call_function: {
+					name: "Call Function",
+					category: "Functions",
+					input_parameters: [{
+						name: "arg0_function_key",
+						type: "string"
+					}, {
+						name: "arg1_arguments_array",
+						type: "any[]"
+					}],
+					output_type: "any",
+					special_function: (arg0_function_key, arg1_arguments_array) => {
+						return {
+							display_value: `Run: global.${arg0_function_key}`,
+							run: () => {
+								try {
+									return Object.getValue(global, arg0_function_key)(...arg1_arguments_array);
+								} catch (e) { console.error(e); }
+							}
+						}
+					}
+				},
+				call_function_in_preview: {
+					name: "Call Function (Preview)",
+					category: "Functions",
+					input_parameters: [{
+						name: "arg0_function_key",
+						type: "string"
+					}, {
+						name: "arg1_arguments_array",
+						type: "any[]"
+					}],
+					output_type: "any",
+					special_function: (arg0_function_key, arg1_arguments_array) => {
+						let return_value;
+						
+						try {
+							return_value = Object.getValue(global, arg0_function_key)(...arg1_arguments_array);
+						} catch (e) { console.error(e); }
+						
+						return {
+							display_value: `Run: global.${arg0_function_key}`,
+							run: () => return_value,
+							value: return_value
+						}
+					}
+				},
+				run_script: {
+					name: "Run Script",
+					
+					category: "Expressions",
+					input_parameters: [{
+						name: "arg0_script",
+						type: "script"
+					}],
+					output_type: "any",
+					special_function: function (arg0_script) {
+						let return_value;
+						
+						try {
+							if (fs.existsSync(arg0_script)) {
+								let script_value = fs.readFileSync(arg0_script, "utf8");
+								return_value = eval(script_value);
+							}
+						} catch (e) {
+							console.error(e);
+						}
+						
+						return {
+							display_value: `Run: ${path.basename(arg0_script)}`,
+							run: () => return_value,
+							value: return_value
+						};
+					}
+				},
 				
 				//Loops
 				

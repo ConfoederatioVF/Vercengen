@@ -994,38 +994,39 @@ ve.NodeEditor = class extends ve.Component {
 				let args = [];
 				let node = arg0_node;
 				
-				for (let i = 0; i < node.value.input_parameters.length; i++) {
-					let local_parameter = node.value.input_parameters[i];
-					
-					if (node.dynamic_values[i]) {
-						let resolved;
-						for (let x = 0; x < ve.NodeEditorDatatype.instances.length; x++) {
-							let source = ve.NodeEditorDatatype.instances[x];
-							if (source.options.node_editor !== this) continue;
-							for (let y = 0; y < source.connections.length; y++) {
-								let target_data = source.connections[y];
-								if (
-									target_data[0].id === node.id &&
-									target_data[1] === i + 1
-								) {
-									resolved = this.main.variables[source.id];
-									break;
+				if (node.value.input_parameters)
+					for (let i = 0; i < node.value.input_parameters.length; i++) {
+						let local_parameter = node.value.input_parameters[i];
+						
+						if (node.dynamic_values[i]) {
+							let resolved;
+							for (let x = 0; x < ve.NodeEditorDatatype.instances.length; x++) {
+								let source = ve.NodeEditorDatatype.instances[x];
+								if (source.options.node_editor !== this) continue;
+								for (let y = 0; y < source.connections.length; y++) {
+									let target_data = source.connections[y];
+									if (
+										target_data[0].id === node.id &&
+										target_data[1] === i + 1
+									) {
+										resolved = this.main.variables[source.id];
+										break;
+									}
 								}
+								if (resolved !== undefined) break;
 							}
-							if (resolved !== undefined) break;
+							args.push(resolved);
+						} else if (node.constant_values[i] !== undefined) {
+							args.push(node.constant_values[i]);
+						} else {
+							let local_parameter_type = JSON.parse(
+								JSON.stringify(local_parameter.type),
+							);
+							if (ve.NodeEditorDatatype.types[local_parameter_type] === undefined)
+								local_parameter_type = "any";
+							args.push(ve.NodeEditorDatatype.types[local_parameter_type]);
 						}
-						args.push(resolved);
-					} else if (node.constant_values[i] !== undefined) {
-						args.push(node.constant_values[i]);
-					} else {
-						let local_parameter_type = JSON.parse(
-							JSON.stringify(local_parameter.type),
-						);
-						if (ve.NodeEditorDatatype.types[local_parameter_type] === undefined)
-							local_parameter_type = "any";
-						args.push(ve.NodeEditorDatatype.types[local_parameter_type]);
 					}
-				}
 				return args;
 			};
 			
@@ -1047,11 +1048,7 @@ ve.NodeEditor = class extends ve.Component {
 						if (local_node.dynamic_values)
 							for (let x = 0; x < local_node.dynamic_values.length; x++) {
 								if (local_node.dynamic_values[x])
-									for (
-										let j = 0;
-										j < ve.NodeEditorDatatype.instances.length;
-										j++
-									) {
+									for (let j = 0; j < ve.NodeEditorDatatype.instances.length; j++) {
 										let source = ve.NodeEditorDatatype.instances[j];
 										if (source.options.node_editor !== this) continue;
 										for (let k = 0; k < source.connections.length; k++) {

@@ -106,33 +106,6 @@ setTimeout(() => {
 					};
 				}
 			},
-			run_return_script: {
-				name: "Run Return Script",
-				
-				category: "Expressions",
-				input_parameters: [{
-					name: "arg0_script",
-					type: "script"
-				}],
-				special_function: function (arg0_script) {
-					let return_value;
-					
-					try {
-						if (fs.existsSync(arg0_script)) {
-							let script_value = fs.readFileSync(arg0_script, "utf8");
-							return_value = eval(script_value);
-						}
-					} catch (e) {
-						console.error(e);
-					}
-					
-					return {
-						display_value: `Run: ${path.basename(arg0_script)}`,
-						run: () => return_value,
-						value: return_value
-					};
-				}
-			},
 			
 			get_object_key: {
 				name: "Get Object Key",
