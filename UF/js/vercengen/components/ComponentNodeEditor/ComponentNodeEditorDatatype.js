@@ -1,5 +1,3 @@
-
-
 /**
  * Represents a single node instance within a ve.NodeEditor.
  */
@@ -249,6 +247,11 @@ ve.NodeEditorDatatype = class extends ve.Component {
 						: "";
 					if (this.dynamic_values[i]) local_value_name = "";
 					
+					// REINTRODUCED: script type basename handling
+					if (local_parameter.type === "script" && this.constant_values[i]) {
+						local_value_name = ` | ${path.basename(this.constant_values[i])}`;
+					}
+					
 					let local_rect = new maptalks.Rectangle(
 						Geospatiale.translatePoint(coords, 0, -400 * (i + 1)),
 						2000,
@@ -357,6 +360,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				let local_parameter_type = JSON.parse(
 					JSON.stringify(local_parameter.type),
 				);
+				let local_script_file_path = "";
 				
 				if (ve.NodeEditorDatatype.types[local_parameter_type] === undefined)
 					local_parameter_type = "any";
@@ -397,7 +401,75 @@ ve.NodeEditorDatatype = class extends ve.Component {
 						local_default_value,
 						local_parameter_options,
 					);
-				else
+				else if (local_parameter_type === "script") {
+					parameter_fields[local_parameter.name] = new ve.Button(
+						() => {
+							let local_script_value = "";
+							if (fs.existsSync(local_default_value))
+								local_script_value = fs.readFileSync(
+									local_default_value,
+									"utf8",
+								);
+							
+							let node_editor_registry = ve.registry.settings.NodeEditor;
+							let settings_obj = {};
+							let project_folder =
+								this.options.node_editor.options.project_folder;
+							if (project_folder) settings_obj.project_folder = project_folder;
+							
+							if (node_editor_registry.script_window)
+								node_editor_registry.script_window.close();
+							
+							node_editor_registry.script_window = new ve.Window(
+								new ve.ScriptManager(local_script_value, {
+									folder_path: project_folder,
+									settings: settings_obj,
+									style: { height: "50rem" },
+								}),
+								{
+									name: "ScriptManager",
+									can_rename: false,
+									height: "60rem",
+									width: "50rem",
+									onuserchange: (v) => {
+										if (v.close) {
+											let script_manager =
+												node_editor_registry.script_window.component;
+											if (script_manager._file_path) {
+												this.constant_values[i] = script_manager._file_path;
+												ve.NodeEditorDatatype.draw(this.options.node_editor);
+											} else {
+												let file_prompt = new ve.File(undefined, {
+													onuserchange: (v) => {
+														if (v.length > 0) {
+															this.constant_values[i] = v[0];
+														} else {
+															this.constant_values[i] = "";
+														}
+													},
+													save_function: () => script_manager.v,
+												});
+												file_prompt.openModal();
+											}
+										}
+									},
+								},
+							);
+							
+							if (fs.existsSync(local_default_value))
+								node_editor_registry.script_window.component._file_path =
+									local_default_value;
+						},
+						{
+							name: this.constant_values[i] ? "Edit Script" : "Create Script",
+							tooltip: this.constant_values[i]
+								? this.constant_values[i]
+								: undefined,
+							x: 0,
+							y: i,
+						},
+					);
+				} else
 					parameter_fields[local_parameter.name] = new ve.Text(
 						local_default_value,
 						local_parameter_options,
@@ -421,8 +493,13 @@ ve.NodeEditorDatatype = class extends ve.Component {
 										`<icon>warning</icon> Constants will not apply while node is connected.`,
 									);
 								} else {
-									this.constant_values[i] =
-										parameter_fields[local_parameter.name].v;
+									// REINTRODUCED: script toggle condition
+									if (local_parameter_type !== "script") {
+										this.constant_values[i] =
+											parameter_fields[local_parameter.name].v;
+									} else {
+										this.constant_values[i] = local_script_file_path;
+									}
 								}
 							}
 							ve.NodeEditorDatatype.draw(this.options.node_editor);
@@ -467,8 +544,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			}
 		}
 		
-		for (let i = 0; i < this.geometries.length; i++)
-			this.geometries[i].remove();
+		for (let i = 0; i < this.geometries.length; i++) this.geometries[i].remove();
 		this.geometries = [];
 		
 		if (this.context_menu) this.context_menu.close();
@@ -529,9 +605,9 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				
 				let arc_connector_line = new maptalks.ArcConnectorLine(
 					local_node.geometries[0].getGeometries()[2],
-					local_ot_node.geometries[
-						local_node.connections[x][1]
-						].getGeometries()[1],
+					local_ot_node.geometries[local_node.connections[x][1]].getGeometries()[
+						1
+						],
 					{
 						arcDegree: 90,
 						arrowPlacement: "vertex-last",
