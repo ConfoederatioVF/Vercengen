@@ -396,23 +396,18 @@ ve.NodeEditor.Forse = class {
 					}],
 					output_type: "number",
 					special_function: function (arg0_number) {
-						// The local_node (ve.NodeEditorDatatype) is always the final argument passed by run()
-						const local_node = arguments[arguments.length - 1];
-						// The first input parameter (arg0_times)
-						const arg0_times = arguments[0];
-						
-						// Use this.main.node_iterations to store a counter for this specific node
-						// This object is cleared every time run() is called, ensuring the index resets
-						const state_key = `${local_node.id}_current_index`;
-						if (this.main.node_iterations[state_key] === undefined) {
+						//local_node (ve.NodeEditorDatatype) is always the final argument passed by run()
+						let local_node = arguments[arguments.length - 1];
+						let state_key = `${local_node.id}_current_index`;
+						if (this.main.node_iterations[state_key] === undefined)
 							this.main.node_iterations[state_key] = 0;
-						}
 						
-						const current_index = this.main.node_iterations[state_key]++;
+						let current_index = this.main.node_iterations[state_key]++;
 						
+						//Return statement
 						return {
-							//display_value: `Iterate ${arg0_number}x`,
-							iterations: arg0_times,
+							display_value: `Iterate ${arg0_number}x`,
+							iterations: arg0_number,
 							value: current_index,
 						};
 					}
