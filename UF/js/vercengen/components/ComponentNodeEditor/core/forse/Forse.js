@@ -358,6 +358,63 @@ ve.NodeEditor.Forse = class {
 				},
 				
 				//Functions (Expressions)
+				log_error: {
+					name: "(Log) ERROR",
+					
+					category: "Functions",
+					input_parameters: [{
+						name: "arg0_variable",
+						type: "any"
+					}],
+					output_type: "any",
+					special_function: function (arg0_variable) {
+						console.error("[FORSE] [ERROR]", arg0_variable);
+						
+						//Return statement
+						return {
+							display_value: `Logged Error`,
+							value: arg0_variable
+						};
+					}
+				},
+				log_info: {
+					name: "(Log) INFO",
+					
+					category: "Functions",
+					input_parameters: [{
+						name: "arg0_variable",
+						type: "any"
+					}],
+					output_type: "any",
+					special_function: function (arg0_variable) {
+						console.log("[FORSE] [INFO]", arg0_variable);
+						
+						//Return statement
+						return {
+							display_value: `Logged Info`,
+							value: arg0_variable
+						};
+					}
+				},
+				log_warn: {
+					name: "(Log) WARN",
+					
+					category: "Functions",
+					input_parameters: [{
+						name: "arg0_variable",
+						type: "any"
+					}],
+					output_type: "any",
+					special_function: function (arg0_variable) {
+						console.warn("[FORSE] [WARN]", arg0_variable);
+						
+						//Return statement
+						return {
+							display_value: `Logged Warning`,
+							value: arg0_variable
+						};
+					}
+				},
 				run_script: {
 					name: "Run Script",
 					
@@ -413,14 +470,46 @@ ve.NodeEditor.Forse = class {
 						};
 					}
 				},
-				object_iterate: {
+				get_object_iteration_key: {
+					name: "Get Obj.Iter. Key",
+					category: "Loops",
+					input_parameters: [{
+						name: "arg0_object_iteration",
+						type: "{key: string, value: any}"
+					}],
+					output_type: "string",
+					special_function: function (arg0_object_iteration) {
+						//Return statement
+						return {
+							display_value: `.${arg0_object_iteration.local_key}`,
+							value: arg0_object_iteration.local_key
+						};
+					}
+				},
+				get_object_iteration_value: {
+					name: "Get Obj.Iter. Value",
+					category: "Loops",
+					input_parameters: [{
+						name: "arg0_object_iteration",
+						type: "{key: string, value: any}"
+					}],
+					output_type: "any",
+					special_function: function (arg0_object_iteration) {
+						//Return statement
+						return {
+							display_value: `Iteration Value`,
+							value: arg0_object_iteration.local_value
+						};
+					}
+				},
+				object_iterate: { //[WIP] - Refactor at a later date
 					name: "Iterate over Object",
 					category: "Loops",
 					input_parameters: [{
 						name: "arg0_object",
 						type: "any",
 					}],
-					output_type: "any",
+					output_type: "{key: string, value: any}",
 					special_function: function (arg0_object) {
 						// local_node is always the final argument passed by run()
 						const local_node = arguments[arguments.length - 1];

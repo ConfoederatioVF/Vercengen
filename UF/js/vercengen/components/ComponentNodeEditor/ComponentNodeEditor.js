@@ -533,7 +533,6 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 						: "any";
 				return { name: param_name, type: param_type };
 			});
-			console.log(`graph_data.nodes`, graph_data.nodes)
 			
 			let meta_category = "Custom";
 			let meta_name = existing_def ? existing_def.name : "New Custom Node";
