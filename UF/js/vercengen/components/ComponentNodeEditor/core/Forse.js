@@ -356,10 +356,12 @@ ve.NodeEditor.Forse = class {
 						}
 					}
 				},
+				
+				//Functions (Expressions)
 				run_script: {
 					name: "Run Script",
 					
-					category: "Expressions",
+					category: "Functions",
 					input_parameters: [{
 						name: "arg0_script",
 						type: "script"
@@ -385,9 +387,36 @@ ve.NodeEditor.Forse = class {
 					}
 				},
 				
-				//Functions (Expressions)
-				
 				//Loops (For loop, setInterval, setTimeout, Object.iterate (Get Iteration Key, Get Iteration Value))
+				repeat: {
+					name: "Repeat",
+					input_parameters: [{
+						name: "arg0_times",
+						type: "number"
+					}],
+					output_type: "number",
+					special_function: function (arg0_number) {
+						// The local_node (ve.NodeEditorDatatype) is always the final argument passed by run()
+						const local_node = arguments[arguments.length - 1];
+						// The first input parameter (arg0_times)
+						const arg0_times = arguments[0];
+						
+						// Use this.main.node_iterations to store a counter for this specific node
+						// This object is cleared every time run() is called, ensuring the index resets
+						const state_key = `${local_node.id}_current_index`;
+						if (this.main.node_iterations[state_key] === undefined) {
+							this.main.node_iterations[state_key] = 0;
+						}
+						
+						const current_index = this.main.node_iterations[state_key]++;
+						
+						return {
+							//display_value: `Iterate ${arg0_number}x`,
+							iterations: arg0_times,
+							value: current_index,
+						};
+					}
+				}
 				
 				//Variables
 				

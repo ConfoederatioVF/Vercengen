@@ -64,7 +64,7 @@
  * @memberof ve.Component
  * @type {ve.NodeEditor}
  */
-ve.NodeEditor = class extends ve.Component {
+ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iterations so that sub-nodes are aware of their current iteration index? By making for loop nodes return their current iteration value.
 	/**
 	 * @type {ve.NodeEditor[]}
 	 */
@@ -1168,17 +1168,24 @@ ve.NodeEditor = class extends ve.Component {
 						} else {
 							// Check if this node triggers a new iteration count for its branch
 							let explicit_iters = Math.returnSafeNumber(
-								last_descriptor?.iteration,
+								last_descriptor?.iterations,
 								0,
 							);
 							
 							if (explicit_iters > 0) {
 								this.main.node_iterations[local_node.id] = explicit_iters;
-								// If node starts iteration, repeat its last result for downstream
-								let base_val = results[results.length - 1];
-								this.main.variables[local_node.id] = new Array(
-									explicit_iters,
-								).fill(base_val);
+								// FIX: Instead of .fill(), run remaining iterations to generate unique values
+								for (let j = 1; j < explicit_iters; j++) {
+									let args = resolve_arguments(local_node, j);
+									let sf = local_node.value.special_function;
+									let descriptor = await sf.call(this, ...args, local_node);
+									results.push(
+										descriptor && typeof descriptor === "object"
+											? descriptor.value
+											: descriptor,
+									);
+								}
+								this.main.variables[local_node.id] = results;
 							} else {
 								this.main.node_iterations[local_node.id] = max_iters;
 								this.main.variables[local_node.id] =
