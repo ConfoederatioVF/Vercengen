@@ -13,7 +13,7 @@ ve.NodeEditor.Forse = class {
 					text_colour: [0, 0, 0]
 				},
 				"Loops": {
-					colour: "#e0d122",
+					colour: "#d4ca60",
 					text_colour: [0, 0, 0]
 				},
 				"Variables": {
@@ -387,9 +387,10 @@ ve.NodeEditor.Forse = class {
 					}
 				},
 				
-				//Loops (For loop, setInterval, setTimeout, Object.iterate (Get Iteration Key, Get Iteration Value))
-				repeat: {
-					name: "Repeat",
+				//Loops (For loop, [WIP] - setInterval, setTimeout, Object.iterate (Get Iteration Key, Get Iteration Value))
+				for_loop: {
+					name: "For Loop",
+					category: "Loops",
 					input_parameters: [{
 						name: "arg0_times",
 						type: "number"
@@ -409,6 +410,68 @@ ve.NodeEditor.Forse = class {
 							display_value: `Iterate ${arg0_number}x`,
 							iterations: arg0_number,
 							value: current_index,
+						};
+					}
+				},
+				object_iterate: {
+					name: "Iterate over Object",
+					category: "Loops",
+					input_parameters: [{
+						name: "arg0_object",
+						type: "any",
+					}],
+					output_type: "any",
+					special_function: function (arg0_object) {
+						// local_node is always the final argument passed by run()
+						const local_node = arguments[arguments.length - 1];
+						
+						// Ensure we have a valid object to iterate over
+						const obj =
+							typeof arg0_object === "object" && arg0_object !== null
+								? arg0_object
+								: {};
+						const entries = Object.entries(obj);
+						const num_iterations = entries.length;
+						
+						// Track state for the current iteration index
+						const state_key = `${local_node.id}_current_index`;
+						if (this.main.node_iterations[state_key] === undefined)
+							this.main.node_iterations[state_key] = 0;
+						
+						const current_index = this.main.node_iterations[state_key]++;
+						
+						// Safely get the key and value for the current index
+						const current_entry = entries[current_index] || [null, null];
+						const [key, val] = current_entry;
+						
+						// Return statement
+						return {
+							display_value: key !== null ? `Key: ${key}` : "Empty Object",
+							iterations: num_iterations,
+							value: { local_key: key, local_value: val },
+						};
+					},
+				},
+				set_timeout: {
+					name: "Set Timeout",
+					category: "Loops",
+					input_parameters: [{
+						name: "arg0_timeout",
+						type: "number"
+					}, {
+						name: "arg1_value",
+						type: "any"
+					}],
+					output_type: "any",
+					special_function: async function (arg0_number, arg1_value) {
+						let delay_time = Math.returnSafeNumber(arg0_number);
+						
+						await new Promise((resolve) => setTimeout(resolve, delay_time));
+						
+						//Return statement
+						return {
+							display_value: `Wait ${delay_time}ms`,
+							value: arg1_value
 						};
 					}
 				}

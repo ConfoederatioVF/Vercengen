@@ -533,6 +533,7 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 						: "any";
 				return { name: param_name, type: param_type };
 			});
+			console.log(`graph_data.nodes`, graph_data.nodes)
 			
 			let meta_category = "Custom";
 			let meta_name = existing_def ? existing_def.name : "New Custom Node";
@@ -626,30 +627,8 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 				}
 			}
 			
-			if (existing_def && existing_def.subgraph) {
+			if (existing_def && existing_def.subgraph)
 				temp_editor.v = existing_def.subgraph;
-			} else {
-				temp_editor.v = {
-					nodes: [
-						{
-							coords: { x: -400, y: -200 },
-							key: "ve_config_name",
-						},
-						{
-							coords: { x: -400, y: 0 },
-							key: "ve_config_category",
-						},
-						{
-							coords: { x: -400, y: 200 },
-							key: "ve_config_output_type",
-						},
-						{
-							coords: { x: 400, y: 0 },
-							key: "ve_output",
-						},
-					],
-				};
-			}
 			ve.NodeEditorDatatype.draw(temp_editor);
 		}, 100);
 	}
