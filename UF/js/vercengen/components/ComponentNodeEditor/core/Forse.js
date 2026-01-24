@@ -385,7 +385,9 @@ ve.NodeEditor.Forse = class {
 					}
 				},
 				
-				//Loops
+				//Functions (Expressions)
+				
+				//Loops (For loop, setInterval, setTimeout, Object.iterate (Get Iteration Key, Get Iteration Value))
 				
 				//Variables
 				

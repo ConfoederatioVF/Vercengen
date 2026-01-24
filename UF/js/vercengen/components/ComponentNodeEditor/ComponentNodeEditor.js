@@ -54,7 +54,8 @@ ve.NodeEditor = class extends ve.Component {
 		
 		if (
 			ve.NodeEditor.Forse &&
-			typeof ve.NodeEditor.Forse.getForseObject === "function"
+			typeof ve.NodeEditor.Forse.getForseObject === "function" &&
+			!options.disable_forse
 		) {
 			let forse_data = ve.NodeEditor.Forse.getForseObject();
 			if (forse_data.category_types)
@@ -990,7 +991,11 @@ ve.NodeEditor = class extends ve.Component {
 		try {
 			let dag_sequence = this.getDAGSequence();
 			let preview_mode = arg0_preview_mode;
-			let resolve_arguments = (arg0_node) => {
+			this.main.variables = {};
+			this.main.skipped_nodes = new Set();
+			this.main.node_iterations = {}; // Track branch iteration counts
+			
+			let resolve_arguments = (arg0_node, iteration_index = 0) => {
 				let args = [];
 				let node = arg0_node;
 				
@@ -1005,11 +1010,15 @@ ve.NodeEditor = class extends ve.Component {
 								if (source.options.node_editor !== this) continue;
 								for (let y = 0; y < source.connections.length; y++) {
 									let target_data = source.connections[y];
-									if (
-										target_data[0].id === node.id &&
-										target_data[1] === i + 1
-									) {
-										resolved = this.main.variables[source.id];
+									if (target_data[0].id === node.id && target_data[1] === i + 1) {
+										let source_val = this.main.variables[source.id];
+										let source_iters = this.main.node_iterations[source.id] || 1;
+										
+										// Pick specific value for this iteration, or fallback to scalar
+										resolved =
+											Array.isArray(source_val) && source_iters > 1
+												? source_val[iteration_index % source_iters]
+												: source_val;
 										break;
 									}
 								}
@@ -1019,19 +1028,14 @@ ve.NodeEditor = class extends ve.Component {
 						} else if (node.constant_values[i] !== undefined) {
 							args.push(node.constant_values[i]);
 						} else {
-							let local_parameter_type = JSON.parse(
-								JSON.stringify(local_parameter.type),
-							);
-							if (ve.NodeEditorDatatype.types[local_parameter_type] === undefined)
-								local_parameter_type = "any";
-							args.push(ve.NodeEditorDatatype.types[local_parameter_type]);
+							let local_type = JSON.parse(JSON.stringify(local_parameter.type));
+							if (ve.NodeEditorDatatype.types[local_type] === undefined)
+								local_type = "any";
+							args.push(ve.NodeEditorDatatype.types[local_type]);
 						}
 					}
 				return args;
 			};
-			
-			this.main.variables = {};
-			this.main.skipped_nodes = new Set();
 			
 			for (let i = 0; i < dag_sequence.length; i++) {
 				let layer = dag_sequence[i];
@@ -1044,89 +1048,100 @@ ve.NodeEditor = class extends ve.Component {
 				
 				await Promise.all(
 					layer.map(async (local_node) => {
-						let is_aborted_upstream = false;
-						if (local_node.dynamic_values)
-							for (let x = 0; x < local_node.dynamic_values.length; x++) {
-								if (local_node.dynamic_values[x])
-									for (let j = 0; j < ve.NodeEditorDatatype.instances.length; j++) {
-										let source = ve.NodeEditorDatatype.instances[j];
-										if (source.options.node_editor !== this) continue;
-										for (let k = 0; k < source.connections.length; k++) {
-											let target_data = source.connections[k];
-											if (
-												target_data[0].id === local_node.id &&
-												target_data[1] === x + 1
-											) {
-												if (this.main.skipped_nodes.has(source.id))
-													is_aborted_upstream = true;
-												break;
-											}
-										}
-										if (is_aborted_upstream) break;
-									}
-								if (is_aborted_upstream) break;
+						// Determine if we are inside an iterating branch by checking parents
+						let max_iters = 1;
+						for (let inst of ve.NodeEditorDatatype.instances) {
+							if (inst.options.node_editor !== this) continue;
+							for (let conn of inst.connections) {
+								if (conn[0].id === local_node.id) {
+									max_iters = Math.max(
+										max_iters,
+										this.main.node_iterations[inst.id] || 1,
+									);
+								}
 							}
+						}
 						
-						if (is_aborted_upstream) {
+						let results = [];
+						let last_descriptor;
+						let is_aborted = false;
+						
+						// Run the branch logic N times
+						for (let iter = 0; iter < max_iters; iter++) {
+							let args = resolve_arguments(local_node, iter);
+							let sf = local_node.value.special_function;
+							let descriptor, value;
+							
+							try {
+								descriptor =
+									typeof sf === "function"
+										? await sf.call(this, ...args, local_node)
+										: sf;
+								
+								if (descriptor && descriptor.abort === true) {
+									is_aborted = true;
+									break;
+								}
+								
+								value =
+									descriptor && typeof descriptor === "object"
+										? descriptor.value
+										: descriptor;
+								
+								if (
+									!preview_mode &&
+									descriptor &&
+									typeof descriptor.run === "function"
+								) {
+									local_node.ui.information.status = "is_running";
+									local_node.draw();
+									await descriptor.run();
+								}
+								results.push(value);
+								last_descriptor = descriptor;
+							} catch (e) {
+								console.error(`Execution failed (${local_node.id})`, e);
+								is_aborted = true;
+								break;
+							}
+						}
+						
+						if (is_aborted) {
 							this.main.skipped_nodes.add(local_node.id);
 							local_node.ui.information.status = "aborted";
-							if (!preview_mode) local_node.draw();
-							return;
-						}
-						
-						let args = resolve_arguments(local_node);
-						let descriptor;
-						let sf = local_node.value.special_function;
-						let value;
-						
-						try {
-							if (typeof sf === "function") {
-								descriptor = await sf.call(this, ...args, local_node);
+						} else {
+							// Check if this node triggers a new iteration count for its branch
+							let explicit_iters = Math.returnSafeNumber(
+								last_descriptor?.iteration,
+								0,
+							);
+							
+							if (explicit_iters > 0) {
+								this.main.node_iterations[local_node.id] = explicit_iters;
+								// If node starts iteration, repeat its last result for downstream
+								let base_val = results[results.length - 1];
+								this.main.variables[local_node.id] = new Array(
+									explicit_iters,
+								).fill(base_val);
 							} else {
-								descriptor = sf;
+								this.main.node_iterations[local_node.id] = max_iters;
+								this.main.variables[local_node.id] =
+									max_iters > 1 ? results : results[0];
 							}
-							
-							if (descriptor && descriptor.abort === true) {
-								this.main.skipped_nodes.add(local_node.id);
-								local_node.ui.information.status = "aborted";
-								if (!preview_mode) local_node.draw();
-								return;
-							}
-							
-							if (descriptor && typeof descriptor === "object")
-								value = descriptor.value;
-							
-							if (
-								!preview_mode &&
-								descriptor &&
-								typeof descriptor.run === "function"
-							) {
-								local_node.ui.information.status = "is_running";
-								local_node.draw();
-								await descriptor.run();
-								local_node.ui.information.status = "finished";
-							} else if (!preview_mode) {
-								local_node.ui.information.status = "finished";
-							}
-							if (!preview_mode) local_node.draw();
-						} catch (e) {
-							console.error(`Node execution failed (${local_node.id})`, e);
-							this.main.skipped_nodes.add(local_node.id);
-							local_node.ui.information.status = "error";
-							if (!preview_mode) local_node.draw();
-							value = undefined;
+							local_node.ui.information.status = "finished";
 						}
 						
-						this.main.variables[local_node.id] = value;
-						local_node.ui.information.alluvial_width = Math.returnSafeNumber(
-							descriptor?.alluvial_width,
-							1,
-						);
-						local_node.ui.information.value =
-							descriptor?.display_value !== undefined
-								? descriptor.display_value
-								: value;
-						return value;
+						if (!preview_mode) {
+							local_node.ui.information.alluvial_width = Math.returnSafeNumber(
+								last_descriptor?.alluvial_width,
+								1,
+							);
+							local_node.ui.information.value =
+								last_descriptor?.display_value !== undefined
+									? last_descriptor.display_value
+									: this.main.variables[local_node.id];
+							local_node.draw();
+						}
 					}),
 				);
 			}
@@ -1134,7 +1149,6 @@ ve.NodeEditor = class extends ve.Component {
 			this._is_running = false;
 		}
 		
-		console.trace(`Run finished.`);
 		return this.main.variables;
 	}
 };

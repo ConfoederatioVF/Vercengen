@@ -24,8 +24,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			: [];
 		this.dynamic_values = [];
 		this.geometries = [];
-		
-		// FIX: Scope ID to definition or generation properly
 		this.id = value.id
 			? value.id
 			: Class.generateRandomID(ve.NodeEditorDatatype);
