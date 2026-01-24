@@ -1,8 +1,64 @@
 /**
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  *
- * Creates a drag-and-drop Node Editor using Maptalks as a backend. Nodes are executed from a root node using a parallelised version of Kahn's algorithm, and nodes must form a directed acyclic graph (DAG).
+ * Creates a drag-and-drop Node Editor using Maptalks as a backend. Nodes are executed from a root node using a parallelised version of Kahn's algorithm, and nodes must form a directed acyclic graph (DAG). Circular references will not be executed if forced.
+ *
+ * If you need a loop, call `async run()` multiple times instead.
  * - Functional binding: <span color=00ffff>veNodeEditor</span>().
+ *
+ * ##### Constructor:
+ * - `arg0_value`: {@link Object} - The JSON object for the Maptalks instance attached to the current NodeEditor, including properties data.
+ * - `arg1_options`: {@link Object}
+ *   - `.bg_ctx`: {@link function} | {@link Object} - Returns the context of a Canvas.
+ *   - `.category_types`: {@link Object}
+ *     - `<category_key>`: {@link Object}
+ *       - `.colour`: {@link Array}<{@link number}, {@link number}, {@link number}>|{@link string} - Either a hex/RGB value.
+ *   - `.disable_forse=false`: {@link boolean} - Whether to disable Forse Nodes.
+ *   - `.exclude_all=false`: {@link boolean} - Whether to exclude the default 'All' category at the start.
+ *   - `.node_types`: {@link Object}
+ *     - `<node_key>`: {@link Object} - Current valid types for `.input_parameters` and `.output_type` include 'any'/'number[]'/'string[]'/'boolean'/'number'/'script'/'string'.
+ *       - `.category="Expression"` - The category that any {@link ve.NodeEditorDatatype} instances should belong to. Typically should either be 'Filter'/'Expression'.
+ *       - `.input_parameters=[]`: {@link Array}<{@link Object}> - The types of input parameters that will be accepted for evaluation.
+ *         - `[n]`: {@link Object}
+ *           - `.name`: {@link string}
+ *           - `.type`: {@link string}
+ *       - `.output_type="any"`: {@link string}
+ *     - `.name`: {@link string}
+ *     - `.output_type="any"`: {@link string} - What the output (return) type is regarded as being. There can only be a single return type per Node, similar to functions in most programming languages.
+ *     - `.special_function`: {@link function}(argn_arguments:{@link any}) ¦ {@link Object}
+ *       - Returns:
+ *       - `.abort=false`: {@link boolean} - Whether to abort the current node branch from further execution (conditional branching).
+ *       - `.alluvial_width=1`: {@link number}
+ *       - `.display_value`: {@link string} - The actual display_value to show.
+ *       - `.run`: {@link function} - The actual expression to execute upon running it in non-preview mode.
+ *       - `.value`: {@link any} - If a filter, it should return an {@link Array}<{@link any}>.
+ *     -
+ *     - `.options`: {@link Object}
+ *       - `.alluvial_scaling=1`: {@link number} - How much to scale alluvial widths by when displayed compared to their actual number.
+ *   	   - `.id=Class.generateRandomID(ve.NodeEditorDatatype)`: {@link string} - The ID to assign to the present datatype at a class level.
+ *       - `.show_alluvial=false`: {@link boolean}
+ *   - `.project_folder`: {@link string}
+ *
+ * ##### Instance:
+ * - `.id`: {@link string}
+ * - `.main`: {@link Object}
+ *   - `.variables`: {@link Object} - Where values during the run-cycle are stored.
+ * - `.map`: {@link maptalks.Map} - Not an actual map instance. Used for rendering the node environment in 3D space.
+ * - `.node_layer`: {@link maptalks.VectorLayer}
+ * - `.v`: {@link Object}
+ *
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.NodeEditor._connect|_connect}</span>(arg0_node:{@link ve.NodeEditorDatatype}, arg1_node:{@link ve.NodeEditorDatatype}, arg2_index:{@link number}, arg3_options:{@link Object})
+ * - <span color=00ffff>{@link ve.NodeEditor._disconnect|_disconnect}</span>(arg0_node:{@link ve.NodeEditorDatatype}, arg1_node:{@link ve.NodeEditorDatatype}, arg2_index:{@link number})
+ * - <span color=00ffff>{@link ve.NodeEditor._select|_select}</span>(arg0_node:{@link ve.NodeEditorDatatype}, arg1_index:{@link number})
+ *
+ * - <span color=00ffff>{@link ve.NodeEditor.clear|clear}</span>()
+ * - <span color=00ffff>{@link ve.NodeEditor.drawToolbox|drawToolbox}</span>()
+ * - <span color=00ffff>{@link ve.NodeEditor.getCanvas|getCanvas}</span>() | {@link HTMLCanvasElement}
+ * - <span color=00ffff>{@link ve.NodeEditor.getDAGSequence|getDAGSequence}</span>() | {@link Array}<{@link Array}<{@link ve.NodeEditorDatatype}>>
+ * - <span color=00ffff>{@link ve.NodeEditor.getDefaultBaseLayer|getDefaultBaseLayer}</span>() | {@link Object}
+ * - <span color=00ffff>{@link ve.NodeEditor.loadSettings|loadSettings}</span>(arg0_settings:{@link Object})
+ * - async <span color=00ffff>{@link ve.NodeEditor.run|run}</span>(arg0_preview_mode:{@link boolean}) | {@link Object}
  *
  * @augments ve.Component
  * @memberof ve.Component
