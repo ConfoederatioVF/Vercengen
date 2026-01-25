@@ -878,6 +878,7 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 		if (this.toolbox_window) this.toolbox_window.close();
 		this.toolbox_window = new ve.PageMenuWindow(page_menu_obj, {
 			name: "Toolbox",
+			height: "40vh",
 			width: "23rem",
 			can_rename: false,
 		});

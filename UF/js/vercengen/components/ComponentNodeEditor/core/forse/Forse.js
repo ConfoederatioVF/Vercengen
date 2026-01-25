@@ -1,5 +1,20 @@
 ve.NodeEditor.Forse = class {
 	static getForseObject () {
+		//Declare local instance variables
+		let get_variable_obj = {
+			category: "Variables",
+			input_parameters: [{
+				name: "arg0_key",
+				type: "string"
+			}],
+			special_function: function (arg0_key) {
+				return {
+					display_value: `${arg0_key}: ${this.main.variables[arg0_key]}`,
+					value: this.main.variables[arg0_key]
+				};
+			}
+		};
+		
 		//Return statement
 		return {
 			project_folder: "./settings/scripts/",
@@ -17,6 +32,10 @@ ve.NodeEditor.Forse = class {
 					text_colour: [0, 0, 0]
 				},
 				"Variables": {
+					colour: "#d56a6a",
+					text_colour: [0, 0, 0]
+				},
+				"Variables (Casting)": {
 					colour: "#a82020",
 					text_colour: [255, 255, 255]
 				}
@@ -354,6 +373,61 @@ ve.NodeEditor.Forse = class {
 							run: () => return_value,
 							value: return_value
 						}
+					}
+				},
+				
+				//Functions (Class)
+				call_class_method: {
+					name: "Call Method",
+					category: "Functions",
+					input_parameters: [{
+						name: "arg0_variable",
+						type: "any"
+					}, {
+						name: "arg1_method_key",
+						type: "string"
+					}, {
+						name: "arg2_arguments_array",
+						type: "any[]"
+					}],
+					output_type: "any",
+					special_function: function (arg0_variable, arg1_method_key, arg2_arguments_array) {
+						return {
+							display_value:`Run Class Method: ${arg1_method_key}`,
+							run: () => {
+								try {
+									return arg0_variable[arg1_method_key](...arg2_arguments_array);
+								} catch (e) { console.error(e); }
+							},
+						};
+					}
+				},
+				call_class_method_in_preview: {
+					name: "Call Method (Preview)",
+					category: "Functions",
+					input_parameters: [{
+						name: "arg0_variable",
+						type: "any"
+					}, {
+						name: "arg1_method_key",
+						type: "string"
+					}, {
+						name: "arg2_arguments_array",
+						type: "any[]"
+					}],
+					output_type: "any",
+					special_function: function (arg0_variable, arg1_method_key, arg2_arguments_array) {
+						let return_value;
+						
+						try {
+							return_value = arg0_variable[arg1_method_key](...arg2_arguments_array);
+						} catch (e) { console.error(e); }
+						
+						return {
+							display_value:`Run Class Method: ${arg1_method_key}`,
+							run: () => return_value,
+							value: return_value
+						};
 					}
 				},
 				
@@ -747,6 +821,240 @@ ve.NodeEditor.Forse = class {
 						return {
 							display_value: `${arg0_key}: ${arg1_value}`,
 							value: this.main.variables[arg0_key]
+						};
+					}
+				},
+				
+				//Variables (Get)
+				get_any: {
+					name: "Get Any",
+					...get_variable_obj,
+					output_type: "any"
+				},
+				get_string_array: {
+					name: "Get String Array",
+					...get_variable_obj,
+					output_type: "string[]"
+				},
+				get_number_array: {
+					name: "Get Number Array",
+					...get_variable_obj,
+					output_type: "number[]"
+				},
+				get_boolean: {
+					name: "Get Boolean",
+					...get_variable_obj,
+					output_type: "boolean"
+				},
+				get_number: {
+					name: "Get Number",
+					...get_variable_obj,
+					output_type: "number"
+				},
+				get_string: {
+					name: "Get String",
+					...get_variable_obj,
+					output_type: "string"
+				},
+				get_array: {
+					name: "Get Array",
+					...get_variable_obj,
+					output_type: "any[]"
+				},
+				get_null: {
+					name: "Get Null",
+					...get_variable_obj,
+					output_type: "any"
+				},
+				get_object: {
+					name: "Get Object",
+					...get_variable_obj,
+					output_type: "any"
+				},
+				get_global: {
+					name: "Get Global",
+					category: "Variables",
+					input_parameters: [{
+						name: "arg0_key",
+						type: "string"
+					}],
+					output_type: "any",
+					special_function: function (arg0_key) {
+						//Return statement
+						return {
+							display_value: `${arg0_key}: ${this.main.variables[arg0_key]}`,
+							value: this.main.variables[arg0_key]
+						};
+					}
+				},
+				
+				//Variables (Convert)
+				convert_to_any: {
+					name: "Convert to Any",
+					category: "Variables (Casting)",
+					input_parameters: [{
+						name: "arg0_variable",
+						type: "any"
+					}],
+					output_type: "any",
+					special_function: function (arg0_variable) {
+						//Return statement
+						return {
+							display_value: `Type: any`,
+							value: this.main.variables[arg0_variable]
+						};
+					}
+				},
+				convert_to_array: {
+					name: "Convert to String Array",
+					category: "Variables (Casting)",
+					input_parameters: [{
+						name: "arg0_variable",
+						type: "any"
+					}],
+					output_type: "any[]",
+					special_function: function (arg0_variable) {
+						//Convert from parameters
+						let local_value =  this.main.variables[arg0_variable];
+						
+						//Convert to array if not already an array
+						if (!Array.isArray(local_value)) local_value = Array.toArray(local_value);
+						
+						//Return statement
+						return {
+							display_value: `any[${local_value.length}]`,
+							value: local_value
+						};
+					}
+				},
+				convert_to_string_array: {
+					name: "Convert to String Array",
+					category: "Variables (Casting)",
+					input_parameters: [{
+						name: "arg0_variable",
+						type: "any"
+					}],
+					output_type: "string[]",
+					special_function: function (arg0_variable) {
+						//Convert from parameters
+						let local_value =  this.main.variables[arg0_variable];
+						
+						//Convert to array if not already an array
+						if (!Array.isArray(local_value)) local_value = Array.toArray(local_value);
+						for (let i = 0; i < local_value.length; i++)
+							if (local_value[i].toString) {
+								local_value[i] = local_value[i].toString();
+							} else if (typeof local_value[i] !== "string") {
+								try {
+									local_value[i] = JSON.stringify(local_value[i]);
+								} catch (e) {
+									local_value[i] = `${local_value[i]}`;
+								}
+							}
+						
+						//Return statement
+						return {
+							display_value: `string[${local_value.length}]`,
+							value: local_value
+						};
+					}
+				},
+				convert_to_number_array: {
+					name: "Convert to Number Array",
+					category: "Variables (Casting)",
+					input_parameters: [{
+						name: "arg0_variable",
+						type: "any"
+					}],
+					output_type: "number[]",
+					special_function: function (arg0_variable) {
+						//Convert from parameters
+						let local_value =  this.main.variables[arg0_variable];
+						
+						//Convert to array if not already an array
+						if (!Array.isArray(local_value)) local_value = Array.toArray(local_value);
+						for (let i = 0; i < local_value.length; i++)
+							if (typeof local_value[i] !== "number")
+								local_value[i] = parseFloat(local_value[i]);
+						
+						//Return statement
+						return {
+							display_value: `number[${local_value.length}]`,
+							value: local_value
+						};
+					}
+				},
+				convert_to_boolean: {
+					name: "Convert to Boolean",
+					category: "Variables (Casting)",
+					input_parameters: [{
+						name: "arg0_variable",
+						type: "any"
+					}],
+					output_type: "boolean",
+					special_function: function (arg0_variable) {
+						return {
+							display_value: (arg0_variable) ? `boolean: true` : `boolean: false`,
+							value: (arg0_variable) ? true : false
+						};
+					}
+				},
+				convert_to_number: {
+					name: "Convert to Number",
+					category: "Variables (Casting)",
+					input_parameters: [{
+						name: "arg0_variable",
+						type: "any"
+					}],
+					output_type: "number",
+					special_function: function (arg0_variable) {
+						let casted_number = Math.returnSafeNumber(arg0_variable);
+						
+						return {
+							display_value: casted_number,
+							value: casted_number
+						};
+					}
+				},
+				convert_to_script: {
+					name: "Convert to Script",
+					category: "Variables (Casting)",
+					input_parameters: [{
+						name: "arg0_file_path",
+						type: "string"
+					}],
+					output_type: "string",
+					special_function: function (arg0_file_path) {
+						return {
+							display_value: arg0_file_path,
+							value: arg0_file_path
+						};
+					}
+				},
+				convert_to_string: {
+					name: "Convert to String",
+					category: "Variables (Casting)",
+					input_parameters: [{
+						name: "arg0_variable",
+						type: "any"
+					}],
+					output_type: "number",
+					special_function: function (arg0_variable) {
+						let local_value = arg0_variable;
+						
+						if (local_value.toString) {
+							local_value = local_value.toString();
+						} else if (typeof local_value !== "string") {
+							try {
+								local_value = JSON.stringify(local_value);
+							} catch (e) {
+								local_value = `${local_value}`;
+							}
+						}
+						
+						return {
+							display_value: local_value,
+							value: local_value
 						};
 					}
 				}
