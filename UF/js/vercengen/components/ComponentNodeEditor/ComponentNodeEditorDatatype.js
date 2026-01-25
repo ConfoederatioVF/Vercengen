@@ -554,7 +554,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		let ed = arg0_editor;
 		if (!ed) return;
 		
-		if (ed.options.headless || ed._is_running) return;
 		let local_dag_sequence = ed.getDAGSequence();
 		if (!local_dag_sequence) return;
 		
@@ -563,7 +562,9 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				local_dag_sequence[x][y].ui.information.dag_layer = x;
 		
 		// Perform background dag run
-		ed.run(true);
+		try {
+			ed.run(true);
+		} catch (e) { console.error(e); }
 		
 		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++) {
 			let node = ve.NodeEditorDatatype.instances[i];

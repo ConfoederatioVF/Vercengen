@@ -71,13 +71,13 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 	 */
 	static instances = [];
 	
-	constructor(arg0_value, arg1_options) {
+	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
-		let options = arg1_options ? arg1_options : {};
 		let value = arg0_value;
-		super(options);
-		
-		//Declare local instance variables
+		let options = arg1_options ? arg1_options : {};
+			super(options);
+			
+		//Initialise options
 		options.attributes = options.attributes ? options.attributes : {};
 		options.category_types = options.category_types ? options.category_types : {};
 		options.node_types = options.node_types ? options.node_types : {};
@@ -109,19 +109,13 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 				text_colour: [255, 255, 255],
 			};
 		
-		if (
-			ve.NodeEditor.Forse &&
-			typeof ve.NodeEditor.Forse.getForseObject === "function" &&
-			!options.disable_forse
-		) {
-			let forse_data = ve.NodeEditor.Forse.getForseObject();
-			if (forse_data.category_types)
-				options.category_types = {
-					...forse_data.category_types,
-					...options.category_types,
-				};
-			if (forse_data.node_types)
-				options.node_types = { ...forse_data.node_types, ...options.node_types };
+		if (!options.disable_forse) {
+			let forse_obj = ve.NodeEditor.Forse.getForseObject();
+			
+			if (forse_obj.category_types)
+				options.category_types = { ...forse_obj.category_types, ...options.category_types };
+			if (forse_obj.node_types)
+				options.node_types = { ...forse_obj.node_types, ...options.node_types };
 		}
 		
 		options.node_types = {
@@ -190,6 +184,7 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 			},
 		};
 		
+		//Declare local instance variables
 		this.element = document.createElement("div");
 		this.element.instance = this;
 		this.element.setAttribute("component", "ve-node-editor");
