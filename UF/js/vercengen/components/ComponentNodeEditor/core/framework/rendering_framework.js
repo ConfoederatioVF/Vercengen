@@ -1,5 +1,25 @@
 //Initialise methods
 {
+	/**
+	 * Clears all nodes.
+	 */
+	ve.NodeEditor.prototype.clear = function () {
+		//Declare local instance variables
+		if (this.node_layer) this.node_layer.clear();
+		
+		for (let i = this.main.nodes.length - 1; i >= 0; i--)
+			this.main.nodes[i].remove();
+		
+		this.main.nodes = [];
+		this.main.user.selected_nodes = [];
+		this.main.variables = {};
+	};
+	
+	ve.NodeEditor.prototype.getCanvas = function () {
+		if (!this._canvas) this._canvas = document.createElement("canvas");
+		return this._canvas;
+	};
+	
 	ve.NodeEditor.prototype.getDefaultBaseLayer = function () {
 		let base_layer = new maptalks.TileLayer("base", {
 			urlTemplate: "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
