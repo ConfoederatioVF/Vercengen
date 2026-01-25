@@ -511,33 +511,31 @@ ve.NodeEditor.Forse = class {
 					}],
 					output_type: "{key: string, value: any}",
 					special_function: function (arg0_object) {
-						// local_node is always the final argument passed by run()
-						const local_node = arguments[arguments.length - 1];
+						//Convert from parameters
+						let object = (typeof arg0_object === "object" && arg0_object !== null) ? 
+							arg0_object : {};
 						
-						// Ensure we have a valid object to iterate over
-						const obj =
-							typeof arg0_object === "object" && arg0_object !== null
-								? arg0_object
-								: {};
-						const entries = Object.entries(obj);
-						const num_iterations = entries.length;
+						//Declare local instance variables
+						let entries = Object.entries(object);
+						let iteration_count = entries.length;
+						let local_node = arguments[arguments.length - 1];
 						
-						// Track state for the current iteration index
-						const state_key = `${local_node.id}_current_index`;
+						//Track state for the current iteration index
+						let state_key = `${local_node.id}_current_index`;
 						if (this.main.node_iterations[state_key] === undefined)
 							this.main.node_iterations[state_key] = 0;
 						
-						const current_index = this.main.node_iterations[state_key]++;
+						let current_index = this.main.node_iterations[state_key]++;
 						
-						// Safely get the key and value for the current index
-						const current_entry = entries[current_index] || [null, null];
-						const [key, val] = current_entry;
+						//Safely get the key and value for the current index
+						let current_entry = entries[current_index] || [null, null];
+						let [key, value] = current_entry;
 						
-						// Return statement
+						//Return statement
 						return {
 							display_value: key !== null ? `Key: ${key}` : "Empty Object",
-							iterations: num_iterations,
-							value: { local_key: key, local_value: val },
+							iterations: iteration_count,
+							value: { local_key: key, local_value: value }
 						};
 					},
 				},
@@ -563,10 +561,195 @@ ve.NodeEditor.Forse = class {
 							value: arg1_value
 						};
 					}
-				}
+				},
 				
 				//Variables
-				
+				set_any: {
+					name: "Set Any",
+					category: "Variables",
+					input_parameters: [{
+						name: "arg0_key",
+						type: "string"
+					}, {
+						name: "arg1_value",
+						type: "any"
+					}],
+					output_type: "any",
+					special_function: function (arg0_key, arg1_value) {
+						this.main.variables[arg0_key] = arg1_value;
+						
+						return {
+							display_value: `${arg0_key}: ${arg1_value}`,
+							value: arg1_value
+						};
+					}
+				},
+				set_string_array: {
+					name: "Set String Array",
+					category: "Variables",
+					input_parameters: [{
+						name: "arg0_key",
+						type: "string"
+					}, {
+						name: "arg1_value",
+						type: "string"
+					}],
+					output_type: "string[]",
+					special_function: function (arg0_key, arg1_value) {
+						this.main.variables[arg0_key] = arg1_value.split(",");
+						let local_value = this.main.variables[arg0_key];
+						
+						//Iterate over all local_value elements and cast to string
+						for (let i = 0; i < local_value.length; i++)
+							if (local_value[i].toString)
+								local_value[i] = local_value[i].toString();
+						
+						return {
+							display_value: `${arg0_key}: ${local_value.length} Elements`,
+							value: this.main.variables[arg0_key]
+						};
+					}
+				},
+				set_number_array: {
+					name: "Set Number Array",
+					category: "Variables",
+					input_parameters: [{
+						name: "arg0_key",
+						type: "string"
+					}, {
+						name: "arg1_value",
+						type: "string"
+					}],
+					output_type: "number[]",
+					special_function: function (arg0_key, arg1_value) {
+						this.main.variables[arg0_key] = arg1_value.split(",").map(parseFloat);
+						let local_value = this.main.variables[arg0_key];
+						
+						return {
+							display_value: `${arg0_key}: ${local_value.length} Elements`,
+							value: this.main.variables[arg0_key]
+						};
+					}
+				},
+				set_boolean: {
+					name: "Set Boolean",
+					category: "Variables",
+					input_parameters: [{
+						name: "arg0_key",
+						type: "string"
+					}, {
+						name: "arg1_value",
+						type: "boolean"
+					}],
+					output_type: "boolean",
+					special_function: function (arg0_key, arg1_value) {
+						this.main.variables[arg0_key] = arg1_value;
+						
+						return {
+							display_value: (arg1_value) ? `${arg0_key}: True` : `${arg0_key}: False`,
+							value: arg1_value
+						};
+					}
+				},
+				set_number: {
+					name: "Set Number",
+					category: "Variables",
+					input_parameters: [{
+						name: "arg0_key",
+						type: "string"
+					}, {
+						name: "arg1_value",
+						type: "number"
+					}],
+					output_type: "number",
+					special_function: function (arg0_key, arg1_value) {
+						this.main.variables[arg0_key] = arg1_value;
+						
+						return {
+							display_value: `${arg0_key}: ${arg1_value}`,
+							value: arg1_value
+						};
+					}
+				},
+				set_string: {
+					name: "Set String",
+					category: "Variables",
+					input_parameters: [{
+						name: "arg0_key",
+						type: "string"
+					}, {
+						name: "arg1_value",
+						type: "string"
+					}],
+					output_type: "string",
+					special_function: function (arg0_key, arg1_value) {
+						this.main.variables[arg0_key] = arg1_value;
+						
+						return {
+							display_value: `${arg0_key}: ${arg1_value}`,
+							value: arg1_value
+						};
+					}
+				},
+				set_array: {
+					name: "Set Array",
+					category: "Variables",
+					input_parameters: [{
+						name: "arg0_key",
+						type: "string"
+					}, {
+						name: "arg1_value",
+						type: "string"
+					}],
+					output_type: "any[]",
+					special_function: function (arg0_key, arg1_value) {
+						this.main.variables[arg0_key] = arg1_value.split(",");
+						let local_value = this.main.variables[arg0_key];
+						
+						return {
+							display_value: `${arg0_key}: ${local_value.length} Elements`,
+							value: this.main.variables[arg0_key]
+						};
+					}
+				},
+				set_null: {
+					name: "Set Null",
+					category: "Variables",
+					input_parameters: [{
+						name: "arg0_key",
+						type: "string"
+					}],
+					output_type: "any",
+					special_function: function (arg0_key) {
+						this.main.variables[arg0_key] = null;
+						
+						return {
+							display_value: `${arg0_key}: null`,
+							value: this.main.variables[arg0_key]
+						};
+					}
+				},
+				set_object: {
+					name: "Set Object",
+					category: "Variables",
+					input_parameters:	[{
+						name: "arg0_key",
+						type: "any"
+					}, {
+						name: "arg1_value",
+						type: "string"
+					}],
+					output_type: "any",
+					special_function: function (arg0_key, arg1_value) {
+						this.main.variables[arg0_key] = (typeof arg1_value === "string") ? 
+							JSON.parse(arg1_value) : arg1_value;
+						
+						return {
+							display_value: `${arg0_key}: ${arg1_value}`,
+							value: this.main.variables[arg0_key]
+						};
+					}
+				}
 			}
 		};
 	}

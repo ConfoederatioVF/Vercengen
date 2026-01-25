@@ -22,7 +22,7 @@ setTimeout(() => {
 	});*/
 	global.node_window = veWindow(new ve.NodeEditor(undefined, {
 		project_folder: "./scripts/",
-		category_types: {
+		/*category_types: {
 			"Expressions": {
 				colour: "#9ecd9e",
 				text_colour: [0, 0, 0]
@@ -116,7 +116,7 @@ setTimeout(() => {
 					type: "string"
 				}]
 			}
-		}
+		}*/
 	}), {
 		can_rename: false,
 		name: "Node Editor",
