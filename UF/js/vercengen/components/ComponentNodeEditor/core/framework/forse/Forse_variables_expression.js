@@ -493,7 +493,7 @@ ve.NodeEditor.Forse.variables_expression = {
 				display_value: result,
 				value: result
 			};
-		}``
+		}
 	},
 	string_length: {
 		name: "String Length",
