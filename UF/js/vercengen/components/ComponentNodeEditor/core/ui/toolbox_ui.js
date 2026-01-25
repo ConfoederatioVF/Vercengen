@@ -121,7 +121,7 @@
 						this.main.custom_node_types[local_key]
 					) {
 						setTimeout(() => {
-							if (toolbox_button.element) {
+							if (toolbox_button.element && !this.options.disable_custom_nodes) {
 								toolbox_button.element.addEventListener("contextmenu", (e) => {
 									e.preventDefault();
 									new ve.ContextMenu(
@@ -160,6 +160,7 @@
 					},
 					{
 						name: "<icon>add_circle</icon> Create Custom Node",
+						limit: () => (!this.options.disable_custom_nodes),
 						style: {
 							button: {
 								border: "1px dashed var(--body-colour)",
