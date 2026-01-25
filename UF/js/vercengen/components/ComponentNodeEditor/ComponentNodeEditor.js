@@ -13,6 +13,7 @@
  *   - `.category_types`: {@link Object}
  *     - `<category_key>`: {@link Object}
  *       - `.colour`: {@link Array}<{@link number}, {@link number}, {@link number}>|{@link string} - Either a hex/RGB value.
+ *   - `.disable_custom_nodes=false`: {@link boolean} - Whether to disable custom nodes editing.
  *   - `.disable_forse=false`: {@link boolean} - Whether to disable Forse Nodes.
  *   - `.exclude_all=false`: {@link boolean} - Whether to exclude the default 'All' category at the start.
  *   - `.node_types`: {@link Object}
