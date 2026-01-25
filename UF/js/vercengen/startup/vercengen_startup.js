@@ -344,8 +344,10 @@ global.path = require("path");
 			"UF/js/vercengen/components/ComponentDatavisSuite/ui",
 			//ve.FileExplorer
 			"UF/js/vercengen/components/ComponentFileExplorer/file_operations_ui.js",
+			//ve.NodeEditor
+			"UF/js/vercengen/components/ComponentNodeEditor/ComponentNodeEditor.js",
+			"UF/js/vercengen/components/ComponentNodeEditor/",
 			//ve.ScriptManager
-			"UF/js/vercengen/components/ComponentScriptManager/ComponentCodemirror",
 			"!UF/libraries/monaco/",
 			"UF/js/vercengen/components/ComponentScriptManager/blockly/blockly_toolbox.js",
 			"UF/js/vercengen/components/ComponentScriptManager/core",

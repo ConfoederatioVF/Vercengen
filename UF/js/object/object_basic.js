@@ -142,6 +142,36 @@
 	};
 	
 	/**
+	 * Recursively merges two objects, but only on undefined keys.
+	 * @alias Object.concat
+	 * 
+	 * @param arg0_object
+	 * @param arg1_object
+	 * 
+	 * @returns {Object}
+	 */
+	Object.concat = function (arg0_object, arg1_object) {
+		//Convert from parameters
+		let object = arg0_object;
+		let ot_object = arg1_object;
+		
+		//Iterate over ot_object and attempt to merge if the corresponding key in object is undefined
+		Object.iterate(ot_object, (local_key, local_value) => {
+			if (object[local_key] === undefined) {
+				object[local_key] = local_value;
+			} else if (
+				typeof object[local_key] === "object" && !Array.isArray(object[local_key]) &&
+				typeof local_value === "object" && !Array.isArray(local_value)
+			) {
+				object[local_key] = Object.concat(object[local_key], local_value);
+			}
+		});
+		
+		//Return statement
+		return object;
+	};
+	
+	/**
 	 * Generates and returns a random unique ID given a specific object.
 	 * @alias Object.generateRandomID
 	 * 
