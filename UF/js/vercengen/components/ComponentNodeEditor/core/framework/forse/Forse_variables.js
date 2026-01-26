@@ -25,11 +25,17 @@ ve.NodeEditor.Forse.variables = {
 		}],
 		output_type: "any",
 		special_function: function (arg0_key, arg1_value) {
-			this.main.variables[arg0_key] = arg1_value;
+			//Convert from parameters
+			let key = arg0_key;
+			let value = arg1_value;
 			
+			//Declare local instance variables
+			this.main.variables[key] = value;
+			
+			//Return statement
 			return {
-				display_value: `${arg0_key}: ${arg1_value}`,
-				value: arg1_value
+				display_value: `${key}: ${value}`,
+				value: value
 			};
 		}
 	},
@@ -45,17 +51,23 @@ ve.NodeEditor.Forse.variables = {
 		}],
 		output_type: "string[]",
 		special_function: function (arg0_key, arg1_value) {
-			this.main.variables[arg0_key] = arg1_value.split(",");
-			let local_value = this.main.variables[arg0_key];
+			//Convert from parameters
+			let key = arg0_key;
+			let value = arg1_value;
+			
+			//Declare local instance variables
+			this.main.variables[key] = value.split(",");
+			let local_value = this.main.variables[key];
 			
 			//Iterate over all local_value elements and cast to string
 			for (let i = 0; i < local_value.length; i++)
 				if (local_value[i].toString)
 					local_value[i] = local_value[i].toString();
 			
+			//Return statement
 			return {
-				display_value: `${arg0_key}: ${local_value.length} Elements`,
-				value: this.main.variables[arg0_key]
+				display_value: `${key}: ${local_value.length} Elements`,
+				value: this.main.variables[key]
 			};
 		}
 	},
@@ -71,12 +83,18 @@ ve.NodeEditor.Forse.variables = {
 		}],
 		output_type: "number[]",
 		special_function: function (arg0_key, arg1_value) {
-			this.main.variables[arg0_key] = arg1_value.split(",").map(parseFloat);
-			let local_value = this.main.variables[arg0_key];
+			//Convert from parameters
+			let key = arg0_key;
+			let value = arg1_value;
 			
+			//Declare local instance variables
+			this.main.variables[key] = value.split(",").map(parseFloat);
+			let local_value = this.main.variables[key];
+			
+			//Return statement
 			return {
-				display_value: `${arg0_key}: ${local_value.length} Elements`,
-				value: this.main.variables[arg0_key]
+				display_value: `${key}: ${local_value.length} Elements`,
+				value: this.main.variables[key]
 			};
 		}
 	},
@@ -92,11 +110,17 @@ ve.NodeEditor.Forse.variables = {
 		}],
 		output_type: "boolean",
 		special_function: function (arg0_key, arg1_value) {
-			this.main.variables[arg0_key] = arg1_value;
+			//Convert from parameters
+			let key = arg0_key;
+			let value = arg1_value;
 			
+			//Declare local instance variables
+			this.main.variables[key] = value;
+			
+			//Return statement
 			return {
-				display_value: (arg1_value) ? `${arg0_key}: True` : `${arg0_key}: False`,
-				value: arg1_value
+				display_value: (value) ? `${key}: True` : `${key}: False`,
+				value: value
 			};
 		}
 	},
@@ -112,11 +136,17 @@ ve.NodeEditor.Forse.variables = {
 		}],
 		output_type: "number",
 		special_function: function (arg0_key, arg1_value) {
-			this.main.variables[arg0_key] = arg1_value;
+			//Convert from parameters
+			let key = arg0_key;
+			let value = arg1_value;
 			
+			//Declare local instance variables
+			this.main.variables[key] = value;
+			
+			//Return statement
 			return {
-				display_value: `${arg0_key}: ${arg1_value}`,
-				value: arg1_value
+				display_value: `${key}: ${value}`,
+				value: value
 			};
 		}
 	},
@@ -132,11 +162,17 @@ ve.NodeEditor.Forse.variables = {
 		}],
 		output_type: "string",
 		special_function: function (arg0_key, arg1_value) {
-			this.main.variables[arg0_key] = arg1_value;
+			//Convert from parameters
+			let key = arg0_key;
+			let value = arg1_value;
 			
+			//Declare local instance variables
+			this.main.variables[key] = value;
+			
+			//Return statement
 			return {
-				display_value: `${arg0_key}: ${arg1_value}`,
-				value: arg1_value
+				display_value: `${key}: ${value}`,
+				value: value
 			};
 		}
 	},
@@ -152,12 +188,18 @@ ve.NodeEditor.Forse.variables = {
 		}],
 		output_type: "any[]",
 		special_function: function (arg0_key, arg1_value) {
-			this.main.variables[arg0_key] = arg1_value.split(",");
-			let local_value = this.main.variables[arg0_key];
+			//Convert from parameters
+			let key = arg0_key;
+			let value = arg1_value;
 			
+			//Declare local instance variables
+			this.main.variables[key] = value.split(",");
+			let local_value = this.main.variables[key];
+			
+			//Return statement
 			return {
-				display_value: `${arg0_key}: ${local_value.length} Elements`,
-				value: this.main.variables[arg0_key]
+				display_value: `${key}: ${local_value.length} Elements`,
+				value: this.main.variables[key]
 			};
 		}
 	},
@@ -170,11 +212,16 @@ ve.NodeEditor.Forse.variables = {
 		}],
 		output_type: "any",
 		special_function: function (arg0_key) {
-			this.main.variables[arg0_key] = null;
+			//Convert from parameters
+			let key = arg0_key;
 			
+			//Declare local instance variables
+			this.main.variables[key] = null;
+			
+			//Return statement
 			return {
-				display_value: `${arg0_key}: null`,
-				value: this.main.variables[arg0_key]
+				display_value: `${key}: null`,
+				value: this.main.variables[key]
 			};
 		}
 	},
@@ -190,12 +237,18 @@ ve.NodeEditor.Forse.variables = {
 		}],
 		output_type: "any",
 		special_function: function (arg0_key, arg1_value) {
-			this.main.variables[arg0_key] = (typeof arg1_value === "string") ?
-				JSON.parse(arg1_value) : arg1_value;
+			//Convert from parameters
+			let key = arg0_key;
+			let value = arg1_value;
 			
+			//Declare local instance variables
+			this.main.variables[key] = (typeof value === "string") ?
+				JSON.parse(value) : value;
+			
+			//Return statement
 			return {
-				display_value: `${arg0_key}: ${arg1_value}`,
-				value: this.main.variables[arg0_key]
+				display_value: `${key}: ${value}`,
+				value: this.main.variables[key]
 			};
 		}
 	},
@@ -255,10 +308,13 @@ ve.NodeEditor.Forse.variables = {
 		}],
 		output_type: "any",
 		special_function: function (arg0_key) {
+			//Convert from parameters
+			let key = arg0_key;
+			
 			//Return statement
 			return {
-				display_value: `${arg0_key}: ${this.main.variables[arg0_key]}`,
-				value: this.main.variables[arg0_key]
+				display_value: `${key}: ${this.main.variables[key]}`,
+				value: this.main.variables[key]
 			};
 		}
 	},

@@ -13,9 +13,14 @@ ve.NodeEditor.Forse.conditionals = {
 		}],
 		output_type: "boolean",
 		special_function: (arg0_variable, arg1_variable) => {
+			//Convert from parameters
+			let variable = arg0_variable;
+			let ot_variable = arg1_variable;
+			
+			//Return statement
 			return {
-				display_value: (arg0_variable == arg1_variable) ? "True" : "False",
-				value: (arg0_variable == arg1_variable)
+				display_value: (variable == ot_variable) ? "True" : "False",
+				value: (variable == ot_variable)
 			};
 		}
 	},
@@ -31,9 +36,14 @@ ve.NodeEditor.Forse.conditionals = {
 		}],
 		output_type: "boolean",
 		special_function: (arg0_variable, arg1_variable) => {
+			//Convert from parameters
+			let variable = arg0_variable;
+			let ot_variable = arg1_variable;
+			
+			//Return statement
 			return {
-				display_value: (arg0_variable === arg1_variable) ? "True" : "False",
-				value: (arg0_variable === arg1_variable)
+				display_value: (variable === ot_variable) ? "True" : "False",
+				value: (variable === ot_variable)
 			};
 		}
 	},
@@ -49,14 +59,19 @@ ve.NodeEditor.Forse.conditionals = {
 		}],
 		output_type: "boolean",
 		special_function: (arg0_variable, arg1_variable) => {
+			//Convert from parameters
+			let variable = arg0_variable;
+			let ot_variable = arg1_variable;
+			
+			//Return statement
 			return {
-				display_value: (arg0_variable != arg1_variable) ? "True" : "False",
-				value: (arg0_variable != arg1_variable)
+				display_value: (variable != ot_variable) ? "True" : "False",
+				value: (variable != ot_variable)
 			};
 		}
 	},
 	is_not_strictly_equal: {
-		name: "Is Not Equal",
+		name: "Is Not Strictly Equal",
 		category: "Conditionals",
 		input_parameters: [{
 			name: "arg0_variable",
@@ -67,9 +82,14 @@ ve.NodeEditor.Forse.conditionals = {
 		}],
 		output_type: "boolean",
 		special_function: (arg0_variable, arg1_variable) => {
+			//Convert from parameters
+			let variable = arg0_variable;
+			let ot_variable = arg1_variable;
+			
+			//Return statement
 			return {
-				display_value: (arg0_variable !== arg1_variable) ? "True" : "False",
-				value: (arg0_variable !== arg1_variable)
+				display_value: (variable !== ot_variable) ? "True" : "False",
+				value: (variable !== ot_variable)
 			};
 		}
 	},
@@ -85,9 +105,14 @@ ve.NodeEditor.Forse.conditionals = {
 		}],
 		output_type: "boolean",
 		special_function: (arg0_variable, arg1_variable) => {
+			//Convert from parameters
+			let variable = arg0_variable;
+			let ot_variable = arg1_variable;
+			
+			//Return statement
 			return {
-				display_value: (arg0_variable >= arg1_variable) ? "True" : "False",
-				value: (arg0_variable >= arg1_variable)
+				display_value: (variable >= ot_variable) ? "True" : "False",
+				value: (variable >= ot_variable)
 			};
 		}
 	},
@@ -103,9 +128,14 @@ ve.NodeEditor.Forse.conditionals = {
 		}],
 		output_type: "boolean",
 		special_function: (arg0_variable, arg1_variable) => {
+			//Convert from parameters
+			let variable = arg0_variable;
+			let ot_variable = arg1_variable;
+			
+			//Return statement
 			return {
-				display_value: (arg0_variable > arg1_variable) ? "True" : "False",
-				value: (arg0_variable > arg1_variable)
+				display_value: (variable > ot_variable) ? "True" : "False",
+				value: (variable > ot_variable)
 			};
 		}
 	},
@@ -121,9 +151,14 @@ ve.NodeEditor.Forse.conditionals = {
 		}],
 		output_type: "boolean",
 		special_function: (arg0_variable, arg1_variable) => {
+			//Convert from parameters
+			let variable = arg0_variable;
+			let ot_variable = arg1_variable;
+			
+			//Return statement
 			return {
-				display_value: (arg0_variable <= arg1_variable) ? "True" : "False",
-				value: (arg0_variable <= arg1_variable)
+				display_value: (variable <= ot_variable) ? "True" : "False",
+				value: (variable <= ot_variable)
 			};
 		}
 	},
@@ -139,9 +174,14 @@ ve.NodeEditor.Forse.conditionals = {
 		}],
 		output_type: "boolean",
 		special_function: (arg0_variable, arg1_variable) => {
+			//Convert from parameters
+			let variable = arg0_variable;
+			let ot_variable = arg1_variable;
+			
+			//Return statement
 			return {
-				display_value: (arg0_variable < arg1_variable) ? "True" : "False",
-				value: (arg0_variable < arg1_variable)
+				display_value: (variable < ot_variable) ? "True" : "False",
+				value: (variable < ot_variable)
 			};
 		}
 	},
@@ -156,10 +196,14 @@ ve.NodeEditor.Forse.conditionals = {
 		}],
 		output_type: "boolean",
 		special_function: (arg0_boolean) => {
+			//Convert from parameters
+			let boolean = arg0_boolean;
+			
+			//Return statement
 			return {
-				abort: (!arg0_boolean),
-				display_value: (arg0_boolean) ? "True" : "False",
-				value: arg0_boolean
+				abort: (!boolean),
+				display_value: (boolean) ? "True" : "False",
+				value: boolean
 			};
 		}
 	},
@@ -168,6 +212,7 @@ ve.NodeEditor.Forse.conditionals = {
 		category: "Conditionals",
 		output_type: "boolean",
 		special_function: () => {
+			//Return statement
 			return {
 				display_value: "False",
 				value: false
@@ -179,6 +224,7 @@ ve.NodeEditor.Forse.conditionals = {
 		category: "Conditionals",
 		output_type: "boolean",
 		special_function: () => {
+			//Return statement
 			return {
 				display_value: "True",
 				value: true
@@ -190,6 +236,7 @@ ve.NodeEditor.Forse.conditionals = {
 		category: "Conditionals",
 		output_type: "any",
 		special_function: () => {
+			//Return statement
 			return {
 				display_value: "null",
 				value: null
@@ -201,6 +248,7 @@ ve.NodeEditor.Forse.conditionals = {
 		category: "Conditionals",
 		output_type: "any",
 		special_function: () => {
+			//Return statement
 			return {
 				display_value: "undefined",
 				value: undefined
@@ -221,9 +269,14 @@ ve.NodeEditor.Forse.conditionals = {
 		}],
 		output_type: "boolean",
 		special_function: (arg0_variable, arg1_variable) => {
+			//Convert from parameters
+			let variable = arg0_variable;
+			let ot_variable = arg1_variable;
+			
+			//Return statement
 			return {
-				display_value: (arg0_variable && arg1_variable) ? "True" : "False",
-				value: (arg0_variable && arg1_variable)
+				display_value: (variable && ot_variable) ? "True" : "False",
+				value: (variable && ot_variable)
 			};
 		}
 	},
@@ -236,9 +289,13 @@ ve.NodeEditor.Forse.conditionals = {
 		}],
 		output_type: "boolean",
 		special_function: (arg0_variable) => {
+			//Convert from parameters
+			let variable = arg0_variable;
+			
+			//Return statement
 			return {
-				display_value: (!arg0_variable) ? "True" : "False",
-				value: (!arg0_variable)
+				display_value: (!variable) ? "True" : "False",
+				value: (!variable)
 			};
 		}
 	},
@@ -254,9 +311,14 @@ ve.NodeEditor.Forse.conditionals = {
 		}],
 		output_type: "boolean",
 		special_function: (arg0_variable, arg1_variable) => {
+			//Convert from parameters
+			let variable = arg0_variable;
+			let ot_variable = arg1_variable;
+			
+			//Return statement
 			return {
-				display_value: (arg0_variable || arg1_variable) ? "True" : "False",
-				value: (arg0_variable || arg1_variable)
+				display_value: (variable || ot_variable) ? "True" : "False",
+				value: (variable || ot_variable)
 			};
 		}
 	},
@@ -272,10 +334,15 @@ ve.NodeEditor.Forse.conditionals = {
 		}],
 		output_type: "boolean",
 		special_function: (arg0_variable, arg1_variable) => {
+			//Convert from parameters
+			let variable = arg0_variable;
+			let ot_variable = arg1_variable;
+			
+			//Return statement
 			let is_false = false;
 			
-			if (arg0_variable && arg1_variable) is_false = true;
-			if (!arg0_variable && !arg1_variable) is_false = true;
+			if (variable && ot_variable) is_false = true;
+			if (!variable && !ot_variable) is_false = true;
 			
 			return {
 				display_value: (!is_false) ? "True" : "False",

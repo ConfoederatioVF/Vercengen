@@ -9,8 +9,11 @@ ve.NodeEditor.Forse.loops = {
 		}],
 		output_type: "number",
 		special_function: function (arg0_number) {
-			//local_node (ve.NodeEditorDatatype) is always the final argument passed by run()
-			let local_node = arguments[arguments.length - 1];
+			//Convert from parameters
+			let number = arg0_number;
+			
+			//Declare local instance variables
+			let local_node = arguments[arguments.length - 1]; //local_node (ve.NodeEditorDatatype) is always the final argument passed by run()
 			let state_key = `${local_node.id}_current_index`;
 			if (this.main.node_iterations[state_key] === undefined)
 				this.main.node_iterations[state_key] = 0;
@@ -19,8 +22,8 @@ ve.NodeEditor.Forse.loops = {
 			
 			//Return statement
 			return {
-				display_value: `Iterate ${arg0_number}x`,
-				iterations: arg0_number,
+				display_value: `Iterate ${number}x`,
+				iterations: number,
 				value: current_index,
 			};
 		}
@@ -34,10 +37,13 @@ ve.NodeEditor.Forse.loops = {
 		}],
 		output_type: "string",
 		special_function: function (arg0_object_iteration) {
+			//Convert from parameters
+			let object_iteration_obj = arg0_object_iteration;
+			
 			//Return statement
 			return {
-				display_value: `.${arg0_object_iteration.local_key}`,
-				value: arg0_object_iteration.local_key
+				display_value: `.${object_iteration_obj.local_key}`,
+				value: object_iteration_obj.local_key
 			};
 		}
 	},
@@ -50,10 +56,13 @@ ve.NodeEditor.Forse.loops = {
 		}],
 		output_type: "any",
 		special_function: function (arg0_object_iteration) {
+			//Convert from parameters
+			let object_iteration_obj = arg0_object_iteration;
+			
 			//Return statement
 			return {
 				display_value: `Iteration Value`,
-				value: arg0_object_iteration.local_value
+				value: object_iteration_obj.local_value
 			};
 		}
 	},
@@ -74,15 +83,14 @@ ve.NodeEditor.Forse.loops = {
 			let entries = Object.entries(object);
 			let iteration_count = entries.length;
 			let local_node = arguments[arguments.length - 1];
-			
-			//Track state for the current iteration index
 			let state_key = `${local_node.id}_current_index`;
+			
+			//Make sure node_iterations is defined first
 			if (this.main.node_iterations[state_key] === undefined)
 				this.main.node_iterations[state_key] = 0;
-			
 			let current_index = this.main.node_iterations[state_key]++;
 			
-			//Safely get the key and value for the current index
+			//Get the key and value for the current index
 			let current_entry = entries[current_index] || [null, null];
 			let [key, value] = current_entry;
 			
@@ -106,14 +114,20 @@ ve.NodeEditor.Forse.loops = {
 		}],
 		output_type: "any",
 		special_function: async function (arg0_number, arg1_value) {
-			let delay_time = Math.returnSafeNumber(arg0_number);
+			//Convert from parameters
+			let number = arg0_number;
+			let value = arg1_value;
 			
+			//Declare local instance variables
+			let delay_time = Math.returnSafeNumber(number);
+			
+			//Wait tick
 			await new Promise((resolve) => setTimeout(resolve, delay_time));
 			
 			//Return statement
 			return {
 				display_value: `Wait ${delay_time}ms`,
-				value: arg1_value
+				value: value
 			};
 		}
 	},

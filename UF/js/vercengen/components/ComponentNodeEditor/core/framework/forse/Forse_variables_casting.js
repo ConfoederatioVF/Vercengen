@@ -9,15 +9,18 @@ ve.NodeEditor.Forse.variables_casting = {
 		}],
 		output_type: "any",
 		special_function: function (arg0_variable) {
+			//Convert from parameters
+			let variable = arg0_variable;
+			
 			//Return statement
 			return {
 				display_value: `Type: any`,
-				value: this.main.variables[arg0_variable]
+				value: variable
 			};
 		}
 	},
 	convert_to_array: {
-		name: "Convert to String Array",
+		name: "Convert to Array",
 		category: "Variables (Casting)",
 		input_parameters: [{
 			name: "arg0_variable",
@@ -26,7 +29,10 @@ ve.NodeEditor.Forse.variables_casting = {
 		output_type: "any[]",
 		special_function: function (arg0_variable) {
 			//Convert from parameters
-			let local_value =  this.main.variables[arg0_variable];
+			let variable = arg0_variable;
+			
+			//Declare local instance variables
+			let local_value = variable;
 			
 			//Convert to array if not already an array
 			if (!Array.isArray(local_value)) local_value = Array.toArray(local_value);
@@ -48,7 +54,10 @@ ve.NodeEditor.Forse.variables_casting = {
 		output_type: "string[]",
 		special_function: function (arg0_variable) {
 			//Convert from parameters
-			let local_value =  this.main.variables[arg0_variable];
+			let variable = arg0_variable;
+			
+			//Declare local instance variables
+			let local_value = variable;
 			
 			//Convert to array if not already an array
 			if (!Array.isArray(local_value)) local_value = Array.toArray(local_value);
@@ -80,7 +89,10 @@ ve.NodeEditor.Forse.variables_casting = {
 		output_type: "number[]",
 		special_function: function (arg0_variable) {
 			//Convert from parameters
-			let local_value =  this.main.variables[arg0_variable];
+			let variable = arg0_variable;
+			
+			//Declare local instance variables
+			let local_value = variable;
 			
 			//Convert to array if not already an array
 			if (!Array.isArray(local_value)) local_value = Array.toArray(local_value);
@@ -104,9 +116,13 @@ ve.NodeEditor.Forse.variables_casting = {
 		}],
 		output_type: "boolean",
 		special_function: function (arg0_variable) {
+			//Convert from parameters
+			let variable = arg0_variable;
+			
+			//Return statement
 			return {
-				display_value: (arg0_variable) ? `boolean: true` : `boolean: false`,
-				value: (arg0_variable) ? true : false
+				display_value: (variable) ? `boolean: true` : `boolean: false`,
+				value: (variable) ? true : false
 			};
 		}
 	},
@@ -119,8 +135,13 @@ ve.NodeEditor.Forse.variables_casting = {
 		}],
 		output_type: "number",
 		special_function: function (arg0_variable) {
-			let casted_number = Math.returnSafeNumber(arg0_variable);
+			//Convert from parameters
+			let variable = arg0_variable;
 			
+			//Declare local instance variables
+			let casted_number = Math.returnSafeNumber(variable);
+			
+			//Return statement
 			return {
 				display_value: casted_number,
 				value: casted_number
@@ -136,9 +157,13 @@ ve.NodeEditor.Forse.variables_casting = {
 		}],
 		output_type: "string",
 		special_function: function (arg0_file_path) {
+			//Convert from parameters
+			let file_path = arg0_file_path;
+			
+			//Return statement
 			return {
-				display_value: arg0_file_path,
-				value: arg0_file_path
+				display_value: file_path,
+				value: file_path
 			};
 		}
 	},
@@ -151,7 +176,11 @@ ve.NodeEditor.Forse.variables_casting = {
 		}],
 		output_type: "number",
 		special_function: function (arg0_variable) {
-			let local_value = arg0_variable;
+			//Convert from parameters
+			let variable = arg0_variable;
+			
+			//Declare local instance variables
+			let local_value = variable;
 			
 			if (local_value.toString) {
 				local_value = local_value.toString();
@@ -163,6 +192,7 @@ ve.NodeEditor.Forse.variables_casting = {
 				}
 			}
 			
+			//Return statement
 			return {
 				display_value: local_value,
 				value: local_value

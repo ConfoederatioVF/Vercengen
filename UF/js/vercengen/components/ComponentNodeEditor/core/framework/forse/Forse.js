@@ -1,20 +1,5 @@
 ve.NodeEditor.Forse = class {
 	static getForseObject () {
-		//Declare local instance variables
-		let get_variable_obj = {
-			category: "Variables",
-			input_parameters: [{
-				name: "arg0_key",
-				type: "string"
-			}],
-			special_function: function (arg0_key) {
-				return {
-					display_value: `${arg0_key}: ${this.main.variables[arg0_key]}`,
-					value: this.main.variables[arg0_key]
-				};
-			}
-		};
-		
 		//Return statement
 		return {
 			project_folder: "./settings/scripts/",

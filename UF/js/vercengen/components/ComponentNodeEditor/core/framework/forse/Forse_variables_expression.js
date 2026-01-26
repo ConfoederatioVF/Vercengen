@@ -11,8 +11,14 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "any[]",
 		special_function: function (arg0_array, arg1_array) {
-			let concat_array = arg0_array.concat(arg1_array)
+			//Convert from parameters
+			let array = arg0_array;
+			let ot_array = arg1_array;
 			
+			//Declare local instance variables
+			let concat_array = array.concat(ot_array);
+			
+			//Return statement
 			return {
 				display_value: `any[${concat_array.length}]`,
 				value: concat_array
@@ -31,8 +37,14 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "number",
 		special_function: function (arg0_array, arg1_element) {
-			let index = arg0_array.indexOf(arg1_element);
+			//Convert from parameters
+			let array = arg0_array;
+			let element = arg1_element;
 			
+			//Declare local instance variables
+			let index = array.indexOf(element);
+			
+			//Return statement
 			return {
 				display_value: `${index}`,
 				value: index
@@ -48,9 +60,13 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "number",
 		special_function: function (arg0_array) {
+			//Convert from parameters
+			let array = arg0_array;
+			
+			//Return statement
 			return {
-				display_value: `${arg0_array.length}`,
-				value: arg0_array.length
+				display_value: `${array.length}`,
+				value: array.length
 			};
 		}
 	},
@@ -63,12 +79,17 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "any[]",
 		special_function: function (arg0_array) {
-			arg0_array.pop();
+			//Convert from parameters
+			let array = arg0_array;
 			
+			//Declare local instance variables
+			array.pop();
+			
+			//Return statement
 			return {
-				display_value: `any[${arg0_array.length}]`,
-				value: arg0_array
-			}
+				display_value: `any[${array.length}]`,
+				value: array
+			};
 		}
 	},
 	array_push: {
@@ -83,11 +104,17 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "any[]",
 		special_function: function (arg0_array, arg1_element) {
-			arg0_array.push(arg1_element);
+			//Convert from parameters
+			let array = arg0_array;
+			let element = arg1_element;
 			
+			//Declare local instance variables
+			array.push(element);
+			
+			//Return statement
 			return {
-				display_value: `Pushed ${arg1_element}`,
-				value: arg0_array
+				display_value: `Pushed ${element}`,
+				value: array
 			};
 		}
 	},
@@ -100,8 +127,13 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "any[]",
 		special_function: function (arg0_array) {
-			let local_value = arg0_array.reverse();
+			//Convert from parameters
+			let array = arg0_array;
 			
+			//Declare local instance variables
+			let local_value = array.reverse();
+			
+			//Return statement
 			return {
 				display_value: `any[${local_value.length}]`,
 				value: local_value
@@ -117,8 +149,13 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "any",
 		special_function: function (arg0_array) {
-			let shifted_element = arg0_array.shift();
+			//Convert from parameters
+			let array = arg0_array;
 			
+			//Declare local instance variables
+			let shifted_element = array.shift();
+			
+			//Return statement
 			return {
 				display_value: `Shifted: ${shifted_element}`,
 				value: shifted_element
@@ -140,11 +177,18 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "any[]",
 		special_function: function (arg0_array, arg1_index, arg2_how_many) {
-			arg0_array.splice(arg1_index, arg2_how_many);
+			//Convert from parameters
+			let array = arg0_array;
+			let index = arg1_index;
+			let how_many = arg2_how_many;
 			
+			//Declare local instance variables
+			array.splice(index, how_many);
+			
+			//Return statement
 			return {
-				display_value: `Spliced ${arg2_how_many} items`,
-				value: arg0_array
+				display_value: `Spliced ${how_many} items`,
+				value: array
 			};
 		}
 	},
@@ -160,11 +204,17 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "any[]",
 		special_function: function (arg0_array, arg1_element) {
-			arg0_array.unshift(arg1_element);
+			//Convert from parameters
+			let array = arg0_array;
+			let element = arg1_element;
 			
+			//Declare local instance variables
+			array.unshift(element);
+			
+			//Return statement
 			return {
-				display_value: `Unshifted ${arg1_element}`,
-				value: arg0_array
+				display_value: `Unshifted ${element}`,
+				value: array
 			};
 		}
 	},
@@ -180,8 +230,14 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "string",
 		special_function: function (arg0_array, arg1_separator) {
-			let result = arg0_array.join(arg1_separator);
+			//Convert from parameters
+			let array = arg0_array;
+			let separator = arg1_separator;
 			
+			//Declare local instance variables
+			let result = array.join(separator);
+			
+			//Return statement
 			return {
 				display_value: `"${result}"`,
 				value: result
@@ -200,8 +256,14 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "string[]",
 		special_function: function (arg0_string, arg1_separator) {
-			let result = arg0_string.split(arg1_separator);
+			//Convert from parameters
+			let string = arg0_string;
+			let separator = arg1_separator;
 			
+			//Declare local instance variables
+			let result = string.split(separator);
+			
+			//Return statement
 			return {
 				display_value: `${result.length} Elements`,
 				value: result
@@ -222,8 +284,14 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "any",
 		special_function: function (arg0_object, arg1_object) {
-			let merged = Object.assign({}, arg0_object, arg1_object);
+			//Convert from parameters
+			let object = arg0_object;
+			let ot_object = arg1_object;
 			
+			//Declare local instance variables
+			let merged = Object.assign({}, object, ot_object);
+			
+			//Return statement
 			return {
 				display_value: `Merged Object`,
 				value: merged
@@ -239,8 +307,13 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "string[]",
 		special_function: function (arg0_object) {
-			let keys = Object.keys(arg0_object);
+			//Convert from parameters
+			let object = arg0_object;
 			
+			//Declare local instance variables
+			let keys = Object.keys(object);
+			
+			//Return statement
 			return {
 				display_value: `${keys.length} Keys`,
 				value: keys
@@ -256,8 +329,13 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "any[]",
 		special_function: function (arg0_object) {
-			let values = Object.values(arg0_object);
+			//Convert from parameters
+			let object = arg0_object;
 			
+			//Declare local instance variables
+			let values = Object.values(object);
+			
+			//Return statement
 			return {
 				display_value: `${values.length} Values`,
 				value: values
@@ -278,8 +356,14 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "number",
 		special_function: function (arg0_number, arg1_number) {
-			let sum = arg0_number + arg1_number;
+			//Convert from parameters
+			let number = arg0_number;
+			let ot_number = arg1_number;
 			
+			//Declare local instance variables
+			let sum = number + ot_number;
+			
+			//Return statement
 			return {
 				display_value: `${sum}`,
 				value: sum
@@ -298,8 +382,14 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "number",
 		special_function: function (arg0_number, arg1_number) {
-			let result = Math.pow(arg0_number, arg1_number);
+			//Convert from parameters
+			let number = arg0_number;
+			let ot_number = arg1_number;
 			
+			//Declare local instance variables
+			let result = Math.pow(number, ot_number);
+			
+			//Return statement
 			return {
 				display_value: `${result}`,
 				value: result
@@ -318,8 +408,14 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "number",
 		special_function: function (arg0_number, arg1_number) {
-			let result = arg0_number % arg1_number;
+			//Convert from parameters
+			let number = arg0_number;
+			let ot_number = arg1_number;
 			
+			//Declare local instance variables
+			let result = number % ot_number;
+			
+			//Return statement
 			return {
 				display_value: `${result}`,
 				value: result
@@ -338,8 +434,14 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "number",
 		special_function: function (arg0_number, arg1_number) {
-			let result = arg0_number * arg1_number;
+			//Convert from parameters
+			let number = arg0_number;
+			let ot_number = arg1_number;
 			
+			//Declare local instance variables
+			let result = number * ot_number;
+			
+			//Return statement
 			return {
 				display_value: `${result}`,
 				value: result
@@ -358,8 +460,14 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "number",
 		special_function: function (arg0_number, arg1_number) {
-			let result = arg0_number / arg1_number;
+			//Convert from parameters
+			let number = arg0_number;
+			let ot_number = arg1_number;
 			
+			//Declare local instance variables
+			let result = number / ot_number;
+			
+			//Return statement
 			return {
 				display_value: `${result}`,
 				value: result
@@ -378,8 +486,14 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "number",
 		special_function: function (arg0_number, arg1_number) {
-			let result = arg0_number - arg1_number;
+			//Convert from parameters
+			let number = arg0_number;
+			let ot_number = arg1_number;
 			
+			//Declare local instance variables
+			let result = number - ot_number;
+			
+			//Return statement
 			return {
 				display_value: `${result}`,
 				value: result
@@ -400,8 +514,14 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "string",
 		special_function: function (arg0_string, arg1_string) {
-			let result = arg0_string + arg1_string;
+			//Convert from parameters
+			let string = arg0_string;
+			let ot_string = arg1_string;
 			
+			//Declare local instance variables
+			let result = string + ot_string;
+			
+			//Return statement
 			return {
 				display_value: result,
 				value: result
@@ -420,8 +540,14 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "boolean",
 		special_function: function (arg0_string, arg1_search) {
-			let result = arg0_string.endsWith(arg1_search);
+			//Convert from parameters
+			let string = arg0_string;
+			let search = arg1_search;
 			
+			//Declare local instance variables
+			let result = string.endsWith(search);
+			
+			//Return statement
 			return {
 				display_value: result ? "True" : "False",
 				value: result
@@ -440,9 +566,15 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "string[]",
 		special_function: function (arg0_string, arg1_regex) {
-			let regex = new RegExp(arg1_regex, "g");
-			let result = arg0_string.match(regex) || [];
+			//Convert from parameters
+			let string = arg0_string;
+			let regex_string = arg1_regex;
 			
+			//Declare local instance variables
+			let regex = new RegExp(regex_string, "g");
+			let result = string.match(regex) || [];
+			
+			//Return statement
 			return {
 				display_value: `${result.length} Matches`,
 				value: result
@@ -464,8 +596,15 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "string",
 		special_function: function (arg0_string, arg1_pattern, arg2_replacement) {
-			let result = arg0_string.replace(arg1_pattern, arg2_replacement);
+			//Convert from parameters
+			let string = arg0_string;
+			let pattern = arg1_pattern;
+			let replacement = arg2_replacement;
 			
+			//Declare local instance variables
+			let result = string.replace(pattern, replacement);
+			
+			//Return statement
 			return {
 				display_value: result,
 				value: result
@@ -487,8 +626,15 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "string",
 		special_function: function (arg0_string, arg1_pattern, arg2_replacement) {
-			let result = arg0_string.replaceAll(arg1_pattern, arg2_replacement);
+			//Convert from parameters
+			let string = arg0_string;
+			let pattern = arg1_pattern;
+			let replacement = arg2_replacement;
 			
+			//Declare local instance variables
+			let result = string.replaceAll(pattern, replacement);
+			
+			//Return statement
 			return {
 				display_value: result,
 				value: result
@@ -504,9 +650,13 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "number",
 		special_function: function (arg0_string) {
+			//Convert from parameters
+			let string = arg0_string;
+			
+			//Return statement
 			return {
-				display_value: `${arg0_string.length}`,
-				value: arg0_string.length
+				display_value: `${string.length}`,
+				value: string.length
 			};
 		}
 	},
@@ -522,8 +672,14 @@ ve.NodeEditor.Forse.variables_expression = {
 		}],
 		output_type: "boolean",
 		special_function: function (arg0_string, arg1_search) {
-			let result = arg0_string.startsWith(arg1_search);
+			//Convert from parameters
+			let string = arg0_string;
+			let search = arg1_search;
 			
+			//Declare local instance variables
+			let result = string.startsWith(search);
+			
+			//Return statement
 			return {
 				display_value: result ? "True" : "False",
 				value: result
