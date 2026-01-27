@@ -136,38 +136,29 @@
 							}
 						}
 						
+						let information_obj = local_node.ui.information;
 						let results = [];
 						let last_descriptor;
 						let is_aborted = false;
 						
-						// Run the branch logic N times
-						for (let iter = 0; iter < max_iters; iter++) {
-							let args = resolve_arguments(local_node, iter);
+						//Iterate over the branch logic for all n iterations
+						for (let x = 0; x < max_iters; x++) {
+							let args = resolve_arguments(local_node, x);
 							let sf = local_node.value.special_function;
 							let descriptor, value;
 							
 							try {
-								descriptor =
-									typeof sf === "function"
-										? await sf.call(this, ...args, local_node)
-										: sf;
+								descriptor = (typeof sf === "function") ? await sf.call(this, ...args, local_node) : sf;
 								
 								if (descriptor && descriptor.abort === true) {
 									is_aborted = true;
 									break;
 								}
 								
-								value =
-									descriptor && typeof descriptor === "object"
-										? descriptor.value
-										: descriptor;
+								value = (descriptor && typeof descriptor === "object") ? descriptor.value : descriptor;
 								
-								if (
-									!preview_mode &&
-									descriptor &&
-									typeof descriptor.run === "function"
-								) {
-									local_node.ui.information.status = "is_running";
+								if (!preview_mode && descriptor && typeof descriptor.run === "function") {
+									information_obj.status = "is_running";
 									local_node.draw();
 									await descriptor.run();
 								}
@@ -182,45 +173,37 @@
 						
 						if (is_aborted) {
 							this.main.skipped_nodes.add(local_node.id);
-							local_node.ui.information.status = "aborted";
+							information_obj.status = "aborted";
 						} else {
-							// Check if this node triggers a new iteration count for its branch
-							let explicit_iters = Math.returnSafeNumber(
-								last_descriptor?.iterations,
-								0,
-							);
+							//Check if this node triggers a new iteration count for its branch
+							let explicit_iters = Math.returnSafeNumber(last_descriptor?.iterations);
 							
 							if (explicit_iters > 0) {
 								this.main.node_iterations[local_node.id] = explicit_iters;
-								// FIX: Instead of .fill(), run remaining iterations to generate unique values
-								for (let j = 1; j < explicit_iters; j++) {
-									let args = resolve_arguments(local_node, j);
+								
+								//Iterate over all explicit_iters
+								//FIX: Instead of .fill(), run remaining iterations to generate unique values
+								for (let x = 1; x < explicit_iters; x++) {
+									let args = resolve_arguments(local_node, x);
 									let sf = local_node.value.special_function;
 									let descriptor = await sf.call(this, ...args, local_node);
-									results.push(
-										descriptor && typeof descriptor === "object"
-											? descriptor.value
-											: descriptor,
-									);
+									
+									results.push((descriptor && typeof descriptor === "object") ? descriptor.value : descriptor);
 								}
 								this.main.variables[local_node.id] = results;
 							} else {
 								this.main.node_iterations[local_node.id] = max_iters;
-								this.main.variables[local_node.id] =
-									max_iters > 1 ? results : results[0];
+								this.main.variables[local_node.id] = (max_iters > 1) ? results : results[0];
 							}
-							local_node.ui.information.status = "finished";
+							information_obj.status = "finished";
 						}
 						
 						if (!preview_mode) {
-							local_node.ui.information.alluvial_width = Math.returnSafeNumber(
-								last_descriptor?.alluvial_width,
-								1,
-							);
-							local_node.ui.information.value =
-								last_descriptor?.display_value !== undefined
-									? last_descriptor.display_value
-									: this.main.variables[local_node.id];
+							information_obj.alluvial_width = Math.returnSafeNumber(last_descriptor?.alluvial_width,1);
+							information_obj.value = (last_descriptor?.display_value !== undefined) ? 
+								last_descriptor.display_value : `${this.main.variables[local_node.id]}`;
+							information_obj.value = information_obj.value.truncate(information_obj.value, 40);
+							
 							local_node.draw();
 						}
 					}),

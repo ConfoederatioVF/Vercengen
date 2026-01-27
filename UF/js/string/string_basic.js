@@ -235,7 +235,28 @@
 	};
 	
 	/**
+	 * Truncates a string to a given length, appending the ellipsis afterwards.
+	 * @alias String.prototype.truncate
+	 * @memberof String
+	 * 
+	 * @param {string} arg0_number
+	 * @param {string} [arg1_ellipsis=" ..."]
+	 * 
+	 * @returns {string}
+	 */
+	String.prototype.truncate = function (arg0_number, arg1_ellipsis) {
+		//Convert from parameters
+		let number = Math.returnSafeNumber(arg0_number, 120);
+		let ellipsis = (arg1_ellipsis) ? arg1_ellipsis : " ...";
+		
+		//Return statement
+		if (this.length > number)
+			return `${this.substring(0, number)}${ellipsis}`;
+	};
+	
+	/**
 	 * Checks whether a given string is loosely a valid URL.
+	 * @alias String.prototype.isURL
 	 * @memberof String
 	 * 
 	 * @returns {boolean}
