@@ -1,4 +1,22 @@
+/**
+ * Internal DSL of <span color="yellow">{@link ve.NodeEditor}</span>.
+ * 
+ * ##### Static Methods:
+ * - <span color=00ffff>{@link ve.NodeEditor.Forse.getForseCustomNodesObject|getForseCustomNodesObject}</span>() | {@link Object}
+ * - <span color=00ffff>{@link ve.NodeEditor.Forse.getForseObject|getForseObject}</span>(arg0_options:{@link Object}) | {@link Object}
+ * 
+ * @memberof ve.Component.ve.NodeEditor
+ * @type {ve.NodeEditor.Forse}
+ */
 ve.NodeEditor.Forse = class {
+	/**
+	 * Returns custom nodes from Forse that are needed for recursion.
+	 * - Static method of: {@link ve.NodeEditor.Forse}
+	 * 
+	 * @alias ve.Component.ve.NodeEditor.Forse.getForseCustomNodesObject
+	 * 
+	 * @returns {Object}
+	 */
 	static getForseCustomNodesObject () {
 		//Return statement
 		return {
@@ -83,6 +101,18 @@ ve.NodeEditor.Forse = class {
 		};
 	}
 	
+	/**
+	 * Returns the configured DSL for the given {@link ve.NodeEditor} instance.
+	 * - Static method of: {@link ve.NodeEditor.Forse}
+	 * 
+	 * @alias ve.Component.ve.NodeEditor.Forse.getForseObject
+	 * 
+	 * @param {Object} [arg0_options]
+	 *  @param {boolean} [arg0_options.disable_custom_nodes=false] - Whether to disable custom nodes creation.
+	 *  @param {boolean} [arg0_options.disable_forse=false] - Whether to disable Forse itself.
+	 * 
+	 * @returns {Object}
+	 */
 	static getForseObject (arg0_options) {
 		//Convert from parameters
 		let options = (arg0_options) ? arg0_options : {};

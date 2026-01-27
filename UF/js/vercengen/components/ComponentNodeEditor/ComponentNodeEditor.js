@@ -50,6 +50,8 @@
  * - `.v`: {@link Object}
  *
  * ##### Methods:
+ * **Note.** User interactions are privated within ve.NodeEditor.
+ * 
  * - <span color=00ffff>{@link ve.NodeEditor._connect|_connect}</span>(arg0_node:{@link ve.NodeEditorDatatype}, arg1_node:{@link ve.NodeEditorDatatype}, arg2_index:{@link number}, arg3_options:{@link Object})
  * - <span color=00ffff>{@link ve.NodeEditor._disconnect|_disconnect}</span>(arg0_node:{@link ve.NodeEditorDatatype}, arg1_node:{@link ve.NodeEditorDatatype}, arg2_index:{@link number})
  * - <span color=00ffff>{@link ve.NodeEditor._select|_select}</span>(arg0_node:{@link ve.NodeEditorDatatype}, arg1_index:{@link number})
@@ -62,8 +64,8 @@
  * - <span color=00ffff>{@link ve.NodeEditor.loadSettings|loadSettings}</span>(arg0_settings:{@link Object})
  * - async <span color=00ffff>{@link ve.NodeEditor.run|run}</span>(arg0_preview_mode:{@link boolean}) | {@link Object}
  * 
- * - <span color=00ffff>{@link ve.NodeEditor.createCustomExecutionLogic}</span>(arg0_subgraph:{@link Object})
- * - <span color=00ffff>{@link ve.NodeEditor.deleteCustomNode}</span>(arg0_key:{@link string})
+ * - <span color=00ffff>{@link ve.NodeEditor.createCustomExecutionLogic|createCustomExecutionLogic}</span>(arg0_subgraph:{@link Object})
+ * - <span color=00ffff>{@link ve.NodeEditor.deleteCustomNode|deleteCustomNode}</span>(arg0_key:{@link string})
  * 
  * ##### Static Fields:
  * - `.instances`: {@link Array}<{@link ve.NodeEditor}>
