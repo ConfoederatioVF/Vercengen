@@ -3,7 +3,7 @@
  *
  * Creates a drag-and-drop Node Editor using Maptalks as a backend. Nodes are executed from a root node using a parallelised version of Kahn's algorithm, and nodes must form a directed acyclic graph (DAG). Circular references will not be executed if forced.
  * 
- * Compilation for {@link ve.NodeEditor} is 3-way and roundtrippable between Nodes <-> Code <-> Blocks, as NodeEditor extends {@link ve.ScriptManager} and its subcomponents. Nodes can be recursively grouped via custom nodes creation and Forse support.
+ * Compilation for {@link ve.NodeEditor} is 3-way and roundtrippable between Nodes <-> Code <-> Blocks through the default visual editor, as NodeEditor extends {@link ve.ScriptManager} and its subcomponents. Nodes can be recursively grouped via custom nodes creation and Forse support.
  *
  * If you need a loop, call `async run()` multiple times instead. For Forse as a DSL, see {@link ve.NodeEditor.Forse}.
  * - Functional binding: <span color=00ffff>veNodeEditor</span>().
