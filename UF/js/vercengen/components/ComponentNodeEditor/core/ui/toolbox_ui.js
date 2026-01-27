@@ -2,6 +2,8 @@
 {
 	/**
 	 * Draws the toolbox UI and displays it in a {@link ve.Window}.
+	 * - Method of: {@link ve.NodeEditor}
+	 * 
 	 * @alias ve.Component.ve.NodeEditor.prototype.drawToolbox
 	 * @instance
 	 * @memberof ve.NodeEditor

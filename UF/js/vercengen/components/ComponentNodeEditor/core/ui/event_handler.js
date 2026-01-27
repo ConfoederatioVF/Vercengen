@@ -2,6 +2,8 @@
 {
 	/**
 	 * UI function. Draws a connection between two nodes as a user interaction.
+	 * - Method of: {@link ve.NodeEditor}
+	 * 
 	 * @alias ve.Component.ve.NodeEditor.prototype._connect
 	 * @instance
 	 * @memberof ve.NodeEditor
@@ -57,6 +59,8 @@
 	
 	/**
 	 * UI function. Disconnects two nodes as a user interaction.
+	 * - Method of: {@link ve.NodeEditor}
+	 * 
 	 * @alias ve.Component.ve.NodeEditor.prototype._disconnect
 	 * @instance
 	 * @memberof ve.NodeEditor
@@ -85,6 +89,8 @@
 	
 	/**
 	 * UI function. Selects a node index.
+	 * - Method of: {@link ve.NodeEditor}
+	 * 
 	 * @alias ve.Component.ve.NodeEditor.prototype._select
 	 * @instance
 	 * @memberof ve.NodeEditor

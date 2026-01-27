@@ -2,7 +2,12 @@
 {
 	/**
 	 * Returns the current DAG sequence as a node.
+	 * - Method of: {@link ve.NodeEditor}
+	 * 
 	 * @alias ve.Component.NodeEditor.prototype.getDAGSequence
+	 * @instance
+	 * @memberof ve.NodeEditor
+	 * @this ve.NodeEditor
 	 * 
 	 * @returns {Array.<ve.NodeEditorDatatype[]>}
 	 */
@@ -65,9 +70,14 @@
 	
 	/**
 	 * Run the current execution cycle/model as a DAG.
-	 * @alias ve.Component.NodeEditor.prototype.run
+	 * - Method of {@link ve.NodeEditor}
 	 * 
-	 * @param {boolean} arg0_preview_mode
+	 * @alias ve.Component.NodeEditor.prototype.run
+	 * @instance
+	 * @memberof ve.NodeEditor
+	 * @this ve.NodeEditor
+	 * 
+	 * @param {boolean} [arg0_preview_mode=false]
 	 * 
 	 * @returns {Object}
 	 */

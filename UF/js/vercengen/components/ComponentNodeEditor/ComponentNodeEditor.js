@@ -3,7 +3,7 @@
  *
  * Creates a drag-and-drop Node Editor using Maptalks as a backend. Nodes are executed from a root node using a parallelised version of Kahn's algorithm, and nodes must form a directed acyclic graph (DAG). Circular references will not be executed if forced.
  *
- * If you need a loop, call `async run()` multiple times instead.
+ * If you need a loop, call `async run()` multiple times instead. For Forse as a DSL, see {@link ve.NodeEditor.Forse}.
  * - Functional binding: <span color=00ffff>veNodeEditor</span>().
  *
  * ##### Constructor:
@@ -61,6 +61,9 @@
  * - <span color=00ffff>{@link ve.NodeEditor.getDefaultBaseLayer|getDefaultBaseLayer}</span>() | {@link Object}
  * - <span color=00ffff>{@link ve.NodeEditor.loadSettings|loadSettings}</span>(arg0_settings:{@link Object})
  * - async <span color=00ffff>{@link ve.NodeEditor.run|run}</span>(arg0_preview_mode:{@link boolean}) | {@link Object}
+ * 
+ * - <span color=00ffff>{@link ve.NodeEditor.createCustomExecutionLogic}</span>(arg0_subgraph:{@link Object})
+ * - <span color=00ffff>{@link ve.NodeEditor.deleteCustomNode}</span>(arg0_key:{@link string})
  * 
  * ##### Static Fields:
  * - `.instances`: {@link Array}<{@link ve.NodeEditor}>
@@ -199,7 +202,7 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 		let data = (typeof arg0_value === "string") ? JSON.parse(arg0_value) : arg0_value;
 		
 		//Declare local instance variables
-		if (!data) return;
+		if (!data) return; //Internal guard clause if data is not valid
 			this.clear(); //Reset instance first
 		
 		//Handle custom nodes
@@ -269,9 +272,7 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 	loadSettings (arg0_settings) {}
 };
 
-/**
- * Functional binding for ve.NodeEditor.
- */
+//Functional binding
 veNodeEditor = function () {
 	return new ve.NodeEditor(...arguments);
 };

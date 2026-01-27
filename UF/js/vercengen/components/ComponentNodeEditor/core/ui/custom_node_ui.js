@@ -2,6 +2,8 @@
 {
 	/**
 	 * Opens custom node editor window. Can optionally edit an existing node.
+	 * - Method of: {@link ve.NodeEditor}
+	 * 
 	 * @alias ve.Component.ve.NodeEditor.prototype.openCustomNodeEditor
 	 * @instance
 	 * @memberof ve.NodeEditor

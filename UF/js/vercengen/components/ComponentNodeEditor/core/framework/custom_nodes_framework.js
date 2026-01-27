@@ -2,7 +2,12 @@
 {
 	/**
 	 * Generates logic for custom nodes.
+	 * - Method of: {@link ve.NodeEditor}
+	 * 
 	 * @alias ve.Component.NodeEditor.prototype.createCustomExecutionLogic
+	 * @instance
+	 * @memberof ve.NodeEditor
+	 * @this ve.NodeEditor
 	 * 
 	 * @param {Object} arg0_subgraph
 	 * 
@@ -40,7 +45,12 @@
 	
 	/**
 	 * Deletes a custom node definition.
+	 * - Method of: {@link ve.NodeEditor}
+	 * 
 	 * @alias ve.Component.NodeEditor.prototype.deleteCustomNode
+	 * @instance
+	 * @memberof ve.NodeEditor
+	 * @this ve.NodeEditor
 	 * 
 	 * @param {string} arg0_key
 	 */
