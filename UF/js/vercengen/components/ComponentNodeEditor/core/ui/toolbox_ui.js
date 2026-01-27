@@ -127,15 +127,11 @@
 									new ve.ContextMenu(
 										{
 											edit_node: new ve.Button(
-												() => {
-													this._openCustomNodeEditor(local_key);
-												},
+												() => this._openCustomNodeEditor(local_key),
 												{ name: "<icon>edit</icon> Edit Node" },
 											),
 											delete_node: new ve.Button(
-												() => {
-													this._deleteCustomNode(local_key);
-												},
+												() => this.deleteCustomNode(local_key),
 												{ name: "<icon>delete</icon> Delete Node" },
 											),
 										},

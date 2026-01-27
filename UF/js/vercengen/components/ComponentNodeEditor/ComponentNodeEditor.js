@@ -186,30 +186,22 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");
-		this.element.instance = this;
-		this.element.setAttribute("component", "ve-node-editor");
-		HTML.setAttributesObject(this.element, options.attributes);
-		
+			this.element.instance = this;
+			this.element.setAttribute("component", "ve-node-editor");
+			HTML.setAttributesObject(this.element, options.attributes);
 		this.map_el = document.createElement("div");
-		this.map_el.id = "map-container";
-		this.element.appendChild(this.map_el);
+			this.map_el.id = "map-container";
+			this.element.appendChild(this.map_el);
 		
 		if (ve.registry.debug_mode) {
-			let debug_button = new ve.Button(
-				() => {
-					console.log(this.getDAGSequence());
-				},
-				{ name: "Debug" },
-			);
+			let debug_button = new ve.Button(() => console.log(this.getDAGSequence()), { 
+				name: "Debug"
+			});
 			debug_button.bind(this.element);
 		}
-		
-		let run_button = new ve.Button(
-			() => {
-				this.run().then(() => ve.NodeEditorDatatype.draw(this));
-			},
-			{ name: "Run" },
-		);
+		let run_button = new ve.Button(() => this.run().then(() => ve.NodeEditorDatatype.draw(this)), { 
+			name: "Run" 
+		});
 		run_button.bind(this.element);
 		
 		this.id = Class.generateRandomID(ve.NodeEditor);
@@ -218,11 +210,8 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 			zoom: 14,
 			baseLayer: this.getDefaultBaseLayer(),
 		});
-		
-		this.node_layer = new maptalks.VectorLayer("nodes", [], {
-			hitDetect: true,
-		});
-		this.node_layer.addTo(this.map);
+		this.node_layer = new maptalks.VectorLayer("nodes", [], { hitDetect: true });
+			this.node_layer.addTo(this.map);
 		this.options = options;
 		
 		this.main = {
@@ -237,6 +226,7 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 			variables: {},
 		};
 		
+		//Handle map events; populate values
 		this.map.addEventListener("click", (e) => {
 			this._mouse_coords = e.coordinate;
 		});
@@ -279,83 +269,79 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 	 * @memberof ve.Component.ve.NodeEditor
 	 * @param {Object} arg0_value
 	 */
-	set v(arg0_value) {
+	set v (arg0_value) {
 		//Convert from parameters
-		let data =
-			typeof arg0_value === "string" ? JSON.parse(arg0_value) : arg0_value;
+		let data = (typeof arg0_value === "string") ? JSON.parse(arg0_value) : arg0_value;
 		
 		//Declare local instance variables
 		if (!data) return;
-		this.clear();
+			this.clear(); //Reset instance first
 		
-		if (data.map_state) {
-			this.map.setCenter(data.map_state.center);
-			this.map.setZoom(data.map_state.zoom);
-		}
-		
+		//Handle custom nodes
 		if (data.custom_node_types) {
 			this.main.custom_node_types = data.custom_node_types;
 			Object.keys(this.main.custom_node_types).forEach((key) => {
-				let def = this.main.custom_node_types[key];
-				if (def.subgraph) {
-					def.special_function = this._createCustomExecutionLogic(def.subgraph);
-				}
+				let local_custom_node = this.main.custom_node_types[key];
+				if (local_custom_node.subgraph)
+					local_custom_node.special_function = this.createCustomExecutionLogic(local_custom_node.subgraph);
 			});
 			this.options.node_types = {
 				...this.options.node_types,
 				...this.main.custom_node_types,
 			};
 		}
-		
+		//Handle map state (zoom/position)
+		if (data.map_state) {
+			this.map.setCenter(data.map_state.center);
+			this.map.setZoom(data.map_state.zoom);
+		}
+		//Handle non-custom nodes
 		if (data.nodes && Array.isArray(data.nodes)) {
 			data.nodes.forEach((node_data) => {
 				let definition = this.options.node_types[node_data.key];
 				if (definition) {
-					let category_options =
-						this.options.category_types[definition.category] || {};
-					let new_node = new ve.NodeEditorDatatype(
-						{
-							...definition,
-							...node_data,
-						},
-						{
-							category_options: category_options,
-							node_editor: this,
-							...definition.options,
-						},
-					);
+					let category_options = this.options.category_types[definition.category] || {};
+					let new_node = new ve.NodeEditorDatatype({
+						...definition,
+						...node_data,
+					}, {
+						category_options: category_options,
+						node_editor: this,
+						...definition.options,
+					});
 					this.main.nodes.push(new_node);
 				} else {
-					console.warn(
-						`Node type '${node_data.key}' not found in registry. Skipping node.`,
-					);
+					console.warn(`Node type '${node_data.key}' not found in registry. Skipping node.`);
 				}
 			});
 			
-			this.main.nodes.forEach((node) => {
-				if (node._serialised_connections) {
-					node.connections = [];
-					node._serialised_connections.forEach(([target_id, target_index]) => {
-						// FIX: Pass 'this' to getNode to scope lookup to this editor
+			//Iterate over all nodes and set their connections
+			this.main.nodes.forEach((local_node) => {
+				if (local_node._serialised_connections) {
+					local_node.connections = [];
+					local_node._serialised_connections.forEach(([target_id, target_index]) => {
+						//Pass 'this' to getNode to scope lookup to this editor
 						let target_node = ve.NodeEditorDatatype.getNode(target_id, this);
+						
 						if (target_node) {
-							node.connections.push([target_node, target_index]);
+							local_node.connections.push([target_node, target_index]);
 							if (target_index > 0)
 								target_node.dynamic_values[target_index - 1] = true;
 						}
 					});
-					delete node._serialised_connections;
+					delete local_node._serialised_connections;
 				}
 			});
 		}
-		
+		//Handle settings
 		if (data.settings)
 			this.main.settings = { ...this.main.settings, ...data.settings };
 		
+		//Draw NodeEditor
 		ve.NodeEditorDatatype.draw(this);
 	}
 	
-	loadSettings(arg0_settings) {}
+	loadSettings (arg0_settings) {}
 };
 
 /**

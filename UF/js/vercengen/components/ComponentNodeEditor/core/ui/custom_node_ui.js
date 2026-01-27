@@ -79,7 +79,7 @@
 					show_alluvial: false,
 				},
 				subgraph: graph_data,
-				special_function: this._createCustomExecutionLogic(graph_data),
+				special_function: this.createCustomExecutionLogic(graph_data),
 			};
 			
 			this.main.custom_node_types[node_key] = custom_definition;

@@ -1,7 +1,8 @@
 //Initialise methods
 {
 	/**
-	 * Clears all nodes.
+	 * Clears the current instance, disposing all existing nodes and user interactions.
+	 * @alias ve.Component.NodeEditor.prototype.clear
 	 */
 	ve.NodeEditor.prototype.clear = function () {
 		//Declare local instance variables
@@ -17,6 +18,12 @@
 		this.main.variables = {};
 	};
 	
+	/**
+	 * Returns the canvas element of the NodeEditor.
+	 * @alias ve.Component.NodeEditor.prototype.getCanvas
+	 * 
+	 * @returns {HTMLCanvasElement}
+	 */
 	ve.NodeEditor.prototype.getCanvas = function () {
 		//Declare local instance variables
 		if (!this._canvas) this._canvas = document.createElement("canvas");
@@ -25,6 +32,12 @@
 		return this._canvas;
 	};
 	
+	/**
+	 * Fetches the default base layer as a tile layer. Used for the actual dark graph background.
+	 * @alias ve.Component.NodeEditor.prototype.getDefaultBaseLayer
+	 * 
+	 * @returns {maptalks.TileLayer}
+	 */
 	ve.NodeEditor.prototype.getDefaultBaseLayer = function () {
 		//Declare local instance variables
 		let base_layer = new maptalks.TileLayer("base", {
