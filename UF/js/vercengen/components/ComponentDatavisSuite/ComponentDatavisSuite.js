@@ -26,6 +26,18 @@
  *   - `.table_value`: {@link Object} - The ve.Spreadsheet value that can be used to restore both formulas and values.
  * - `arg1_options`: {@link Object}
  *   - `.dark_mode=true`: {@link boolean}
+ *   
+ * ##### Methods:
+ * - <span color=00ffff>{@link ve.DatavisSuite.drawEditGraph|drawEditGraph}</span>()
+ * - <span color=00ffff>{@link ve.DatavisSuite.drawEditSeriesHierarchy|drawEditSeriesHierarchy}</span>() | {@link ve.Hierarchy}
+ * - <span color=00ffff>{@link ve.DatavisSuite.drawGraphs|drawGraphs}</span>(arg0_resize_only:{@link boolean})
+ * - <span color=00ffff>{@link ve.DatavisSuite.getAllSeriesNames|getAllSeriesNames}</span>() | {@link Object}
+ * - <span color=00ffff>{@link ve.DatavisSuite.getSeriesData|getSeriesData}</span>(arg0_series_id:{@link string}) | {@link Array}<{@link Array}<{@link Object}>>
+ * - <span color=00ffff>{@link ve.DatavisSuite.getSeriesName|getSeriesName}</span>(arg0_series_obj:{@link Object}) | {@link string}
+ * - <span color=00ffff>{@link ve.DatavisSuite.openEditGraph|openEditGraph}</span>()
+ * - <span color=00ffff>{@link ve.DatavisSuite.openEditSeries|openEditSeries}</span>(arg0_series_obj:{@link Object})
+ * - <span color=00ffff>{@link ve.DatavisSuite.openScriptManager|openEditScriptManager}</span>()
+ * - <span color=00ffff>{@link ve.DatavisSuite.redraw|redraw}</span>()
  *
  * @augments ve.Component
  * @memberof ve.Component
@@ -71,15 +83,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				}, { name: "Series",
 					style: topbar_button_style }),
 				script_button: new ve.Button(() => {
-					if (this.script_manager_window) this.script_manager_window.close();
-					this.script_manager_window = veWindow({
-						script_manager: new ve.ScriptManager()
-					}, {
-						name: "ScriptManager (Datavis Suite)",
-						
-						can_rename: false,
-						width: "80dvw"
-					})
+					this.openScriptManager();
 				}, { name: "ScriptManager", 
 					style: topbar_button_style }),
 				view_button: new ve.Button(() => {}, { name: "View", 
@@ -123,6 +127,14 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		this.table_obj = this.components_obj.scene_interface.table;
 	}
 	
+	/**
+	 * Returns the current DatavisSuite value as a JSON-compatible object.
+	 * - Accessor of: {@link ve.DatavisSuite}
+	 * 
+	 * @alias v
+	 * @memberof ve.Component.ve.DatavisSuite
+	 * @type {{data_scripts: Object, graphs: Object, series: Object, table_value: Object}}
+	 */
 	get v () {
 		//Declare local instance variables
 		let graphs_obj = {};
@@ -143,6 +155,15 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		};
 	}
 	
+	/**
+	 * Sets the current DatavisSuite value from a JSON-compatible object.
+	 * - Accessor of: {@link ve.DatavisSuite}
+	 * 
+	 * @alias v
+	 * @memberof ve.Component.ve.DatavisSuite
+	 * @param {{data_scripts: Object, graphs: Object, series: Object, table_value: Object}} arg0_value
+	 * @type Object
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let value = (arg0_value) ? arg0_value : {};
@@ -171,6 +192,13 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			this.drawEditGraph();
 	}
 	
+	/**
+	 * Refreshes the edit graph window.
+	 * - Method of: {@link ve.DatavisSuite}
+	 *
+	 * @alias drawEditGraph
+	 * @memberof ve.Component.ve.DatavisSuite
+	 */
 	drawEditGraph () {
 		//Declare local instance variables
 		let actions_bar = new ve.HierarchyDatatype({
@@ -419,6 +447,15 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		}
 	}
 	
+	/**
+	 * Refreshes the edit series window.
+	 * - Method of: {@link ve.DatavisSuite}
+	 *
+	 * @alias drawEditSeriesHierarchy
+	 * @memberof ve.Component.ve.DatavisSuite
+	 * 
+	 * @returns {ve.Hierarchy}
+	 */
 	drawEditSeriesHierarchy () {
 		let actions_bar = new ve.HierarchyDatatype({
 			create_new_series: new ve.Button(() => {
@@ -515,6 +552,15 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		return new_hierarchy;
 	}
 	
+	/**
+	 * Draws graphs and attempts to update them.
+	 * - Method of: {@link ve.DatavisSuite}
+	 *
+	 * @alias drawGraphs
+	 * @memberof ve.Component.ve.DatavisSuite
+	 * 
+	 * @param {boolean} [arg0_resize_only=false]
+	 */
 	drawGraphs (arg0_resize_only) {
 		//Convert from parameters
 		let resize_only = arg0_resize_only;
@@ -543,6 +589,15 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			}
 	}
 	
+	/**
+	 * Returns an {@link Object} of current series names.
+	 * - Method of: {@link ve.DatavisSuite}
+	 *
+	 * @alias getAllSeriesNames
+	 * @memberof ve.Component.ve.DatavisSuite
+	 * 
+	 * @returns {{"<series_key>": string}}
+	 */
 	getAllSeriesNames () {
 		//Declare local instance variables
 		let return_obj = {};
@@ -555,6 +610,17 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		return return_obj;
 	}
 	
+	/**
+	 * Returns series data as a 2D array of objects.
+	 * - Method of: {@link ve.DatavisSuite}
+	 *
+	 * @alias getSeriesData
+	 * @memberof ve.Component.ve.DatavisSuite
+	 * 
+	 * @param {string} arg0_series_id
+	 * 
+	 * @returns {Array.<Object[]>}
+	 */
 	getSeriesData (arg0_series_id) {
 		//Convert from parameters
 		let series_id = arg0_series_id;
@@ -568,6 +634,17 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		});
 	}
 	
+	/**
+	 * Returns the series name from a given series object.
+	 * - Method of: {@link ve.DatavisSuite}
+	 *
+	 * @alias getSeriesName
+	 * @memberof ve.Component.ve.DatavisSuite
+	 * 
+	 * @param {Object} arg0_series_obj
+	 * 
+	 * @returns {string}
+	 */
 	getSeriesName (arg0_series_obj) {
 		//Convert from parameters
 		let series_obj = (arg0_series_obj) ? arg0_series_obj : {};
@@ -588,6 +665,13 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		return series_name;
 	}
 	
+	/**
+	 * Opens the edit graph window.
+	 * - Method of: {@link ve.DatavisSuite}
+	 *
+	 * @alias openEditGraph
+	 * @memberof ve.Component.ve.DatavisSuite
+	 */
 	openEditGraph () {
 		//Close this.graph_window if already open
 		if (this.graph_window) this.graph_window.close();
@@ -644,6 +728,15 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		this.drawEditGraph();
 	}
 	
+	/**
+	 * Opens the edit series window.
+	 * - Method of: {@link ve.DatavisSuite}
+	 *
+	 * @alias openEditSeries
+	 * @memberof ve.Component.ve.DatavisSuite
+	 * 
+	 * @param arg0_series_obj
+	 */
 	openEditSeries (arg0_series_obj) {
 		//Convert from parameters
 		let series_obj = (arg0_series_obj) ? arg0_series_obj : {};
@@ -690,6 +783,13 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		});
 	}
 	
+	/**
+	 * Opens the edit series hierarchy window.
+	 * - Method of: {@link ve.DatavisSuite}
+	 *
+	 * @alias openEditSeriesHierarchy
+	 * @memberof ve.Component.ve.DatavisSuite
+	 */
 	openEditSeriesHierarchy () {
 		//Close this.series_window if already open
 		if (this.series_window) this.series_window.close();
@@ -705,10 +805,33 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		this.drawEditSeriesHierarchy();
 	}
 	
+	/**
+	 * Opens the {@link ve.ScriptManager} widow for visual macro scripting.
+	 * - Method of: {@link ve.DatavisSuite}
+	 *
+	 * @alias openScriptManager
+	 * @memberof ve.Component.ve.DatavisSuite
+	 */
 	openScriptManager () {
-		
+		//Close script manager window if already open
+		if (this.script_manager_window) this.script_manager_window.close();
+		this.script_manager_window = veWindow({
+			script_manager: new ve.ScriptManager()
+		}, {
+			name: "ScriptManager (Datavis Suite)",
+			
+			can_rename: false,
+			width: "80dvw"
+		})
 	}
 	
+	/**
+	 * Redraws the current {@link ve.DatavisSuite} component.
+	 * - Method of: {@link ve.DatavisSuite}
+	 * 
+	 * @alias redraw
+	 * @memberof ve.Component.ve.DatavisSuite
+	 */
 	redraw () {
 		//Reset HTML, then rebind all this.components_obj
 		//this.element.innerHTML = "";
