@@ -10,6 +10,7 @@
 	
 	/**
 	 * Formats an array into a string.
+	 * @alias String.formatArray
 	 * @memberof String
 	 * 
 	 * @param {Array} arg0_array
@@ -40,6 +41,7 @@
 	
 	/**
 	 * Formats a Date object into a default string.
+	 * @alias String.formatDate
 	 * @memberof String
 	 * 
 	 * @param {Object} arg0_date
@@ -62,6 +64,7 @@
 	
 	/**
 	 * Formats a date length into a string given a number of seconds.
+	 * @alias String.formatDateLength
 	 * @memberof String
 	 * 
 	 * @param {number} arg0_seconds
@@ -86,6 +89,7 @@
 	
 	/**
 	 * Formats an object as a given string.
+	 * @alias String.formatObject
 	 * @memberof String
 	 * 
 	 * @param {Object} arg0_object
@@ -117,6 +121,7 @@
 	
 	/**
 	 * Formats a number based off of the selected locale, rounding it to the specified number of places.
+	 * @alias String.formatNumber
 	 * @memberof String
 	 * 
 	 * @param {number} arg0_number
@@ -138,6 +143,7 @@
 	
 	/**
 	 * Formats the type name of a given value based off its actual JS type.
+	 * @alias String.formatTypeName
 	 * @memberof String
 	 * 
 	 * @param {any} arg0_value
@@ -163,6 +169,7 @@
 	
 	/**
 	 * Returns spreadsheet formatted coords (i.e. 'A1', 'ZZ15') given a numeric coords pair (1-indexed).
+	 * @alias String.getSpreadsheetCell
 	 * @memberof String
 	 * 
 	 * @param {number} arg0_x
@@ -184,6 +191,7 @@
 	
 	/**
 	 * Returns the spreadsheet column (i.e. 'A', 'ZZ') given an X coordinate number.
+	 * @alias String.getSpreadsheetColumn
 	 * @memberof String
 	 * 
 	 * @param {number} arg0_x
@@ -209,6 +217,7 @@
 	
 	/**
 	 * Ordinalises a given number and returns it as a string.
+	 * @alias String.ordinalise
 	 * @memberof String
 	 * 
 	 * @param {number} arg0_number

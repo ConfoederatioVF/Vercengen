@@ -1,5 +1,11 @@
 //Initialise methods
 {
+	/**
+	 * Returns the current DAG sequence as a node.
+	 * @alias ve.Component.NodeEditor.prototype.getDAGSequence
+	 * 
+	 * @returns {Array.<ve.NodeEditorDatatype[]>}
+	 */
 	ve.NodeEditor.prototype.getDAGSequence = function () {
 		//Declare local instance variables
 		let adjacency = new Map();
@@ -57,6 +63,14 @@
 		return layers;
 	};
 	
+	/**
+	 * Run the current execution cycle/model as a DAG.
+	 * @alias ve.Component.NodeEditor.prototype.run
+	 * 
+	 * @param {boolean} arg0_preview_mode
+	 * 
+	 * @returns {Object}
+	 */
 	ve.NodeEditor.prototype.run = async function (arg0_preview_mode) {
 		//Convert from parameters
 		let preview_mode = arg0_preview_mode;
