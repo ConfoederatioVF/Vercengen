@@ -47,7 +47,6 @@ ve.Range = class extends ve.Component {
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-range");
 			this.element.instance = this;
-		
 		this.options = options;
 		this.value = value;
 		
