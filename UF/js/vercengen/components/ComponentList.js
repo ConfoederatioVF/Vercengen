@@ -37,14 +37,14 @@ ve.List = class extends ve.Component { //[WIP] - Refactor at a later date
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");
-		this.element.setAttribute("component", "ve-horizontal-list");
-		if (options.attributes)
-			Object.iterate(options.attributes, (local_key, local_value) => {
-				this.element.setAttribute(local_key, local_value.toString());
-			});
-		this.element.instance = this;
-		this.element.style.alignItems = "center";
-		this.element.style.display = "flex";
+			this.element.setAttribute("component", "ve-horizontal-list");
+			if (options.attributes)
+				Object.iterate(options.attributes, (local_key, local_value) => {
+					this.element.setAttribute(local_key, local_value.toString());
+				});
+			this.element.instance = this;
+			this.element.style.alignItems = "center";
+			this.element.style.display = "flex";
 		
 		//Format html_string
 		let html_string = [];
@@ -59,7 +59,7 @@ ve.List = class extends ve.Component { //[WIP] - Refactor at a later date
 		this.shift_positions = 1;
 		this.value = Array.toArray(value);
 		
-		// --- Logic Update Start ---
+		//Update logic for insertion
 		if (!options.do_not_allow_insertion) {
 			this.add_item_button = new ve.Button(() => {
 				this.addItem();
@@ -67,14 +67,12 @@ ve.List = class extends ve.Component { //[WIP] - Refactor at a later date
 			}, { name: "<icon>add</icon>", tooltip: "Add Item" });
 			this.add_item_button.bind(this.element);
 			
-			// Determine the template component (Source)
-			// Priority: 1. Options Placeholder, 2. First element of existing array
-			let source_component = options.placeholder || this.value[0];
+			//Determine the template component (source)
+			let source_component = (options.placeholder) ? options.placeholder : this.value[0];
 			
 			if (source_component) {
 				try {
-					// 1. Determine Class Name
-					// If .class_name exists on component, use it. Otherwise derive from Constructor name.
+					//1. Determine Class Name
 					if (source_component.class_name) {
 						this.class_name = source_component.class_name;
 					} else {
@@ -82,27 +80,25 @@ ve.List = class extends ve.Component { //[WIP] - Refactor at a later date
 						this.class_name = source_component.constructor.name.replace(/^ve/, "");
 					}
 					
-					// 2. Determine Placeholder Value
+					//2. Determine Placeholder Value
 					this.placeholder = source_component.v;
 					
 				} catch (e) {
+					//Disable button if we fail to resolve template
 					console.error(`Class name/Placeholder could not be found for template:`, source_component, e);
-					// Disable button if we fail to resolve template
 					this.add_item_button.hide();
 				}
 			} else {
-				// Case: Empty array AND no placeholder option provided.
-				// We cannot know what to insert, so we hide the add button.
+				//Empty array and no placeholder option provided, we cannot know what to insert, so we hide the add button.
 				this.add_item_button.hide();
 			}
 			
 			this.overlay_window = undefined;
 		}
-		// --- Logic Update End ---
-		
 		if (!this.options.do_not_display_info_button) {
 			this.info_button = new ve.Button(() => {}, {
-				name: "<icon>info</icon>", tooltip: `<kbd>RMB</kbd>: ${loc("ve.registry.localisation.List_info_edit_item")}` });
+				name: "<icon>info</icon>", tooltip: `<kbd>RMB</kbd>: ${loc("ve.registry.localisation.List_info_edit_item")}` 
+			});
 			this.info_button.bind(this.element);
 		}
 		

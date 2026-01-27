@@ -93,16 +93,160 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		this.fireFromBinding();
 	}
 	
-	// --- Data Helpers ---
+	_getType (arg0_value) {
+		//Convert from parameters
+		let value = arg0_value;
+		
+		//Return statement
+		if (Array.isArray(value)) return "array";
+		if (value === null) return "null";
+		return typeof value;
+	}
 	
-	_moveArrayItem(arr, old_index, new_index) {
+	_moveArrayItem (arg0_array, arg1_old_index, arg2_new_index) {
+		//Convert from parameters
+		let arr = arg0_array;
+		let old_index = arg1_old_index;
+		let new_index = arg2_new_index;
+		
+		//new_index; old_index handling
 		if (new_index >= arr.length) new_index = arr.length - 1;
 		if (new_index < 0) new_index = 0;
-		if (old_index === new_index) return;
-		const item = arr.splice(old_index, 1)[0];
+		if (old_index === new_index) return; //Internal guard clause if it is being moved into the same item
+		
+		let item = arr.splice(old_index, 1)[0];
 		arr.splice(new_index, 0, item);
+		
+		//Refresh view and fire to binding
 		this.refresh();
 		this.fireToBinding();
+	}
+	
+	_openAddModal (arg0_target_obj) {
+		//Convert from parameters
+		let target_obj = arg0_target_obj;
+		
+		//Declare local instance variables
+		let is_array = Array.isArray(target_obj);
+		
+		let components_obj = {
+			info: new ve.HTML((is_array) ? "Select the type of item to push to the array." : "Define the key name and value type."),
+			type_select: new ve.Select({
+				string: { name: "String", selected: true },
+				number: { name: "Number" },
+				boolean: { name: "Boolean" },
+				object: { name: "Object" },
+				array: { name: "Array" },
+				null: { name: "Null" }
+			}, {
+				style: { width: "100%", marginBottom: "var(--cell-padding)" }
+			}),
+			confirm_button: new ve.Button(() => {
+				let selected_type = this.modal_window.components_obj.type_select.v;
+				let new_key = (is_array) ? target_obj.length : this.modal_window.components_obj.key_name.v;
+				
+				if (!is_array && !new_key) {
+					new ve.Toast("Please enter a property name.");
+					return;
+				}
+				if (!is_array && target_obj.hasOwnProperty(new_key)) {
+					new ve.Toast(`Property "${new_key}" already exists.`);
+					return;
+				}
+				
+				let new_value = null;
+				switch (selected_type) {
+					case "string": new_value = ""; break;
+					case "number": new_value = 0; break;
+					case "boolean": new_value = false; break;
+					case "object": new_value = {}; break;
+					case "array": new_value = []; break;
+					case "null": new_value = null; break;
+				}
+				
+				if (is_array) target_obj.push(new_value);
+				else target_obj[new_key] = new_value;
+				
+				this.modal_window.close();
+				this.refresh();
+				this.fireToBinding();
+				
+			}, { name: "Add Item", style: { width: "100%" } })
+		};
+		if (!is_array)
+			components_obj.key_name = new ve.Text("", {
+				placeholder: "Property Name",
+				style: { marginBottom: "var(--cell-padding)" }
+			});
+		
+		//Open modal_window if possible
+		if (this.modal_window) this.modal_window.close();
+		this.modal_window = new ve.Window(components_obj, {
+			name: (is_array) ? "Add Element to Array" : "Add Variable",
+			can_rename: false
+		});
+	}
+	
+	_openChangeTypeModal (arg0_target_object, arg1_key) {
+		//Convert from parameters
+		let target_obj = arg0_target_object;
+		let key = arg1_key;
+		
+		//Declare local instance variables
+		let current_val = target_obj[key];
+		let current_type = this._getType(current_val);
+		
+		let components_obj = {
+			info: new ve.HTML(`Change type for <b>${key}</b>.<br><small>Warning: This will reset the value.</small>`),
+			type_select: new ve.Select({
+				string: { name: "String", selected: current_type === "string" },
+				number: { name: "Number", selected: current_type === "number" },
+				boolean: { name: "Boolean", selected: current_type === "boolean" },
+				object: { name: "Object", selected: current_type === "object" },
+				array: { name: "Array", selected: current_type === "array" },
+				null: { name: "Null", selected: current_type === "null" }
+			}, {
+				style: { width: "100%", marginBottom: "var(--cell-padding)" }
+			}),
+			confirm_button: new ve.Button(() => {
+				let selected_type = this.change_type_window.components_obj.type_select.v;
+				
+				// Don't do anything if type didn't change
+				if (selected_type === current_type) {
+					this.change_type_window.close();
+					return;
+				}
+				
+				let new_value = null;
+				switch (selected_type) {
+					case "string": new_value = ""; break;
+					case "number": new_value = 0; break;
+					case "boolean": new_value = false; break;
+					case "object": new_value = {}; break;
+					case "array": new_value = []; break;
+					case "null": new_value = null; break;
+				}
+				
+				target_obj[key] = new_value;
+				
+				this.change_type_window.close();
+				this.refresh();
+				this.fireToBinding();
+				
+			}, {
+				name: "Change Type",
+				style: { width: "100%" }
+			})
+		};
+		
+		//Open change_type_window if possible
+		if (this.change_type_window) this.change_type_window.close();
+		this.change_type_window = new ve.Window(components_obj, {
+			name: "Change Variable Type",
+			can_rename: false,
+			width: "300px",
+			height: "auto"
+		});
 	}
 	
 	_renameObjectKey(obj, old_key, new_key) {
@@ -124,148 +268,33 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		this.fireToBinding();
 	}
 	
-	_getType(value) {
-		if (Array.isArray(value)) return "array";
-		if (value === null) return "null";
-		return typeof value;
-	}
-	
-	// --- Modal ---
-	
-	_openAddModal(target_obj) {
-		let is_array = Array.isArray(target_obj);
-		let modal_components = {};
+	/**
+	 * Generates HTML recursively for the current component.
+	 * - Private method of: {@link ve.ObjectEditor}
+	 * 
+	 * @param arg0_current_data
+	 * @param arg1_current_key
+	 * @param arg2_depth
+	 * @param arg3_parent_object
+	 * @returns {*|ve.Component.HierarchyDatatype}
+	 * 
+	 * @private
+	 */
+	_generateRecursive (arg0_current_data, arg1_current_key, arg2_depth, arg3_parent_object) { //[WIP] - Refactor later
+		//Convert from parameters
+		let current_data = arg0_current_data;
+		let current_key = arg1_current_key;
+		let depth = arg2_depth;
+		let parent_object = arg3_parent_object;
 		
-		modal_components.info = new ve.HTML((is_array) ? "Select the type of item to push to the array." : "Define the key name and value type.");
-		
-		if (!is_array) {
-			modal_components.key_name = new ve.Text("", {
-				placeholder: "Property Name",
-				style: { marginBottom: "var(--cell-padding)" }
-			});
-		}
-		
-		modal_components.type_select = new ve.Select({
-			string: { name: "String", selected: true },
-			number: { name: "Number" },
-			boolean: { name: "Boolean" },
-			object: { name: "Object" },
-			array: { name: "Array" },
-			null: { name: "Null" }
-		}, {
-			style: { width: "100%", marginBottom: "var(--cell-padding)" }
-		});
-		
-		modal_components.confirm_btn = new ve.Button(() => {
-			let selected_type = this.modal_window.components_obj.type_select.v;
-			let new_key = (is_array) ? target_obj.length : this.modal_window.components_obj.key_name.v;
-			
-			if (!is_array && !new_key) {
-				new ve.Toast("Please enter a property name.");
-				return;
-			}
-			if (!is_array && target_obj.hasOwnProperty(new_key)) {
-				new ve.Toast(`Property "${new_key}" already exists.`);
-				return;
-			}
-			
-			let new_value = null;
-			switch (selected_type) {
-				case "string": new_value = ""; break;
-				case "number": new_value = 0; break;
-				case "boolean": new_value = false; break;
-				case "object": new_value = {}; break;
-				case "array": new_value = []; break;
-				case "null": new_value = null; break;
-			}
-			
-			if (is_array) target_obj.push(new_value);
-			else target_obj[new_key] = new_value;
-			
-			this.modal_window.close();
-			this.refresh();
-			this.fireToBinding();
-			
-		}, { name: "Add Item", style: { width: "100%" } });
-		
-		if (this.modal_window) this.modal_window.close();
-		this.modal_window = new ve.Window(modal_components, {
-			name: (is_array) ? "Add Element to Array" : "Add Variable",
-			can_rename: false
-		});
-	}
-	
-	_openChangeTypeModal (target_obj, key) {
-		let current_val = target_obj[key];
-		let current_type = this._getType(current_val);
-		let modal_components = {};
-		
-		modal_components.info = new ve.HTML(`Change type for <b>${key}</b>.<br><small>Warning: This will reset the value.</small>`);
-		
-		modal_components.type_select = new ve.Select({
-			string: { name: "String", selected: current_type === "string" },
-			number: { name: "Number", selected: current_type === "number" },
-			boolean: { name: "Boolean", selected: current_type === "boolean" },
-			object: { name: "Object", selected: current_type === "object" },
-			array: { name: "Array", selected: current_type === "array" },
-			null: { name: "Null", selected: current_type === "null" }
-		}, {
-			style: { width: "100%", marginBottom: "var(--cell-padding)" }
-		});
-		
-		modal_components.confirm_btn = new ve.Button(() => {
-			let selected_type = this.change_type_window.components_obj.type_select.v;
-			
-			// Don't do anything if type didn't change
-			if (selected_type === current_type) {
-				this.change_type_window.close();
-				return;
-			}
-			
-			let new_value = null;
-			switch (selected_type) {
-				case "string": new_value = ""; break;
-				case "number": new_value = 0; break;
-				case "boolean": new_value = false; break;
-				case "object": new_value = {}; break;
-				case "array": new_value = []; break;
-				case "null": new_value = null; break;
-			}
-			
-			target_obj[key] = new_value;
-			
-			this.change_type_window.close();
-			this.refresh();
-			this.fireToBinding();
-			
-		}, { name: "Change Type", style: { width: "100%" } });
-		
-		if (this.change_type_window) this.change_type_window.close();
-		this.change_type_window = new ve.Window(modal_components, {
-			name: "Change Variable Type",
-			can_rename: false,
-			width: "300px",
-			height: "auto"
-		});
-	}
-	
-	// --- Generator ---
-	
-	_generateRecursive (current_data, current_key, depth, parent_object) {
+		//Declare local instance variables
+		let components_obj = {};
 		let type = this._getType(current_data);
+		
 		let is_group = (type === "object" || type === "array");
 		let parent_is_array = Array.isArray(parent_object);
 		
-		// We use 'order' styles to enforce:
-		// 0: Icon
-		// 1: Key
-		// 2: Separator
-		// 3: Value
-		// 4: Delete Button (Right aligned)
-		
-		let components_obj = {};
-		
-		// 1. Icon (Order 0)
+		//1. Icon (Order 0)
 		if (!this.options.do_not_display_icons) {
 			let icon_name = "help_outline";
 			switch(type) {
@@ -286,7 +315,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 				padding: 0
 			};
 			
-			// Changed to ve.Button to allow clicking to change type
+			//Changed to ve.Button to allow clicking to change type
 			if (!this.options.do_not_allow_type_change) {
 				components_obj.icon = new ve.Button((e) => {
 					this._openChangeTypeModal(parent_object, current_key);
@@ -308,7 +337,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 			}
 		}
 		
-		// 2. Key Input (Order 1)
+		//2. Key Input (Order 1)
 		if (!this.options.do_not_allow_key_change) {
 			if (parent_is_array) {
 				components_obj.key_input = new ve.Number(current_key, {
@@ -339,12 +368,12 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 			})
 		}
 		
-		// 3. Separator (Order 2)
+		//3. Separator (Order 2)
 		components_obj.separator = new ve.HTML("<b>&nbsp;:&nbsp;</b>", {
 			style: { opacity: 0.5 }
 		});
 		
-		// 4. Value Input (Order 3)
+		//4. Value Input (Order 3)
 		if (!is_group) {
 			if (type === "string") {
 				components_obj.input = new ve.Text(current_data, {
@@ -364,13 +393,13 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 					style: { order: 3 }
 				});
 			} else {
-				// Null or other types
+				//Null or other types
 				components_obj.input = new ve.HTML(`<span style="opacity:0.5">${String(current_data)}</span>`, {
 					style: { order: 3 }
 				});
 			}
 		} else {
-			// Group Add Button
+			//Group Add Button
 			components_obj.add_child_btn = new ve.Button((e) => {
 				this._openAddModal(current_data);
 			}, {
@@ -381,8 +410,8 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 			});
 		}
 		
-		// 5. Delete Button (Order 4)
-		// This gets marginLeft: auto to push it to the far right edge of the container
+		//5. Delete Button (Order 4)
+		//This gets marginLeft: auto to push it to the far right edge of the container
 		components_obj.delete_btn = new ve.Button((e) => {
 			veConfirm(`Are you sure you want to delete "${current_key}"?`, {
 				special_function: () => {
@@ -405,16 +434,15 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 			}
 		});
 		
-		// Children
-		if (is_group) {
+		//Handle children
+		if (is_group)
 			Object.keys(current_data).forEach((key) => {
 				let safe_key = key;
 				if (Array.isArray(current_data)) safe_key = parseInt(key);
 				components_obj[`child_${key}`] = this._generateRecursive(current_data[key], safe_key, depth + 1, current_data);
 			});
-		}
 		
-		// Final HierarchyDatatype
+		//Return statement
 		return new ve.HierarchyDatatype(components_obj, {
 			name: (typeof current_key === "string") ? current_key : current_key.toString(),
 			type: is_group ? "group" : "item",
@@ -437,20 +465,23 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		});
 	}
 	
-	_handleReorder(v, e) {
-		let stop_data = e.on_stop_data;
-		if (!stop_data) return;
+	_handleReorder (arg0_v, arg1_e) {
+		//Convert from parameters
+		let v = arg0_v;
+		let e = arg1_e;
 		
+		let stop_data = e.on_stop_data;
+		if (!stop_data) return; //Internal guard clause if no event date
+		
+		//Declare local instance variables
 		let moved_instance = stop_data.movedNode.instance;
 		let original_parent_instance = stop_data.originalParentItem?.instance;
 		let new_parent_instance = stop_data.newParentItem?.instance;
-		
 		let source_container = (original_parent_instance) ?
 			original_parent_instance.options.data_value : this.value;
 		
 		let dest_container = (new_parent_instance) ?
 			new_parent_instance.options.data_value : this.value;
-		
 		let key_to_move = moved_instance.options.data_key;
 		let val_to_move = source_container[key_to_move];
 		
@@ -463,20 +494,21 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		);
 		let new_index = siblings.indexOf(stop_data.movedNode);
 		
-		// Remove
-		if (Array.isArray(source_container)) {
-			source_container.splice(key_to_move, 1);
-		} else {
-			delete source_container[key_to_move];
-		}
-		
-		// Add
+		//Add
 		if (Array.isArray(dest_container)) {
 			dest_container.splice(new_index, 0, val_to_move);
 		} else {
 			dest_container[key_to_move] = val_to_move;
 		}
 		
+		//Remove
+		if (Array.isArray(source_container)) {
+			source_container.splice(key_to_move, 1);
+		} else {
+			delete source_container[key_to_move];
+		}
+		
+		//Refresh and fire to binding
 		this.refresh();
 		this.fireToBinding();
 	}
@@ -489,8 +521,8 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 	 * @memberof ve.Component.ve.ObjectEditor
 	 */
 	refresh () {
+		//Declare local instance varioables
 		this.element.innerHTML = "";
-		
 		let actions_bar = new ve.HierarchyDatatype({
 			add_root_btn: new ve.Button(() => {
 				if (this.value === null) this.value = {};
@@ -511,29 +543,26 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 				width: "20rem"
 			}
 		});
-		
 		let hierarchy_obj = (!this.options.do_not_allow_insertion) ?
 			{ actions_bar: actions_bar } : {};
 		
-		if (this.value && typeof this.value === "object") {
+		//Assign objects recursively when drawing UI
+		if (this.value && typeof this.value === "object")
 			Object.keys(this.value).forEach((key) => {
 				let safe_key = key;
 				if (Array.isArray(this.value)) safe_key = parseInt(key);
 				hierarchy_obj[`root_${key}`] = this._generateRecursive(this.value[key], safe_key, 0, this.value);
 			});
-		}
 		
 		this.hierarchy = new ve.Hierarchy(hierarchy_obj, {
 			disable_searchbar: false,
 			searchbar_style: { marginBottom: "0" },
 			onuserchange: (v, e) => this._handleReorder(v, e)
 		});
-		
-		this.hierarchy.element.style.height = "100%";
-		this.hierarchy.element.style.overflowY = "auto";
+			this.hierarchy.element.style.height = "100%";
+			this.hierarchy.element.style.overflowY = "auto";
 		
 		if (this.owner) this.hierarchy.setOwner(this.owner);
-		
 		this.element.appendChild(this.hierarchy.element);
 	}
 };
