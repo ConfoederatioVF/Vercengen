@@ -16,6 +16,7 @@
  *     - `<category_key>`: {@link Object}
  *       - `.colour`: {@link Array}<{@link number}, {@link number}, {@link number}>|{@link string} - Either a hex/RGB value.
  *   - `.disable_custom_nodes=false`: {@link boolean} - Whether to disable custom nodes editing.
+ *   - `.disable_file_explorer=false`: {@link boolean} - Whether to disable the leftbar file explorer, used for saving/loading files.
  *   - `.disable_forse=false`: {@link boolean} - Whether to disable Forse Nodes, which is the default DSL used by Vercengen.
  *   - `.exclude_all=false`: {@link boolean} - Whether to exclude the default 'All' category at the start.
  *   - `.node_types`: {@link Object}
@@ -42,6 +43,7 @@
  *   	   - `.id=Class.generateRandomID(ve.NodeEditorDatatype)`: {@link string} - The ID to assign to the present datatype at a class level.
  *       - `.show_alluvial=false`: {@link boolean}
  *   - `.project_folder`: {@link string}
+ *   - `.save_extension=".ve-ne"`: {@link string}
  *
  * ##### Instance:
  * - `.id`: {@link string}
@@ -99,7 +101,6 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 			height: "100%",
 			width: "100%",
 			padding: "0",
-			overflow: "hidden", // Prevents recursive expansion
 			".maptalks-attribution": {
 				display: "none",
 			},
@@ -146,8 +147,28 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 		//2. Scene 
 		this.map_el = document.createElement("div");
 		this.map_el.id = "map-container";
-		this.map_el.setAttribute("style", "flex: 1 1; min-height: 8rem; width: 100%;");
-			this.element.appendChild(this.map_el);
+		this.map_el.setAttribute("style", "height: 100%; width: 100%;");
+		
+		this.scene_interface = new ve.FlexInterface({
+			type: "horizontal",
+			file_explorer: (!options.disable_file_explorer) ? new ve.FileExplorer(options.project_folder, {
+				style: {
+					maxHeight: "40rem",
+				},
+				load_function: (arg0_data) => {
+					//Convert from parameters
+					let local_data = arg0_data;
+					
+					this.v = JSON.parse(local_data);
+				},
+				save_extension: (options.save_extension) ? options.save_extension : [".ve-ne"],
+				save_function: () => this.v,
+			}) : undefined,
+			map_el: new ve.HTML(this.map_el, {
+				style: { minHeight: "8rem", height: "100%", padding: 0 }
+			})
+		});
+		this.scene_interface.bind(this.element);
 		
 		this.id = Class.generateRandomID(ve.NodeEditor);
 		this.map = new maptalks.Map(this.map_el, {

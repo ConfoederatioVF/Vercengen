@@ -8,9 +8,12 @@ global.ScriptManager = class extends ve.Class {
 }
 
 setTimeout(() => {
-	global.node_window = veWindow(veNodeEditor(), {
+	global.node_window = veWindow(veNodeEditor(undefined, {
+		project_folder: "./saves/"
+	}), {
 		can_rename: false,
 		name: "Node Editor",
-		width: "50vw"
+		height: "60vh",
+		width: "60vw"
 	});
 }, 500);
