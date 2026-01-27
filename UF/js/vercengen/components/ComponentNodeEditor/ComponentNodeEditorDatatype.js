@@ -220,13 +220,14 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		for (let i = 0; i < this.geometries.length; i++) this.geometries[i].remove();
 		this.geometries = [];
 		
+		//Draw this.geometries, then push it to the map
 		{
 			let comment_options = (is_comment) ? {
 				textWrapCharacter: "\\n"
 			} : {};
 			let display_name = (this.value.display_name) ? this.value.display_name : this.value.name;
 			let extra_geometries = [];
-			let height = is_comment ? 1200 : 400;
+			let height = (is_comment) ? 1200 : 400;
 			let width = 2000;
 			
 			let primary_geometry = new maptalks.Rectangle(coords, width, height, {
@@ -245,26 +246,19 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				},
 			});
 			
+			//Non-comment handling
 			if (!is_comment) {
-				extra_geometries.push(
-					new maptalks.Marker(
-						Geospatiale.translatePoint(coords, 0, -400 * 0.5),
-						{
-							symbol: marker_symbol,
-						},
-					),
-				);
-				extra_geometries.push(
-					new maptalks.Marker(
-						Geospatiale.translatePoint(coords, 2000, -400 * 0.5),
-						{ symbol: marker_symbol },
-					),
-				);
+				extra_geometries.push(new maptalks.Marker(
+					Geospatiale.translatePoint(coords, 0, -400 * 0.5),
+					{ symbol: marker_symbol },
+				));
+				extra_geometries.push(new maptalks.Marker(Geospatiale.translatePoint(coords, 2000, -400 * 0.5),
+					{ symbol: marker_symbol },
+				));
 			}
 			
 			if (!is_comment && this.ui.information.dag_layer !== undefined) {
-				let sequence_status_colour =
-					{
+				let sequence_status_colour = {
 						aborted: "rgb(150, 50, 50)",
 						error: "rgb(255, 0, 0)",
 						finished: "rgb(44,108,53)",
@@ -272,103 +266,87 @@ ve.NodeEditorDatatype = class extends ve.Component {
 						other: "rgb(25, 25, 25)",
 					}[this.ui.information.status || "other"] || "rgb(25, 25, 25)";
 				
-				extra_geometries.push(
-					new maptalks.Marker(Geospatiale.translatePoint(coords, 2000, 0), {
-						symbol: {
-							...marker_symbol,
-							textFill: sequence_status_colour,
-							textSize: {
-								stops: [
-									[12, 4],
-									[14, 96],
-								],
-							},
+				extra_geometries.push(new maptalks.Marker(Geospatiale.translatePoint(coords, 2000, 0), {
+					symbol: {
+						...marker_symbol,
+						textFill: sequence_status_colour,
+						textSize: {
+							stops: [
+								[12, 4],
+								[14, 96],
+							],
 						},
-					}),
-				);
-				extra_geometries.push(
-					new maptalks.Marker(Geospatiale.translatePoint(coords, 2000, 7), {
-						symbol: {
-							...marker_symbol,
-							textFaceName: "Karla",
-							textName: `${this.ui.information.dag_layer}`,
-							textSize: {
-								stops: [
-									[12, 2],
-									[14, 14],
-								],
-							},
+					},
+				}));
+				extra_geometries.push(new maptalks.Marker(Geospatiale.translatePoint(coords, 2000, 7), {
+					symbol: {
+						...marker_symbol,
+						textFaceName: "Karla",
+						textName: `${this.ui.information.dag_layer}`,
+						textSize: {
+							stops: [
+								[12, 2],
+								[14, 14],
+							],
 						},
-					}),
-				);
+					},
+				}));
 			}
 			
 			let primary_geometry_collection = new maptalks.GeometryCollection(
 				[primary_geometry, ...extra_geometries],
 				{ draggable: true },
 			);
-			primary_geometry_collection.addEventListener("click", (e) => {
-				this.options.node_editor._select(this, 0);
-			});
-			primary_geometry_collection.addEventListener("contextmenu", (e) => {
-				this.openContextMenu();
-			});
+			primary_geometry_collection.addEventListener("click", () => this.options.node_editor._select(this, 0));
+			primary_geometry_collection.addEventListener("contextmenu", () => this.openContextMenu());
 			
 			this.geometries.push(primary_geometry_collection);
 		}
 		
 		if (!is_comment) {
 			if (this.value.input_parameters)
+				//Iterate over all input_parameters and append them to the primary_geometry
 				for (let i = 0; i < this.value.input_parameters.length; i++) {
 					let local_parameter = this.value.input_parameters[i];
-					let local_value_name = this.constant_values[i]
-						? ` | ${this.constant_values[i]}`
-						: "";
+					let local_value_name = (this.constant_values[i]) ? 
+						` | ${this.constant_values[i]}` : "";
 					if (this.dynamic_values[i]) local_value_name = "";
 					
-					// REINTRODUCED: script type basename handling
-					if (local_parameter.type === "script" && this.constant_values[i]) {
+					//Script type basename handling
+					if (local_parameter.type === "script" && this.constant_values[i])
 						local_value_name = ` | ${path.basename(this.constant_values[i])}`;
-					}
 					
+					//Draw local_rect and input marker
 					let local_rect = new maptalks.Rectangle(
 						Geospatiale.translatePoint(coords, 0, -400 * (i + 1)),
-						2000,
-						400,
-						{
+						2000, 400, {
 							symbol: {
 								...polygon_symbol,
 								lineColor: this.isSelected(i + 1) ? "yellow" : "black",
 								polygonOpacity: 0.5,
 								textName: `${local_parameter.name} (${local_parameter.type})${local_value_name}`,
 							},
-						},
-					);
+						});
 					let local_left_marker = new maptalks.Marker(
-						Geospatiale.translatePoint(coords, 0, -400 * (i + 1) - 400 * 0.5),
-						{
+						Geospatiale.translatePoint(coords, 0, -400 * (i + 1) - 400 * 0.5), {
 							symbol: {
 								...marker_symbol,
 								textFill: "rgba(255, 255, 255, 0.5)",
 							},
-						},
-					);
+						});
 					
 					let local_geometry_collection = new maptalks.GeometryCollection([
 						local_rect,
 						local_left_marker,
 					]);
-					local_geometry_collection.addEventListener("click", (e) => {
-						this.options.node_editor._select(this, i + 1);
-					});
-					local_geometry_collection.addEventListener("contextmenu", (e) => {
-						this.openContextMenu();
-					});
+					local_geometry_collection.addEventListener("click", () => this.options.node_editor._select(this, i + 1));
+					local_geometry_collection.addEventListener("contextmenu", (e) => this.openContextMenu());
 					
 					this.geometries.push(local_geometry_collection);
 				}
 		}
 		
+		//Render node and initialise events handler
 		this._render();
 		this.handleEvents();
 	}
@@ -498,19 +476,13 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			for (let i = 0; i < this.value.input_parameters.length; i++) {
 				let is_actually_disabled = this.dynamic_values[i] !== undefined;
 				let local_parameter = this.value.input_parameters[i];
-				let local_parameter_type = JSON.parse(
-					JSON.stringify(local_parameter.type),
-				);
+				let local_parameter_type = JSON.parse(JSON.stringify(local_parameter.type));
+					if (ve.NodeEditorDatatype.types[local_parameter_type] === undefined)
+						local_parameter_type = "any";
 				let local_script_file_path = "";
 				
-				if (ve.NodeEditorDatatype.types[local_parameter_type] === undefined)
-					local_parameter_type = "any";
-				
-				let local_default_value =
-					this.constant_values[i] !== undefined
-						? this.constant_values[i]
-						: ve.NodeEditorDatatype.types[local_parameter_type];
-				
+				let local_default_value = (this.constant_values[i] !== undefined) ? 
+					this.constant_values[i] : ve.NodeEditorDatatype.types[local_parameter_type];
 				let local_parameter_options = {
 					name: local_parameter.name,
 					onuserchange: (v) => {
@@ -518,8 +490,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 						this.constant_values[i] = v;
 						ve.NodeEditorDatatype.draw(this.options.node_editor);
 					},
-					x: 0,
-					y: i,
+					x: 0, y: i,
 				};
 				
 				if (local_parameter_type === "number[]") {
