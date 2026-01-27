@@ -1,6 +1,18 @@
 /**
  * Internal DSL of <span color="yellow">{@link ve.NodeEditor}</span>.
  * 
+ * **Custom Nodes** (6):
+ * - Config: Node Category, Node Name, Node Output Type, Comment
+ * - Parameters: Input (Parameter), Output (Return)
+ * 
+ * **Default Nodes** (81):
+ * - __Booleans__: Is Equal, Is Strictly Equal, Is Not Equal, Is Not Strictly Equal, Greater or Equal Than, Greater Than, Less Than or Equal, To Less Than, If Then, False, True, Null, Undefined, AND, NOT, OR, XOR
+ * - __Functions__: Call Function, Call Function (Preview), Call Method, Call Method (Preview), Get Class Field, Set Class Field, (Log) ERROR, (Log) INFO, (Log) WARN, Run Script
+ * - __Loops__: For Loop, Get Obj.Iter. Key, Get Obj.Iter. Value, Iterate over Object, Set Timeout
+ * - __Variables__: Set Any, Set String Array, Set Number Array, Set Boolean, Set Number, Set String, Set Array, Set Null, Set Object, Get Any, Get String Array, Get Number Array, Get Boolean, Get Number, Get String, Get Array, Get Null, Get Object, Get Global
+ *   - <u>Variables (Casting)</u>: Convert to Any, Convert to Array, Convert to String Array, Convert to Number Array, Convert to Boolean, Convert to Number, Convert to Script, Convert to String
+ *   - <u>Variables (Expressions)</u>: Array Concat, Array Indexof, Array Length, Array Pop, Array Push, Array Reverse, Array Shift, Array Splice, Array Unshift, Join Array, Split String, Merge Objects, Get Object Keys, Get Object Values, Add Numbers, Exponentiate Numbers, Modulo, Multiply Numbers, Divide Numbers, Subtract Numbers, Add Strings, Ends With, Matches, Replace, Replace All, String Length, Starts With
+ * 
  * ##### Static Methods:
  * - <span color=00ffff>{@link ve.NodeEditor.Forse.getForseCustomNodesObject|getForseCustomNodesObject}</span>() | {@link Object}
  * - <span color=00ffff>{@link ve.NodeEditor.Forse.getForseObject|getForseObject}</span>(arg0_options:{@link Object}) | {@link Object}
@@ -24,10 +36,6 @@ ve.NodeEditor.Forse = class {
 				"Config": {
 					colour: [70, 70, 90],
 					text_colour: [200, 200, 255],
-				},
-				"Custom": {
-					colour: [100, 50, 150],
-					text_colour: [255, 255, 255],
 				},
 				"Parameters": {
 					colour: [50, 50, 50],

@@ -148,7 +148,7 @@ ve.NodeEditor.Forse.functions = {
 		}
 	},
 	set_class_field: {
-		name: "Get Class Field",
+		name: "Set Class Field",
 		category: "Functions",
 		input_parameters: [{
 			name: "arg0_variable",
