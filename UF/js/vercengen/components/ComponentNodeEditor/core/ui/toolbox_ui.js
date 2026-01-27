@@ -127,7 +127,7 @@
 									new ve.ContextMenu(
 										{
 											edit_node: new ve.Button(
-												() => this._openCustomNodeEditor(local_key),
+												() => this.openCustomNodeEditor(local_key),
 												{ name: "<icon>edit</icon> Edit Node" },
 											),
 											delete_node: new ve.Button(
@@ -152,7 +152,7 @@
 			if (category_key === "Custom" || category_key === "All")
 				local_search_select_obj["create_custom"] = new ve.Button(
 					() => {
-						this._openCustomNodeEditor();
+						this.openCustomNodeEditor();
 					},
 					{
 						name: "<icon>add_circle</icon> Create Custom Node",

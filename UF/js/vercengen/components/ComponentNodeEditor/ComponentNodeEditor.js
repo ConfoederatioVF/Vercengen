@@ -167,7 +167,7 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 	 * @memberof ve.Component.ve.NodeEditor
 	 * @type {Object}
 	 */
-	get v() {
+	get v () {
 		//Return statement
 		return {
 			custom_node_types: this.main.custom_node_types,
