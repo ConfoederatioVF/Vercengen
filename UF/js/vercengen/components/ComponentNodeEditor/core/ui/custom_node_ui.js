@@ -2,9 +2,12 @@
 {
 	/**
 	 * Opens custom node editor window. Can optionally edit an existing node.
-	 * @alias ve.Component.NodeEditor.prototype.openCustomNodeEditor
+	 * @alias ve.Component.ve.NodeEditor.prototype.openCustomNodeEditor
+	 * @instance
+	 * @memberof ve.NodeEditor
+	 * @this ve.NodeEditor
 	 * 
-	 * @param {string} [arg0_edit_key] - Optional. Edits the existing custom node with this key.
+	 * @param {string} arg0_edit_key - Optional. Edits the existing custom node with this key.
 	 */
 	ve.NodeEditor.prototype.openCustomNodeEditor = function (arg0_edit_key) {
 		//Convert from parameters
