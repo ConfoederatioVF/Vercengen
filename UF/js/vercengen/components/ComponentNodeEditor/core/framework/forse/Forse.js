@@ -74,7 +74,7 @@ ve.NodeEditor.Forse = class {
 				},
 				ve_comment: {
 					name: "Comment",
-					category: "Parameters",
+					category: "Config",
 					input_parameters: [],
 					options: { is_comment: true },
 					output_type: "none",

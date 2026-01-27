@@ -14,7 +14,7 @@
  *     - `<category_key>`: {@link Object}
  *       - `.colour`: {@link Array}<{@link number}, {@link number}, {@link number}>|{@link string} - Either a hex/RGB value.
  *   - `.disable_custom_nodes=false`: {@link boolean} - Whether to disable custom nodes editing.
- *   - `.disable_forse=false`: {@link boolean} - Whether to disable Forse Nodes.
+ *   - `.disable_forse=false`: {@link boolean} - Whether to disable Forse Nodes, which is the default DSL used by Vercengen.
  *   - `.exclude_all=false`: {@link boolean} - Whether to exclude the default 'All' category at the start.
  *   - `.node_types`: {@link Object}
  *     - `<node_key>`: {@link Object} - Current valid types for `.input_parameters` and `.output_type` include 'any'/'number[]'/'string[]'/'boolean'/'number'/'script'/'string'.
@@ -31,6 +31,7 @@
  *       - `.abort=false`: {@link boolean} - Whether to abort the current node branch from further execution (conditional branching).
  *       - `.alluvial_width=1`: {@link number}
  *       - `.display_value`: {@link string} - The actual display_value to show.
+ *       - `.iterations=1`; {@link number} - The number of iterations to run for sub-nodes.
  *       - `.run`: {@link function} - The actual expression to execute upon running it in non-preview mode.
  *       - `.value`: {@link any} - If a filter, it should return an {@link Array}<{@link any}>.
  *     -
@@ -60,6 +61,9 @@
  * - <span color=00ffff>{@link ve.NodeEditor.getDefaultBaseLayer|getDefaultBaseLayer}</span>() | {@link Object}
  * - <span color=00ffff>{@link ve.NodeEditor.loadSettings|loadSettings}</span>(arg0_settings:{@link Object})
  * - async <span color=00ffff>{@link ve.NodeEditor.run|run}</span>(arg0_preview_mode:{@link boolean}) | {@link Object}
+ * 
+ * ##### Static Fields:
+ * - `.instances`: {@link Array}<{@link ve.NodeEditor}>
  *
  * @augments ve.Component
  * @memberof ve.Component
@@ -162,6 +166,7 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 	
 	/**
 	 * Returns the current JSON object from the component.
+	 * - Accessor of: {@link ve.NodeEditor}
 	 *
 	 * @alias v
 	 * @memberof ve.Component.ve.NodeEditor
@@ -182,10 +187,12 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 	
 	/**
 	 * Sets the current value of the ve.NodeEditor from available JSON.
+	 * - Accessor of: {@link ve.NodeEditor}
 	 *
 	 * @alias v
 	 * @memberof ve.Component.ve.NodeEditor
 	 * @param {Object} arg0_value
+	 * @type Object
 	 */
 	set v (arg0_value) {
 		//Convert from parameters

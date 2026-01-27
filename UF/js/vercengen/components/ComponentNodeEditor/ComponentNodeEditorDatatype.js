@@ -23,10 +23,18 @@
  * 
  * ##### Methods:
  * 
- * Represents a single node instance within a ve.NodeEditor.
+ * @augments ve.Component
+ * @memberof ve.Component
+ * @type {ve.NodeEditorDatatype}
  */
 ve.NodeEditorDatatype = class extends ve.Component {
+	/**
+	 * @type {ve.NodeEditorDatatype[]}
+	 */
 	static instances = [];
+	/**
+	 * @type {Object}
+	 */
 	static types = {
 		"number[]": [],
 		"string[]": [],
