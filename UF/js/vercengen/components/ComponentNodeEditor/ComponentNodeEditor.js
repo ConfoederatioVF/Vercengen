@@ -93,96 +93,14 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 			...options.style,
 		};
 		
-		if (!options.category_types["Config"])
-			options.category_types["Config"] = {
-				colour: [70, 70, 90],
-				text_colour: [200, 200, 255],
-			};
-		if (!options.category_types["Custom"])
-			options.category_types["Custom"] = {
-				colour: [100, 50, 150],
-				text_colour: [255, 255, 255],
-			};
-		if (!options.category_types["I/O"])
-			options.category_types["I/O"] = {
-				colour: [50, 50, 50],
-				text_colour: [255, 255, 255],
-			};
-		
-		if (!options.disable_forse) {
-			let forse_obj = ve.NodeEditor.Forse.getForseObject();
-			
+		let forse_obj = ve.NodeEditor.Forse.getForseObject({
+			disable_custom_nodes: options.disable_custom_nodes,
+			disable_forse: options.disable_forse
+		});
 			if (forse_obj.category_types)
 				options.category_types = { ...forse_obj.category_types, ...options.category_types };
 			if (forse_obj.node_types)
 				options.node_types = { ...forse_obj.node_types, ...options.node_types };
-		}
-		
-		options.node_types = {
-			...options.node_types,
-			ve_config_category: {
-				name: "Node Category",
-				category: "Config",
-				input_parameters: [{ name: "Category", type: "string" }],
-				is_internal: true,
-				output_type: "string",
-				special_function: (val) => {
-					return { value: val };
-				},
-			},
-			ve_config_name: {
-				name: "Node Name",
-				category: "Config",
-				input_parameters: [{ name: "Name", type: "string" }],
-				is_internal: true,
-				output_type: "string",
-				special_function: (val) => {
-					return { value: val };
-				},
-			},
-			ve_config_output_type: {
-				name: "Node Output Type",
-				category: "Config",
-				input_parameters: [{ name: "Type", type: "string" }],
-				is_internal: true,
-				output_type: "string",
-				special_function: (val) => {
-					return { value: val };
-				},
-			},
-			ve_input: {
-				name: "Input",
-				category: "I/O",
-				input_parameters: [
-					{ name: "Name", type: "string" },
-					{ name: "Type", type: "string" },
-				],
-				is_internal: true,
-				output_type: "any",
-				special_function: function (p_name, p_type, context_node) {
-					return {
-						value: context_node ? context_node.runtime_value : undefined,
-					};
-				},
-			},
-			ve_output: {
-				name: "Output",
-				category: "I/O",
-				input_parameters: [{ name: "Result", type: "any" }],
-				is_internal: true,
-				output_type: "any",
-				special_function: (arg) => {
-					return { value: arg };
-				},
-			},
-			ve_comment: {
-				name: "Comment",
-				category: "I/O",
-				input_parameters: [],
-				options: { is_comment: true },
-				output_type: "none",
-			},
-		};
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");
