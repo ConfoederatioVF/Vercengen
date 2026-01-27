@@ -11,7 +11,7 @@ ve.NodeEditor.Forse = class {
 					colour: [100, 50, 150],
 					text_colour: [255, 255, 255],
 				},
-				"I/O": {
+				"Parameters": {
 					colour: [50, 50, 50],
 					text_colour: [255, 255, 255],
 				}
@@ -48,8 +48,8 @@ ve.NodeEditor.Forse = class {
 					},
 				},
 				ve_input: {
-					name: "Input",
-					category: "I/O",
+					name: "Input (Parameter)",
+					category: "Parameters",
 					input_parameters: [
 						{ name: "Name", type: "string" },
 						{ name: "Type", type: "string" },
@@ -63,8 +63,8 @@ ve.NodeEditor.Forse = class {
 					},
 				},
 				ve_output: {
-					name: "Output",
-					category: "I/O",
+					name: "Output (Return)",
+					category: "Parameters",
 					input_parameters: [{ name: "Result", type: "any" }],
 					is_internal: true,
 					output_type: "any",
@@ -74,7 +74,7 @@ ve.NodeEditor.Forse = class {
 				},
 				ve_comment: {
 					name: "Comment",
-					category: "I/O",
+					category: "Parameters",
 					input_parameters: [],
 					options: { is_comment: true },
 					output_type: "none",

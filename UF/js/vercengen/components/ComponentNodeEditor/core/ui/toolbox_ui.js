@@ -66,7 +66,7 @@
 								this.main.nodes.push(new ve.NodeEditorDatatype({
 									coords: this._mouse_coords,
 									key: local_key,
-									name: comment_text,
+									display_name: comment_text,
 									...local_value,
 								}, {
 									category_options: local_category_options,
@@ -78,6 +78,7 @@
 							}, { name: "Place Comment" });
 							this.current_comment_window = new ve.Window(comment_window_components, { 
 								name: "Add Comment",
+								can_rename: false,
 								height: "auto",
 								width: "20rem" 
 							});
