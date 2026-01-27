@@ -252,6 +252,7 @@
 		//Return statement
 		if (this.length > number)
 			return `${this.substring(0, number)}${ellipsis}`;
+		return this;
 	};
 	
 	/**
