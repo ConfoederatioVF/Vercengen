@@ -25,7 +25,8 @@ ve.NodeEditor.Forse = class {
 	 * Returns custom nodes from Forse that are needed for recursion.
 	 * - Static method of: {@link ve.NodeEditor.Forse}
 	 * 
-	 * @alias ve.Component.ve.NodeEditor.Forse.getForseCustomNodesObject
+	 * @alias getForseCustomNodesObject
+	 * @memberof ve.Component.ve.NodeEditor.ve.NodeEditor.Forse
 	 * 
 	 * @returns {Object}
 	 */
@@ -113,7 +114,8 @@ ve.NodeEditor.Forse = class {
 	 * Returns the configured DSL for the given {@link ve.NodeEditor} instance.
 	 * - Static method of: {@link ve.NodeEditor.Forse}
 	 * 
-	 * @alias ve.Component.ve.NodeEditor.Forse.getForseObject
+	 * @alias getForseObject
+	 * @memberof ve.Component.ve.NodeEditor.ve.NodeEditor.Forse
 	 * 
 	 * @param {Object} [arg0_options]
 	 *  @param {boolean} [arg0_options.disable_custom_nodes=false] - Whether to disable custom nodes creation.
