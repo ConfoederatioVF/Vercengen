@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>File - Documentation</title>
+    <title>ve.NodeEditor.Forse - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,7 +32,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">File</h1>
+    <h1 class="page-title">ve.NodeEditor.Forse</h1>
     
 
     
@@ -45,8 +45,34 @@
 <header>
     
         <h2>
-        File
+            <span class="ancestors"><a href="ve.html">ve</a><a href="ve.Component.html">.Component</a><a href="ve.Component.ve.NodeEditor.html">.ve.NodeEditor</a>.</span>
+        
+        ve.NodeEditor.Forse
         </h2>
+        
+            <div class="class-description"><p>Internal DSL of <span color="yellow">ve.NodeEditor</span>.</p>
+<p><strong>Custom Nodes</strong> (6):</p>
+<ul>
+<li>Config: Node Category, Node Name, Node Output Type, Comment</li>
+<li>Parameters: Input (Parameter), Output (Return)</li>
+</ul>
+<p><strong>Default Nodes</strong> (81):</p>
+<ul>
+<li><strong>Booleans</strong>: Is Equal, Is Strictly Equal, Is Not Equal, Is Not Strictly Equal, Greater or Equal Than, Greater Than, Less Than or Equal, To Less Than, If Then, False, True, Null, Undefined, AND, NOT, OR, XOR</li>
+<li><strong>Functions</strong>: Call Function, Call Function (Preview), Call Method, Call Method (Preview), Get Class Field, Set Class Field, (Log) ERROR, (Log) INFO, (Log) WARN, Run Script</li>
+<li><strong>Loops</strong>: For Loop, Get Obj.Iter. Key, Get Obj.Iter. Value, Iterate over Object, Set Timeout</li>
+<li><strong>Variables</strong>: Set Any, Set String Array, Set Number Array, Set Boolean, Set Number, Set String, Set Array, Set Null, Set Object, Get Any, Get String Array, Get Number Array, Get Boolean, Get Number, Get String, Get Array, Get Null, Get Object, Get Global
+<ul>
+<li><u>Variables (Casting)</u>: Convert to Any, Convert to Array, Convert to String Array, Convert to Number Array, Convert to Boolean, Convert to Number, Convert to Script, Convert to String</li>
+<li><u>Variables (Expressions)</u>: Array Concat, Array Indexof, Array Length, Array Pop, Array Push, Array Reverse, Array Shift, Array Splice, Array Unshift, Join Array, Split String, Merge Objects, Get Object Keys, Get Object Values, Add Numbers, Exponentiate Numbers, Modulo, Multiply Numbers, Divide Numbers, Subtract Numbers, Add Strings, Ends With, Matches, Replace, Replace All, String Length, Starts With</li>
+</ul>
+</li>
+</ul>
+<h5 id="static-methods%3A">Static Methods:</h5>
+<ul>
+<li><span color=00ffff>getForseCustomNodesObject</span>() | <a href="Object.html">Object</a></li>
+<li><span color=00ffff>getForseObject</span>(arg0_options:<a href="Object.html">Object</a>) | <a href="Object.html">Object</a></li>
+</ul></div>
         
     
 </header>
@@ -55,10 +81,20 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>The namespace for all UF/File utility functions, typically for static methods.</p></div>
-        
+<div class="section-method">
 
-        
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="ve.NodeEditor.Forse"><span class="type-signature"></span>new ve.NodeEditor.Forse<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
 
 
 <dl class="details">
@@ -90,7 +126,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_file_basic.js.html">file/file_basic.js</a>, <a href="file_file_basic.js.html#line4">line 4</a>
+        <a href="vercengen_components_ComponentNodeEditor_core_framework_forse_Forse.js.html">vercengen/components/ComponentNodeEditor/core/framework/forse/Forse.js</a>, <a href="vercengen_components_ComponentNodeEditor_core_framework_forse_Forse.js.html#line23">line 23</a>
     </li></ul></dd>
     
 
@@ -102,7 +138,28 @@
 </dl>
 
 
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
     
     </div>
 
@@ -118,452 +175,6 @@
 
     
 
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".containsPath"><span class="type-signature">(static) </span>containsPath<span class="signature">(arg0_file_path, arg1_folder_path)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Whether a file is inside a folder path.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_file_basic.js.html">file/file_basic.js</a>, <a href="file_file_basic.js.html#line19">line 19</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_file_path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_folder_path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".getAllDrives"><span class="type-signature">(static) </span>getAllDrives<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;string>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Returns all drives in the current operating system.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_file_basic.js.html">file/file_basic.js</a>, <a href="file_file_basic.js.html#line35">line 35</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;string></code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".isDrive"><span class="type-signature">(static) </span>isDrive<span class="signature">(arg0_file_path)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Whether the selected file path is a valid drive.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_file_basic.js.html">file/file_basic.js</a>, <a href="file_file_basic.js.html#line141">line 141</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_file_path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
     
 
     

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>File - Documentation</title>
+    <title>vercengen/components/ComponentNodeEditor/core/framework/forse/Forse.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,546 +32,196 @@
 
 <div id="main">
     
-    <h1 class="page-title">File</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-        File
-        </h2>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description"><p>The namespace for all UF/File utility functions, typically for static methods.</p></div>
-        
-
-        
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_file_basic.js.html">file/file_basic.js</a>, <a href="file_file_basic.js.html#line4">line 4</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".containsPath"><span class="type-signature">(static) </span>containsPath<span class="signature">(arg0_file_path, arg1_folder_path)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Whether a file is inside a folder path.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_file_basic.js.html">file/file_basic.js</a>, <a href="file_file_basic.js.html#line19">line 19</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_file_path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_folder_path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".getAllDrives"><span class="type-signature">(static) </span>getAllDrives<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;string>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Returns all drives in the current operating system.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_file_basic.js.html">file/file_basic.js</a>, <a href="file_file_basic.js.html#line35">line 35</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;string></code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id=".isDrive"><span class="type-signature">(static) </span>isDrive<span class="signature">(arg0_file_path)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Whether the selected file path is a valid drive.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="file_file_basic.js.html">file/file_basic.js</a>, <a href="file_file_basic.js.html#line141">line 141</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_file_path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">vercengen/components/ComponentNodeEditor/core/framework/forse/Forse.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Internal DSL of &lt;span color="yellow">{@link ve.NodeEditor}&lt;/span>.
+ * 
+ * **Custom Nodes** (6):
+ * - Config: Node Category, Node Name, Node Output Type, Comment
+ * - Parameters: Input (Parameter), Output (Return)
+ * 
+ * **Default Nodes** (81):
+ * - __Booleans__: Is Equal, Is Strictly Equal, Is Not Equal, Is Not Strictly Equal, Greater or Equal Than, Greater Than, Less Than or Equal, To Less Than, If Then, False, True, Null, Undefined, AND, NOT, OR, XOR
+ * - __Functions__: Call Function, Call Function (Preview), Call Method, Call Method (Preview), Get Class Field, Set Class Field, (Log) ERROR, (Log) INFO, (Log) WARN, Run Script
+ * - __Loops__: For Loop, Get Obj.Iter. Key, Get Obj.Iter. Value, Iterate over Object, Set Timeout
+ * - __Variables__: Set Any, Set String Array, Set Number Array, Set Boolean, Set Number, Set String, Set Array, Set Null, Set Object, Get Any, Get String Array, Get Number Array, Get Boolean, Get Number, Get String, Get Array, Get Null, Get Object, Get Global
+ *   - &lt;u>Variables (Casting)&lt;/u>: Convert to Any, Convert to Array, Convert to String Array, Convert to Number Array, Convert to Boolean, Convert to Number, Convert to Script, Convert to String
+ *   - &lt;u>Variables (Expressions)&lt;/u>: Array Concat, Array Indexof, Array Length, Array Pop, Array Push, Array Reverse, Array Shift, Array Splice, Array Unshift, Join Array, Split String, Merge Objects, Get Object Keys, Get Object Values, Add Numbers, Exponentiate Numbers, Modulo, Multiply Numbers, Divide Numbers, Subtract Numbers, Add Strings, Ends With, Matches, Replace, Replace All, String Length, Starts With
+ * 
+ * ##### Static Methods:
+ * - &lt;span color=00ffff>{@link ve.NodeEditor.Forse.getForseCustomNodesObject|getForseCustomNodesObject}&lt;/span>() | {@link Object}
+ * - &lt;span color=00ffff>{@link ve.NodeEditor.Forse.getForseObject|getForseObject}&lt;/span>(arg0_options:{@link Object}) | {@link Object}
+ * 
+ * @memberof ve.Component.ve.NodeEditor
+ * @type {ve.NodeEditor.Forse}
+ */
+ve.NodeEditor.Forse = class {
+	/**
+	 * Returns custom nodes from Forse that are needed for recursion.
+	 * - Static method of: {@link ve.NodeEditor.Forse}
+	 * 
+	 * @alias ve.Component.ve.NodeEditor.Forse.getForseCustomNodesObject
+	 * 
+	 * @returns {Object}
+	 */
+	static getForseCustomNodesObject () {
+		//Return statement
+		return {
+			category_types: {
+				"Config": {
+					colour: [70, 70, 90],
+					text_colour: [200, 200, 255],
+				},
+				"Parameters": {
+					colour: [50, 50, 50],
+					text_colour: [255, 255, 255],
+				}
+			},
+			node_types: {
+				ve_config_category: {
+					name: "Node Category",
+					category: "Config",
+					input_parameters: [{ name: "Category", type: "string" }],
+					is_internal: true,
+					output_type: "string",
+					special_function: (val) => {
+						return { value: val };
+					},
+				},
+				ve_config_name: {
+					name: "Node Name",
+					category: "Config",
+					input_parameters: [{ name: "Name", type: "string" }],
+					is_internal: true,
+					output_type: "string",
+					special_function: (val) => {
+						return { value: val };
+					},
+				},
+				ve_config_output_type: {
+					name: "Node Output Type",
+					category: "Config",
+					input_parameters: [{ name: "Type", type: "string" }],
+					is_internal: true,
+					output_type: "string",
+					special_function: (val) => {
+						return { value: val };
+					},
+				},
+				ve_input: {
+					name: "Input (Parameter)",
+					category: "Parameters",
+					input_parameters: [
+						{ name: "Name", type: "string" },
+						{ name: "Type", type: "string" },
+					],
+					is_internal: true,
+					output_type: "any",
+					special_function: function (p_name, p_type, context_node) {
+						return {
+							value: context_node ? context_node.runtime_value : undefined,
+						};
+					},
+				},
+				ve_output: {
+					name: "Output (Return)",
+					category: "Parameters",
+					input_parameters: [{ name: "Result", type: "any" }],
+					is_internal: true,
+					output_type: "any",
+					special_function: (arg) => {
+						return { value: arg };
+					},
+				},
+				ve_comment: {
+					name: "Comment",
+					category: "Config",
+					input_parameters: [],
+					options: { is_comment: true },
+					output_type: "none",
+				}
+			}
+		};
+	}
+	
+	/**
+	 * Returns the configured DSL for the given {@link ve.NodeEditor} instance.
+	 * - Static method of: {@link ve.NodeEditor.Forse}
+	 * 
+	 * @alias ve.Component.ve.NodeEditor.Forse.getForseObject
+	 * 
+	 * @param {Object} [arg0_options]
+	 *  @param {boolean} [arg0_options.disable_custom_nodes=false] - Whether to disable custom nodes creation.
+	 *  @param {boolean} [arg0_options.disable_forse=false] - Whether to disable Forse itself.
+	 * 
+	 * @returns {Object}
+	 */
+	static getForseObject (arg0_options) {
+		//Convert from parameters
+		let options = (arg0_options) ? arg0_options : {};
+		
+		//Declare local instance variables
+		let custom_nodes_obj = (!options.disable_custom_nodes) ? 
+			ve.NodeEditor.Forse.getForseCustomNodesObject() : {};
+		if (options.disable_forse &amp;&amp; !options.disable_custom_nodes)
+			return custom_nodes_obj; //Internal guard clause if only custom nodes are enabled
+		
+		//Return statement
+		return {
+			project_folder: "./settings/scripts/",
+			category_types: {
+				"Conditionals": {
+					colour: "#7072e0",
+					text_colour: [255, 255, 255]
+				},
+				"Functions": {
+					colour: "#9ecd9e",
+					text_colour: [0, 0, 0]
+				},
+				"Loops": {
+					colour: "#d4ca60",
+					text_colour: [0, 0, 0]
+				},
+				"Variables": {
+					colour: "#eaaf6c",
+					text_colour: [0, 0, 0]
+				},
+				"Variables (Casting)": {
+					colour: "#d56a6a",
+					text_colour: [0, 0, 0]
+				},
+				"Variables (Expressions)": {
+					colour: "#a82020",
+					text_colour: [255, 255, 255]
+				},
+				
+				...custom_nodes_obj.category_types
+			},
+			
+			node_types: {
+				...ve.NodeEditor.Forse.conditionals,
+				...ve.NodeEditor.Forse.functions,
+				...ve.NodeEditor.Forse.loops,
+				...ve.NodeEditor.Forse.variables,
+				...ve.NodeEditor.Forse.variables_casting,
+				...ve.NodeEditor.Forse.variables_expression,
+				
+				...custom_nodes_obj.node_types
+			}
+		};
+	}
+};</code></pre>
+        </article>
+    </section>
 
 
 
