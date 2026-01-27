@@ -348,6 +348,7 @@ ve.Interface = class extends ve.Component {
 	
 	/**
 	 * Returns the current `.dimensions` [width, height] of defined components prior to assigning coordinates to non-defined coordinates.
+	 * - Static method of: {@link ve.Interface}
 	 *
 	 * @alias #getDefinedComponentDimensions
 	 * @memberof ve.Component.ve.Interface

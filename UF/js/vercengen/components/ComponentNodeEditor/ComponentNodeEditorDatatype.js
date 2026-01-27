@@ -22,6 +22,23 @@
  * - `.v`: {@link Object} - Parses to/from JSON in Object form.
  * 
  * ##### Methods:
+ * - <span color=00ffff>{@link ve.NodeEditorDatatype._render|_render}</span>()
+ * - <span color=00ffff>{@link ve.NodeEditorDatatype.draw|draw}</span>()
+ * - <span color=00ffff>{@link ve.NodeEditorDatatype.getConnection|getConnection}</span>(arg0_node:{@link ve.NodeEditorDatatype}, arg1_index:{@link number}) | {@link number}
+ * - <span color=00ffff>{@link ve.NodeEditorDatatype.handleEvents|handleEvents}</span>()
+ * - <span color=00ffff>{@link ve.NodeEditorDatatype.hasConnection|hasConnection}</span>(arg0_index:{@link number}) | {@link boolean}
+ * - <span color=00ffff>{@link ve.NodeEditorDatatype.isSelected|isSelected}</span>(arg0_index:{@link number}) | {@link boolean}
+ * - <span color=00ffff>{@link ve.NodeEditorDatatype.openContextMenu|openContextMenu}</span>()
+ * - <span color=00ffff>{@link ve.NodeEditorDatatype.remove|remove}</span>()
+ * - <span color=00ffff>{@link ve.NodeEditorDatatype.toJSON|toJSON}</span>() | {@link Object}
+ * 
+ * ##### Static Fields:
+ * - `.instances`: {@link Array}<{@link ve.NodeEditorDatatype}>
+ * - `.types`: {@link Object}
+ * 
+ * ##### Static Methods:
+ * - <span color=00ffff>{@link ve.NodeEditorDatatype.draw|draw}</span>(arg0_editor:{@link ve.NodeEditor})
+ * - <span color=00ffff>{@link ve.NodeEditorDatatype.getNode|getNode}</span>(arg0_node_id:{@link string}, arg1_editor:{@link ve.NodeEditor})
  * 
  * @augments ve.Component
  * @memberof ve.Component
@@ -72,6 +89,14 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		this.draw();
 	}
 	
+	/**
+	 * Returns the JSON compatible object representing the current component.
+	 * - Accessor of: {@link ve.NodeEditorDatatype}
+	 * 
+	 * @alias v
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * @type {Object}
+	 */
 	get v () {
 		let current_coords = this.value.coords;
 		if (this.geometries[0]) {
@@ -98,6 +123,14 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		};
 	}
 	
+	/**
+	 * Sets the current value from a JSON compatible object.
+	 * - Accessor of: {@link ve.NodeEditorDatatype}
+	 * 
+	 * @alias v
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * @param {Object|string} arg0_value
+	 */
 	set v (arg0_value) {
 		//Convert from parameters
 		let json = (typeof arg0_value === "string") ? JSON.parse(arg0_value) : arg0_value;
@@ -120,6 +153,11 @@ ve.NodeEditorDatatype = class extends ve.Component {
 	
 	/**
 	 * Renders the current node where appropriate.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias _render
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * 
 	 * @private
 	 */
 	_render() {
@@ -136,15 +174,22 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			}
 	}
 	
+	/**
+	 * Draws the present node.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias draw
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 */
 	draw () {
+		//Declare local instance variables
 		let category_options = this.options.category_options || {};
 		let coords = this.value.coords;
 		let is_comment = this.options.is_comment === true;
 		
-		let fill_colour = category_options.colour || [255, 255, 255, 1];
-		fill_colour = Colour.convertRGBAToHex(fill_colour);
-		if (is_comment) fill_colour = "#fff9c4";
-		
+		let fill_colour = (category_options.colour || [255, 255, 255, 1]);
+			fill_colour = Colour.convertRGBAToHex(fill_colour);
+			if (is_comment) fill_colour = "#fff9c4";
 		let marker_symbol = {
 			textFill: "white",
 			textHaloFill: "black",
@@ -157,7 +202,6 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				],
 			},
 		};
-		
 		let polygon_symbol = {
 			polygonFill: fill_colour,
 			textFaceName: "Karla",
@@ -172,6 +216,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			},
 		};
 		
+		//Iterate over all geometries and start drawing them
 		for (let i = 0; i < this.geometries.length; i++) this.geometries[i].remove();
 		this.geometries = [];
 		
@@ -328,6 +373,18 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		this.handleEvents();
 	}
 	
+	/**
+	 * Returns the given index of a connection, i.e. the node an input parameter is connected to,
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias getConnection
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * 
+	 * @param {ve.NodeEditorDatatype} arg0_node
+	 * @param {number} arg1_index
+	 * 
+	 * @returns {number}
+	 */
 	getConnection (arg0_node, arg1_index) {
 		//Convert from parameters
 		let node = arg0_node;
@@ -341,6 +398,13 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		return -1;
 	}
 	
+	/**
+	 * Handles events for the given node.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias handleEvents
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 */
 	handleEvents () {
 		//Initialise event handlers
 		this.geometries[0].addEventListener("dragend", (e) => {
@@ -350,6 +414,17 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		});
 	}
 	
+	/**
+	 * Checks if an index in the node, i.e. an input parameter has a connection. Note that the 0th index represents the base output.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias hasConnection
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * 
+	 * @param {number} arg0_index
+	 * 
+	 * @returns {boolean}
+	 */
 	hasConnection (arg0_index) {
 		//Convert from parameters
 		let index = Math.returnSafeNumber(arg0_index);
@@ -370,6 +445,17 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		return false;
 	}
 	
+	/**
+	 * Checks if a given index in the node, i.e. an input parameter is currently selected. Note that the 0th index represents the base output.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias isSelected
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * 
+	 * @param {number} arg0_index
+	 * 
+	 * @returns {boolean}
+	 */
 	isSelected (arg0_index) {
 		//Convert from parameters
 		let index = Math.returnSafeNumber(arg0_index);
@@ -385,6 +471,13 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		return false;
 	}
 	
+	/**
+	 * Opens a context menu for editing the current node.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias openContextMenu
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 */
 	openContextMenu () {
 		//Declare local instance variables
 		let parameter_fields = {};
@@ -541,6 +634,13 @@ ve.NodeEditorDatatype = class extends ve.Component {
 	 	});
 	}
 	
+	/**
+	 * Removes the present node from its {@link ve.NodeEditor} scene.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 *
+	 * @alias remove
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 */
 	remove () {
 		//Declare local instance variables
 		let editor = this.options.node_editor;
@@ -570,11 +670,29 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		ve.NodeEditorDatatype.draw(editor);
 	}
 	
+	/**
+	 * Converts the current node to a JSON-compatible object.
+	 * - Method of: {@link ve.NodeEditorDatatype}
+	 * 
+	 * @alias toJSON
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * 
+	 * @returns {Object} 
+	 */
 	toJSON () {
 		//Return statement
 		return this.v;
 	}
 	
+	/**
+	 * Draws the present node within its {@link ve.NodeEditor} context.
+	 * - Static method of: {@link ve.NodeEditorDatatype}
+	 * 
+	 * @alias #draw
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * 
+	 * @param {ve.NodeEditor} arg0_editor
+	 */
 	static draw (arg0_editor) {
 		//Convert from parameters
 		let editor = arg0_editor;
@@ -654,6 +772,18 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		}
 	}
 	
+	/**
+	 * Fetches a node from its {@link ve.NodeEditor} and ID.
+	 * - Static method of: {@link ve.NodeEditorDatatype}
+	 * 
+	 * @alias #getNode
+	 * @memberof ve.Component.ve.NodeEditorDatatype
+	 * 
+	 * @param {string} arg0_node_id
+	 * @param {ve.NodeEditor} arg1_editor
+	 * 
+	 * @returns {ve.NodeEditorDatatype}
+	 */
 	static getNode (arg0_node_id, arg1_editor) {
 		//Convert from parameters
 		let node_id = arg0_node_id;
@@ -674,9 +804,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 	}
 };
 
-/**
- * Functional binding for ve.NodeEditorDatatype.
- */
+//Functional binding
 veNodeEditorDatatype = function () {
 	return new ve.NodeEditorDatatype(...arguments);
 };
