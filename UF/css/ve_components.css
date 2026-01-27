@@ -234,6 +234,8 @@
     > table { 
         height: 100%;
         width: 100%; 
+        
+        table-layout: fixed;
     }
     > table:has([component="ve-script-manager"]),
     > table:has([component="ve-spreadsheet"]),

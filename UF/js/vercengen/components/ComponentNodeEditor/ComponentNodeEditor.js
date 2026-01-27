@@ -94,13 +94,15 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 		options.node_types = options.node_types ? options.node_types : {};
 		options.polling = Math.returnSafeNumber(options.polling, 100);
 		options.style = {
-			height: "50vh",
-			width: "50vw",
-			"#map-container": { height: "100%", width: "100%" },
-			".maptalks-all-layers, .maptalks-canvas-layer, .maptalks-wrapper": {
-				position: "static",
+			display: "flex",
+			flexDirection: "column",
+			height: "100%",
+			width: "100%",
+			padding: "0",
+			overflow: "hidden", // Prevents recursive expansion
+			".maptalks-attribution": {
+				display: "none",
 			},
-			".maptalks-attribution": { display: "none" },
 			...options.style,
 		};
 		
@@ -118,23 +120,38 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 			this.element.instance = this;
 			this.element.setAttribute("component", "ve-node-editor");
 			HTML.setAttributesObject(this.element, options.attributes);
-		this.map_el = document.createElement("div");
-			this.map_el.id = "map-container";
-			this.element.appendChild(this.map_el);
 		
-		if (ve.registry.debug_mode) {
-			let debug_button = new ve.Button(() => console.log(this.getDAGSequence()), { 
+		//1. Topbar; actions bar
+		let debug_components_obj = (ve.registry.debug_mode) ? {
+			debug_button: new ve.Button(() => console.log(this.getDAGSequence()), {
 				name: "Debug"
-			});
-			debug_button.bind(this.element);
-		}
-		let run_button = new ve.Button(() => this.run().then(() => ve.NodeEditorDatatype.draw(this)), { 
-			name: "Run" 
+			})
+		} : {};
+		
+		let actions_bar = new ve.RawInterface({
+			run_button: new ve.Button(() => this.run().then(() => ve.NodeEditorDatatype.draw(this)), {
+				name: "Run",
+			}),
+			...debug_components_obj
+		}, {
+			style: {
+				marginBottom: `var(--cell-padding)`,
+				"button": {
+					marginRight: `var(--cell-padding)`
+				}
+			}
 		});
-		run_button.bind(this.element);
+		actions_bar.bind(this.element);
+		
+		//2. Scene 
+		this.map_el = document.createElement("div");
+		this.map_el.id = "map-container";
+		this.map_el.setAttribute("style", "flex: 1 1; min-height: 8rem; width: 100%;");
+			this.element.appendChild(this.map_el);
 		
 		this.id = Class.generateRandomID(ve.NodeEditor);
 		this.map = new maptalks.Map(this.map_el, {
+			autoResize: false,
 			center: [0, 0],
 			zoom: 14,
 			baseLayer: this.getDefaultBaseLayer(),
