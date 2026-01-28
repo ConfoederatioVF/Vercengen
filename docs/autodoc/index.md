@@ -128,7 +128,7 @@ Running Vercengen in the browser means that certain components (i.e. FileExplore
    ]});
    ```
 
-But if that's too much work for you, fork our [bootstrap repository](https://github.com/Confoederatio/Vercengen/) instead.
+But if that's too much work for you, fork our [bootstrap repository](https://github.com/Confoederatio/Vercengen/) and call `npm install` instead.
 
 ---
 

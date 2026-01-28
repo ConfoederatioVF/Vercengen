@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>class/Class.js - Documentation</title>
+    <title>Scriptly - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,76 +32,52 @@
 
 <div id="main">
     
-    <h1 class="page-title">class/Class.js</h1>
+    <h1 class="page-title">Scriptly</h1>
     
 
-    
-
-
-
-    
     <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>if (!global.Class)
-	/**
-	 * The namespace for all UF/Class utility functions, typically for static methods.
-	 * 
-	 * @namespace Class
-	 */
-	global.Class = {};
 
-/**
- * Generates a random ID given the values in the `.instances` Array.
- * 
- * @param {Class} arg0_class
- * 
- * @returns {string}
- */
-Class.generateRandomID = function (arg0_class) {
-	//Convert from parameters
-	let local_class = arg0_class;
-	
-	//Declare local instance variables
-	let random_id = Math.randomNumber(0, 100000000000).toString();
-	
-	//Check if local_class is defined
-	if (typeof local_class == "function") {
-		//Internal guard clause if class doesn't have .instances
-		if (local_class.instances === undefined) {
-			console.warn(`${local_class.constructor.name} has an undefined .instances dictionary. Returning default random ID.`);
-			return random_id;
-		}
-		if (!Array.isArray(local_class.instances)) {
-			console.warn(`${local_class.constructor.name} has an .instances field, but it is not of type Array. Returning default random ID.`);
-			return random_id;
-		}
-		
-		//Continually iterate over .instances in class until we can guarantee that the generated ID is not a duplicate
-		while (true) {
-			let is_duplicate_id = false;
-			let local_id = Class.generateRandomID();
-			
-			//Return and break once a true ID is found
-			for (let i = 0; i &lt; local_class.instances.length; i++)
-				if (local_class.instances[i].id === local_id) {
-					is_duplicate_id = true;
-					break;
-				}
-			
-			if (!is_duplicate_id)
-				//Return statement
-				return local_id;
-		}
-	} else {
-		//Return statement
-		return random_id;
-	}
-};</code></pre>
-        </article>
-    </section>
+<header>
+    
+</header>
 
+<article>
+    <p><strong>Scriptly</strong> is the visual IDE system used by Vercengen. It is also in charge of handling application DSLs, and various views of Scriptly (i.e. Blocks/Nodes) can be toggled/disabled. Since it implements a 3-way abstract syntax tree/directed acyclic graph (AST/DAG) behind the scenes, it is important to understand both how it roundtrips as well as how it handles non-JS programming languages and recursion.</p>
+<p>Scriptly is ES6+ compatible, and thus blocks/nodes can be auto-generated from simply copy/pasting code into the code editor.</p>
+<p><strong>Recommended Architecture</strong>: For highly complex programs, it is recommended that nodes be used to organise dataflows instead of general scripting, and to use <u>Run Script</u> nodes such that they can be edited by ve.ScriptManager in either the code view (for power users) or the blocks view (for regular users).</p>
+<h3 id="components%3A">Components:</h3>
+<ul>
+<li>ve.NodeEditor - Recommended for exposing all three views to the user. Disable Forse and 'script' types if you only want the nodes view.
+<ul>
+<li>ve.NodeEditorDatatype</li>
+</ul>
+</li>
+<li>ve.ScriptManager - Recommended for exposing blocks &lt;-&gt; code view to the user.
+<ul>
+<li>ve.ScriptManagerBlockly - Exposes only the block view to the user.</li>
+<li>ve.ScriptManagerMonaco - Exposes only the code view to the user.</li>
+</ul>
+</li>
+</ul>
+<p>Scriptly components can be declared like any other component. With the exception of ve.NodeEditor which outputs a JSON string, each component's <code>.v</code> outputs a regular code string.</p>
+<p>In addition, there is a Spreadsheet and Graph view via ve.DatavisSuite, though it does not round-trip unless the user writes individual macros via the visual editor to do so.</p>
+<p><strong>Note.</strong> ve.NodeEditor uses ve.ScriptManager for subtypes.</p>
+<h3 id="console%3A">Console:</h3>
+<img src = "./autodoc/images/DatavisSuite_console.png">
+<div style = "text-align: center;"><i>ve.DatavisSuite's console and spreadsheet view along with graph projections. DatavisSuite uses a form of ve.ScriptManager.</i></div>
+<p>The console for <strong>Scriptly</strong> is bound to ve.ScriptManager. It supports the same recursion and view when inspecting objects that DevTools does (only DOM-facing), but is obviously not as deep for DOM inspection itself, and it is still recommended to use Inspect Element for this purpose.</p>
+<p>The 'Help' button should print necessary instructions for how to engage with the console. In general, <code>this.console_el.print(&lt;message&gt;, &lt;type&gt;);</code> can be used to print to the ve.ScriptManager console.</p>
+<h3 id="graceful-degradation%3A">Graceful Degradation:</h3>
+<p>For non-JS languages, Scriptly will attempt to gracefully degrade to a regular text editor whereever possible. It will still offer Intellisesnse via multifile Doxygen parsing, and code in other languages must be interfaced through Javascript if they are to be grouped into visual blocks/nodes.</p>
+<h3 id="round-tripping%3A">Round-Tripping:</h3>
+<p>Round-tripping takes place through the concept of lossless pathways as opposed to a universal AST. If a visual view is possible, that means that round-tripping from any view to any other view is also possible.</p>
+<p>Parsing is typically done via a core <code>Blocks &lt;-&gt; Code</code> AST in which code is typically represented. Nodes are simply types of blocks that contain code, and when their DAG is run, they execute Javascript in order. As such, Nodes compile to Code (<code>Nodes &lt;-&gt; Code</code>), and Nodes are configured in code.</p>
+<p>This forms lossless roundtripping between all views (<code>Blocks &lt;-&gt; Code &lt;-&gt; Nodes</code>), with two plausible pathways.</p>
+<p><strong>Plausible Pathways</strong>: <code>Code &gt; Blocks &gt; Nodes</code> <code>Nodes &gt; Code &gt; Blocks</code></p>
+<p>By default, roundtripping is scripted to be able to handle multifile projects.</p>
+</article>
 
-
+</section>
 
 </div>
 
