@@ -80,6 +80,8 @@
 				special_function: this.createCustomExecutionLogic(graph_data),
 			};
 			
+			console.log(`Custom definition:`, custom_definition);
+			
 			this.main.custom_node_types[node_key] = custom_definition;
 			this.options.node_types[node_key] = custom_definition;
 			
@@ -107,7 +109,7 @@
 			}),
 			controls: new ve.RawInterface({
 				save_btn: new ve.Button(save_custom_node, {
-					name: existing_def ? "Update Custom Node" : "Save Custom Node",
+					name: existing_definition ? "Update Custom Node" : "Save Custom Node",
 					style: { width: "100%", height: "100%" },
 				}),
 			},{ 

@@ -33,7 +33,7 @@ ve.NodeEditor.Forse.loops = {
 		category: "Loops",
 		input_parameters: [{
 			name: "arg0_object_iteration",
-			type: "{key: string, value: any}"
+			type: "object_iteration"
 		}],
 		output_type: "string",
 		special_function: function (arg0_object_iteration) {
@@ -52,7 +52,7 @@ ve.NodeEditor.Forse.loops = {
 		category: "Loops",
 		input_parameters: [{
 			name: "arg0_object_iteration",
-			type: "{key: string, value: any}"
+			type: "object_iteration"
 		}],
 		output_type: "any",
 		special_function: function (arg0_object_iteration) {
@@ -73,7 +73,7 @@ ve.NodeEditor.Forse.loops = {
 			name: "arg0_object",
 			type: "any",
 		}],
-		output_type: "{key: string, value: any}",
+		output_type: "object_iteration",
 		special_function: function (arg0_object) {
 			//Convert from parameters
 			let object = (typeof arg0_object === "object" && arg0_object !== null) ?

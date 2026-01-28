@@ -47,9 +47,9 @@ ve.Colour = class extends ve.Component { //[WIP] - Refactor at a later date
 				if (options.is_rgba === undefined) options.is_rgba = true;
 			} else {
 				//[R, G, B]
-				rgb_value = initial_val;
+				rgb_value = initial_value;
 			}
-		} else if (typeof initial_val === "string") {
+		} else if (typeof initial_value === "string") {
 			//Handle String Input
 			if (initial_value.startsWith("#")) {
 				if (initial_value.length > 7) {

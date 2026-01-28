@@ -38,12 +38,23 @@ ve.NodeEditor.Forse = class {
 					colour: [70, 70, 90],
 					text_colour: [200, 200, 255],
 				},
+				"Custom": {
+					colour: [130, 90, 160],
+					text_colour: [255, 255, 255]
+				},
 				"Parameters": {
 					colour: [50, 50, 50],
 					text_colour: [255, 255, 255],
 				}
 			},
 			node_types: {
+				ve_comment: {
+					name: "Comment",
+					category: "Config",
+					input_parameters: [],
+					options: { is_comment: true },
+					output_type: "none",
+				},
 				ve_config_category: {
 					name: "Node Category",
 					category: "Config",
@@ -83,7 +94,20 @@ ve.NodeEditor.Forse = class {
 					],
 					is_internal: true,
 					output_type: "any",
-					special_function: function (p_name, p_type, context_node) {
+					special_function: async function (p_name, p_type, context_node) {
+						//Declare local instance variables
+						let elapsed_time = 0;
+						let poll_interval = 10; //Check every 10ms
+						
+						// Polling loop: Wait for runtime_value to be populated by createCustomExecutionLogic
+						while (
+							context_node.runtime_value === undefined
+						) {
+							await new Promise((resolve) => setTimeout(resolve, poll_interval));
+							elapsed_time += poll_interval;
+						}
+						
+						//Return statement
 						return {
 							value: context_node ? context_node.runtime_value : undefined,
 						};
@@ -98,13 +122,6 @@ ve.NodeEditor.Forse = class {
 					special_function: (arg) => {
 						return { value: arg };
 					},
-				},
-				ve_comment: {
-					name: "Comment",
-					category: "Config",
-					input_parameters: [],
-					options: { is_comment: true },
-					output_type: "none",
 				}
 			}
 		};

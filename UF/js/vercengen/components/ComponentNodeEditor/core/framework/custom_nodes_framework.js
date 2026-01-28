@@ -29,14 +29,13 @@
 			
 			//Iterate over all subinputs and fetch their runtime value
 			for (let i = 0; i < subinputs.length; i++)
-				if (args[i] !== undefined) subinputs[i].runtime_value = args[i];
+				if (args[i] !== undefined)
+					subinputs[i].runtime_value = args[i];
 			
 			let results = await subeditor.run(false);
 			let sub_output = subeditor.main.nodes.find((n) => n.value.key === "ve_output");
 			
 			let return_value = sub_output ? results[sub_output.id] : undefined;
-			
-			subeditor.clear();
 			
 			//Return statement
 			return { value: return_value };

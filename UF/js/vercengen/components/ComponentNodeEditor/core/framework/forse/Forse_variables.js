@@ -311,10 +311,13 @@ ve.NodeEditor.Forse.variables = {
 			//Convert from parameters
 			let key = arg0_key;
 			
+			//Declare local instance variables
+			let obj_value = Object.getValue(global, key);
+			
 			//Return statement
 			return {
-				display_value: `${key}: ${this.main.variables[key]}`,
-				value: this.main.variables[key]
+				display_value: `${key}: ${obj_value}`,
+				value: obj_value
 			};
 		}
 	},

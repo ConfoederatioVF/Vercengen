@@ -174,7 +174,7 @@ ve.NodeEditor.Forse.variables_casting = {
 			name: "arg0_variable",
 			type: "any"
 		}],
-		output_type: "number",
+		output_type: "string",
 		special_function: function (arg0_variable) {
 			//Convert from parameters
 			let variable = arg0_variable;
