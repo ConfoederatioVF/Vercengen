@@ -70,46 +70,46 @@ ve.Colour = class extends ve.Component { //[WIP] - Refactor at a later date
 	constructor (arg0_value, arg1_options) {
 		//Convert from parameters
 		let options = (arg1_options) ? arg1_options : {};
-		let initial_val = (arg0_value) ? arg0_value : [255, 255, 255];
+		let initial_value = (arg0_value) ? arg0_value : [255, 255, 255];
 			super(options);
 		
 		//Initialise options
 		options.attributes = options.attributes ? options.attributes : {};
 		if (options.name === undefined) options.name = "Colour";
 		
-		// --- Logic Update: Robust Parsing ---
-		let rgb_value = [255, 255, 255];
+		//Logic update for RGB/alpha parsing
 		let alpha_value = 1;
+		let rgb_value = [255, 255, 255];
 		
-		if (Array.isArray(initial_val)) {
+		if (Array.isArray(initial_value)) {
 			// Handle Array Input
-			if (initial_val.length === 4) {
-				// [R, G, B, A]
-				rgb_value = [initial_val[0], initial_val[1], initial_val[2]];
-				alpha_value = initial_val[3];
+			if (initial_value.length === 4) {
+				//[R, G, B, A]
+				rgb_value = [initial_value[0], initial_value[1], initial_value[2]];
+				alpha_value = initial_value[3];
 				// Auto-enable RGBA mode if 4 values are passed, unless explicitly disabled
 				if (options.is_rgba === undefined) options.is_rgba = true;
 			} else {
-				// [R, G, B]
-				rgb_value = initial_val;
+				//[R, G, B]
+				rgb_value = initial_value;
 			}
-		} else if (typeof initial_val === "string") {
-			// Handle String Input
-			if (initial_val.startsWith("#")) {
-				if (initial_val.length > 7) {
-					// #RRGGBBAA (8-digit)
-					let rgba = Colour.convertHexToRGBA(initial_val);
+		} else if (typeof initial_value === "string") {
+			//Handle String Input
+			if (initial_value.startsWith("#")) {
+				if (initial_value.length > 7) {
+					//#RRGGBBAA (8-digit)
+					let rgba = Colour.convertHexToRGBA(initial_value);
 					rgb_value = [rgba[0], rgba[1], rgba[2]];
 					alpha_value = rgba[3];
 					if (options.is_rgba === undefined) options.is_rgba = true;
 				} else {
-					// #RRGGBB (6-digit)
-					rgb_value = Colour.convertHexToRGB(initial_val);
+					//#RRGGBB (6-digit)
+					rgb_value = Colour.convertHexToRGB(initial_value);
 				}
 			}
 		}
 		
-		// Convert RGB array to #RRGGBB string for the HTML input
+		//Convert RGB array to #RRGGBB string for the HTML input
 		let value = Colour.convertRGBToHex(rgb_value);
 		
 		//Declare local instance variables
@@ -159,9 +159,6 @@ ve.Colour = class extends ve.Component { //[WIP] - Refactor at a later date
 		}
 		
 		this.name = options.name;
-		
-		// Ensure initial .v reflects what was passed in (normalized)
-		// We do not set this.v = arg0_value directly because setters trigger bindings/conversions
 	}
 	
 	/**
@@ -195,9 +192,9 @@ ve.Colour = class extends ve.Component { //[WIP] - Refactor at a later date
 		let input_rgb = [0, 0, 0];
 		let input_alpha = 1;
 		
-		// 1. Parse Input
+		//1. Parse Input
 		if (typeof arg0_value === "string") {
-			// Hex String Handling
+			//Hex String Handling
 			if (arg0_value.startsWith("#")) {
 				if (arg0_value.length > 7) {
 					// #RRGGBBAA
@@ -205,7 +202,7 @@ ve.Colour = class extends ve.Component { //[WIP] - Refactor at a later date
 					input_rgb = [rgba[0], rgba[1], rgba[2]];
 					input_alpha = rgba[3];
 				} else {
-					// #RRGGBB
+					//#RRGGBB
 					input_rgb = Colour.convertHexToRGB(arg0_value);
 				}
 			}
@@ -219,14 +216,14 @@ ve.Colour = class extends ve.Component { //[WIP] - Refactor at a later date
 			}
 		}
 		
-		// 2. Convert RGB part to Standard Hex for HTML Input
+		//2. Convert RGB part to Standard Hex for HTML Input
 		let hex_value = Colour.convertRGBToHex(input_rgb);
 		
-		// 3. Update State
+		//3. Update State
 		this.value = hex_value;
 		this.element.querySelector("input").value = this.value;
 		
-		// 4. Update Alpha if applicable
+		//4. Update Alpha if applicable
 		if (this.options.is_rgba) {
 			this.alpha = input_alpha;
 			this.element.querySelector("input").style.opacity = this.alpha;

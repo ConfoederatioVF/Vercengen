@@ -60,6 +60,7 @@
  *     - `&lt;category_key>`: {@link Object}
  *       - `.colour`: {@link Array}&lt;{@link number}, {@link number}, {@link number}>|{@link string} - Either a hex/RGB value.
  *   - `.disable_custom_nodes=false`: {@link boolean} - Whether to disable custom nodes editing.
+ *   - `.disable_file_explorer=false`: {@link boolean} - Whether to disable the leftbar file explorer, used for saving/loading files.
  *   - `.disable_forse=false`: {@link boolean} - Whether to disable Forse Nodes, which is the default DSL used by Vercengen.
  *   - `.exclude_all=false`: {@link boolean} - Whether to exclude the default 'All' category at the start.
  *   - `.node_types`: {@link Object}
@@ -86,6 +87,7 @@
  *   	   - `.id=Class.generateRandomID(ve.NodeEditorDatatype)`: {@link string} - The ID to assign to the present datatype at a class level.
  *       - `.show_alluvial=false`: {@link boolean}
  *   - `.project_folder`: {@link string}
+ *   - `.save_extension=".ve-ne"`: {@link string}
  *
  * ##### Instance:
  * - `.id`: {@link string}
@@ -138,13 +140,14 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 		options.node_types = options.node_types ? options.node_types : {};
 		options.polling = Math.returnSafeNumber(options.polling, 100);
 		options.style = {
-			height: "50vh",
-			width: "50vw",
-			"#map-container": { height: "100%", width: "100%" },
-			".maptalks-all-layers, .maptalks-canvas-layer, .maptalks-wrapper": {
-				position: "static",
+			display: "flex",
+			flexDirection: "column",
+			height: "100%",
+			width: "100%",
+			padding: "0",
+			".maptalks-attribution": {
+				display: "none",
 			},
-			".maptalks-attribution": { display: "none" },
 			...options.style,
 		};
 		
@@ -162,23 +165,58 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 			this.element.instance = this;
 			this.element.setAttribute("component", "ve-node-editor");
 			HTML.setAttributesObject(this.element, options.attributes);
-		this.map_el = document.createElement("div");
-			this.map_el.id = "map-container";
-			this.element.appendChild(this.map_el);
 		
-		if (ve.registry.debug_mode) {
-			let debug_button = new ve.Button(() => console.log(this.getDAGSequence()), { 
+		//1. Topbar; actions bar
+		let debug_components_obj = (ve.registry.debug_mode) ? {
+			debug_button: new ve.Button(() => console.log(this.getDAGSequence()), {
 				name: "Debug"
-			});
-			debug_button.bind(this.element);
-		}
-		let run_button = new ve.Button(() => this.run().then(() => ve.NodeEditorDatatype.draw(this)), { 
-			name: "Run" 
+			})
+		} : {};
+		
+		let actions_bar = new ve.RawInterface({
+			run_button: new ve.Button(() => this.run().then(() => ve.NodeEditorDatatype.draw(this)), {
+				name: "Run",
+			}),
+			...debug_components_obj
+		}, {
+			style: {
+				marginBottom: `var(--cell-padding)`,
+				"button": {
+					marginRight: `var(--cell-padding)`
+				}
+			}
 		});
-		run_button.bind(this.element);
+		actions_bar.bind(this.element);
+		
+		//2. Scene 
+		this.map_el = document.createElement("div");
+		this.map_el.id = "map-container";
+		this.map_el.setAttribute("style", "height: 100%; width: 100%;");
+		
+		this.scene_interface = new ve.FlexInterface({
+			type: "horizontal",
+			file_explorer: (!options.disable_file_explorer) ? new ve.FileExplorer(options.project_folder, {
+				style: {
+					maxHeight: "40rem",
+				},
+				load_function: (arg0_data) => {
+					//Convert from parameters
+					let local_data = arg0_data;
+					
+					this.v = JSON.parse(local_data);
+				},
+				save_extension: (options.save_extension) ? options.save_extension : [".ve-ne"],
+				save_function: () => this.v,
+			}) : undefined,
+			map_el: new ve.HTML(this.map_el, {
+				style: { minHeight: "8rem", height: "100%", padding: 0 }
+			})
+		});
+		this.scene_interface.bind(this.element);
 		
 		this.id = Class.generateRandomID(ve.NodeEditor);
 		this.map = new maptalks.Map(this.map_el, {
+			autoResize: false,
 			center: [0, 0],
 			zoom: 14,
 			baseLayer: this.getDefaultBaseLayer(),
