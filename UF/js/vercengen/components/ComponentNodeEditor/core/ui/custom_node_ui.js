@@ -97,6 +97,7 @@
 		};
 		let temp_editor = new ve.NodeEditor({ nodes: [] }, {
 			category_types: this.options.category_types,
+			disable_file_explorer: true,
 			node_types: this.options.node_types,
 			project_folder: this.options.project_folder,
 			show_internal: true,
