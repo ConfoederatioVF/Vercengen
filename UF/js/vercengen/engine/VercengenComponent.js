@@ -71,7 +71,7 @@
  *   - {@link ve.Component.ve.NodeEditorDatatype|veNodeEditorDatatype}(arg0_value:{@link Object}, arg1_options:{@link Object}) | {@link Object}
  * - {@link ve.Component.ve.ScriptManager|veScriptManager}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string}
  *   - {@link ve.Component.ve.ScriptManagerBlockly|veScriptManagerBlockly}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string}
- *   - {@link ve.Component.ve.ScriptManagerCodemirror|veScriptManagerCodemirror}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string}
+ *   - {@link ve.Component.ve.ScriptManagerMonaco|ScriptManagerMonaco}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string}
  * - {@link ve.Component.ve.Spreadsheet|veSpreadsheet}(arg0_value:{@link Array}<{@link Array}<{@link Array}<{@link any}>>>|{@link Object}, arg1_options:{@link Object}) | {@link Array}<{@link Array}<{@link Array}<{@link any}>>>|{@link Object} - Spreadsheet editor with formulas. Can be converted to {@link ve.Table} on demand.
  * - {@link ve.Component.ve.WordProcessor|WordProcessor}(arg0_value:{@link string}, arg1_options:{@link Object}) | {@link string} - Word processor.
  * 
