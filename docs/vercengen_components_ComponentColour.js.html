@@ -71,11 +71,11 @@ ve.Colour = class extends ve.Component { //[WIP] - Refactor at a later date
 		//Convert from parameters
 		let options = (arg1_options) ? arg1_options : {};
 		let initial_value = (arg0_value) ? arg0_value : [255, 255, 255];
-			super(options);
+		super(options);
 		
 		//Initialise options
 		options.attributes = options.attributes ? options.attributes : {};
-		if (options.name === undefined) options.name = "Colour";
+		if (options.name === undefined) options.name = loc("ve.registry.localisation.Colour_name_default");
 		
 		//Logic update for RGB/alpha parsing
 		let alpha_value = 1;
@@ -141,7 +141,7 @@ ve.Colour = class extends ve.Component { //[WIP] - Refactor at a later date
 		//RGBA Opacity Slider Logic
 		if (this.options.is_rgba) {
 			this.opacity_slider = new ve.Range(this.alpha * 100, {
-				name: "OPA:",
+				name: loc("ve.registry.localisation.Colour_opacity_label"),
 				min: 0,
 				max: 100,
 				step: 1,

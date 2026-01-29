@@ -174,14 +174,14 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		let is_array = Array.isArray(target_obj);
 		
 		let components_obj = {
-			info: new ve.HTML((is_array) ? "Select the type of item to push to the array." : "Define the key name and value type."),
+			info: new ve.HTML((is_array) ? loc("ve.registry.localisation.ObjectEditor_add_array_info") : loc("ve.registry.localisation.ObjectEditor_add_object_info")),
 			type_select: new ve.Select({
-				string: { name: "String", selected: true },
-				number: { name: "Number" },
-				boolean: { name: "Boolean" },
-				object: { name: "Object" },
-				array: { name: "Array" },
-				null: { name: "Null" }
+				string: { name: loc("ve.registry.localisation.ObjectEditor_type_string"), selected: true },
+				number: { name: loc("ve.registry.localisation.ObjectEditor_type_number") },
+				boolean: { name: loc("ve.registry.localisation.ObjectEditor_type_boolean") },
+				object: { name: loc("ve.registry.localisation.ObjectEditor_type_object") },
+				array: { name: loc("ve.registry.localisation.ObjectEditor_type_array") },
+				null: { name: loc("ve.registry.localisation.ObjectEditor_type_null") }
 			}, {
 				style: { width: "100%", marginBottom: "var(--cell-padding)" }
 			}),
@@ -190,11 +190,11 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 				let new_key = (is_array) ? target_obj.length : this.modal_window.components_obj.key_name.v;
 				
 				if (!is_array &amp;&amp; !new_key) {
-					new ve.Toast("Please enter a property name.");
+					new ve.Toast(loc("ve.registry.localisation.ObjectEditor_toast_enter_property_name"));
 					return;
 				}
 				if (!is_array &amp;&amp; target_obj.hasOwnProperty(new_key)) {
-					new ve.Toast(`Property "${new_key}" already exists.`);
+					new ve.Toast(loc("ve.registry.localisation.ObjectEditor_toast_property_exists", new_key));
 					return;
 				}
 				
@@ -215,18 +215,18 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 				this.refresh();
 				this.fireToBinding();
 				
-			}, { name: "Add Item", style: { width: "100%" } })
+			}, { name: loc("ve.registry.localisation.ObjectEditor_button_add_item"), style: { width: "100%" } })
 		};
 		if (!is_array)
 			components_obj.key_name = new ve.Text("", {
-				placeholder: "Property Name",
+				placeholder: loc("ve.registry.localisation.ObjectEditor_placeholder_property_name"),
 				style: { marginBottom: "var(--cell-padding)" }
 			});
 		
 		//Open modal_window if possible
 		if (this.modal_window) this.modal_window.close();
 		this.modal_window = new ve.Window(components_obj, {
-			name: (is_array) ? "Add Element to Array" : "Add Variable",
+			name: (is_array) ? loc("ve.registry.localisation.ObjectEditor_window_add_array_element") : loc("ve.registry.localisation.ObjectEditor_window_add_variable"),
 			can_rename: false
 		});
 	}
@@ -241,14 +241,14 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		let current_type = this._getType(current_val);
 		
 		let components_obj = {
-			info: new ve.HTML(`Change type for &lt;b>${key}&lt;/b>.&lt;br>&lt;small>Warning: This will reset the value.&lt;/small>`),
+			info: new ve.HTML(loc("ve.registry.localisation.ObjectEditor_change_type_info", key)),
 			type_select: new ve.Select({
-				string: { name: "String", selected: current_type === "string" },
-				number: { name: "Number", selected: current_type === "number" },
-				boolean: { name: "Boolean", selected: current_type === "boolean" },
-				object: { name: "Object", selected: current_type === "object" },
-				array: { name: "Array", selected: current_type === "array" },
-				null: { name: "Null", selected: current_type === "null" }
+				string: { name: loc("ve.registry.localisation.ObjectEditor_type_string"), selected: current_type === "string" },
+				number: { name: loc("ve.registry.localisation.ObjectEditor_type_number"), selected: current_type === "number" },
+				boolean: { name: loc("ve.registry.localisation.ObjectEditor_type_boolean"), selected: current_type === "boolean" },
+				object: { name: loc("ve.registry.localisation.ObjectEditor_type_object"), selected: current_type === "object" },
+				array: { name: loc("ve.registry.localisation.ObjectEditor_type_array"), selected: current_type === "array" },
+				null: { name: loc("ve.registry.localisation.ObjectEditor_type_null"), selected: current_type === "null" }
 			}, {
 				style: { width: "100%", marginBottom: "var(--cell-padding)" }
 			}),
@@ -278,7 +278,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 				this.fireToBinding();
 				
 			}, {
-				name: "Change Type",
+				name: loc("ve.registry.localisation.ObjectEditor_button_change_type"),
 				style: { width: "100%" }
 			})
 		};
@@ -286,7 +286,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		//Open change_type_window if possible
 		if (this.change_type_window) this.change_type_window.close();
 		this.change_type_window = new ve.Window(components_obj, {
-			name: "Change Variable Type",
+			name: loc("ve.registry.localisation.ObjectEditor_window_change_type"),
 			can_rename: false,
 			width: "300px",
 			height: "auto"
@@ -296,7 +296,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 	_renameObjectKey(obj, old_key, new_key) {
 		if (old_key === new_key) return;
 		if (obj.hasOwnProperty(new_key)) {
-			new ve.Toast(`Key "${new_key}" already exists.`);
+			new ve.Toast(loc("ve.registry.localisation.ObjectEditor_toast_key_exists", new_key));
 			this.refresh();
 			return;
 		}
@@ -370,13 +370,13 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 						"data-is-type": true
 					},
 					style: icon_style,
-					tooltip: `${type} (Click to change)`
+					tooltip: loc("ve.registry.localisation.ObjectEditor_tooltip_change_type", type)
 				});
 			} else {
 				components_obj.icon = new ve.HTML(`&lt;icon>${icon_name}&lt;/icon>`, {
 					attributes: { "data-is-type": true },
 					style: icon_style,
-					tooltip: `${type}`
+					tooltip: loc("ve.registry.localisation.ObjectEditor_tooltip_type", type)
 				})
 			}
 		}
@@ -432,8 +432,8 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 			} else if (type === "boolean") {
 				components_obj.input = new ve.Toggle(current_data, {
 					onuserchange: (v) => { parent_object[current_key] = v; this.fireToBinding(); },
-					on_name: "True",
-					off_name: "False",
+					on_name: loc("ve.registry.localisation.ObjectEditor_value_true"),
+					off_name: loc("ve.registry.localisation.ObjectEditor_value_false"),
 					style: { order: 3 }
 				});
 			} else {
@@ -449,7 +449,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 			}, {
 				name: "&lt;icon>add&lt;/icon>",
 				limit: () => (!this.options.do_not_allow_insertion),
-				tooltip: "Add Item...",
+				tooltip: loc("ve.registry.localisation.ObjectEditor_tooltip_add_item"),
 				style: { order: 3 }
 			});
 		}
@@ -457,7 +457,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		//5. Delete Button (Order 4)
 		//This gets marginLeft: auto to push it to the far right edge of the container
 		components_obj.delete_btn = new ve.Button((e) => {
-			veConfirm(`Are you sure you want to delete "${current_key}"?`, {
+			veConfirm(loc("ve.registry.localisation.ObjectEditor_confirm_delete", current_key), {
 				special_function: () => {
 					if (Array.isArray(parent_object)) {
 						parent_object.splice(current_key, 1);
@@ -471,7 +471,7 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 		}, {
 			name: "&lt;icon>delete&lt;/icon>",
 			limit: () => (!this.options.do_not_allow_deletion),
-			tooltip: "Delete",
+			tooltip: loc("ve.registry.localisation.ObjectEditor_tooltip_delete"),
 			style: {
 				order: 4,
 				color: "var(--color-error)"
@@ -573,11 +573,11 @@ ve.ObjectEditor = class extends ve.Component { //[WIP] - Refactor at a later dat
 				this._openAddModal(this.value);
 			}, {
 				name: "&lt;icon>playlist_add&lt;/icon>",
-				tooltip: "Add Variable"
+				tooltip: loc("ve.registry.localisation.ObjectEditor_tooltip_add_variable")
 			}),
 			information: new ve.Button(() => {}, {
 				name: "&lt;icon>info&lt;/icon>",
-				tooltip: "Key names are on the left, and are text entries with the exception of arrays. Values are located to the right."
+				tooltip: loc("ve.registry.localisation.ObjectEditor_tooltip_info")
 			})
 		}, {
 			disabled: true,

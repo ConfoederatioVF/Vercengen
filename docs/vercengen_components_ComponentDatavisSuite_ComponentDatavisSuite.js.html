@@ -121,16 +121,16 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				edit_graph_button: new ve.Button(() => {
 					this.openEditGraph();
 				}, { 
-					name: "Graph", style: topbar_button_style }),
+					name: loc("ve.registry.localisation.DatavisSuite_graph"), style: topbar_button_style }),
 				edit_series_button: new ve.Button(() => {
 					this.openEditSeriesHierarchy();
-				}, { name: "Series",
+				}, { name: loc("ve.registry.localisation.DatavisSuite_series"),
 					style: topbar_button_style }),
 				script_button: new ve.Button(() => {
 					this.openScriptManager();
-				}, { name: "ScriptManager", 
+				}, { name: loc("ve.registry.localisation.DatavisSuite_script_manager"), 
 					style: topbar_button_style }),
-				view_button: new ve.Button(() => {}, { name: "View", 
+				view_button: new ve.Button(() => {}, { name: loc("ve.registry.localisation.DatavisSuite_view"), 
 					style: topbar_button_style })
 			}),
 			scene_interface: new ve.RawInterface({
@@ -253,14 +253,14 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					this.graphs[new_graph_id].options.order = Object.keys(this.graphs).length;
 				this.drawEditGraph();
 				
-				veToast(`Added chart to graph.`);
-			}, { name: "&lt;icon>add_chart&lt;/icon>", tooltip: "Add Graph" }),
+				veToast(loc("ve.registry.localisation.DatavisSuite_toast_added_chart_to_graph"));
+			}, { name: "&lt;icon>add_chart&lt;/icon>", tooltip: loc("ve.registry.localisation.DatavisSuite_tooltip_add_graph") }),
 			create_new_graphlegend: new ve.Button(() => {
 				
-			}, { name: "&lt;icon>format_list_bulleted&lt;/icon>", tooltip: "Add Legend" }),
+			}, { name: "&lt;icon>format_list_bulleted&lt;/icon>", tooltip: loc("ve.registry.localisation.DatavisSuite_tooltip_add_legend") }),
 			create_new_graphtext: new ve.Button(() => {
 				
-			}, { name: "&lt;icon>notes&lt;/icon>", tooltip: "Add Overlay Text" })
+			}, { name: "&lt;icon>notes&lt;/icon>", tooltip: loc("ve.registry.localisation.DatavisSuite_tooltip_add_overlay_text") })
 		}, { disabled: true });
 		let hierarchy_obj = {};
 		
@@ -271,14 +271,14 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 			Object.iterate(this.graphs, (local_key, local_value) => {
 				if (local_value instanceof ve.Graph) {
 					let graph_name = (local_value?.options?.symbol?.title?.text) ?
-						local_value.options.symbol.title.text : "New Graph"
+						local_value.options.symbol.title.text : loc("ve.registry.localisation.DatavisSuite_new_graph")
 					
 					hierarchy_obj[local_key] = new ve.HierarchyDatatype({
 						icon: new ve.HTML("&lt;icon>show_chart&lt;/icon>"),
 						
 						delete_button: new ve.Button(() => {}, {
 							name: "&lt;icon>delete&lt;/icon>",
-							tooltip: "Delete Graph",
+							tooltip: loc("ve.registry.localisation.DatavisSuite_tooltip_delete_graph"),
 							style: {
 								marginLeft: "auto",
 								order: 100
@@ -291,7 +291,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 							let series_options = {
 								onuserchange: (v) => {
 									if (!this.series[v])
-										veToast(`&lt;icon>warning&lt;/icon> The data series you have selected is not valid.`);
+										veToast(`&lt;icon>warning&lt;/icon> ${loc("ve.registry.localisation.DatavisSuite_toast_invalid_data_series")}`);
 									this.assigned_series_list.fireToBinding();
 								}
 							};
@@ -310,7 +310,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 								}
 							
 							let assigned_series_list = new ve.List((assigned_series_values.length > 0) ? assigned_series_values : [series_select], {
-								name: "Attached Series",
+								name: loc("ve.registry.localisation.DatavisSuite_attached_series"),
 								onuserchange: (v) => {
 									local_value.value.series = {};
 									
@@ -340,7 +340,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 								interface: new ve.RawInterface({
 									assigned_series: assigned_series_list,
 									background_colour: new ve.Colour((local_value.options.symbol.backgroundColor) ? local_value.options.symbol.backgroundColor : [0, 0, 0, 0], {
-										name: "Background Colour",
+										name: loc("ve.registry.localisation.DatavisSuite_background_colour"),
 										is_rgba: true,
 										onuserchange: (v, e) => {
 											local_value.options.symbol.backgroundColor = e.getHex();
@@ -348,7 +348,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 										}
 									}),
 									default_colours: new ve.List(all_default_colours, {
-										name: "Default Colours",
+										name: loc("ve.registry.localisation.DatavisSuite_default_colours"),
 										onuserchange: (v) => {
 											//Declare local instance variables
 											let all_colours = [];
@@ -371,7 +371,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 											axis_type: "x",
 											datavis_suite_obj: this,
 											graph_obj: local_value,
-											name: "X Axis Symbol",
+											name: loc("ve.registry.localisation.DatavisSuite_x_axis_symbol"),
 											style: { padding: 0 },
 											x: 0,
 											y: 0,
@@ -385,7 +385,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 											axis_type: "y",
 											datavis_suite_obj: this,
 											graph_obj: local_value,
-											name: "Y Axis Symbol",
+											name: loc("ve.registry.localisation.DatavisSuite_y_axis_symbol"),
 											style: { padding: 0 },
 											x: 1,
 											y: 0,
@@ -398,7 +398,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 										polar_axis_symbol: new ve.DatavisSuite.AxisSymbol_Polar(local_value.options.symbol?.polar, {
 											datavis_suite_obj: this,
 											graph_obj: local_value,
-											name: "Polar Axis Symbol",
+											name: loc("ve.registry.localisation.DatavisSuite_polar_axis_symbol"),
 											style: { padding: 0 },
 											x: 0,
 											y: 1,
@@ -409,31 +409,31 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 											}
 										}).interface
 									}, {
-										name: "Axis Symbols"
+										name: loc("ve.registry.localisation.DatavisSuite_axis_symbols")
 									}),
 									text_symbol: new ve.DatavisSuite.TextSymbol(local_value.options.symbol?.textStyle, {
-										name: "Text Symbol",
+										name: loc("ve.registry.localisation.DatavisSuite_text_symbol"),
 										onuserchange: (v) => {
 											local_value.options.symbol.textStyle = v;
 											this.drawGraphs(true);
 										}
 									}).interface,
 									title_symbol: new ve.DatavisSuite.TitleSymbol(local_value.options.symbol?.title, {
-										name: "Title Symbol",
+										name: loc("ve.registry.localisation.DatavisSuite_title_symbol"),
 										onuserchange: (v) => {
 											local_value.options.symbol.title = v;
 											this.drawGraphs(true);
 										}
 									}).interface,
 									tooltip_symbol: new ve.DatavisSuite.TooltipSymbol(local_value.options.symbol?.tooltip, {
-										name: "Tooltip Symbol",
+										name: loc("ve.registry.localisation.DatavisSuite_tooltip_symbol"),
 										onuserchange: (v) => {
 											local_value.options.symbol.tooltip = v;
 											this.drawGraphs(true);
 										}
 									}).interface,
 									visual_map: new ve.DatavisSuite.VisualMapSymbol(local_value.options.symbol?.visualMap, {
-										name: "Visual Map",
+										name: loc("ve.registry.localisation.DatavisSuite_visual_map"),
 										onuserchange: (v) => {
 											local_value.options.symbol.visualMap = v;
 											this.drawGraphs(true);
@@ -441,13 +441,13 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 									}).interface,
 								})
 							}, {
-								name: `Edit ${graph_name}`,
+								name: `${loc("ve.registry.localisation.DatavisSuite_edit")} ${graph_name}`,
 								can_rename: false,
 								width: "30rem"
 							});
 						}, {
 							name: "&lt;icon>more_vert&lt;/icon>",
-							tooltip: "Modify Graph",
+							tooltip: loc("ve.registry.localisation.DatavisSuite_tooltip_modify_graph"),
 							style: {
 								order: 101
 							}
@@ -514,8 +514,8 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				};
 				this.drawEditSeriesHierarchy();
 			}, { 
-				name: "&lt;icon>add&lt;/icon> New Series", 
-				tooltip: "Create New Series"
+				name: `&lt;icon>add&lt;/icon> ${loc("ve.registry.localisation.DatavisSuite_new_series")}`, 
+				tooltip: loc("ve.registry.localisation.DatavisSuite_tooltip_create_new_series")
 			})
 		}, {
 			disabled: true
@@ -533,7 +533,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					style: { order: 1 }
 				}),
 				delete_button: new ve.Button(() => {
-					new ve.Confirm(`Are you sure you wish to delete ${series_name}?`, {
+					new ve.Confirm(`${loc("ve.registry.localisation.DatavisSuite_confirm_delete_series", series_name)}`, {
 						special_function: () => {
 							delete this.series[local_key];
 							this.drawEditSeriesHierarchy();
@@ -541,7 +541,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					});
 				}, {
 					name: "&lt;icon>delete&lt;/icon>",
-					tooltip: "Delete Series",
+					tooltip: loc("ve.registry.localisation.DatavisSuite_tooltip_delete_series"),
 					style: {
 						marginLeft: "auto",
 						order: 100
@@ -551,7 +551,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 					this.openEditSeries(local_value);
 				}, { 
 					name: "&lt;icon>more_vert&lt;/icon>",
-					tooltip: "Modify Series",
+					tooltip: loc("ve.registry.localisation.DatavisSuite_tooltip_modify_series"),
 					style: {
 						order: 101
 					}
@@ -694,13 +694,13 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		let series_obj = (arg0_series_obj) ? arg0_series_obj : {};
 		
 		//Declare local instance variables
-		let series_name = "New Series";
+		let series_name = loc("ve.registry.localisation.DatavisSuite_new_series");
 			if (!series_obj.name) {
 				if (series_obj.coords)
 					//The series_name is located in the top left of the current range
 					series_name = this.components_obj.scene_interface.table.getCellData(...series_obj.coords[0])?.v;
 				if (series_name === undefined || series_name.length === 0)
-					series_name = "New Series";
+					series_name = loc("ve.registry.localisation.DatavisSuite_new_series");
 			} else {
 				series_name = series_obj.name;
 			}
@@ -745,7 +745,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		//Open this.graph_window with controls on the left and visualisation on the right
 		this.graph_window = new ve.Window({
 			container: new ve.FlexInterface({
-				graph_options: new ve.HTML("Loading ..", {
+				graph_options: new ve.HTML(loc("ve.registry.localisation.DatavisSuite_loading"), {
 					style: {
 						scrollbarWidth: "thin"
 					}
@@ -760,7 +760,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				}
 			})
 		}, {
-			name: "Edit Graph",
+			name: loc("ve.registry.localisation.DatavisSuite_edit_graph"),
 			can_rename: false,
 			width: "30rem",
 			
@@ -791,27 +791,27 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		//Refresh series window
 		if (this.edit_series_window) this.edit_series_window.close();
 		this.edit_series_window = new ve.Window({
-			range_information: new ve.HTML(() => `Series Range: ${this.table_obj.getRangeName(series_obj.coords)}`),
+			range_information: new ve.HTML(() => `${loc("ve.registry.localisation.DatavisSuite_series_range")}: ${this.table_obj.getRangeName(series_obj.coords)}`),
 			range_selection: new ve.RawInterface({
 				clear_range: new ve.Button(() => {
 					delete series_obj.coords;
 					this.drawEditSeriesHierarchy();
 					this.drawGraphs();
 					
-					veToast(`Cleared selected series range.`);
-				}, { name: "Clear Range", limit: () => series_obj.coords }),
+					veToast(loc("ve.registry.localisation.DatavisSuite_toast_cleared_range"));
+				}, { name: loc("ve.registry.localisation.DatavisSuite_clear_range"), limit: () => series_obj.coords }),
 				select_series_range: new ve.Button(() => {
 					this.table_obj.setSelectedRange(series_obj.coords[0], series_obj.coords[1]);
-				}, { name: "Select Series Range", limit: () => series_obj.coords }),
+				}, { name: loc("ve.registry.localisation.DatavisSuite_select_series_range"), limit: () => series_obj.coords }),
 				set_series_range: new ve.Button(() => {
 					try {
 						series_obj.coords = this.table_obj.getSelectedRange();
 						this.drawEditSeriesHierarchy();
 						this.drawGraphs();
 						
-						veToast(`New series range set.`);
+						veToast(loc("ve.registry.localisation.DatavisSuite_toast_range_set"));
 					} catch (e) { console.error(e); }
-				}, { name: "Set Series Range" })
+				}, { name: loc("ve.registry.localisation.DatavisSuite_set_series_range") })
 			}),
 			
 			symbol: new ve.DatavisSuite.SeriesSymbol(series_obj.symbol, {
@@ -821,7 +821,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 				}
 			})
 		}, {
-			name: `Edit ${series_name}`,
+			name: `${loc("ve.registry.localisation.DatavisSuite_edit")} ${series_name}`,
 			can_rename: false,
 			width: "30rem"
 		});
@@ -840,9 +840,9 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		
 		//Open this.series_window
 		this.series_window = new ve.Window({ //Use ve.Hierarchy for list creation
-			hierarchy: new ve.HTML("Loading ..", { style: { padding: 0 } })
+			hierarchy: new ve.HTML(loc("ve.registry.localisation.DatavisSuite_loading"), { style: { padding: 0 } })
 		}, { 
-			name: "Data Series", 
+			name: loc("ve.registry.localisation.DatavisSuite_data_series"), 
 			can_rename: false,
 			width: "30rem"
 		});
@@ -862,7 +862,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		this.script_manager_window = veWindow({
 			script_manager: new ve.ScriptManager()
 		}, {
-			name: "ScriptManager (Datavis Suite)",
+			name: loc("ve.registry.localisation.DatavisSuite_script_manager_window_name"),
 			
 			can_rename: false,
 			width: "80dvw"
