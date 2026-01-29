@@ -66,7 +66,7 @@ ve.NodeEditor.Forse.loops = {
 			};
 		}
 	},
-	object_iterate: { //[WIP] - Refactor at a later date
+	object_iterate: {
 		name: "Iterate over Object",
 		category: "Loops",
 		input_parameters: [{
