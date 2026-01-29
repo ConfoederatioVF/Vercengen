@@ -64,7 +64,7 @@ ve.ScriptManager = class extends ve.Component {
 		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
-		if (options.name === undefined) options.name = "ScriptManager";
+		if (options.name === undefined) options.name = loc("ve.registry.localisation.ScriptManager_name_default");
 		if (options.style === undefined) options.style = {};
 		
 		//Declare local instance variables
@@ -172,7 +172,7 @@ ve.ScriptManager = class extends ve.Component {
 				if (this.file_context_menu) this.file_context_menu.close();
 				this.file_context_menu = new ve.ContextMenu({
 					override_file_type: new ve.Select(ve.ScriptManager._getFileExtensions({ return_select_obj: true }), {
-						name: "Mark as File Type",
+						name: loc("ve.registry.localisation.ScriptManager_mark_as_file_type"),
 						limit: () => is_file,
 						selected: (local_file_obj.type) ? local_file_obj.type : default_file_extension,
 						
@@ -181,7 +181,7 @@ ve.ScriptManager = class extends ve.Component {
 					mark_source_as_excluded: new ve.Button(() => {
 						ve.ScriptManager._setSourceAsMode.call(this, local_file_path, "excluded");
 					}, {
-						name: "Mark Source as Excluded",
+						name: loc("ve.registry.localisation.ScriptManager_mark_excluded"),
 						style: {
 							textAlign: "left",
 							whiteSpace: "nowrap"
@@ -190,7 +190,7 @@ ve.ScriptManager = class extends ve.Component {
 					mark_source_as_included: new ve.Button(() => {
 						ve.ScriptManager._setSourceAsMode.call(this, local_file_path, "default");
 					}, {
-						name: "Mark Source as Included",
+						name: loc("ve.registry.localisation.ScriptManager_mark_included"),
 						style: {
 							textAlign: "left",
 							whiteSpace: "nowrap"
@@ -202,7 +202,7 @@ ve.ScriptManager = class extends ve.Component {
 				});
 			}, {
 				name: "<icon>more_vert</icon>",
-				tooltip: "Edit Properties",
+				tooltip: loc("ve.registry.localisation.ScriptManager_tooltip_edit_properties"),
 				style: {
 					paddingBottom: `var(--cell-padding)`,
 					paddingTop: `var(--cell-padding)`
@@ -217,10 +217,10 @@ ve.ScriptManager = class extends ve.Component {
 					this.config.project_folder = new_folder_path;
 					ve.ScriptManager._indexDocumentation.call(this, this.bottombar_status_el);
           ve.ScriptManager._saveConfig.call(this);
-					veToast(`Changed project folder to ${new_folder_path}`);
+					veToast(loc("ve.registry.localisation.ScriptManager_toast_changed_project_folder", new_folder_path));
 				}, { 
 					name: "<icon>gite</icon>",
-					tooltip: "Set as Project Folder",
+					tooltip: loc("ve.registry.localisation.ScriptManager_tooltip_set_project_folder"),
 					limit: () => (path.resolve(this.leftbar_file_explorer.v) !== this.config.project_folder)
 				})
 			},
@@ -298,7 +298,7 @@ ve.ScriptManager = class extends ve.Component {
 				try {
 					this.scene_monaco.editor.addAction({
 						id: "open-project-find-and-replace",
-						label: "Open Project Find and Replace",
+						label: loc("ve.registry.localisation.ScriptManager_action_find_replace"),
 						keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyF],
 						contextMenuGroupId: "1_modification",
 						run: (ed) => {
@@ -349,7 +349,7 @@ ve.ScriptManager = class extends ve.Component {
 				this.settings_window = new ve.Window({
 					appearance: new ve.Interface({
 						background: new ve.Text(this._settings.background_image, {
-							name: "Background",
+							name: loc("ve.registry.localisation.ScriptManager_background"),
 							onuserchange: (v) => {
 								if (v.isURL()) v = `url(${v})`;
 								
@@ -361,14 +361,14 @@ ve.ScriptManager = class extends ve.Component {
 							}
 						}),
 						background_colour: new ve.Colour(this._settings.background_colour, {
-							name: "Background Colour",
+							name: loc("ve.registry.localisation.ScriptManager_background_colour"),
 							onuserchange: (v, e) => {
 								this._settings.background_colour = e.getHex();
 								this.loadSettings({ background_colour: this._settings.background_colour });
 							}
 						}),
 						background_opacity: new ve.Range(Math.returnSafeNumber(this._settings.background_opacity, 0.5), {
-							name: "Background Opacity",
+							name: loc("ve.registry.localisation.ScriptManager_background_opacity"),
 							onuserchange: (v) => {
 								this._settings.background_opacity = v;
 								this.loadSettings({ background_opacity: this._settings.background_opacity });
@@ -376,7 +376,7 @@ ve.ScriptManager = class extends ve.Component {
 						}),
 						
 						scene_height: new ve.Number(Math.returnSafeNumber(this._settings.scene_height, 0), {
-							name: "Scene height (px)",
+							name: loc("ve.registry.localisation.ScriptManager_scene_height_px"),
 							min: 0,
 							onuserchange: (v) => {
 								if (v === 0) {
@@ -388,31 +388,31 @@ ve.ScriptManager = class extends ve.Component {
 								this._drawHeight();
 							}
 						}),
-					}, { name: "Appearance" }),
+					}, { name: loc("ve.registry.localisation.ScriptManager_appearance") }),
 					monaco_settings: this.scene_monaco.drawOptionsInterface({
-						name: "Editor (Code)"
+						name: loc("ve.registry.localisation.ScriptManager_editor_code")
 					}),
 					features: new ve.Interface({
 						autosave_projects: new ve.Toggle(this._settings.autosave_projects, {
-							name: "Autosave projects",
+							name: loc("ve.registry.localisation.ScriptManager_autosave_projects"),
 							onuserchange: (v) => this._settings.autosave_projects = v
 						}),
 						index_documentation: new ve.Toggle(this._settings.index_documentation, {
-							name: "Index documentation",
+							name: loc("ve.registry.localisation.ScriptManager_index_documentation"),
 							onuserchange: (v) => {
 								this._settings.index_documentation = v;
 								if (v) ve.ScriptManager._indexDocumentation.call(this, this.bottombar_status_el);
 							}
 						}),
 						log_large_objects_in_console: new ve.Toggle(this._settings.log_large_objects_in_console, {
-							name: "Log large objects in console without confirmation",
+							name: loc("ve.registry.localisation.ScriptManager_log_large_objects_confirm"),
 							onuserchange: (v) => this._settings.log_large_objects_in_console = v
 						}),
 						manual_synchronisation: new ve.Toggle(this._settings.manual_synchronisation, {
-							name: "Manual synchronisation",
+							name: loc("ve.registry.localisation.ScriptManager_manual_synchronisation"),
 							onuserchange: (v) => this._settings.manual_synchronisation = v
 						}),
-					}, { name: "Features" }),
+					}, { name: loc("ve.registry.localisation.ScriptManager_features") }),
 					
 					actions_bar: new ve.RawInterface({
 						load_settings: new ve.File(undefined, {
@@ -506,7 +506,7 @@ ve.ScriptManager = class extends ve.Component {
 					open_project_find_and_replace: new ve.Button(() => {
 						this._openFindAndReplace.call(this);
 					}, {
-						name: "Open Project Find & Replace"
+						name: loc("ve.registry.localisation.ScriptManager_open_find_replace")
 					}),
 					
 					display_load_errors: new ve.Toggle(this._settings.display_load_errors, {
@@ -524,7 +524,7 @@ ve.ScriptManager = class extends ve.Component {
 			}, { name: loc("ve.registry.localisation.ScriptManager_view"), x: 0, y: 2 }),
 			run: new ve.Button(() => {
 				let local_context_menu = new ve.ContextMenu({
-					run_header: new ve.HTML(`<b>${loc("ve.registry.localisation.ScriptManager_run_settings")}</b><br>`, { x: 0, y: 0 }),
+					run_header: new ve.HTML(`<b>${loc("ve.registry.localisation.ScriptManager_view_settings")}</b><br>`, { x: 0, y: 0 }),
 					
 					warning: new ve.HTML(`<div style = "align-items: center; display: flex"><icon style = "width: auto;">info</icon><b style = "margin-left: calc(var(--padding)*0.5);">${loc("ve.registry.localisation.ScriptManager_note")}</b></div><span>${loc("ve.registry.localisation.ScriptManager_trust_warning")}</span><br><br>`),
 					run_this_file_button: new ve.Button(() => {
@@ -564,8 +564,8 @@ ve.ScriptManager = class extends ve.Component {
 						}, { name: loc("ve.registry.localisation.ScriptManager_send") }),
 						information: new ve.Button(() => {
 							this.console_el.print(loc("ve.registry.localisation.ScriptManager_help_menu"));
-							this.console_el.print(`- this.console_el.print(arg0_message:string, arg1_type:string) - Prints a message to the console.`);
-							this.console_el.print(`- - arg1_type: 'error'/'info'`);
+							this.console_el.print(loc("ve.registry.localisation.ScriptManager_help_print"));
+							this.console_el.print(loc("ve.registry.localisation.ScriptManager_help_types"));
 						}, {
 							name: loc("ve.registry.localisation.ScriptManager_help"),
 							tooltip: loc("ve.registry.localisation.ScriptManager_prints_help_information")
@@ -690,7 +690,7 @@ ve.ScriptManager = class extends ve.Component {
 				
 				//Log error to console if this._settings.display_load_errors is true
 				if (this._settings.display_load_errors)
-					this.console_el.print(`On parsing file: ${e.toString()}. The loaded file is not ES6-compatible.`, "error");
+					this.console_el.print(loc("ve.registry.localisation.ScriptManager_error_parsing_es6", e.toString()), "error");
 				
 				//Hide Blockly workspace, then clear it
 				this.scene_blockly.hide();
@@ -927,7 +927,7 @@ ve.ScriptManager = class extends ve.Component {
 		let error = arg0_error;
 		
 		//Instantiate load message popup
-		veWindow(`${loc("ve.registry.localisation.error_compatibility", (this.options.compatibility_message) ? this.options.compatibility_message : "ES6")}<br><br><div style = "align-items: center; display: flex;"><icon>warning</icon>&nbsp;${error}</div><br><b>${loc("ve.registry.localisation.ScriptManager_stack_trace")}</b><br><div style = "margin-left: 1rem;">${error.stack}</div>`, {
+		veWindow(`${loc("ve.registry.localisation.ScriptManager_error_compatibility", (this.options.compatibility_message) ? this.options.compatibility_message : "ES6")}<br><br><div style = "align-items: center; display: flex;"><icon>warning</icon>&nbsp;${error}</div><br><b>${loc("ve.registry.localisation.ScriptManager_stack_trace")}</b><br><div style = "margin-left: 1rem;">${error.stack}</div>`, {
 			name: loc("ve.registry.localisation.ScriptManager_error_reading_file"),
 			width: "24rem"
 		});

@@ -85,7 +85,7 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 				//3. Fix paste event for Electron
 				this.editor.addAction({
 					id: "electron-native-paste",
-					label: "Electron Paste",
+					label: loc("ve.registry.localisation.ScriptManagerMonaco_action_paste"),
 					keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyV],
 					contextMenuGroupId: "9_cutcopypaste",
 					run: (ed) => {
@@ -242,44 +242,44 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 		let new_interface = new ve.Interface({
 			appearance: new ve.Interface({
 				font_family: new ve.Text(getMonacoOption("fontFamily"), {
-					name: "Font Family",
+					name: loc("ve.registry.localisation.ScriptManagerMonaco_font_family"),
 					onuserchange: (v) => this._setOption("fontFamily", v)
 				}),
 				font_ligatures: new ve.Toggle(getMonacoOption("fontLigatures"), {
-					name: "Font Ligatures",
+					name: loc("ve.registry.localisation.ScriptManagerMonaco_font_ligatures"),
 					onuserchange: (v) => this._setOption("fontLigatures", v)
 				}),
 				font_size: new ve.Number(getMonacoOption("fontSize"), {
-					name: "Font Size",
+					name: loc("ve.registry.localisation.ScriptManagerMonaco_font_size"),
 					onuserchange: (v) => this._setOption("fontSize", v)
 				}),
 				minimap: new ve.Toggle((getMonacoOption("minimap.enabled")) ? getMonacoOption("minimap.enabled") : true, {
-					name: "Show Minimap",
+					name: loc("ve.registry.localisation.ScriptManagerMonaco_show_minimap"),
 					onuserchange: (v) => {
 						this._setOption("minimap.enabled", v);
 						this.setOptions({ minimap: { enabled: v } });
 					}
 				}),
 				word_wrap: new ve.Toggle((getMonacoOption("wordWrap") === "bounded"), {
-					name: "Word Wrap",
+					name: loc("ve.registry.localisation.ScriptManagerMonaco_word_wrap"),
 					onuserchange: (v) => this._setOption("wordWrap", (v) ? "bounded" : "off")
 				}),
 				word_wrap_column: new ve.Number(Math.returnSafeNumber(getMonacoOption("wordWrapColumn"), 120), {
-					name: "Word Wrap Column",
+					name: loc("ve.registry.localisation.ScriptManagerMonaco_word_wrap_column"),
 					min: 1,
 					onuserchange: (v) => this._setOption("wordWrapColumn", v)
 				})
-			}, { name: "Appearance" }),
+			}, { name: loc("ve.registry.localisation.ScriptManagerMonaco_appearance") }),
 			indentation: new ve.Interface({
 				insert_spaces: new ve.Toggle(getMonacoOption("insertSpaces"), {
-					name: "Insert Spaces",
+					name: loc("ve.registry.localisation.ScriptManagerMonaco_insert_spaces"),
 					onuserchange: (v) => this._setOption("insertSpaces", v)
 				}),
 				tab_size: new ve.Number(getMonacoOption("tabSize"), {
-					name: "Tab Size",
+					name: loc("ve.registry.localisation.ScriptManagerMonaco_tab_size"),
 					onuserchange: (v) => this._setOption("tabSize", v)
 				})
-			}, { name: "Indentation" }),
+			}, { name: loc("ve.registry.localisation.ScriptManagerMonaco_indentation") }),
 			reset_monaco_settings: new ve.Button(() => {
 				//Declare local instance variables
 				let computed_style_obj = window.getComputedStyle(this.element);
@@ -302,9 +302,9 @@ ve.ScriptManagerMonaco = class extends ve.Component {
 					this.options_interface.element = new_interface.element;
 					this.options_interface.v = new_interface.components_obj;
 				}, 100);
-			}, { name: "Reset Code Editor Settings" })
+			}, { name: loc("ve.registry.localisation.ScriptManagerMonaco_button_reset") })
 		}, {
-			name: (options.name) ? options.name : "Code Editor"
+			name: (options.name) ? options.name : loc("ve.registry.localisation.ScriptManagerMonaco_name_default")
 		});
 		if (!options.do_not_cache)
 			this.options_interface = new_interface;

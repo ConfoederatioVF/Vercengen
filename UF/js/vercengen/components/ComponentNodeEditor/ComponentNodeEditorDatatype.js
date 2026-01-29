@@ -239,7 +239,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 					textName: is_comment
 						? display_name
 						: `${display_name} | ${
-							this.value.output_type ? this.value.output_type : "any"
+							this.value.output_type ? this.value.output_type : loc("ve.registry.localisation.NodeEditorDatatype_any")
 						}`,
 					textWrapWidth: is_comment ? 1000 : undefined,
 					...comment_options
@@ -463,7 +463,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		//Comment handling
 		if (this.options.is_comment) {
 			parameter_fields["text"] = new ve.Text(this.value.display_name, {
-				name: "Comment Text",
+				name: loc("ve.registry.localisation.NodeEditorDatatype_comment_text"),
 				onuserchange: (v) => {
 					this.value.display_name = v;
 					ve.NodeEditorDatatype.draw(this.options.node_editor);
@@ -526,7 +526,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 							settings: settings_obj,
 							style: { height: "50rem" },
 						}), {
-							name: "ScriptManager",
+							name: loc("ve.registry.localisation.DatavisSuite_script_manager"),
 							can_rename: false,
 							height: "60rem",
 							width: "50rem",
@@ -557,7 +557,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 						if (fs.existsSync(local_default_value))
 							node_editor_registry.script_window.component._file_path = local_default_value;
 					}, {
-						name: this.constant_values[i] ? "Edit Script" : "Create Script",
+						name: this.constant_values[i] ? loc("ve.registry.localisation.NodeEditorDatatype_edit_script") : loc("ve.registry.localisation.NodeEditorDatatype_create_script"),
 						tooltip: (this.constant_values[i]) ? this.constant_values[i] : undefined,
 						x: 0, y: i,
 					});
@@ -567,8 +567,8 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				
 				//Set parameter toggles
 				parameter_fields[`${local_parameter.name}_toggle`] = new ve.Toggle(this.constant_values[i] !== undefined && !is_actually_disabled, {
-					off_name: `<icon class = "toggle-icon off">toggle_off</icon> &nbsp; ${is_actually_disabled ? "Is Connected" : "Disabled"}`,
-					on_name: `<icon class = "toggle-icon on">toggle_on</icon> &nbsp; Enabled`,
+					off_name: `<icon class = "toggle-icon off">toggle_off</icon> &nbsp; ${is_actually_disabled ? loc("ve.registry.localisation.NodeEditorDatatype_is_connected") : loc("ve.registry.localisation.NodeEditorDatatype_disabled")}`,
+					on_name: `<icon class = "toggle-icon on">toggle_on</icon> &nbsp; ${loc("ve.registry.localisation.NodeEditorDatatype_enabled")}`,
 					onuserchange: (v) => {
 						if (v === false) {
 							this.constant_values[i] = undefined;
@@ -576,7 +576,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 							if (is_actually_disabled) {
 								this.constant_values[i] = undefined;
 								parameter_fields[`${local_parameter.name}_toggle`].v = false;
-								veToast(`<icon>warning</icon> Constants will not apply while node is connected.`);
+								veToast(`<icon>warning</icon> ${loc("ve.registry.localisation.NodeEditorDatatype_toast_constants_warning")}`);
 							} else {
 								//Script toggle condition
 								if (local_parameter_type !== "script")
@@ -597,13 +597,13 @@ ve.NodeEditorDatatype = class extends ve.Component {
 			...parameter_fields,
 			actions_bar: new ve.RawInterface({
 				delete_button: new ve.Button(() => this.remove(),{
-					name: `<icon>delete</icon> Delete`
+					name: `<icon>delete</icon> ${loc("ve.registry.localisation.NodeEditorDatatype_delete")}`
 				}),
 				run_from_node: new ve.Button(() => {
 					this.options.node_editor.run(false, this);
-					veToast(`Started running from ${(this.value.display_name) ? this.value.display_name : this.value.name}.`);
+					veToast(loc("ve.registry.localisation.NodeEditorDatatype_toast_run_from_node", (this.value.display_name) ? this.value.display_name : this.value.name));
 				}, {
-					name: `<icon>play_arrow</icon> Run From Node`,
+					name: `<icon>play_arrow</icon> ${loc("ve.registry.localisation.NodeEditorDatatype_run_from_node")}`,
 				})
 			}, {
 				style: {

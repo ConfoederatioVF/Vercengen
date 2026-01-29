@@ -78,7 +78,7 @@ ve.ScriptManager.FindAndReplace = class {
 				}
 			}
 		} catch (e) {
-			console.error(`Error processing ${file_path}: ${e.message}`);
+			console.error(loc("ve.registry.localisation.FindAndReplace_error_processing", file_path, e.message));
 		}
 	}
 	
@@ -221,7 +221,7 @@ ve.ScriptManager.FindAndReplace = class {
 				is_open = true;
 			
 			element.innerHTML = `<details id = "matches-details"${(!is_open) ? is_open : " open"}>
-				<summary id = "matches-label">Occurrences (0)</summary>
+				<summary id = "matches-label">${loc("ve.registry.localisation.FindAndReplace_summary_occurrences", 0)}</summary>
 			</details>`;
 		}
 		
@@ -230,7 +230,7 @@ ve.ScriptManager.FindAndReplace = class {
 		
 		//Update total count label
 		if (matches_label_el)
-			matches_label_el.innerHTML = `Occurrences (${String.formatNumber(this.matches.length)})`;
+			matches_label_el.innerHTML = loc("ve.registry.localisation.FindAndReplace_summary_occurrences", String.formatNumber(this.matches.length));
 		
 		//2. Append new results only (Streaming UI)
 		//Calculate the starting index for these new results within the main array
@@ -256,7 +256,7 @@ ve.ScriptManager.FindAndReplace = class {
 			
 			//2. Create match entry
 			local_entry_el.className = (this.selected_index === global_index) ? "match-entry selected" : "match-entry";
-			local_entry_el.innerHTML = `${(is_new_file) ? `${local_file_name}: Line(s) ` : ""}<span class = "line">${new_results[i].line}</span>`;
+			local_entry_el.innerHTML = `${(is_new_file) ? loc("ve.registry.localisation.FindAndReplace_file_lines", local_file_name) : ""}<span class = "line">${new_results[i].line}</span>`;
 				local_entry_el.title = new_results[i].match; //Tooltip for full line
 			
 			//3. Add onclick handler
@@ -358,7 +358,7 @@ ve.ScriptManager.FindAndReplace = class {
 				new RegExp(search_string, options.flags.join("")) :
 				new RegExp(search_string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), options.flags.join(""));
 		} catch (e) {
-			console.error("Invalid Regex:", e);
+			console.error(loc("ve.registry.localisation.FindAndReplace_error_invalid_regex", e));
 			this.is_searching = false;
 			if (callbacks.onfinish) callbacks.onfinish();
 			return;
@@ -443,30 +443,30 @@ ve.ScriptManager.FindAndReplace = class {
 		//Create Status Element
 		let status_el = document.createElement("div");
 		status_el.id = "status-label";
-		status_el.innerHTML = "Ready.";
+		status_el.innerHTML = loc("ve.registry.localisation.FindAndReplace_status_ready");
 		
 		this.find_and_replace_window = new ve.Window({
 			find_text: new ve.Text((this._settings.far_find_text) ? this._settings.far_find_text : "", {
-				name: "Find:",
+				name: loc("ve.registry.localisation.FindAndReplace_find"),
 				onuserchange: (v) => {
 					this._settings.far_find_text = v;
 				}
 			}),
 			replace_text: new ve.Text((this._settings.far_replace_text) ? this._settings.far_replace_text : "", {
-				name: "Replace:",
+				name: loc("ve.registry.localisation.FindAndReplace_replace"),
 				onuserchange: (v) => {
 					this._settings.far_replace_text = v;
 				}
 			}),
 			toggles: new ve.RawInterface({
 				is_case_sensitive: new ve.Toggle(this._settings.far_is_case_sensitive, {
-					name: "Is Case Sensitive",
+					name: loc("ve.registry.localisation.FindAndReplace_is_case_sensitive"),
 					onuserchange: (v) => {
 						this._settings.far_is_case_sensitive = v;
 					}
 				}),
 				is_regex: new ve.Toggle(this._settings.far_is_regex, {
-					name: "Is Regex",
+					name: loc("ve.registry.localisation.FindAndReplace_is_regex"),
 					onuserchange: (v) => {
 						this._settings.far_is_regex = v;
 					}
@@ -487,7 +487,7 @@ ve.ScriptManager.FindAndReplace = class {
 						local_far.matches = [];
 						local_far.selected_index = -1;
 						local_far.draw(matches_el, [], true); //true = reset container
-						status_el.innerHTML = "Scanning ..";
+						status_el.innerHTML = loc("ve.registry.localisation.FindAndReplace_status_scanning");
 						
 						//2. Execute Async
 						local_far.execute(current_folder, this._settings.far_find_text, undefined, {
@@ -501,10 +501,10 @@ ve.ScriptManager.FindAndReplace = class {
 								local_far.draw(matches_el, new_matches, false);
 							},
 							onprogress: (count) => {
-								status_el.innerHTML = `Scanning .. (${String.formatNumber(count)} files)`;
+								status_el.innerHTML = loc("ve.registry.localisation.FindAndReplace_status_scanning_progress", String.formatNumber(count));
 							},
 							onfinish: () => {
-								status_el.innerHTML = `Search complete in <kbd>${current_folder}</kbd>. Found ${String.formatNumber(local_far.matches.length)} matches in ${String.formatNumber(local_far.getFiles(local_far.matches).length)} file(s).`;
+								status_el.innerHTML = loc("ve.registry.localisation.FindAndReplace_status_search_complete", current_folder, String.formatNumber(local_far.matches.length), String.formatNumber(local_far.getFiles(local_far.matches).length));
 								
 								//Auto-select first match if exists
 								if (local_far.matches.length > 0 && local_far.selected_index === -1) {
@@ -516,7 +516,7 @@ ve.ScriptManager.FindAndReplace = class {
 						});
 					}
 				}, {
-					name: "Find"
+					name: loc("ve.registry.localisation.FindAndReplace_find")
 				}),
 				replace: new ve.Button(() => {
 					let local_far = this._find_and_replace_obj;
@@ -542,26 +542,26 @@ ve.ScriptManager.FindAndReplace = class {
 						local_far.draw(matches_el, local_far.matches, false);
 					}
 				}, {
-					name: "Replace"
+					name: loc("ve.registry.localisation.FindAndReplace_replace")
 				}),
 				replace_all: new ve.Button(() => {
 					if (this._settings.far_find_text) {
 						//Confirmation dialog could go here
-						veConfirm(`Are you sure you want to replace all occurrences of ${this._settings.far_find_text} in ${current_folder}?`, {
+						veConfirm(loc("ve.registry.localisation.FindAndReplace_confirm_replace_all", this._settings.far_find_text, current_folder), {
 							special_function: () => {
 								let local_far = this._find_and_replace_obj;
 								local_get_folder();
-								status_el.innerHTML = "Replacing...";
+								status_el.innerHTML = loc("ve.registry.localisation.FindAndReplace_status_replacing");
 								
 								local_far.execute(current_folder, this._settings.far_find_text, this._settings.far_replace_text, {
 									is_case_sensitive: this._settings.far_is_case_sensitive,
 									is_regex: this._settings.far_is_regex
 								}, {
 									onprogress: (count) => {
-										status_el.innerHTML = `Processing .. (${String.formatNumber(count)} files)`;
+										status_el.innerHTML = loc("ve.registry.localisation.FindAndReplace_status_replacing_progress", String.formatNumber(count));
 									},
 									onfinish: () => {
-										status_el.innerHTML = "Replace All Complete.";
+										status_el.innerHTML = loc("ve.registry.localisation.FindAndReplace_status_replace_all_complete");
 										local_far.matches = [];
 										local_far.selected_index = -1;
 										local_far.draw(matches_el, [], true);
@@ -571,13 +571,13 @@ ve.ScriptManager.FindAndReplace = class {
 						});
 					}
 				}, {
-					name: "Replace All"
+					name: loc("ve.registry.localisation.FindAndReplace_replace_all")
 				})
 			}, {
 				style: { display: "flex" }
 			}),
 		}, {
-			name: "Find and Replace",
+			name: loc("ve.registry.localisation.FindAndReplace_window_name"),
 			width: "30rem",
 			can_rename: false,
 			do_not_wrap: true,

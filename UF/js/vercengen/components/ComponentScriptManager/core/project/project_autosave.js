@@ -15,7 +15,7 @@
 		
 		//Open new confirm prompt if not already open
 		if (this.synchronise_confirm_window) this.synchronise_confirm_window.close();
-		this.synchronise_confirm_window = new ve.Confirm(`Are you sure you wish to synchronise ${(synchronising_from === "monaco") ? "Blockly" : "Monaco"} to ${(synchronising_from === "monaco") ? "Monaco" : "Blockly"}?`, {
+		this.synchronise_confirm_window = new ve.Confirm(loc("ve.registry.localisation.ScriptManager_confirm_synchronise", (synchronising_from === "monaco") ? loc("ve.registry.localisation.ScriptManager_blockly") : loc("ve.registry.localisation.ScriptManager_monaco"), (synchronising_from === "monaco") ? loc("ve.registry.localisation.ScriptManager_monaco") : loc("ve.registry.localisation.ScriptManager_blockly")), {
 			special_function: () => {
 				if (synchronising_from === "blockly") {
 					this.scene_blockly._exportToMonaco(true);

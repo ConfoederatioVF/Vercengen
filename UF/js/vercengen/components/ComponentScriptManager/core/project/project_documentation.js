@@ -47,7 +47,7 @@
 		let shouldAbort = () => (current_call_id !== this._indexDocumentationCallID);
 		
 		//Clear cached documentation if applicable
-		element.innerHTML = `Clearing documentation ..`;
+		element.innerHTML = loc("ve.registry.localisation.ScriptManager_status_clearing_documentation");
 		if (!this._documentation_files) {
 			this._documentation_files = [];
 		} else {
@@ -58,7 +58,7 @@
 		}
 		
 		//Iterate over all_files and check their extname for js/ts and document them
-		element.innerHTML = `Indexing files in project ..`;
+		element.innerHTML = loc("ve.registry.localisation.ScriptManager_status_indexing_files");
 		let all_files = await File.getAllFiles(current_folder, {
 			excluded_paths: options.excluded_paths
 		});
@@ -82,17 +82,17 @@
 			
 			//Waiting tick to update status
 			if (i % 100 === 0 || i === all_files.length - 1) {
-				element.innerHTML = `Indexed ${String.formatNumber(i)}/${String.formatNumber(all_files.length)} file(s)`;
+				element.innerHTML = loc("ve.registry.localisation.ScriptManager_status_indexed_progress", String.formatNumber(i), String.formatNumber(all_files.length));
 				await new Promise((resolve) => setTimeout(resolve, 0));
 				if (shouldAbort()) return;
 			}
 		} catch (e) {
 			console.error(e);
 		}
-		element.innerHTML = `Parsed documentation for ${String.formatNumber(all_files.length)} file(s).`;
+		element.innerHTML = loc("ve.registry.localisation.ScriptManager_status_parsed_documentation", String.formatNumber(all_files.length));
     let index_documentation_button_el = document.createElement("button");
       index_documentation_button_el.classList.add("refresh-button");
-      index_documentation_button_el.innerHTML = "Refresh";
+      index_documentation_button_el.innerHTML = loc("ve.registry.localisation.ScriptManager_refresh");
       
       index_documentation_button_el.addEventListener("click", () => 
         ve.ScriptManager._indexDocumentation.call(this, element, options));

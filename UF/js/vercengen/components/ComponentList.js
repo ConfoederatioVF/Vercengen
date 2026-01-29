@@ -64,7 +64,7 @@ ve.List = class extends ve.Component { //[WIP] - Refactor at a later date
 			this.add_item_button = new ve.Button(() => {
 				this.addItem();
 				this.fireToBinding();
-			}, { name: "<icon>add</icon>", tooltip: "Add Item" });
+			}, { name: "<icon>add</icon>", tooltip: loc("ve.registry.localisation.List_add_item") });
 			this.add_item_button.bind(this.element);
 			
 			//Determine the template component (source)
@@ -299,7 +299,7 @@ ve.List = class extends ve.Component { //[WIP] - Refactor at a later date
 				if (this.overlay_window) this.overlay_window.close();
 				this.overlay_window = new ve.Window(overlay_interface, {
 					can_rename: false,
-					name: "Edit Item",
+					name: loc("ve.registry.localisation.List_edit_item"),
 					width: (this.options.split_row) ? "12rem" : "14rem",
 					y: (HTML.mouse_y < window.innerHeight/2) ?
 						HTML.mouse_y + current_component.element.offsetHeight :

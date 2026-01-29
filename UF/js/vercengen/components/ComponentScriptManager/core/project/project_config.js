@@ -27,7 +27,6 @@
 
     //Try to load the local .ve-sm to determine the actual project path
 		if (fs.existsSync(".ve-sm")) try {
-      console.log(`Reading config from:`, path.join(vesm_folder, ".ve-sm"));
 			this.config = JSON.parse(fs.readFileSync(path.join(vesm_folder, ".ve-sm"), "utf8"));
     } catch (e) { console.error(e); }
 		if (this.config.project_folder === "none" || !this.config.project_folder) return; //Internal guard clause if project folder is not set

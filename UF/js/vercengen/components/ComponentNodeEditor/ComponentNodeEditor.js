@@ -125,7 +125,7 @@ ve.NodeEditor = class extends ve.Component {
 		//1. Topbar; actions bar
 		let debug_components_obj = (ve.registry.debug_mode) ? {
 			debug_button: new ve.Button(() => console.log(this.getDAGSequence()), {
-				name: "Debug"
+				name: loc("ve.registry.localisation.NodeEditor_debug")
 			})
 		} : {};
 		
@@ -138,21 +138,23 @@ ve.NodeEditor = class extends ve.Component {
 							ve.NodeEditorDatatype.draw(this, true);
 						});
 					}, {
-						name: "Run"
+						name: loc("ve.registry.localisation.NodeEditor_run")
 					}),
 					abort_button: new ve.Button(() => {
 						this.abort();
 						console.log(this._is_running_non_preview)
 					}, {
-						name: "Abort Current Run",
+						name: loc("ve.registry.localisation.NodeEditor_abort_current_run"),
 						limit: () => (this._is_running_non_preview)
 					})
 				}, {
-					name: "Run Window",
+					name: loc("ve.registry.localisation.NodeEditor_run_window"),
 					can_rename: false
 				});
 			}, {
-				name: "Run",
+				name: loc("ve.registry.localisation.NodeEditor_run"),
+				can_rename: false,
+				do_not_wrap: true,
 				width: "20rem"
 			}),
 			view_button: new ve.Button(() => {
@@ -161,14 +163,14 @@ ve.NodeEditor = class extends ve.Component {
 				if (this.view_window) this.view_window.close();
 				this.view_window = new ve.Window({
 					alluvial_scaling: new ve.Number(Math.returnSafeNumber(this.options.alluvial_scaling, 1), {
-						name: "Alluvial Scaling",
+						name: loc("ve.registry.localisation.NodeEditor_alluvial_scaling"),
 						onuserchange: (v) => {
 							this.options.alluvial_scaling = v;
 							ve.NodeEditorDatatype.draw(this, true);
 						}
 					}),
 					show_alluvial_width: new ve.Toggle(this.options.show_alluvial, {
-						name: "Show Alluvial Width",
+						name: loc("ve.registry.localisation.NodeEditor_show_alluvial_width"),
 						onuserchange: (v) => {
 							this.options.show_alluvial = v;
 							ve.NodeEditorDatatype.draw(this, true);
@@ -176,7 +178,7 @@ ve.NodeEditor = class extends ve.Component {
 					}),
 					actions_bar: new ve.RawInterface({
 						load_settings: new ve.File(undefined, {
-							name: "Load Settings",
+							name: loc("ve.registry.localisation.NodeEditor_load_settings"),
 							do_not_display: true,
 							onuserchange: (v) => {
 								let display_error = false;
@@ -189,15 +191,15 @@ ve.NodeEditor = class extends ve.Component {
 									error_msg = e;
 								}
 								if (display_error)
-									veWindow(`<span style = "align-items: center; display: flex"><icon>warning</icon> Could not load settings: ${error_msg}</span>`, {
+									veWindow(`<span style = "align-items: center; display: flex"><icon>warning</icon> ${loc("ve.registry.localisation.NodeEditor_error_msg_load_settings", error_msg)}</span>`, {
 										can_rename: false,
-										name: `Error Loading Settings`,
+										name: loc("ve.registry.localisation.NodeEditor_error_loading_settings_window"),
 										width: "20rem"
 									});
 							}
 						}),
 						save_settings: (nodeeditor_settings.save_file === false) ? new ve.File(undefined, {
-								name: "Save Settings",
+								name: loc("ve.registry.localisation.NodeEditor_save_settings"),
 								do_not_display: true,
 								save_function: () => this.saveSettings()
 							}) :
@@ -209,9 +211,9 @@ ve.NodeEditor = class extends ve.Component {
 										return;
 									}
 									fs.writeFileSync(nodeeditor_settings.save_file, this.saveSettings());
-									veToast(`Saved NodeEditor settings to ${nodeeditor_settings.save_file}.`);
+									veToast(loc("ve.registry.localisation.NodeEditor_toast_saved_settings", nodeeditor_settings.save_file));
 								});
-							}, { name: "Save Settings" })
+							}, { name: loc("ve.registry.localisation.NodeEditor_save_settings") })
 					}, {
 						style: {
 							alignItems: "center",
@@ -221,12 +223,13 @@ ve.NodeEditor = class extends ve.Component {
 						}
 					})
 				}, {
-					name: "View Settings",
+					name: loc("ve.registry.localisation.NodeEditor_view_settings"),
 					can_rename: false,
+					do_not_wrap: true,
 					width: "20rem"
 				})
 			}, {
-				name: "View"
+				name: loc("ve.registry.localisation.NodeEditor_view")
 			}),
 			...debug_components_obj
 		}, {

@@ -174,7 +174,7 @@ ve.Table = class extends ve.Component {
 		
 		//Internal guard clause if this._headers is empty
 		if (this._headers.length === 0) {
-			this.element.innerHTML = `<p>No data available.</p>`;
+			this.element.innerHTML = `<p>${loc("ve.registry.localisation.Table_no_data")}</p>`;
 			return;
 		}
 		
@@ -240,7 +240,7 @@ ve.Table = class extends ve.Component {
 		//Declare local instance variables
 		let current_page_label = document.createElement("span");
 			current_page_label.className = "label-current-page";
-			current_page_label.innerHTML = `Page ${String.formatNumber(this.current_page + 1)} of ${String.formatNumber(total_pages)}`;
+			current_page_label.innerHTML = loc("ve.registry.localisation.Table_pagination_info", String.formatNumber(this.current_page + 1), String.formatNumber(total_pages));
 		let nav_el = document.createElement("div");
 			nav_el.className = "pagination-controls";
 			nav_el.style.marginTop = "var(--cell-padding)";
@@ -252,7 +252,7 @@ ve.Table = class extends ve.Component {
 				[(this.current_page >= total_pages + 1) ? "disabled" : "enabled"]: true,
 				id: "next-button"
 			},
-			name: "Next"
+			name: loc("ve.registry.localisation.Table_next")
 		});
 		let prev_btn = new ve.Button(() => {
 			this.current_page--;
@@ -262,7 +262,7 @@ ve.Table = class extends ve.Component {
 				[(this.current_page === 0) ? "disabled" : "enabled"]: true,
 				id: "previous-button"
 			},
-			name: "Previous" 
+			name: loc("ve.registry.localisation.Table_previous")
 		});
 		
 		prev_btn.bind(nav_el);
