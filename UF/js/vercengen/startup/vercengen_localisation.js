@@ -1925,7 +1925,7 @@ ve.registry.localisation = {
 	ScriptManagerMonaco_show_minimap_de: "Minimap anzeigen",
 	ScriptManagerMonaco_tab_size_de: "Tabulator-Größe",
 	ScriptManagerMonaco_word_wrap_de: "Zeilenumbruch",
-	ScriptManagerMonaco_word_wrap_column_de: "Umbruechsspalte",
+	ScriptManagerMonaco_word_wrap_column_de: "Zeilenlänge",
 	
 	//Button
 	Button_confirm_de: "Bestätigen",
