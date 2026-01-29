@@ -21,14 +21,14 @@ Vercengen supports built-in file explorers, nested hierarchies, delta action und
 <table>
   <tr>
     <td colspan = "2">
-      <img src = "https://i.postimg.cc/Syt0JjZr/vercengen-script-manager.png">
+      <img src = "https://i.postimg.cc/Cwfj1BCG/vercengen-scriptly-ide.png">
       <div align = "center">(Scriptly IDE)</div>
     </td>
   </tr>
   <tr>
     <td width = "50%">
-      <img src = "https://i.postimg.cc/7xQvfbBW/naissance-01.png">
-      <div align = "center">(Naissance GIS)</div>
+      <img src = "https://i.postimg.cc/2CGNN0n5/constele-red-02.png">
+      <div align = "center">(Constele Red/Stadestér)</div>
     </td>
     <td width = "50%">
       <img src = "https://i.postimg.cc/HpPGVjSb/constele-red-01.png">
@@ -37,18 +37,18 @@ Vercengen supports built-in file explorers, nested hierarchies, delta action und
   </tr>
   <tr>
     <td>
-      <img src = "https://i.postimg.cc/2CGNN0n5/constele-red-02.png">
-      <div align = "center">(Constele Red/Stadestér)</div>
+      <img src = "https://i.postimg.cc/3wYyfwcB/vercengen-naissance-hgis.png">
+      <div align = "center">(Naissance GIS)</div>
     </td>
     <td>
-      <img src = "https://i.postimg.cc/D2YV8mjT/naissance-02.png">
-      <div align = "center">(SketchMap Editor)</div>
+      <img src = "https://i.postimg.cc/bvy0MPCY/vercengen-datavis-suite-02.png">
+      <div align = "center">(DatavisSuite)</div>
     </td>
   </tr>
   <tr>
     <td colspan = "2">
-      <img src = "https://i.postimg.cc/zq7YYxTv/constele-red-03.png">
-      <div align = "center">(Node-based distributed compute DAG)</div>
+      <img src = "https://i.postimg.cc/hGcJZG5T/vercengen-node-editor.png">
+      <div align = "center">(3-way DAG editor; Blocks <-> Code <-> Nodes)</div>
     </td>
   </tr>
 </table>
