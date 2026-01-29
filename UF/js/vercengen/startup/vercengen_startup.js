@@ -72,7 +72,12 @@ global.path = require("path");
 						 * Any window that is currently open to define a script type.
 						 * @type {ve.Window|undefined}
 						 */
-						script_window: undefined
+						script_window: undefined,
+						/**
+						 * Either false if no automatic save file is declared, or the file path to save settings in.
+						 * @type {boolean|string}
+						 */
+						save_file: "settings/NodeEditor_settings.json"
 					},
 					
 					/**

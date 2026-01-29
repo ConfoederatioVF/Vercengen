@@ -134,8 +134,6 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 				if (this.run_window) this.run_window.close();
 				this.run_window = new ve.Window({
 					run_button: new ve.Button(() => {
-						console.log(this.run)
-						//ve.NodeEditorDatatype.draw(this);
 						this.run(false).then(() => {
 							ve.NodeEditorDatatype.draw(this, true);
 						});
@@ -155,6 +153,80 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 				});
 			}, {
 				name: "Run",
+				width: "20rem"
+			}),
+			view_button: new ve.Button(() => {
+				let nodeeditor_settings = ve.registry.settings.NodeEditor;
+				
+				if (this.view_window) this.view_window.close();
+				this.view_window = new ve.Window({
+					alluvial_scaling: new ve.Number(Math.returnSafeNumber(this.options.alluvial_scaling, 1), {
+						name: "Alluvial Scaling",
+						onuserchange: (v) => {
+							this.options.alluvial_scaling = v;
+							ve.NodeEditorDatatype.draw(this, true);
+						}
+					}),
+					show_alluvial_width: new ve.Toggle(this.options.show_alluvial, {
+						name: "Show Alluvial Width",
+						onuserchange: (v) => {
+							this.options.show_alluvial = v;
+							ve.NodeEditorDatatype.draw(this, true);
+						}
+					}),
+					actions_bar: new ve.RawInterface({
+						load_settings: new ve.File(undefined, {
+							name: "Load Settings",
+							do_not_display: true,
+							onuserchange: (v) => {
+								let display_error = false;
+								let error_msg;
+								try {
+									let settings_obj = JSON.parse(fs.readFileSync(v[0], "utf8"));
+									this.loadSettings(settings_obj);
+								} catch (e) {
+									display_error = true;
+									error_msg = e;
+								}
+								if (display_error)
+									veWindow(`<span style = "align-items: center; display: flex"><icon>warning</icon> Could not load settings: ${error_msg}</span>`, {
+										can_rename: false,
+										name: `Error Loading Settings`,
+										width: "20rem"
+									});
+							}
+						}),
+						save_settings: (nodeeditor_settings.save_file === false) ? new ve.File(undefined, {
+								name: "Save Settings",
+								do_not_display: true,
+								save_function: () => this.saveSettings()
+							}) :
+							new ve.Button(() => {
+								let dirname = path.dirname(nodeeditor_settings.save_file);
+								fs.mkdir(dirname, { recursive: true }, (err) => {
+									if (err) {
+										console.error(err);
+										return;
+									}
+									fs.writeFileSync(nodeeditor_settings.save_file, this.saveSettings());
+									veToast(`Saved NodeEditor settings to ${nodeeditor_settings.save_file}.`);
+								});
+							}, { name: "Save Settings" })
+					}, {
+						style: {
+							alignItems: "center",
+							display: "flex",
+							
+							"[component='ve-button']": { whiteSpace: "nowrap" }
+						}
+					})
+				}, {
+					name: "View Settings",
+					can_rename: false,
+					width: "20rem"
+				})
+			}, {
+				name: "View"
 			}),
 			...debug_components_obj
 		}, {
@@ -225,6 +297,14 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 		this.map.addEventListener("mousemove", (e) => {
 			this._mouse_coords = e.coordinate;
 		});
+		
+		//Load settings
+		let nodeeditor_settings = ve.registry.settings.NodeEditor;
+		
+		if (nodeeditor_settings.save_file !== false)
+			if (fs.existsSync(nodeeditor_settings.save_file)) try {
+				this.loadSettings(fs.readFileSync(nodeeditor_settings.save_file, "utf8"));
+			} catch (e) { console.warn(e); }
 		
 		this.v = value;
 		ve.NodeEditor.instances.push(this);
@@ -332,7 +412,26 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 		ve.NodeEditorDatatype.draw(this);
 	}
 	
-	loadSettings (arg0_settings) {}
+	loadSettings (arg0_settings) {
+		//Convert from parameters
+		let settings_obj = arg0_settings;
+		if (typeof settings_obj === "string") settings_obj = JSON.parse(settings_obj);
+		
+		//Set this.options, redraw
+		this.options = {
+			...this.options,
+			...settings_obj
+		};
+		ve.NodeEditorDatatype.draw(this);
+	}
+	
+	saveSettings () {
+		//Return statement
+		return JSON.stringify({
+			alluvial_scaling: this.options.alluvial_scaling,
+			show_alluvial: this.options.show_alluvial
+		});
+	}
 };
 
 //Functional binding

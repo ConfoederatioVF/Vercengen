@@ -731,6 +731,15 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				let local_ot_node = ve.NodeEditorDatatype.getNode(local_node.connections[x][0], editor);
 				if (!local_ot_node) continue; //Continue if other node doesn't exist
 				
+				let local_alluvial_width = Math.returnSafeNumber(local_node?.ui?.information?.alluvial_width,1);
+					if (local_node.options.node_editor) {
+						let node_editor_obj = local_node.options.node_editor;
+						
+						local_alluvial_width *= Math.returnSafeNumber(node_editor_obj.options.alluvial_scaling, 1);
+						if (node_editor_obj.options.show_alluvial)
+							local_alluvial_width = 1;
+					}
+				
 				let arc_connector_line = new maptalks.ArcConnectorLine(
 					local_node.geometries[0].getGeometries()[2],
 					local_ot_node.geometries[local_node.connections[x][1]].getGeometries()[1], {
@@ -744,10 +753,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 						showOn: "always",
 						symbol: {
 							lineColor: "white",
-							lineWidth: Math.returnSafeNumber(
-								local_node?.ui?.information?.alluvial_width,
-								1,
-							),
+							lineWidth: local_alluvial_width,
 							...arc_connector_text_symbol,
 						},
 					});
