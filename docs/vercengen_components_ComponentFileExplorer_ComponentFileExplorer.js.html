@@ -336,7 +336,7 @@ ve.FileExplorer = class extends ve.Component {
 		if (!this.options.disable_actions)
 			hierarchy_obj.selection = new ve.HierarchyDatatype({
 				information: new ve.HTML((e) => `${(this.clipboard.length > 0) ? `${loc("ve.registry.localisation.FileExplorer_clipboard")} (${String.formatNumber(this.clipboard.length)})` : loc("ve.registry.localisation.FileExplorer_clipboard_is_empty")} &amp;nbsp; | &amp;nbsp; ${(this.selected.length > 0) ? `${loc("ve.registry.localisation.FileExplorer_elements_selected", String.formatNumber(this.selected.length))}` : ""}
-				`, { style: { marginRight: "auto", padding: 0 }}), //[WIP] - Fix localisation
+				`, { style: { marginRight: "auto", padding: 0 }}),
 				actions_menu: new ve.RawInterface({
 					copy_button: new ve.Button((e) => {
 						if (this.selected.length === 0) return; //Internal guard clause if nothing is selected
@@ -686,8 +686,6 @@ ve.FileExplorer = class extends ve.Component {
 		this.hierarchy = new ve.Hierarchy(hierarchy_obj, { disable_searchbar: true });
 		file_explorer_el.innerHTML = "";
 		file_explorer_el.appendChild(this.hierarchy.element);
-		
-		//[WIP] - Set .name.options.onuserchange listener for all this.hierarchy.components_obj
 		
 		setTimeout(() => {
 			this.hierarchy.setOwner(this.owner, [this.owner]);

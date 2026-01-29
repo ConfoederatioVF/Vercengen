@@ -319,7 +319,7 @@ ve.FileExplorer = class extends ve.Component {
 							resizeable: true, 
 							width: "24rem" 
 						});
-					}, { name: "<icon>cut</icon>", limit: () => this.selected.length, tooltip: "Cut Selected" }),
+					}, { name: "<icon>cut</icon>", limit: () => this.selected.length, tooltip: loc("ve.registry.localisation.FileExplorer_cut_selected") }),
 					paste_button: new ve.Button((e) => {
 						let confirm = new ve.Confirm(loc("ve.registry.localisation.FileExplorer_are_you_sure_copy_paste", String.formatNumber(this.clipboard.length), this.v), {
 							name: loc("ve.registry.localisation.FileExplorer_paste_files", String.formatNumber(this.clipboard.length)),
@@ -352,7 +352,7 @@ ve.FileExplorer = class extends ve.Component {
 							resizeable: true, 
 							width: "24rem"
 						});
-					}, { name: "<icon>arrow_forward</icon>", limit: () => this.selected.length, tooltip: "Move Selected" }),
+					}, { name: "<icon>arrow_forward</icon>", limit: () => this.selected.length, tooltip: loc("ve.registry.localisation.move_selected") }),
 					delete_button: new ve.Button((e) => {
 						let confirm = new ve.Confirm(loc("ve.registry.localisation.FileExplorer_are_you_sure_delete", this.selected.join(", ")), {
 							name: loc("ve.registry.localisation.FileExplorer_delete_files", String.formatNumber(this.selected.length)),
@@ -361,7 +361,7 @@ ve.FileExplorer = class extends ve.Component {
 								ve.FileExplorer.delete(this.selected, () => this.refresh());
 							}
 						});
-					}, { name: "<icon>delete</icon>", limit: () => this.selected.length, tooltip: "Delete Selected" }),
+					}, { name: "<icon>delete</icon>", limit: () => this.selected.length, tooltip: loc("ve.registry.localisation.FileExplorer_delete_selected") }),
 					
 					new_folder_button: new ve.Button((e) => {
 						let local_modal = new ve.Window({

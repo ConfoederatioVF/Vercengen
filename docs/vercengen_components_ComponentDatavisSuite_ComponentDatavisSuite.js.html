@@ -268,7 +268,7 @@ ve.DatavisSuite = class extends ve.Component { //[WIP] - Finish function body
 		if (this.graph_window) {
 			let graph_options = this.graph_window.container.graph_options;
 			
-			Object.iterate(this.graphs, (local_key, local_value) => { //[WIP] - Finish population function
+			Object.iterate(this.graphs, (local_key, local_value) => {
 				if (local_value instanceof ve.Graph) {
 					let graph_name = (local_value?.options?.symbol?.title?.text) ?
 						local_value.options.symbol.title.text : "New Graph"
