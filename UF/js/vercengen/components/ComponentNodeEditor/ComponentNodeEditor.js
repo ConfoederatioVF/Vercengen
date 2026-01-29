@@ -78,7 +78,7 @@
  * @memberof ve.Component
  * @type {ve.NodeEditor}
  */
-ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iterations so that sub-nodes are aware of their current iteration index? By making for loop nodes return their current iteration value.
+ve.NodeEditor = class extends ve.Component {
 	/**
 	 * @type {ve.NodeEditor[]}
 	 */
