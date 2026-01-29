@@ -1,6 +1,19 @@
 //Initialise methods
 {
 	/**
+	 * Aborts the current run cycle, assuming `arg0_preview_mode=false`.
+	 * - Method of: {@link ve.NodeEditor}
+	 * 
+	 * @alias ve.Component.NodeEditor.prototype.abort
+	 * @instance
+	 * @memberof ve.NodeEditor
+	 * @this ve.NodeEditor
+	 */
+	ve.NodeEditor.prototype.abort = function () {
+		if (this._is_running) this._abort_execution = true;
+	};
+	
+	/**
 	 * Returns the current DAG sequence as a node.
 	 * - Method of: {@link ve.NodeEditor}
 	 * 
@@ -71,29 +84,62 @@
 	/**
 	 * Run the current execution cycle/model as a DAG.
 	 * - Method of {@link ve.NodeEditor}
-	 * 
+	 *
 	 * @alias ve.Component.NodeEditor.prototype.run
 	 * @instance
 	 * @memberof ve.NodeEditor
 	 * @this ve.NodeEditor
-	 * 
+	 *
 	 * @param {boolean} [arg0_preview_mode=false]
-	 * 
+	 * @param {ve.NodeEditorDatatype} [arg1_start_node]
+	 *
 	 * @returns {Object}
 	 */
-	ve.NodeEditor.prototype.run = async function (arg0_preview_mode) {
+	ve.NodeEditor.prototype.run = async function (arg0_preview_mode, arg1_start_node) {
 		//Convert from parameters
 		let preview_mode = arg0_preview_mode;
+		let start_node = arg1_start_node;
 		
 		if (this._is_running) return this.main.variables; //Internal guard clause to abort if is running
-			this._is_running = true;
+		this._is_running = true;
+		if (!preview_mode) this._is_running_non_preview = true;
+		this._abort_execution = false;
 		
 		//Declare local instance variables
 		try {
 			let dag_sequence = this.getDAGSequence();
-			this.main.node_iterations = {}; //Track branch iteration counts
+			
+			//Reset DAG draws if preview_mode = false
+			if (this._is_running_non_preview)
+				for (let i = 0; i < dag_sequence.length; i++) {
+					for (let x = 0; x < dag_sequence[i].length; x++)
+						delete dag_sequence[i][x].ui.information.status;
+						dag_sequence[i][x].draw();
+					}
+			
+			//Filter dag_sequence if running from a specific node
+			if (start_node) {
+				let downstream = new Set([start_node.id]);
+				let queue = [start_node];
+				
+				while (queue.length > 0) {
+					let current = queue.shift();
+					for (let x = 0; x < current.connections.length; x++)
+						if (!downstream.has(current.connections[x][0].id)) {
+							downstream.add(current.connections[x][0].id);
+							queue.push(current.connections[x][0]);
+						}
+				}
+				
+				dag_sequence = dag_sequence.map(layer =>
+					layer.filter(node => downstream.has(node.id))
+				).filter(layer => layer.length > 0);
+			} else {
+				this.main.node_iterations = {}; //Track branch iteration counts
+				this.main.variables = {};
+			}
+			
 			this.main.skipped_nodes = new Set();
-			this.main.variables = {};
 			
 			let resolve_arguments = (arg0_node, iteration_index = 0) => {
 				let args = [];
@@ -121,7 +167,7 @@
 										let source_iters = this.main.node_iterations[source.id] || 1;
 										
 										//Pick specific value for this iteration, or fallback to scalar
-										resolved = (Array.isArray(source_val) && source_iters > 1) ? 
+										resolved = (Array.isArray(source_val) && source_iters > 1) ?
 											source_val[iteration_index % source_iters] : source_val;
 										break;
 									}
@@ -145,6 +191,7 @@
 			
 			//Iterate over all layers in the current dag_sequence
 			for (let i = 0; i < dag_sequence.length; i++) {
+				if (!preview_mode && this._abort_execution) break;
 				let layer = dag_sequence[i];
 				
 				//Iterate over all layers and redraw them prior to running
@@ -176,25 +223,30 @@
 					
 					//Iterate over the branch logic for all n iterations
 					for (let x = 0; x < max_iterations; x++) {
+						if (!preview_mode && this._abort_execution) { is_aborted = true; break; }
 						let args = resolve_arguments(local_node, x);
 						let descriptor, value;
 						let special_function = local_node.value.special_function;
 						
 						try {
-							descriptor = (typeof special_function === "function") ? 
+							if (!preview_mode) {
+								information_obj.status = "is_running";
+								ve.NodeEditorDatatype.draw(this, true);
+							}
+							
+							descriptor = (typeof special_function === "function") ?
 								await special_function.call(this, ...args, local_node) : special_function;
-								if (descriptor && descriptor.abort === true) { //Check if execution should be aborted
-									is_aborted = true;
-									break;
-								}
-							value = (descriptor && typeof descriptor === "object") ? 
+							if (descriptor && descriptor.abort === true) { //Check if execution should be aborted
+								is_aborted = true;
+								break;
+							}
+							value = (descriptor && typeof descriptor === "object") ?
 								descriptor.value : descriptor;
 							
 							//Set to is_running and execute node
 							if (!preview_mode && descriptor && typeof descriptor.run === "function") {
-								information_obj.status = "is_running";
-								local_node.draw();
 								await descriptor.run();
+								if (!preview_mode && this._abort_execution) { is_aborted = true; break; }
 							}
 							results.push(value);
 							last_descriptor = descriptor;
@@ -217,8 +269,8 @@
 							this.main.node_iterations[local_node.id] = explicit_iterations;
 							
 							//Iterate over all explicit_iterations
-							//FIX: Instead of .fill(), run remaining iterations to generate unique values
 							for (let x = 1; x < explicit_iterations; x++) {
+								if (!preview_mode && this._abort_execution) break;
 								let args = resolve_arguments(local_node, x);
 								let descriptor = await special_function.call(this, ...args, local_node);
 								
@@ -233,17 +285,18 @@
 					}
 					
 					if (!preview_mode) {
-						information_obj.alluvial_width = Math.returnSafeNumber(last_descriptor?.alluvial_width,1);
-						information_obj.value = (last_descriptor?.display_value !== undefined) ? 
+						information_obj.alluvial_width = Math.returnSafeNumber(last_descriptor?.alluvial_width, 1);
+						information_obj.value = (last_descriptor?.display_value !== undefined) ?
 							last_descriptor.display_value : `${this.main.variables[local_node.id]}`;
 						information_obj.value = information_obj.value.truncate(information_obj.value, 40);
-						
-						local_node.draw();
+						ve.NodeEditorDatatype.draw(this, true);
 					}
 				}));
 			}
 		} finally {
 			this._is_running = false; //Ensure that execution is over
+			if (!preview_mode) this._is_running_non_preview = false;
+			this._abort_execution = false;
 		}
 		
 		//Return statement

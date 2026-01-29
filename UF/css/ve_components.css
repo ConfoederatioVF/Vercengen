@@ -233,8 +233,9 @@
     }
     > table { 
         height: 100%;
-        width: 100%; 
-        
+        width: 100%;
+    }
+    > table:not(:has(td[colspan], :has(td[rowspan]))) {
         table-layout: fixed;
     }
     > table:has([component="ve-script-manager"]),

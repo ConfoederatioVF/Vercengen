@@ -117,16 +117,19 @@ ve.NodeEditor.Forse.loops = {
 			//Convert from parameters
 			let number = arg0_number;
 			let value = arg1_value;
+			let local_node = arguments[arguments.length - 1];
 			
 			//Declare local instance variables
 			let delay_time = Math.returnSafeNumber(number);
 			
-			//Wait tick
-			await new Promise((resolve) => setTimeout(resolve, delay_time));
-			
 			//Return statement
 			return {
 				display_value: `Wait ${delay_time}ms`,
+				run: async () => {
+					await new Promise((resolve) => setTimeout(resolve, delay_time));
+					ve.NodeEditorDatatype.draw(local_node.options.node_editor, true);
+					await new Promise((resolve) => setTimeout(resolve, 10));
+				},
 				value: value
 			};
 		}

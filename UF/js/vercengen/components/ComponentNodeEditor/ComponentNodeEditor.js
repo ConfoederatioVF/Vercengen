@@ -130,7 +130,30 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 		} : {};
 		
 		let actions_bar = new ve.RawInterface({
-			run_button: new ve.Button(() => this.run().then(() => ve.NodeEditorDatatype.draw(this)), {
+			run_button: new ve.Button(() => {
+				if (this.run_window) this.run_window.close();
+				this.run_window = new ve.Window({
+					run_button: new ve.Button(() => {
+						console.log(this.run)
+						//ve.NodeEditorDatatype.draw(this);
+						this.run(false).then(() => {
+							ve.NodeEditorDatatype.draw(this, true);
+						});
+					}, {
+						name: "Run"
+					}),
+					abort_button: new ve.Button(() => {
+						this.abort();
+						console.log(this._is_running_non_preview)
+					}, {
+						name: "Abort Current Run",
+						limit: () => (this._is_running_non_preview)
+					})
+				}, {
+					name: "Run Settings",
+					can_rename: false
+				});
+			}, {
 				name: "Run",
 			}),
 			...debug_components_obj

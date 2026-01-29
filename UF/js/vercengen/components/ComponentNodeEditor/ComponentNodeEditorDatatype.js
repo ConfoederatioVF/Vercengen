@@ -262,7 +262,7 @@ ve.NodeEditorDatatype = class extends ve.Component {
 						aborted: "rgb(150, 50, 50)",
 						error: "rgb(255, 0, 0)",
 						finished: "rgb(44,108,53)",
-						is_running: "rgb(240, 240, 140)",
+						is_running: "rgb(160,160,31)",
 						other: "rgb(25, 25, 25)",
 					}[this.ui.information.status || "other"] || "rgb(25, 25, 25)";
 				
@@ -595,8 +595,22 @@ ve.NodeEditorDatatype = class extends ve.Component {
 		if (this.context_menu) this.context_menu.close();
 		this.context_menu = new ve.Window({
 			...parameter_fields,
-			delete_button: new ve.Button(() => this.remove(),{ 
-				name: `<icon>delete</icon> Delete` 
+			actions_bar: new ve.RawInterface({
+				delete_button: new ve.Button(() => this.remove(),{
+					name: `<icon>delete</icon> Delete`
+				}),
+				run_from_node: new ve.Button(() => {
+					this.options.node_editor.run(false, this);
+					veToast(`Started running from ${(this.value.display_name) ? this.value.display_name : this.value.name}.`);
+				}, {
+					name: `<icon>play_arrow</icon> Run From Node`,
+				})
+			}, {
+				style: {
+					marginTop: "var(--cell-padding)",
+					"button": { marginRight: "var(--cell-padding)" }
+				},
+				width: 99
 			})
 		}, { 
 			name: this.value.name,
@@ -663,10 +677,12 @@ ve.NodeEditorDatatype = class extends ve.Component {
 	 * @memberof ve.Component.ve.NodeEditorDatatype
 	 * 
 	 * @param {ve.NodeEditor} arg0_editor
+	 * @param {boolean} [arg1_do_not_run=false] - Whether to run the editor when visualising the draw call.
 	 */
-	static draw (arg0_editor) {
+	static draw (arg0_editor, arg1_do_not_run) {
 		//Convert from parameters
 		let editor = arg0_editor;
+		let do_not_run = arg1_do_not_run;
 		if (!editor) return; //Internal guard clause if editor doesn't exist
 		
 		//Declare local instance variables
@@ -679,7 +695,8 @@ ve.NodeEditorDatatype = class extends ve.Component {
 				local_dag_sequence[i][x].ui.information.dag_layer = i;
 		
 		//Perform background dag run
-		try {	editor.run(true); } catch (e) { console.error(e); }
+		if (!do_not_run)
+			try {	editor.run(true); } catch (e) { console.error(e); }
 		
 		//Iterate over all nodes and draw them
 		for (let i = 0; i < ve.NodeEditorDatatype.instances.length; i++) {
