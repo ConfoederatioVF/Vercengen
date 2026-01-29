@@ -10,9 +10,9 @@ ve.DatavisSuite.TextSymbol = class extends ve.Component {
 		
 		//Declare local instance variables
 		this.element = document.createElement("div");
-			this.element.setAttribute("component", "ve-datavis-suite-text-symbol");
-			this.element.instance = this;
-			HTML.setAttributesObject(this.element, options.attributes);
+		this.element.setAttribute("component", "ve-datavis-suite-text-symbol");
+		this.element.instance = this;
+		HTML.setAttributesObject(this.element, options.attributes);
 		this.value = {};
 		this.from_binding_fire_silently = true;
 		this.v = value;
@@ -32,100 +32,100 @@ ve.DatavisSuite.TextSymbol = class extends ve.Component {
 		this.element.innerHTML = "";
 		this.interface = new ve.Interface({
 			colour: new ve.Colour((value.color) ? value.color : "#000000", {
-				name: "Colour",
+				name: loc("ve.registry.localisation.TextSymbol_colour"),
 				is_rgba: true,
 				onuserchange: (v, e) => this.value.color = e.getHex()
 			}),
 			ellipsis: new ve.Text((value.ellipsis) ? value.ellipsis : "...", {
-				name: "Ellipsis",
+				name: loc("ve.registry.localisation.TextSymbol_ellipsis"),
 				onuserchange: (v) => this.value.ellipsis = v
 			}),
 			font_family: new ve.Text((value.fontFamily) ? value.fontFamily : "sans-serif", {
-				name: "Font Family",
+				name: loc("ve.registry.localisation.TextSymbol_font_family"),
 				onuserchange: (v) => this.value.fontFamily = v
 			}),
 			font_size: new ve.Number(Math.returnSafeNumber(value.fontSize, 12), {
-				name: "Font Size",
+				name: loc("ve.registry.localisation.TextSymbol_font_size"),
 				onuserchange: (v) => this.value.fontSize = v
 			}),
 			font_style: new ve.Select({
-				normal: { name: "Normal" },
-				italic: { name: "Italic" },
-				oblique: { name: "Oblique" }
+				normal: { name: loc("ve.registry.localisation.TextSymbol_normal") },
+				italic: { name: loc("ve.registry.localisation.TextSymbol_italic") },
+				oblique: { name: loc("ve.registry.localisation.TextSymbol_oblique") }
 			}, {
-				name: "Font Style",
+				name: loc("ve.registry.localisation.TextSymbol_font_style"),
 				onuserchange: (v) => this.value.fontStyle = v,
 				selected: (value.fontStyle) ? value.fontStyle : "normal"
 			}),
 			font_weight: new ve.Select({
-				bold: { name: "Bold" },
-				bolder: { name: "Bolder" },
-				normal: { name: "Normal" },
-				lighter: { name: "Lighter" }
+				bold: { name: loc("ve.registry.localisation.TextSymbol_bold") },
+				bolder: { name: loc("ve.registry.localisation.TextSymbol_bolder") },
+				normal: { name: loc("ve.registry.localisation.TextSymbol_normal") },
+				lighter: { name: loc("ve.registry.localisation.TextSymbol_lighter") }
 			}, {
-				name: "Font Weight",
+				name: loc("ve.registry.localisation.TextSymbol_font_weight"),
 				onuserchange: (v) => this.value.fontWeight = v,
 				selected: (value.fontWeight) ? value.fontWeight : "normal"
 			}),
 			_height: new ve.Number(Math.returnSafeNumber(value.height, 12), {
-				name: "Height",
+				name: loc("ve.registry.localisation.TextSymbol_height"),
 				onuserchange: (v) => this.value.height = v
 			}),
 			overflow: new ve.Select({
-				break: { name: "Break" },
-				breakAll: { name: "Break All" },
-				none: { name: "None" },
-				truncate: { name: "Truncate" }
+				break: { name: loc("ve.registry.localisation.TextSymbol_break") },
+				breakAll: { name: loc("ve.registry.localisation.TextSymbol_break_all") },
+				none: { name: loc("ve.registry.localisation.TextSymbol_none") },
+				truncate: { name: loc("ve.registry.localisation.TextSymbol_truncate") }
 			}, {
-				name: "Overflow",
+				name: loc("ve.registry.localisation.TextSymbol_overflow"),
 				onuserchange: (v) => this.value.overflow = v,
 				selected: (value.overflow) ? value.overflow : "none"
 			}),
 			text_border_colour: new ve.Colour((value.textBorderColor) ? value.textBorderColor : "#000000", {
-				name: "Text Border Colour",
+				name: loc("ve.registry.localisation.TextSymbol_text_border_colour"),
 				is_rgba: true,
 				onuserchange: (v, e) => this.value.textBorderColor = e.getHex()
 			}),
 			text_border_dash_offset: new ve.Number(Math.returnSafeNumber(value.textBorderDashOffset, 0), {
-				name: "Text Border Dash Offset",
+				name: loc("ve.registry.localisation.TextSymbol_text_border_dash_offset"),
 				onuserchange: (v) => this.value.textBorderDashOffset = v
 			}),
 			text_border_type: new ve.Select({
-				solid: { name: "Solid" },
-				dashed: { name: "Dashed" },
-				dotted: { name: "Dotted" }
+				solid: { name: loc("ve.registry.localisation.TextSymbol_solid") },
+				dashed: { name: loc("ve.registry.localisation.TextSymbol_dashed") },
+				dotted: { name: loc("ve.registry.localisation.TextSymbol_dotted") }
 			}, {
-				name: "Text Border Type",
+				name: loc("ve.registry.localisation.TextSymbol_text_border_type"),
 				onuserchange: (v) => this.value.textBorderType = v,
 				selected: (value.textBorderType) ? value.textBorderType : "none"
 			}),
 			text_border_width: new ve.Number(Math.returnSafeNumber(value.textBorderWidth, 0), {
-				name: "Text Border Width",
+				name: loc("ve.registry.localisation.TextSymbol_text_border_width"),
 				onuserchange: (v) => this.value.textBorderWidth
 			}),
 			text_shadow_blur: new ve.Number(Math.returnSafeNumber(value.textShadowBlur), {
-				name: "Shadow Blur",
+				name: loc("ve.registry.localisation.TextSymbol_shadow_blur"),
 				onuserchange: (v) => this.value.textShadowBlur = v
 			}),
 			text_shadow_colour: new ve.Colour((value.textShadowColor) ? value.textShadowColor : "#000000", {
-				name: "Text Shadow Colour",
+				name: loc("ve.registry.localisation.TextSymbol_text_shadow_colour"),
 				is_rgba: true,
 				onuserchange: (v, e) => this.value.textShadowColor = e.getHex()
 			}),
 			text_shadow_offset_x: new ve.Number(Math.returnSafeNumber(value.textShadowOffsetX), {
-				name: "Shadow Offset X",
+				name: loc("ve.registry.localisation.TextSymbol_shadow_offset_x"),
 				onuserchange: (v) => this.value.textShadowOffsetX = v
 			}),
 			text_shadow_offset_y: new ve.Number(Math.returnSafeNumber(value.textShadowOffsetY), {
-				name: "Shadow Offset Y",
+				name: loc("ve.registry.localisation.TextSymbol_shadow_offset_y"),
 				onuserchange: (v) => this.value.textShadowOffsetY = v
 			}),
 			_width: new ve.Number(Math.returnSafeNumber(value.width, 0), {
-				name: "Width",
+				name: loc("ve.registry.localisation.TextSymbol_width"),
 				onuserchange: (v) => this.value.width = v
 			})
 		}, {
-			name: (this.options.name) ? this.options.name : "Text Symbol",
+			name: (this.options.name) ? this.options.name : loc("ve.registry.localisation.TextSymbol_text_symbol"),
 			onuserchange: (v, e) => {
 				delete this.do_not_fire_to_binding;
 				this.fireToBinding();

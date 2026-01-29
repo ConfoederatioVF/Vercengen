@@ -53,37 +53,37 @@ ve.DatavisSuite.FillSymbol = class extends ve.Component { //[WIP] - Refactor to 
 		this.element.innerHTML = "";
 		this.interface = new ve.Interface({
 			fill_colour: new ve.Colour(value.color, {
-				name: "Fill Colour",
+				name: loc("ve.registry.localisation.FillSymbol_fill_colour"),
 				onuserchange: (v, e) => this.value.color = e.getHex()
 			}),
 			origin: new ve.Select({
-				auto: { name: "Auto" },
-				end: { name: "End" },
-				start: { name: "Start" }
+				auto: { name: loc("ve.registry.localisation.FillSymbol_auto") },
+				end: { name: loc("ve.registry.localisation.FillSymbol_end") },
+				start: { name: loc("ve.registry.localisation.FillSymbol_start") }
 			}, {
-				name: "Origin",
+				name: loc("ve.registry.localisation.FillSymbol_origin"),
 				selected: (value.origin) ? value.origin : "auto",
 				onuserchange: (v) => this.value.origin = v
 			}),
 			opacity: new ve.Range(Math.returnSafeNumber(value.opacity, 0.7), {
-				name: "Opacity",
+				name: loc("ve.registry.localisation.FillSymbol_opacity"),
 				onuserchange: (v) => this.value.opacity = v
 			}),
 			
 			shadow_blur: new ve.Number(Math.returnSafeNumber(value.shadowBlur), {
-				name: "Shadow Blur",
+				name: loc("ve.registry.localisation.FillSymbol_shadow_blur"),
 				onuserchange: (v) => this.value.shadowBlur = v
 			}),
 			shadow_offset_x: new ve.Number(Math.returnSafeNumber(value.shadowOffsetX), {
-				name: "Shadow Offset X",
+				name: loc("ve.registry.localisation.FillSymbol_shadow_offset_x"),
 				onuserchange: (v) => this.value.shadowOffsetX = v
 			}),
 			shadow_offset_y: new ve.Number(Math.returnSafeNumber(value.shadowOffsetY), {
-				name: "Shadow Offset Y",
+				name: loc("ve.registry.localisation.FillSymbol_shadow_offset_y"),
 				onuserchange: (v) => this.value.shadowOffsetY = v
 			})
 		}, {
-			name: (this.options.name) ? this.options.name : "Fill Symbol",
+			name: (this.options.name) ? this.options.name : loc("ve.registry.localisation.FillSymbol_fill_symbol"),
 			onuserchange: (v, e) => {
 				delete this.do_not_fire_to_binding;
 				this.fireToBinding();

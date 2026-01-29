@@ -1,13 +1,13 @@
 ve.NodeEditor.Forse.functions = {
 	//Functions
 	call_function: {
-		name: "Call Function",
-		category: "Functions",
+		name: loc("ve.registry.localisation.Forse_node_call_function"),
+		category: loc("ve.registry.localisation.Forse_category_functions"),
 		input_parameters: [{
-			name: "arg0_function_key",
+			name: loc("ve.registry.localisation.Forse_param_function_key"),
 			type: "string"
 		}, {
-			name: "arg1_arguments_array",
+			name: loc("ve.registry.localisation.Forse_param_arguments_array"),
 			type: "any[]"
 		}],
 		output_type: "any",
@@ -18,7 +18,7 @@ ve.NodeEditor.Forse.functions = {
 			
 			//Return statement
 			return {
-				display_value: `Run: global.${function_key}`,
+				display_value: loc("ve.registry.localisation.Forse_display_run_global", function_key),
 				run: () => {
 					try {
 						return Object.getValue(global, function_key)(...arguments_array);
@@ -28,13 +28,13 @@ ve.NodeEditor.Forse.functions = {
 		}
 	},
 	call_function_in_preview: {
-		name: "Call Function (Preview)",
-		category: "Functions",
+		name: loc("ve.registry.localisation.Forse_node_call_function_preview"),
+		category: loc("ve.registry.localisation.Forse_category_functions"),
 		input_parameters: [{
-			name: "arg0_function_key",
+			name: loc("ve.registry.localisation.Forse_param_function_key"),
 			type: "string"
 		}, {
-			name: "arg1_arguments_array",
+			name: loc("ve.registry.localisation.Forse_param_arguments_array"),
 			type: "any[]"
 		}],
 		output_type: "any",
@@ -45,13 +45,13 @@ ve.NodeEditor.Forse.functions = {
 			
 			//Declare local instance variables
 			let return_value;
-				try {
-					return_value = Object.getValue(global, function_key)(...arguments_array);
-				} catch (e) { console.error(e); }
+			try {
+				return_value = Object.getValue(global, function_key)(...arguments_array);
+			} catch (e) { console.error(e); }
 			
 			//Return statement
 			return {
-				display_value: `Run: global.${function_key}`,
+				display_value: loc("ve.registry.localisation.Forse_display_run_global", function_key),
 				run: () => return_value,
 				value: return_value
 			};
@@ -60,16 +60,16 @@ ve.NodeEditor.Forse.functions = {
 	
 	//Functions (Class)
 	call_class_method: {
-		name: "Call Method",
-		category: "Functions",
+		name: loc("ve.registry.localisation.Forse_node_call_method"),
+		category: loc("ve.registry.localisation.Forse_category_functions"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_method_key",
+			name: loc("ve.registry.localisation.Forse_param_method_key"),
 			type: "string"
 		}, {
-			name: "arg2_arguments_array",
+			name: loc("ve.registry.localisation.Forse_param_arguments_array"),
 			type: "any[]"
 		}],
 		output_type: "any",
@@ -81,7 +81,7 @@ ve.NodeEditor.Forse.functions = {
 			
 			//Return statement
 			return {
-				display_value:`Run Class Method: ${method_key}`,
+				display_value: loc("ve.registry.localisation.Forse_display_run_class_method", method_key),
 				run: () => {
 					try {
 						return variable[method_key](...arguments_array);
@@ -91,16 +91,16 @@ ve.NodeEditor.Forse.functions = {
 		}
 	},
 	call_class_method_in_preview: {
-		name: "Call Method (Preview)",
-		category: "Functions",
+		name: loc("ve.registry.localisation.Forse_node_call_method_preview"),
+		category: loc("ve.registry.localisation.Forse_category_functions"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_method_key",
+			name: loc("ve.registry.localisation.Forse_param_method_key"),
 			type: "string"
 		}, {
-			name: "arg2_arguments_array",
+			name: loc("ve.registry.localisation.Forse_param_arguments_array"),
 			type: "any[]"
 		}],
 		output_type: "any",
@@ -118,20 +118,20 @@ ve.NodeEditor.Forse.functions = {
 			
 			//Return statement
 			return {
-				display_value:`Run Class Method: ${method_key}`,
+				display_value: loc("ve.registry.localisation.Forse_display_run_class_method", method_key),
 				run: () => return_value,
 				value: return_value
 			};
 		}
 	},
 	get_class_field: {
-		name: "Get Class Field",
-		category: "Functions",
+		name: loc("ve.registry.localisation.Forse_node_get_class_field"),
+		category: loc("ve.registry.localisation.Forse_category_functions"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_field_key",
+			name: loc("ve.registry.localisation.Forse_param_field_key"),
 			type: "string"
 		}],
 		output_type: "any",
@@ -142,22 +142,22 @@ ve.NodeEditor.Forse.functions = {
 			
 			//Return statement
 			return {
-				display_value: `.${field_key}: ${variable[field_key]}`,
+				display_value: loc("ve.registry.localisation.Forse_display_field_access", field_key, variable[field_key]),
 				value: variable[field_key]
 			};
 		}
 	},
 	set_class_field: {
-		name: "Set Class Field",
-		category: "Functions",
+		name: loc("ve.registry.localisation.Forse_node_set_class_field"),
+		category: loc("ve.registry.localisation.Forse_category_functions"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_field_key",
+			name: loc("ve.registry.localisation.Forse_param_field_key"),
 			type: "string"
 		}, {
-			name: "arg2_value",
+			name: loc("ve.registry.localisation.Forse_param_arg2_value"),
 			type: "any"
 		}],
 		output_type: "any",
@@ -171,7 +171,7 @@ ve.NodeEditor.Forse.functions = {
 			
 			//Return statement
 			return {
-				display_value: `.${field_key}: ${variable[field_key]}`,
+				display_value: loc("ve.registry.localisation.Forse_display_field_access", field_key, variable[field_key]),
 				value: variable[field_key]
 			};
 		}
@@ -179,11 +179,11 @@ ve.NodeEditor.Forse.functions = {
 	
 	//Functions (Expressions)
 	log_error: {
-		name: "(Log) ERROR",
+		name: loc("ve.registry.localisation.Forse_node_log_error"),
 		
-		category: "Functions",
+		category: loc("ve.registry.localisation.Forse_category_functions"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}],
 		output_type: "any",
@@ -195,17 +195,17 @@ ve.NodeEditor.Forse.functions = {
 			
 			//Return statement
 			return {
-				display_value: `Logged Error`,
+				display_value: loc("ve.registry.localisation.Forse_display_logged_error"),
 				value: variable
 			};
 		}
 	},
 	log_info: {
-		name: "(Log) INFO",
+		name: loc("ve.registry.localisation.Forse_node_log_info"),
 		
-		category: "Functions",
+		category: loc("ve.registry.localisation.Forse_category_functions"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}],
 		output_type: "any",
@@ -217,17 +217,17 @@ ve.NodeEditor.Forse.functions = {
 			
 			//Return statement
 			return {
-				display_value: `Logged Info`,
+				display_value: loc("ve.registry.localisation.Forse_display_logged_info"),
 				value: variable
 			};
 		}
 	},
 	log_warn: {
-		name: "(Log) WARN",
+		name: loc("ve.registry.localisation.Forse_node_log_warn"),
 		
-		category: "Functions",
+		category: loc("ve.registry.localisation.Forse_category_functions"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}],
 		output_type: "any",
@@ -239,17 +239,17 @@ ve.NodeEditor.Forse.functions = {
 			
 			//Return statement
 			return {
-				display_value: `Logged Warning`,
+				display_value: loc("ve.registry.localisation.Forse_display_logged_warning"),
 				value: variable
 			};
 		}
 	},
 	run_script: {
-		name: "Run Script",
+		name: loc("ve.registry.localisation.Forse_node_run_script"),
 		
-		category: "Functions",
+		category: loc("ve.registry.localisation.Forse_category_functions"),
 		input_parameters: [{
-			name: "arg0_script",
+			name: loc("ve.registry.localisation.Forse_param_script"),
 			type: "script"
 		}],
 		output_type: "any",
@@ -270,7 +270,7 @@ ve.NodeEditor.Forse.functions = {
 			
 			//Return statement
 			return {
-				display_value: `Run: ${path.basename(script)}`,
+				display_value: loc("ve.registry.localisation.Forse_display_run_script", path.basename(script)),
 				run: () => return_value,
 				value: return_value
 			};

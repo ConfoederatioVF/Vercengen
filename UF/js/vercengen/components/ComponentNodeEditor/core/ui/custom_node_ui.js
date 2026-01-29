@@ -3,12 +3,12 @@
 	/**
 	 * Opens custom node editor window. Can optionally edit an existing node.
 	 * - Method of: {@link ve.NodeEditor}
-	 * 
+	 *
 	 * @alias ve.Component.ve.NodeEditor.prototype.openCustomNodeEditor
 	 * @instance
 	 * @memberof ve.NodeEditor
 	 * @this ve.NodeEditor
-	 * 
+	 *
 	 * @param {string} arg0_edit_key - Optional. Edits the existing custom node with this key.
 	 */
 	ve.NodeEditor.prototype.openCustomNodeEditor = function (arg0_edit_key) {
@@ -17,7 +17,7 @@
 		
 		//Declare local instance variables
 		let custom_node_window;
-		let existing_definition = (edit_key) ? 
+		let existing_definition = (edit_key) ?
 			this.main.custom_node_types[edit_key] : null;
 		let save_custom_node = () => {
 			let active_input_nodes = temp_editor.main.nodes.filter(
@@ -31,7 +31,7 @@
 				let param_name =
 					n.constant_values && n.constant_values[0]
 						? n.constant_values[0]
-						: `Param ${i + 1}`;
+						: loc("ve.registry.localisation.NodeEditor_param_default", i + 1);
 				let param_type =
 					n.constant_values && n.constant_values[1]
 						? n.constant_values[1]
@@ -39,8 +39,8 @@
 				return { name: param_name, type: param_type };
 			});
 			
-			let meta_category = "Custom";
-			let meta_name = existing_definition ? existing_definition.name : "New Custom Node";
+			let meta_category = loc("ve.registry.localisation.Forse_category_custom");
+			let meta_name = existing_definition ? existing_definition.name : loc("ve.registry.localisation.NodeEditor_new_custom_node");
 			let meta_output_type = "any";
 			
 			let n_cat = nodes.find((n) => n.key === "ve_config_category");
@@ -57,7 +57,7 @@
 			
 			let output_node = nodes.find((n) => n.key === "ve_output");
 			if (!output_node) {
-				veToast("Custom Node must have an 'Output' node.");
+				veToast(loc("ve.registry.localisation.NodeEditor_toast_error_missing_output"));
 				return;
 			}
 			
@@ -80,8 +80,6 @@
 				special_function: this.createCustomExecutionLogic(graph_data),
 			};
 			
-			console.log(`Custom definition:`, custom_definition);
-			
 			this.main.custom_node_types[node_key] = custom_definition;
 			this.options.node_types[node_key] = custom_definition;
 			
@@ -92,7 +90,7 @@
 			
 			custom_node_window.close();
 			veToast(
-				`Custom Node '${meta_name}' ${existing_definition ? "Updated" : "Created"}.`,
+				loc("ve.registry.localisation.NodeEditor_toast_custom_node_success", meta_name, existing_definition ? loc("ve.registry.localisation.NodeEditor_updated") : loc("ve.registry.localisation.NodeEditor_created")),
 			);
 		};
 		let temp_editor = new ve.NodeEditor({ nodes: [] }, {
@@ -103,33 +101,33 @@
 			show_internal: true,
 		});
 		let window_contents = new ve.RawInterface({
-			editor_panel: new ve.RawInterface({ 
-				editor: temp_editor 
-			}, { 
+			editor_panel: new ve.RawInterface({
+				editor: temp_editor
+			}, {
 				style: { height: "calc(100% - 3rem)", width: "100%" }
 			}),
 			controls: new ve.RawInterface({
 				save_btn: new ve.Button(save_custom_node, {
-					name: existing_definition ? "Update Custom Node" : "Save Custom Node",
+					name: existing_definition ? loc("ve.registry.localisation.NodeEditor_update_custom_node") : loc("ve.registry.localisation.NodeEditor_save_custom_node"),
 					style: { width: "100%", height: "100%" },
 				}),
-			},{ 
-				style: { 
-					height: "3rem", 
-					padding: "0.5rem" 
-				} 
+			},{
+				style: {
+					height: "3rem",
+					padding: "0.5rem"
+				}
 			}),
-		},{ 
-			style: { 
-				display: "flex", 
-				flexDirection: "column", 
-				height: "100%" 
-			} 
+		},{
+			style: {
+				display: "flex",
+				flexDirection: "column",
+				height: "100%"
+			}
 		});
 		
 		//Open custom_node_window
 		custom_node_window = new ve.Window(window_contents, {
-			name: (existing_definition) ? `Edit ${existing_definition.name}` : "Create Custom Node",
+			name: (existing_definition) ? loc("ve.registry.localisation.NodeEditor_edit_node", existing_definition.name) : loc("ve.registry.localisation.NodeEditor_create_custom_node"),
 			width: "80vw",
 			height: "80vh",
 			can_rename: false,

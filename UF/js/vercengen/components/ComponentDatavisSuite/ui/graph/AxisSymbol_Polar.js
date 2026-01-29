@@ -33,25 +33,25 @@ ve.DatavisSuite.AxisSymbol_Polar = class extends ve.Component {
 		this.element.innerHTML = "";
 		this.interface = new ve.Interface({
 			id: new ve.Text(value.id, {
-				name: "ID",
+				name: loc("ve.registry.localisation.AxisSymbol_Polar_id"),
 				onuserchange: (v) => this.value.id = v
 			}),
 			
 			centre: new ve.Text(["50%", "50%"], {
-				name: "Centre",
+				name: loc("ve.registry.localisation.AxisSymbol_Polar_centre"),
 				onuserchange: (v) => this.value.center = v
 			}),
 			coordinate_system: new ve.Select({
-				calendar: { name: "Calendar" },
-				matrix: { name: "Matrix" },
-				none: { name: "None" }
+				calendar: { name: loc("ve.registry.localisation.AxisSymbol_Polar_calendar") },
+				matrix: { name: loc("ve.registry.localisation.AxisSymbol_Polar_matrix") },
+				none: { name: loc("ve.registry.localisation.AxisSymbol_Polar_none") }
 			}, {
-				name: "Coordinate System",
+				name: loc("ve.registry.localisation.AxisSymbol_Polar_coordinate_system"),
 				selected: (value.coordinateSystem) ? value.coordinateSystem : "none",
 				onuserchange: (v) => this.value.coordinateSystem = v
 			}),
 			radius: new ve.Text((value.radius) ? value.radius : ["", ""], {
-				name: "Radius",
+				name: loc("ve.registry.localisation.AxisSymbol_Polar_radius"),
 				max: 2,
 				min: 2,
 				onuserchange: (v) => this.value.radius = [
@@ -60,37 +60,37 @@ ve.DatavisSuite.AxisSymbol_Polar = class extends ve.Component {
 				]
 			}),
 			z_index: new ve.Number(Math.returnSafeNumber(value.z, 2), {
-				name: "Z Index",
+				name: loc("ve.registry.localisation.AxisSymbol_Polar_z_index"),
 				onuserchange: (v) => this.value.z = v
 			}),
 			
 			calendar_id: new ve.Number(Math.returnSafeNumber(value.calendarId), {
-				name: "Calendar ID",
+				name: loc("ve.registry.localisation.AxisSymbol_Polar_calendar_id"),
 				onuserchange: (v) => this.value.calendarId = v
 			}),
 			calendar_index: new ve.Number(Math.returnSafeNumber(value.calendarIndex), {
-				name: "Calendar Index",
+				name: loc("ve.registry.localisation.AxisSymbol_Polar_calendar_index"),
 				onuserchange: (v) => this.value.calendarIndex = v
 			}),
 			matrix_id: new ve.Number(Math.returnSafeNumber(value.matrixId), {
-				name: "Matrix IO",
+				name: loc("ve.registry.localisation.AxisSymbol_Polar_matrix_io"),
 				onuserchange: (v) => this.value.matrixId = v
 			}),
 			matrix_index: new ve.Number(Math.returnSafeNumber(value.matrixIndex), {
-				name: "Matrix Index",
+				name: loc("ve.registry.localisation.AxisSymbol_Polar_matrix_index"),
 				onuserchange: (v) => this.value.matrixIndex = v
 			}),
 			
 			tooltip: new ve.Interface({
 				label_symbol: new ve.DatavisSuite.LabelSymbol(value.tooltip?.textStyle, {
-					name: "Label Symbol",
+					name: loc("ve.registry.localisation.AxisSymbol_Polar_label_symbol"),
 					onuserchange: (v) => {
 						if (!this.value.tooltip) this.value.tooltip = {};
 						this.value.tooltip.textStyle = v;
 					}
 				}).interface,
 				tooltip_symbol: new ve.DatavisSuite.TooltipSymbol(value.tooltip, {
-					name: "Tooltip",
+					name: loc("ve.registry.localisation.AxisSymbol_Polar_tooltip"),
 					onuserchange: (v) => {
 						if (!this.value.tooltip) this.value.tooltip = {};
 						this.value.tooltip = {
@@ -99,9 +99,9 @@ ve.DatavisSuite.AxisSymbol_Polar = class extends ve.Component {
 						};
 					}
 				}).interface
-			}, { name: "Tooltip" })
+			}, { name: loc("ve.registry.localisation.AxisSymbol_Polar_tooltip") })
 		}, {
-			name: (this.options.name) ? this.options.name : "Axis Symbol (Polar)",
+			name: (this.options.name) ? this.options.name : loc("ve.registry.localisation.AxisSymbol_Polar_axis_symbol_polar"),
 			onuserchange: () => {
 				//Draw graph; fire to binding if possible
 				if (this.options.graph_obj) {

@@ -1,14 +1,14 @@
 ve.NodeEditor.Forse.conditionals = {
 	//Conditionals
 	is_equal: {
-		name: "Is Equal",
+		name: loc("ve.registry.localisation.Forse_node_is_equal"),
 		
-		category: "Conditionals",
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg1_variable"),
 			type: "any"
 		}],
 		output_type: "boolean",
@@ -19,19 +19,19 @@ ve.NodeEditor.Forse.conditionals = {
 			
 			//Return statement
 			return {
-				display_value: (variable == ot_variable) ? "True" : "False",
+				display_value: (variable == ot_variable) ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: (variable == ot_variable)
 			};
 		}
 	},
 	is_strictly_equal: {
-		name: "Is Strictly Equal",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_is_strictly_equal"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg1_variable"),
 			type: "any"
 		}],
 		output_type: "boolean",
@@ -42,19 +42,19 @@ ve.NodeEditor.Forse.conditionals = {
 			
 			//Return statement
 			return {
-				display_value: (variable === ot_variable) ? "True" : "False",
+				display_value: (variable === ot_variable) ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: (variable === ot_variable)
 			};
 		}
 	},
 	is_not_equal: {
-		name: "Is Not Equal",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_is_not_equal"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg1_variable"),
 			type: "any"
 		}],
 		output_type: "boolean",
@@ -65,19 +65,19 @@ ve.NodeEditor.Forse.conditionals = {
 			
 			//Return statement
 			return {
-				display_value: (variable != ot_variable) ? "True" : "False",
+				display_value: (variable != ot_variable) ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: (variable != ot_variable)
 			};
 		}
 	},
 	is_not_strictly_equal: {
-		name: "Is Not Strictly Equal",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_is_not_strictly_equal"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg1_variable"),
 			type: "any"
 		}],
 		output_type: "boolean",
@@ -88,19 +88,19 @@ ve.NodeEditor.Forse.conditionals = {
 			
 			//Return statement
 			return {
-				display_value: (variable !== ot_variable) ? "True" : "False",
+				display_value: (variable !== ot_variable) ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: (variable !== ot_variable)
 			};
 		}
 	},
 	geq: {
-		name: "Greater or Equal Than",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_geq"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg1_variable"),
 			type: "any"
 		}],
 		output_type: "boolean",
@@ -111,19 +111,19 @@ ve.NodeEditor.Forse.conditionals = {
 			
 			//Return statement
 			return {
-				display_value: (variable >= ot_variable) ? "True" : "False",
+				display_value: (variable >= ot_variable) ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: (variable >= ot_variable)
 			};
 		}
 	},
 	greater_than: {
-		name: "Greater Than",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_greater_than"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg1_variable"),
 			type: "any"
 		}],
 		output_type: "boolean",
@@ -134,19 +134,19 @@ ve.NodeEditor.Forse.conditionals = {
 			
 			//Return statement
 			return {
-				display_value: (variable > ot_variable) ? "True" : "False",
+				display_value: (variable > ot_variable) ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: (variable > ot_variable)
 			};
 		}
 	},
 	leq: {
-		name: "Less Than or Equal To",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_leq"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg1_variable"),
 			type: "any"
 		}],
 		output_type: "boolean",
@@ -157,19 +157,19 @@ ve.NodeEditor.Forse.conditionals = {
 			
 			//Return statement
 			return {
-				display_value: (variable <= ot_variable) ? "True" : "False",
+				display_value: (variable <= ot_variable) ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: (variable <= ot_variable)
 			};
 		}
 	},
 	less_than: {
-		name: "Less Than",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_less_than"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg1_variable"),
 			type: "any"
 		}],
 		output_type: "boolean",
@@ -180,7 +180,7 @@ ve.NodeEditor.Forse.conditionals = {
 			
 			//Return statement
 			return {
-				display_value: (variable < ot_variable) ? "True" : "False",
+				display_value: (variable < ot_variable) ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: (variable < ot_variable)
 			};
 		}
@@ -188,10 +188,10 @@ ve.NodeEditor.Forse.conditionals = {
 	
 	//Conditionals (If Statements)
 	if_then: {
-		name: "If Then",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_if_then"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		input_parameters: [{
-			name: "arg0_boolean",
+			name: loc("ve.registry.localisation.Forse_param_arg0_boolean"),
 			type: "boolean"
 		}],
 		output_type: "boolean",
@@ -202,55 +202,55 @@ ve.NodeEditor.Forse.conditionals = {
 			//Return statement
 			return {
 				abort: (!boolean),
-				display_value: (boolean) ? "True" : "False",
+				display_value: (boolean) ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: boolean
 			};
 		}
 	},
 	"false": {
-		name: "False",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_false"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		output_type: "boolean",
 		special_function: () => {
 			//Return statement
 			return {
-				display_value: "False",
+				display_value: loc("ve.registry.localisation.Forse_value_false"),
 				value: false
 			};
 		}
 	},
 	"true": {
-		name: "True",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_true"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		output_type: "boolean",
 		special_function: () => {
 			//Return statement
 			return {
-				display_value: "True",
+				display_value: loc("ve.registry.localisation.Forse_value_true"),
 				value: true
 			};
 		}
 	},
 	"null": {
-		name: "Null",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_null"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		output_type: "any",
 		special_function: () => {
 			//Return statement
 			return {
-				display_value: "null",
+				display_value: loc("ve.registry.localisation.Forse_value_null"),
 				value: null
 			};
 		}
 	},
 	"undefined": {
-		name: "Undefined",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_undefined"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		output_type: "any",
 		special_function: () => {
 			//Return statement
 			return {
-				display_value: "undefined",
+				display_value: loc("ve.registry.localisation.Forse_value_undefined"),
 				value: undefined
 			};
 		}
@@ -258,13 +258,13 @@ ve.NodeEditor.Forse.conditionals = {
 	
 	//Conditionals (Logic)
 	and: {
-		name: "AND",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_and"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg1_variable"),
 			type: "any"
 		}],
 		output_type: "boolean",
@@ -275,16 +275,16 @@ ve.NodeEditor.Forse.conditionals = {
 			
 			//Return statement
 			return {
-				display_value: (variable && ot_variable) ? "True" : "False",
+				display_value: (variable && ot_variable) ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: (variable && ot_variable)
 			};
 		}
 	},
 	not: {
-		name: "NOT",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_not"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}],
 		output_type: "boolean",
@@ -294,19 +294,19 @@ ve.NodeEditor.Forse.conditionals = {
 			
 			//Return statement
 			return {
-				display_value: (!variable) ? "True" : "False",
+				display_value: (!variable) ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: (!variable)
 			};
 		}
 	},
 	or: {
-		name: "OR",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_or"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg1_variable"),
 			type: "any"
 		}],
 		output_type: "boolean",
@@ -317,19 +317,19 @@ ve.NodeEditor.Forse.conditionals = {
 			
 			//Return statement
 			return {
-				display_value: (variable || ot_variable) ? "True" : "False",
+				display_value: (variable || ot_variable) ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: (variable || ot_variable)
 			};
 		}
 	},
 	xor: {
-		name: "XOR",
-		category: "Conditionals",
+		name: loc("ve.registry.localisation.Forse_node_xor"),
+		category: loc("ve.registry.localisation.Forse_category_conditionals"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}, {
-			name: "arg1_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg1_variable"),
 			type: "any"
 		}],
 		output_type: "boolean",
@@ -345,7 +345,7 @@ ve.NodeEditor.Forse.conditionals = {
 			if (!variable && !ot_variable) is_false = true;
 			
 			return {
-				display_value: (!is_false) ? "True" : "False",
+				display_value: (!is_false) ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: (!is_false)
 			};
 		}

@@ -44,19 +44,19 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 		//Declare local instance variables
 		let data_series = {};
 		let position_obj = new ve.Select({
-			top: { name: "Top" },
-			bottom: { name: "Bottom" }
+			top: { name: loc("ve.registry.localisation.AxisSymbol_top") },
+			bottom: { name: loc("ve.registry.localisation.AxisSymbol_bottom") }
 		}, {
-			name: "Position",
+			name: loc("ve.registry.localisation.AxisSymbol_position"),
 			selected: (this.value.position) ? this.value.position : "bottom",
 			onuserchange: (v) => this.value.position = v
 		});
 			if (this.options.axis_type === "y")
 				position_obj = new ve.Select({
-					left: { name: "Left" },
-					right: { name: "Right" }
+					left: { name: loc("ve.registry.localisation.AxisSymbol_left") },
+					right: { name: loc("ve.registry.localisation.AxisSymbol_right") }
 				}, {
-					name: "Position",
+					name: loc("ve.registry.localisation.AxisSymbol_position"),
 					selected: (this.value.position) ? this.value.position : "left",
 					onuserchange: (v) => this.value.position = v
 				})
@@ -66,17 +66,17 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 			
 			let all_series_names = datavis_suite_obj.getAllSeriesNames();
 			let series_options = {
-				name: "Axis Ticks (Data Series)",
-				tooltip: `Assigns a data series as axis ticks instead of manual inputs. Series is vertically aligned.`,
+				name: loc("ve.registry.localisation.AxisSymbol_axis_ticks_data_series"),
+				tooltip: loc("ve.registry.localisation.AxisSymbol_tooltip_axis_ticks_data_series"),
 				selected: (this.value.data_series?.length > 0) ? all_series_names[this.value.data_series] : undefined,
 				onuserchange: (v) => {
 					if (v === "") {
 						delete this.value.data_series;
-						veToast(`Cleared data series from axis ticks.`);
+						veToast(loc("ve.registry.localisation.AxisSymbol_toast_cleared_data_series"));
 						return;
 					}
 					if (!datavis_suite_obj.series[v]) {
-						veToast(`<icon>warning</icon> The data series you have selected is not valid.`);
+						veToast(`<icon>warning</icon> ${loc("ve.registry.localisation.AxisSymbol_toast_invalid_data_series")}`);
 					} else {
 						this.value.data = this.getDataSeries(v);
 						this.value.data_series = v;
@@ -91,43 +91,43 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 		this.element.innerHTML = "";
 		this.interface = new ve.Interface({
 			x_axis_name: new ve.Text((value.name) ? value.name : "", {
-				name: "Name",
+				name: loc("ve.registry.localisation.AxisSymbol_name"),
 				onuserchange: (v) => this.value.name = v
 			}),
 			name_gap: new ve.Number(Math.returnSafeNumber(value.name_gap, 15), {
-				name: "Name Gap",
+				name: loc("ve.registry.localisation.AxisSymbol_name_gap"),
 				onuserchange: (v) => this.value.nameGap = v
 			}),
 			name_location: new ve.Select({
-				start: { name: "Start" },
-				middle: { name: "Middle" },
-				end: { name: "End" }
+				start: { name: loc("ve.registry.localisation.AxisSymbol_start") },
+				middle: { name: loc("ve.registry.localisation.AxisSymbol_middle") },
+				end: { name: loc("ve.registry.localisation.AxisSymbol_end") }
 			}, {
-				name: "Name Location",
+				name: loc("ve.registry.localisation.AxisSymbol_name_location"),
 				selected: (value.name_location) ? value.name_location : "end",
 				onuserchange: (v) => this.value.nameEnd = v
 			}),
 			name_move_overlap: new ve.Toggle(value.nameMoveOverlap, {
-				name: "Name Move Overlap",
+				name: loc("ve.registry.localisation.AxisSymbol_name_move_overlap"),
 				onuserchange: (v) => this.value.nameMoveOverlap = v
 			}),
 			name_rotate: new ve.Number(Math.returnSafeNumber(value.nameRotate, 0), {
-				name: "Name Rotate",
+				name: loc("ve.registry.localisation.AxisSymbol_name_rotate"),
 				onuserchange: (v) => this.value.nameRotate = v
 			}),
 			type: new ve.Select({
-				value: { name: "Value" },
-				category: { name: "Category" },
-				time: { name: "Time" },
-				log: { name: "Log" }
+				value: { name: loc("ve.registry.localisation.AxisSymbol_value") },
+				category: { name: loc("ve.registry.localisation.AxisSymbol_category") },
+				time: { name: loc("ve.registry.localisation.AxisSymbol_time") },
+				log: { name: loc("ve.registry.localisation.AxisSymbol_log") }
 			}, {
-				name: "Type",
+				name: loc("ve.registry.localisation.AxisSymbol_type"),
 				selected: (value.type) ? value.type : "value",
 				onuserchange: (v) => this.value.type = v
 			}),
 			
 			data: new ve.Text((value.data) ? value.data : [""], {
-				name: "Axis Ticks",
+				name: loc("ve.registry.localisation.AxisSymbol_axis_ticks"),
 				onuserchange: (v) => {
 					console.log("this.value.data", v);
 					this.value.data = v;
@@ -137,7 +137,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 			
 			axis_label: new ve.Interface({
 				show: new ve.Toggle(this.value.axisLabel?.show, {
-					name: "Show Axis Label",
+					name: loc("ve.registry.localisation.AxisSymbol_show_axis_label"),
 					onuserchange: (v) => {
 						if (!this.value.axisLabel) this.value.axisLabel = {};
 						this.value.axisLabel = v;
@@ -145,12 +145,12 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 				}),
 				
 				align_max_label: new ve.Select({
-					left: { name: "Left" },
-					center: { name: "Centre" },
-					right: { name: "Right" },
-					none: { name: "None" }
+					left: { name: loc("ve.registry.localisation.AxisSymbol_left") },
+					center: { name: loc("ve.registry.localisation.AxisSymbol_centre") },
+					right: { name: loc("ve.registry.localisation.AxisSymbol_right") },
+					none: { name: loc("ve.registry.localisation.AxisSymbol_none") }
 				}, {
-					name: "Align Max Label",
+					name: loc("ve.registry.localisation.AxisSymbol_align_max_label"),
 					onuserchange: (v) => {
 						if (!this.value.axisLabel) this.value.axisLabel = {};
 						if (v !== "none") {
@@ -161,12 +161,12 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 					}
 				}),
 				align_min_label: new ve.Select({
-					left: { name: "Left" },
-					center: { name: "Centre" },
-					right: { name: "Right" },
-					none: { name: "None" }
+					left: { name: loc("ve.registry.localisation.AxisSymbol_left") },
+					center: { name: loc("ve.registry.localisation.AxisSymbol_centre") },
+					right: { name: loc("ve.registry.localisation.AxisSymbol_right") },
+					none: { name: loc("ve.registry.localisation.AxisSymbol_none") }
 				}, {
-					name: "Align Min Label",
+					name: loc("ve.registry.localisation.AxisSymbol_align_min_label"),
 					onuserchange: (v) => {
 						if (!this.value.axisLabel) this.value.axisLabel = {};
 						if (v !== "none") {
@@ -177,36 +177,36 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 					}
 				}),
 				custom_values: new ve.Number((value.axisLabel?.customValues) ? value.axisLabel.customValues : [0], {
-					name: "Custom Values",
+					name: loc("ve.registry.localisation.AxisSymbol_custom_values"),
 					onuserchange: (v) => {
 						if (!this.value.axisLabel) this.value.axisLabel = {};
 						this.value.axisLabel.customValues = v;
 					}
 				}),
 				formatter: new ve.Text((value.axisLabel?.formatter) ? value.axisLabel.formatter : "", {
-					name: "Formatter",
-					tooltip: `Valid variables include {extraZ}, {index}, {value}, as well as time variables (i.e. {YYYY}) for 'time' axis.`,
+					name: loc("ve.registry.localisation.AxisSymbol_formatter"),
+					tooltip: loc("ve.registry.localisation.AxisSymbol_tooltip_formatter"),
 					onuserchange: (v) => {
 						if (!this.value.axisLabel) this.value.axisLabel = {};
 						this.value.axisLabel.formatter = v;
 					}
 				}),
 				hide_overlap: new ve.Toggle((value.axisLabel?.hideOverlap !== undefined) ? value.axisLabel.hideOverlap : false, {
-					name: "Hide Overlap",
+					name: loc("ve.registry.localisation.AxisSymbol_hide_overlap"),
 					onuserchange: (v) => {
 						if (!this.value.axisLabel) this.value.axisLabel = {};
 						this.value.axisLabel.hideOverlap = v;
 					}
 				}),
 				inside: new ve.Toggle((value.axisLabel?.inside !== undefined) ? value.axisLabel.inside : false, {
-					name: "Inside",
+					name: loc("ve.registry.localisation.AxisSymbol_inside"),
 					onuserchange: (v) => {
 						if (!this.value.axisLabel) this.value.axisLabel = {};
 						this.value.axisLabel.inside = v;
 					}
 				}),
 				interval: new ve.Text((value.axisLabel?.interval !== undefined) ? value.axisLabel.interval : "auto", {
-					name: "Interval",
+					name: loc("ve.registry.localisation.AxisSymbol_interval"),
 					onuserchange: (v) => {
 						if (!this.value.axisLabel) this.value.axisLabel = {};
 						if (!isNaN(parseFloat(v))) v = parseFloat(v);
@@ -214,35 +214,35 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 					}
 				}),
 				margin: new ve.Number(Math.returnSafeNumber(value.axisLabel?.margin, 8), {
-					name: "Margin",
+					name: loc("ve.registry.localisation.AxisSymbol_margin"),
 					onuserchange: (v) => {
 						if (!this.value.axisLabel) this.value.axisLabel = {};
 						this.value.axisLabel.margin = v;
 					}
 				}),
 				rotate: new ve.Number(Math.returnSafeNumber(value.axisLabel?.rotate, 0), {
-					name: "Rotate",
+					name: loc("ve.registry.localisation.AxisSymbol_rotate"),
 					onuserchange: (v) => {
 						if (!this.value.axisLabel) this.value.axisLabel = {};
 						this.value.axisLabel.rotate = v;
 					}
 				}),
 				show_max_label: new ve.Toggle(value.axisLabel?.showMaxLabel, {
-					name: "Show Max Label",
+					name: loc("ve.registry.localisation.AxisSymbol_show_max_label"),
 					onuserchange: (v) => {
 						if (!this.value.axisLabel) this.value.axisLabel = {};
 						this.value.axisLabel.showMaxLabel = v;
 					}
 				}),
 				show_min_label: new ve.Toggle(value.axisLabel?.showMinLabel, {
-					name: "Show Min Label",
+					name: loc("ve.registry.localisation.AxisSymbol_show_min_label"),
 					onuserchange: (v) => {
 						if (!this.value.axisLabel) this.value.axisLabel = {};
 						this.value.axisLabel.showMinLabel = v;
 					}
 				}),
 				label_symbol: new ve.DatavisSuite.LabelSymbol(value.axisLabel, {
-					name: "Label Symbol",
+					name: loc("ve.registry.localisation.AxisSymbol_label_symbol"),
 					onuserchange: (v, e) => {
 						if (!this.value.axisLabel) this.value.axisLabel = {};
 						this.value.axisLabel = {
@@ -252,7 +252,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 					}
 				}).interface,
 				stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.axisLabel, {
-					name: "Stroke Symbol",
+					name: loc("ve.registry.localisation.AxisSymbol_stroke_symbol"),
 					onuserchange: (v, e) => {
 						if (!this.value.axisLabel) this.value.axisLabel = {};
 						this.value.axisLabel = {
@@ -262,11 +262,11 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 					}
 				}).interface
 			}, {
-				name: "Axis Label"
+				name: loc("ve.registry.localisation.AxisSymbol_axis_label")
 			}),
 			axis_line: new ve.Interface({
 				show: new ve.Toggle(value.axisLine?.show, {
-					name: "Show",
+					name: loc("ve.registry.localisation.AxisSymbol_show"),
 					onuserchange: (v, e) => {
 						if (!this.value.axisLine) this.value.axisLine = {};
 						this.value.axisLine.show = v;
@@ -274,31 +274,31 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 				}),
 				
 				on_zero: new ve.Toggle(value.axisLine?.onZero, {
-					name: "On Zero",
+					name: loc("ve.registry.localisation.AxisSymbol_on_zero"),
 					onuserchange: (v) => {
 						if (!this.value.axisLine) this.value.axisLine = {};
 						this.value.axisLine.onZero = v;
 					}
 				}),
 				on_zero_axis_index: new ve.Number(Math.returnSafeNumber(value.axisLine?.onZeroAxisIndex), {
-					name: "On Zero Axis Index",
+					name: loc("ve.registry.localisation.AxisSymbol_on_zero_axis_index"),
 					onuserchange: (v) => {
 						if (!this.value.axisLine) this.value.axisLine = {};
 						this.value.axisLine.onZeroAxisIndex = v;
 					}
 				}),
 				stroke_symbol: new ve.DatavisSuite.StrokeSymbol(Math.returnSafeNumber(value.axisLine?.lineStyle), {
-					name: "Stroke Symbol",
+					name: loc("ve.registry.localisation.AxisSymbol_stroke_symbol"),
 					onuserchange: (v) => {
 						if (!this.value.axisLine) this.value.axisLine = {};
 						this.value.axisLine.lineStyle = v;
 					}
 				}).interface,
 				symbol: new ve.Select({
-					"none-none": { name: "None, None" },
-					"arrow-arrow": { name: "Arrow, Arrow" },
-					"arrow-none": { name: "Arrow, None" },
-					"none-arrow": { name: "None, Arrow" }
+					"none-none": { name: loc("ve.registry.localisation.AxisSymbol_symbol_none_none") },
+					"arrow-arrow": { name: loc("ve.registry.localisation.AxisSymbol_symbol_arrow_arrow") },
+					"arrow-none": { name: loc("ve.registry.localisation.AxisSymbol_symbol_arrow_none") },
+					"none-arrow": { name: loc("ve.registry.localisation.AxisSymbol_symbol_none_arrow") }
 				}, {
 					selected: (value.axisLine?.symbol) ? value.axisLine.symbol.join("-") : "none-none",
 					onuserchange: (v) => {
@@ -308,13 +308,13 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 				}),
 				symbol_size: new ve.RawInterface({
 					symbol_size_x: new ve.Number(Math.returnSafeNumber(value.axisLine?.symbolSize?.[0]), {
-						name: "X"
+						name: loc("ve.registry.localisation.AxisSymbol_x")
 					}),
 					symbol_size_y: new ve.Number(Math.returnSafeNumber(value.axisLine?.symbolSize?.[1]), {
-						name: "Y"
+						name: loc("ve.registry.localisation.AxisSymbol_y")
 					})
 				}, { 
-					name: "Symbol Size",
+					name: loc("ve.registry.localisation.AxisSymbol_symbol_size"),
 					onuserchange: (v) => {
 						if (!this.value.axisLine) this.value.axisLine = {};
 						this.value.axisLine.symbolSize = [v.symbol_size_x.v, v.symbol_size_y.v];
@@ -322,13 +322,13 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 				}),
 				symbol_offset: new ve.RawInterface({
 					symbol_offset_x: new ve.Number(Math.returnSafeNumber(value.axisLine?.symbolOffset?.[0]), {
-						name: "X"
+						name: loc("ve.registry.localisation.AxisSymbol_x")
 					}),
 					symbol_offset_y: new ve.Number(Math.returnSafeNumber(value.axisLine?.symbolOffset?.[1]), {
-						name: "Y"
+						name: loc("ve.registry.localisation.AxisSymbol_y")
 					})
 				}, {
-					name: "Symbol Offset",
+					name: loc("ve.registry.localisation.AxisSymbol_symbol_offset"),
 					onuserchange: (v) => {
 						if (!this.value.axisLine) this.value.axisLine = {};
 						if (v.symbol_offset_x.v === 0 && v.symbol_offset_y.v === 0) return;
@@ -336,39 +336,39 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 					}
 				})
 			}, {
-				name: "Axis Line"
+				name: loc("ve.registry.localisation.AxisSymbol_axis_line")
 			}),
 			axis_pointer: new ve.Interface({
 				show: new ve.Toggle(value.axisPointer?.show, {
-					name: "Show",
+					name: loc("ve.registry.localisation.AxisSymbol_show"),
 					onuserchange: (v) => {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						this.value.axisPointer.show = v;
 					}
 				}),
 				label_symbol: new ve.DatavisSuite.LabelSymbol(value.axisPointer?.label, {
-					name: "Label Symbol",
+					name: loc("ve.registry.localisation.AxisSymbol_label_symbol"),
 					onuserchange: (v) => {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						this.value.axisPointer.label = v;
 					}
 				}).interface,
 				on_hover_emphasis: new ve.Toggle(value.axisPointer?.triggerEmphasis, {
-					name: "Onhover Emphasis",
+					name: loc("ve.registry.localisation.AxisSymbol_onhover_emphasis"),
 					onuserchange: (v) => {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						this.value.axisPointer.triggerEmphasis = v;
 					}
 				}),
 				on_hover_tooltip: new ve.Toggle(value.axisPointer?.triggerTooltip, {
-					name: "Onhover Tooltip",
+					name: loc("ve.registry.localisation.AxisSymbol_onhover_tooltip"),
 					onuserchange: (v) => {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						this.value.axisPointer.triggerTooltip = v;
 					}
 				}),
 				shadow_blur: new ve.Number(Math.returnSafeNumber(value.axisPointer?.shadowStyle?.shadowBlur, 0), {
-					name: "Shadow Blur",
+					name: loc("ve.registry.localisation.AxisSymbol_shadow_blur"),
 					onuserchange: (v) => {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						if (!this.value.axisPointer.shadowStyle) this.value.axisPointer.shadowStyle = {};
@@ -376,7 +376,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 					}
 				}),
 				shadow_colour: new ve.Colour((value.axisPointer?.shadowStyle?.shadowColor) ? value.axisPointer.shadowStyle.shadowColor : "#000", {
-					name: "Shadow Colour",
+					name: loc("ve.registry.localisation.AxisSymbol_shadow_colour"),
 					onuserchange: (v) => {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						if (!this.value.axisPointer.shadowStyle) this.value.axisPointer.shadowStyle = {};
@@ -384,7 +384,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 					}
 				}),
 				shadow_offset_x: new ve.Number(Math.returnSafeNumber(value.axisPointer?.shadowStyle?.shadowOffsetX), {
-					name: "Shadow Offset X",
+					name: loc("ve.registry.localisation.AxisSymbol_shadow_offset_x"),
 					onuserchange: (v) => {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						if (!this.value.axisPointer.shadowStyle) this.value.axisPointer.shadowStyle = {};
@@ -392,7 +392,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 					}
 				}),
 				shadow_offset_y: new ve.Number(Math.returnSafeNumber(value.axisPointer?.shadowStyle?.shadowOffsetY), {
-					name: "Shadow Offset Y",
+					name: loc("ve.registry.localisation.AxisSymbol_shadow_offset_y"),
 					onuserchange: (v) => {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						if (!this.value.axisPointer.shadowStyle) this.value.axisPointer.shadowStyle = {};
@@ -400,85 +400,85 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 					}
 				}),
 				snap_to: new ve.Toggle(value.axisPointer?.shadowStyle?.snap, {
-					name: "Snap To",
+					name: loc("ve.registry.localisation.AxisSymbol_snap_to"),
 					onuserchange: (v) => {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						this.value.axisPointer.snap = v;
 					}
 				}),
 				status: new ve.Toggle(value.axisPointer?.status, {
-					name: "Status",
+					name: loc("ve.registry.localisation.AxisSymbol_status"),
 					onuserchange: (v) => {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						this.value.axisPointer.status = v;
 					}
 				}),
 				stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.axisPointer?.lineStyle, {
-					name: "Stroke Symbol",
+					name: loc("ve.registry.localisation.AxisSymbol_stroke_symbol"),
 					onuserchange: (v) => {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						this.value.axisPointer.lineStyle = v;
 					}
 				}).interface,
 				type: new ve.Select({
-					line: { name: "Line" },
-					shadow: { name: "Shadow" },
-					none: { name: "None" }
+					line: { name: loc("ve.registry.localisation.AxisSymbol_line") },
+					shadow: { name: loc("ve.registry.localisation.AxisSymbol_shadow") },
+					none: { name: loc("ve.registry.localisation.AxisSymbol_none") }
 				}, {
-					name: "Type",
+					name: loc("ve.registry.localisation.AxisSymbol_type"),
 					onuserchange: (v) => {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						this.value.axisPointer.type = v;
 					}
 				}),
 				value: new ve.Number(Math.returnSafeNumber(this.value?.axisPointer?.value), {
-					name: "Value",
+					name: loc("ve.registry.localisation.AxisSymbol_value"),
 					onuserchange: (v) => {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						this.value.axisPointer.value = v;
 					}
 				}),
 				z_index: new ve.Number(Math.returnSafeNumber(this.value?.axisPointer?.z), {
-					name: "Z-Index",
+					name: loc("ve.registry.localisation.AxisSymbol_z_index"),
 					onuserchange: (v) => {
 						if (!this.value.axisPointer) this.value.axisPointer = {};
 						this.value.axisPointer.z = v;
 					}
 				})
 			}, {
-				name: "Axis Pointer"
+				name: loc("ve.registry.localisation.AxisSymbol_axis_pointer")
 			}),
 			axis_tick: new ve.Interface({
 				show: new ve.Toggle(this.value?.axisTick?.show, {
-					name: "Show",
+					name: loc("ve.registry.localisation.AxisSymbol_show"),
 					onuserchange: (v) => {
 						if (!this.value.axisTick) this.value.axisTick = {};
 						this.value.axisTick.show = v;
 					}
 				}),
 				align_with_label: new ve.Toggle(this.value?.axisTick?.alignWithLabel, {
-					name: "Align with Label",
+					name: loc("ve.registry.localisation.AxisSymbol_align_with_label"),
 					onuserchange: (v) => {
 						if (!this.value.axisTick) this.value.axisTick = {};
 						this.value.axisTick.alignWithLabel = v;
 					}
 				}),
 				custom_values: new ve.Number((this.value?.axisTick?.customValues) ? this.value.axisTick.customValues : [0], {
-					name: "Custom Values",
+					name: loc("ve.registry.localisation.AxisSymbol_custom_values"),
 					onuserchange: (v) => {
 						if (!this.value.axisTick) this.value.axisTick = {};
 						this.values.axisTick.customValues = v;
 					}
 				}),
 				inside: new ve.Toggle(this.value?.axisTick?.inside, {
-					name: "Inside",
+					name: loc("ve.registry.localisation.AxisSymbol_inside"),
 					onuserchange: (v) => {
 						if (!this.value.axisTick) this.value.axisTick = {};
 						this.value.axisTick.inside = v;
 					}
 				}),
 				interval: new ve.Text((value.axisTick?.interval !== undefined) ? value.axisTick.interval : "auto", {
-					name: "Interval",
+					name: loc("ve.registry.localisation.AxisSymbol_interval"),
 					onuserchange: (v) => {
 						if (!this.value.axisTick) this.value.axisTick = {};
 						if (!isNaN(parseFloat(v))) v = parseFloat(v);
@@ -486,14 +486,14 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 					}
 				}),
 				length: new ve.Number(Math.returnSafeNumber(value.axisTick?.length, 5), {
-					name: "Length",
+					name: loc("ve.registry.localisation.AxisSymbol_length"),
 					onuserchange: (v) => {
 						if (!this.value.axisTick) this.value.axisTick = {};
 						this.value.axisTick.length = v;
 					}
 				}),
 				stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.axisTick?.lineStyle, {
-					name: "Stroke Symbol",
+					name: loc("ve.registry.localisation.AxisSymbol_stroke_symbol"),
 					onuserchange: (v) => {
 						if (!this.value.axisTick) this.value.axisTick = {};
 						this.value.axisTick.lineStyle = v;
@@ -501,7 +501,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 				}).interface,
 				minor_split_line: new ve.Interface({
 					show: new ve.Toggle(value.axisTick?.minorSplitLine, {
-						name: "Show",
+						name: loc("ve.registry.localisation.AxisSymbol_show"),
 						onuserchange: (v) => {
 							if (!this.value.axisTick) this.value.axisTick = {};
 							if (!this.value.axisTick.minorSplitLine) this.value.axisTick.minorSplitLine = {};
@@ -509,17 +509,17 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 						}
 					}),
 					stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.axisTick?.minorSplitLine?.lineStyle, {
-						name: "Stroke Symbol",
+						name: loc("ve.registry.localisation.AxisSymbol_stroke_symbol"),
 						onuserchange: (v) => {
 							if (!this.value.axisTick) this.value.axisTick = {};
 							if (!this.value.axisTick.minorSplitLine) this.value.axisTick.minorSplitLine = {};
 							this.value.axisTick.minorSplitLine.lineStyle = v;
 						}
 					}).interface
-				}, { name: "Minor Split Line" }),
+				}, { name: loc("ve.registry.localisation.AxisSymbol_minor_split_line") }),
 				minor_tick: new ve.Interface({
 					show: new ve.Toggle(value.axisTick?.minorTick, {
-						name: "Show",
+						name: loc("ve.registry.localisation.AxisSymbol_show"),
 						onuserchange: (v) => {
 							if (!this.value.axisTick) this.value.axisTick = {};
 							if (!this.value.axisTick.minorTick) this.value.axisTick.minorTick = {};
@@ -528,7 +528,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 					}),
 					
 					length: new ve.Number(Math.returnSafeNumber(value.axisTick?.minorTick?.length, 3), {
-						name: "Length",
+						name: loc("ve.registry.localisation.AxisSymbol_length"),
 						onuserchange: (v) => {
 							if (!this.value.axisTick) this.value.axisTick = {};
 							if (!this.value.axisTick.minorTick) this.value.axisTick.minorTick = {};
@@ -536,7 +536,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 						}
 					}),
 					split_number: new ve.Number(Math.returnSafeNumber(value.axisTick?.minorTick?.splitNumber, 5), {
-						name: "Length",
+						name: loc("ve.registry.localisation.AxisSymbol_split_number"),
 						onuserchange: (v) => {
 							if (!this.value.axisTick) this.value.axisTick = {};
 							if (!this.value.axisTick.minorTick) this.value.axisTick.minorTick = {};
@@ -544,68 +544,68 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 						}
 					}),
 					stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.axisTick?.minorTick?.lineStyle, {
-						name: "Stroke Symbol",
+						name: loc("ve.registry.localisation.AxisSymbol_stroke_symbol"),
 						onuserchange: (v) => {
 							if (!this.value.axisTick) this.value.axisTick = {};
 							if (!this.value.axisTick.minorTick) this.value.axisTick.minorTick = {};
 							this.value.axisTick.minorTick.lineStyle = v;
 						}
 					}).interface
-				}, { name: "Minor Split Line" })
+				}, { name: loc("ve.registry.localisation.AxisSymbol_minor_tick") })
 			}, {
-				name: "Axis Tick"
+				name: loc("ve.registry.localisation.AxisSymbol_axis_tick")
 			}),
 			break_area: new ve.Interface({
 				show: new ve.Toggle(value?.breakArea?.show, {
-					name: "Show",
+					name: loc("ve.registry.localisation.AxisSymbol_show"),
 					onuserchange: (v) => {
 						if (!this.value.breakArea) this.value.breakArea = {};
 						this.value.breakArea.show = v;
 					}
 				}),
 				expand_on_click: new ve.Toggle(value?.breakArea?.expandOnClick, {
-					name: "Expand On Click",
+					name: loc("ve.registry.localisation.AxisSymbol_expand_on_click"),
 					onuserchange: (v) => {
 						if (!this.value.breakArea) this.value.breakArea = {};
 						this.value.breakArea.expandOnClick = v;
 					}
 				}),
 				point_symbol: new ve.DatavisSuite.PointSymbol(value?.breakArea?.itemStyle, {
-					name: "Point Symbol",
+					name: loc("ve.registry.localisation.AxisSymbol_point_symbol"),
 					onuserchange: (v) => {
 						if (!this.value.breakArea) this.value.breakArea = {};
 						this.value.breakArea.itemStyle = v;
 					}
 				}).interface,
 				zigzag_amplitude: new ve.Number(Math.returnSafeNumber(value?.breakArea?.zigzagAmplitude, 4), {
-					name: "Zigzag Amplitude",
+					name: loc("ve.registry.localisation.AxisSymbol_zigzag_amplitude"),
 					onuserchange: (v) => {
 						if (!this.value.breakArea) this.value.breakArea = {};
 						this.value.breakArea.zigzagAmplitude = v;
 					}
 				}),
 				zigzag_max_span: new ve.Number(Math.returnSafeNumber(value?.breakArea?.zigzagMaxSpan, 4), {
-					name: "Zigzag Max Span",
+					name: loc("ve.registry.localisation.AxisSymbol_zigzag_max_span"),
 					onuserchange: (v) => {
 						if (!this.value.breakArea) this.value.breakArea = {};
 						this.value.breakArea.zigzagMaxSpan = v;
 					}
 				}),
 				zigzag_min_span: new ve.Number(Math.returnSafeNumber(value?.breakArea?.zigzagMinSpan, 4), {
-					name: "Zigzag Min Span",
+					name: loc("ve.registry.localisation.AxisSymbol_zigzag_min_span"),
 					onuserchange: (v) => {
 						if (!this.value.breakArea) this.value.breakArea = {};
 						this.value.breakArea.zigzagMinSpan = v;
 					}
 				}),
 				zigzag_z_index: new ve.Number(Math.returnSafeNumber(value?.breakArea?.zigzagZIndex, 100), {
-					name: "Zigzag Z-Index",
+					name: loc("ve.registry.localisation.AxisSymbol_zigzag_z_index"),
 					onuserchange: (v) => {
 						if (!this.value.breakArea) this.value.breakArea = {};
 						this.value.breakArea.zigzagZ = v;
 					}
 				})
-			}, { name: "Break Area" }),
+			}, { name: loc("ve.registry.localisation.AxisSymbol_break_area") }),
 			breaks: new ve.Interface({
 				break_editor: new ve.List([], {
 					placeholder: new ve.ObjectEditor({
@@ -631,32 +631,32 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 						}
 					}
 				})
-			}, { name: "Breaks" }),
+			}, { name: loc("ve.registry.localisation.AxisSymbol_breaks") }),
 			name_truncate: new ve.Interface({
 				ellipsis: new ve.Text((value?.nameTruncate?.ellipsis) ? value?.nameTruncate?.ellipsis : "...", {
-					name: "Ellipsis",
+					name: loc("ve.registry.localisation.AxisSymbol_ellipsis"),
 					onuserchange: (v) => {
 						if (!this.value.nameTruncate) this.value.nameTruncate = {};
 						this.value.nameTruncate.ellipsis = v;
 					}
 				}),
 				max_width: new ve.Number(Math.returnSafeNumber(value?.nameTruncate?.maxWidth, -1), {
-					name: "Max Width",
+					name: loc("ve.registry.localisation.AxisSymbol_max_width"),
 					onuserchange: (v) => {
 						if (!this.value.nameTruncate) this.value.nameTruncate = {};
 						this.value.nameTruncate.maxWidth = (v > 0) ? v : undefined;
 					}
 				})
 			}, {
-				name: "Name Truncate"
+				name: loc("ve.registry.localisation.AxisSymbol_name_truncate")
 			}),
 			overlap: new ve.Interface({
 				move_overlap: new ve.Select({
-					auto: { name: "Auto" },
-					"true": { name: "True" },
-					"false": { name: "False" }
+					auto: { name: loc("ve.registry.localisation.AxisSymbol_auto") },
+					"true": { name: loc("ve.registry.localisation.AxisSymbol_true") },
+					"false": { name: loc("ve.registry.localisation.AxisSymbol_false") }
 				}, {
-					name: "Move Overlap",
+					name: loc("ve.registry.localisation.AxisSymbol_move_overlap"),
 					onuserchange: (v) => {
 						if (!this.value.breakLabelLayout) this.value.breakLabelLayout = {};
 						if (v === "true") v = true;
@@ -664,34 +664,34 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 						this.value.breakLabelLayout.moveOverlap = v;
 					}
 				}),
-			}, { name: "Overlap" }),
+			}, { name: loc("ve.registry.localisation.AxisSymbol_overlap") }),
 			split_area: new ve.Interface({
 				show: new ve.Toggle(value?.splitArea?.show, {
-					name: "Show",
+					name: loc("ve.registry.localisation.AxisSymbol_show"),
 					onuserchange: (v) => {
 						if (!this.value.splitArea) this.value.splitArea = {};
 						this.value.splitArea.show = v;
 					}
 				}),
 				fill_symbol: new ve.DatavisSuite.FillSymbol(value?.splitArea?.areaStyle, {
-					name: "Fill Symbol",
+					name: loc("ve.registry.localisation.AxisSymbol_fill_symbol"),
 					onuserchange: (v) => {
 						if (!this.value.splitArea) this.value.splitArea = {};
 						this.value.splitArea.areaStyle = v;
 					}
 				}).interface,
 				interval: new ve.Text((value.splitArea?.interval !== undefined) ? value.splitArea.interval : "auto", {
-					name: "Interval",
+					name: loc("ve.registry.localisation.AxisSymbol_interval"),
 					onuserchange: (v) => {
 						if (!this.value.splitArea) this.value.splitArea = {};
 						if (!isNaN(parseFloat(v))) v = parseFloat(v);
 						this.value.splitArea.interval = v;
 					}
 				}),
-			}, { name: "Split Area" }),
+			}, { name: loc("ve.registry.localisation.AxisSymbol_split_area") }),
 			split_line: new ve.Interface({
 				show: new ve.Toggle(value?.splitLine?.show, {
-					name: "Show",
+					name: loc("ve.registry.localisation.AxisSymbol_show"),
 					onuserchange: (v) => {
 						if (!this.value.splitLine) this.value.splitLine = {};
 						this.value.splitLine.show = v;
@@ -699,7 +699,7 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 				}),
 				
 				interval: new ve.Text((value.splitLine?.interval !== undefined) ? value.splitLine.interval : "auto", {
-					name: "Interval",
+					name: loc("ve.registry.localisation.AxisSymbol_interval"),
 					onuserchange: (v) => {
 						if (!this.value.splitLine) this.value.splitLine = {};
 						if (!isNaN(parseFloat(v))) v = parseFloat(v);
@@ -707,140 +707,140 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 					}
 				}),
 				show_max_line: new ve.Toggle(value.splitLine?.interval, {
-					name: "Show Max Line",
+					name: loc("ve.registry.localisation.AxisSymbol_show_max_line"),
 					onuserchange: (v) => {
 						if (!this.value.splitLine) this.value.splitLine = {};
 						this.value.splitLine.interval = v;
 					}
 				}),
 				show_min_line: new ve.Toggle(value.splitLine?.interval, {
-					name: "Show Min Line",
+					name: loc("ve.registry.localisation.AxisSymbol_show_min_line"),
 					onuserchange: (v) => {
 						if (!this.value.splitLine) this.value.splitLine = {};
 						this.value.splitLine.interval = v;
 					}
 				}),
 				stroke_symbol: new ve.DatavisSuite.StrokeSymbol(value.splitLine?.lineStyle, {
-					name: "Stroke Symbol",
+					name: loc("ve.registry.localisation.AxisSymbol_stroke_symbol"),
 					onuserchange: (v) => {
 						if (!this.value.splitLine) this.value.splitLine = {};
 						this.value.splitLine.strokeSymbol = v;
 					}
 				}).interface
-			}, { name: "Split Line" }),
+			}, { name: loc("ve.registry.localisation.AxisSymbol_split_line") }),
 			
 			advanced_styling: new ve.Interface({
 				align_ticks: new ve.Toggle(value.alignTicks, {
-					name: "Align Ticks",
+					name: loc("ve.registry.localisation.AxisSymbol_align_ticks"),
 					onuserchange: (v) => this.value.alignTicks = v
 				}),
 				boundary_gap: new ve.Toggle(value.boundaryGap, {
-					name: "Boundary Gap",
+					name: loc("ve.registry.localisation.AxisSymbol_boundary_gap"),
 					onuserchange: (v) => this.value.boundaryGap = v
 				}),
 				boundary_gap_array: new ve.RawInterface({
 					boundary_gap_array_x: new ve.Text(value.boundaryGap?.[0]),
 					boundary_gap_array_y: new ve.Text(value.boundaryGap?.[1])
 				}, {
-					name: "Boundary Gap X, Y",
+					name: loc("ve.registry.localisation.AxisSymbol_boundary_gap_x_y"),
 					onuserchange: (v) => this.value.boundaryGap = [v.boundary_gap_array_x.v, v.boundary_gap_array_y.v]
 				}),
 				grid_index: new ve.Number(Math.returnSafeNumber(value.gridIndex), {
-					name: "Grid Index",
+					name: loc("ve.registry.localisation.AxisSymbol_grid_index"),
 					onuserchange: (v) => this.value.gridIndex = v
 				}),
 				interactive: new ve.Toggle(value.interactive, {
-					name: "Interactive",
+					name: loc("ve.registry.localisation.AxisSymbol_interactive"),
 					onuserchange: (v) => this.value.interactive = v
 				}),
 				interval: new ve.Number(Math.returnSafeNumber(value.interval), {
-					name: "Interval",
+					name: loc("ve.registry.localisation.AxisSymbol_interval"),
 					onuserchange: (v) => this.value.interval = v
 				}),
 				inverse: new ve.Toggle(value.inverse, {
-					name: "Inverse",
+					name: loc("ve.registry.localisation.AxisSymbol_inverse"),
 					onuserchange: (v) => this.value.inverse = v
 				}),
 				log_base: new ve.Number(Math.returnSafeNumber(value.logBase, 10), {
-					name: "Log Base",
+					name: loc("ve.registry.localisation.AxisSymbol_log_base"),
 					onuserchange: (v) => this.value.logBase = v
 				}),
 				jitter: new ve.Toggle(value.jitter, {
-					name: "Jitter",
+					name: loc("ve.registry.localisation.AxisSymbol_jitter"),
 					onuserchange: (v) => this.value.jitter = v,
-					tooltip: "Applicable only to Scatterplot."
+					tooltip: loc("ve.registry.localisation.AxisSymbol_tooltip_jitter")
 				}),
 				jitter_margin: new ve.Number(Math.returnSafeNumber(value.jitterMargin, 2), {
-					name: "Jitter Margin",
+					name: loc("ve.registry.localisation.AxisSymbol_jitter_margin"),
 					onuserchange: (v) => this.value.jitterMargin = v,
-					tooltip: "Applicable only to Scatterplot."
+					tooltip: loc("ve.registry.localisation.AxisSymbol_tooltip_jitter")
 				}),
 				jitter_overlap: new ve.Toggle(value.jitterOverlap, {
-					name: "Jitter Overlap",
+					name: loc("ve.registry.localisation.AxisSymbol_jitter_overlap"),
 					onuserchange: (v) => this.value.jitterOverlap = v,
-					tooltip: "Applicable only to Scatterplot."
+					tooltip: loc("ve.registry.localisation.AxisSymbol_tooltip_jitter")
 				}),
 				max: new ve.Text(value.max, {
-					name: "Max",
+					name: loc("ve.registry.localisation.AxisSymbol_max"),
 					onuserchange: (v) => {
 						if (!isNaN(parseFloat(v))) v = parseFloat(v);
 						this.value.max = v;
 					}
 				}),
 				max_interval: new ve.Number(Math.returnSafeNumber(value.maxInterval), {
-					name: "Max Interval",
+					name: loc("ve.registry.localisation.AxisSymbol_max_interval"),
 					onuserchange: (v) => this.value.maxInterval = v
 				}),
 				min: new ve.Text(value.min, {
-					name: "Min",
+					name: loc("ve.registry.localisation.AxisSymbol_min"),
 					onuserchange: (v) => {
 						if (!isNaN(parseFloat(v))) v = parseFloat(v);
 						this.value.min = v;
 					}
 				}),
 				min_interval: new ve.Number(Math.returnSafeNumber(value.minInterval), {
-					name: "Min Interval",
+					name: loc("ve.registry.localisation.AxisSymbol_min_interval"),
 					onuserchange: (v) => this.value.minInterval = v
 				}),
 				offset: new ve.Number(Math.returnSafeNumber(value.offset), {
-					name: "Offset",
+					name: loc("ve.registry.localisation.AxisSymbol_offset"),
 					onuserchange: (v) => this.value.offset = v
 				}),
 				scale: new ve.Toggle(value.scale, {
-					name: "Scale",
+					name: loc("ve.registry.localisation.AxisSymbol_scale"),
 					onuserchange: (v) => this.value.scale = v
 				}),
 				silent: new ve.Toggle(value.silent, {
-					name: "Silent",
+					name: loc("ve.registry.localisation.AxisSymbol_silent"),
 					onuserchange: (v) => this.value.silent = v
 				}),
 				split_number: new ve.Number(Math.returnSafeNumber(value.splitNumber, 5), {
-					name: "Split Number",
+					name: loc("ve.registry.localisation.AxisSymbol_split_number"),
 					onuserchange: (v) => this.value.splitNumber = v
 				}),
 				start_value: new ve.Number(Math.returnSafeNumber(value.startValue, 0), {
-					name: "Start Value",
+					name: loc("ve.registry.localisation.AxisSymbol_start_value"),
 					onuserchange: (v) => this.value.startValue = v
 				}),
 				text_symbol: new ve.DatavisSuite.TextSymbol(value.nameTextStyle, {
-					name: "Text Symbol",
+					name: loc("ve.registry.localisation.AxisSymbol_text_symbol"),
 					onuserchange: (v) => this.value.nameTextStyle = v
 				}).interface,
 				z_index: new ve.Number(Math.returnSafeNumber(value.z), {
-					name: "Z-Index",
+					name: loc("ve.registry.localisation.AxisSymbol_z_index"),
 					onuserchange: (v) => this.value.z = v
 				}),
-			}, { name: "Styling (Advanced)" }),
+			}, { name: loc("ve.registry.localisation.AxisSymbol_styling_advanced") }),
 			tooltip: new ve.Interface({
 				label_symbol: new ve.DatavisSuite.LabelSymbol(value?.tooltip?.textStyle, {
-					name: "Label Symbol",
+					name: loc("ve.registry.localisation.AxisSymbol_label_symbol"),
 					onuserchange: (v) => {
 						if (!this.value.tooltip) this.value.tooltip = {};
 						this.value.tooltip.textStyle = v;
 					}
 				}).interface,
 				tooltip_symbol: new ve.DatavisSuite.TooltipSymbol(value.tooltip, {
-					name: "Tooltip Symbol",
+					name: loc("ve.registry.localisation.AxisSymbol_tooltip_symbol"),
 					onuserchange: (v) => {
 						if (!this.value.tooltip) this.value.tooltip = {};
 						this.value.tooltip = {
@@ -849,102 +849,102 @@ ve.DatavisSuite.AxisSymbol = class extends ve.Component {
 						};
 					}
 				}).interface
-			}, { name: "Tooltip" }),
+			}, { name: loc("ve.registry.localisation.AxisSymbol_tooltip") }),
 			animation: new ve.Interface({
 				delay: new ve.Number(Math.returnSafeNumber(value.animationDelay), {
-					name: "Delay",
+					name: loc("ve.registry.localisation.AxisSymbol_delay"),
 					onuserchange: (v) => this.value.animationDelay = v
 				}),
 				delay_update: new ve.Number(Math.returnSafeNumber(value.animationDelayUpdate, 300), {
-					name: "Delay Update",
+					name: loc("ve.registry.localisation.AxisSymbol_delay_update"),
 					onuserchange: (v) => this.value.animationDelayUpdate = v
 				}),
 				duration: new ve.Number(Math.returnSafeNumber(value.animationDuration, 1000), {
-					name: "Duration",
+					name: loc("ve.registry.localisation.AxisSymbol_duration"),
 					onuserchange: (v) => this.value.animationDuration = v
 				}),
 				duration_update: new ve.Number(Math.returnSafeNumber(value.animationDurationUpdate, 300), {
-					name: "Duration Update",
+					name: loc("ve.registry.localisation.AxisSymbol_duration_update"),
 					onuserchange: (v) => this.value.animationDurationUpdate = v
 				}),
 				easing: new ve.Select({
-					linear: { name: "Linear" },
-					quadraticIn: { name: "Quadratic In" },
-					quadraticOut: { name: "Quadratic Out" },
-					quadraticInOut: { name: "Quadratic In Out" },
-					cubicIn: { name: "Cubic In" },
-					cubicOut: { name: "Cubic Out" },
-					cubicInOut: { name: "Cubic In Out" },
-					quarticIn: { name: "Quartic In" },
-					quarticOut: { name: "Quartic Out" },
-					quarticInOut: { name: "Quartic In Out" },
-					quinticIn: { name: "Quintic In" },
-					quinticOut: { name: "Quintic Out" },
-					quinticInOut: { name: "Quintic In Out" },
-					sinusoidalIn: { name: "Sinusoidal In" },
-					sinusoidalOut: { name: "Sinusoidal Out" },
-					sinusoidalInOut: { name: "Sinusoidal In Out" },
-					exponentialIn: { name: "Exponential In" },
-					exponentialOut: { name: "Exponential Out" },
-					exponentialInOut: { name: "Exponential In Out" },
-					circularIn: { name: "Circular In" },
-					circularOut: { name: "Circular Out" },
-					circularInOut: { name: "Circular In Out" },
-					elasticIn: { name: "Elastic In" },
-					elasticOut: { name: "Elastic Out" },
-					elasticInOut: { name: "Elastic In Out" },
-					backIn: { name: "Back In" },
-					backOut: { name: "Back Out" },
-					backInOut: { name: "Back In Out" },
-					bounceIn: { name: "Bounce In" },
-					bounceOut: { name: "Bounce Out" },
-					bounceInOut: { name: "Bounce In Out" }
+					linear: { name: loc("ve.registry.localisation.AxisSymbol_easing_linear") },
+					quadraticIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_quadratic_in") },
+					quadraticOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_quadratic_out") },
+					quadraticInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_quadratic_in_out") },
+					cubicIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_cubic_in") },
+					cubicOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_cubic_out") },
+					cubicInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_cubic_in_out") },
+					quarticIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_quartic_in") },
+					quarticOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_quartic_out") },
+					quarticInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_quartic_in_out") },
+					quinticIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_quintic_in") },
+					quinticOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_quintic_out") },
+					quinticInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_quintic_in_out") },
+					sinusoidalIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_sinusoidal_in") },
+					sinusoidalOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_sinusoidal_out") },
+					sinusoidalInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_sinusoidal_in_out") },
+					exponentialIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_exponential_in") },
+					exponentialOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_exponential_out") },
+					exponentialInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_exponential_in_out") },
+					circularIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_circular_in") },
+					circularOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_circular_out") },
+					circularInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_circular_in_out") },
+					elasticIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_elastic_in") },
+					elasticOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_elastic_out") },
+					elasticInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_elastic_in_out") },
+					backIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_back_in") },
+					backOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_back_out") },
+					backInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_back_in_out") },
+					bounceIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_bounce_in") },
+					bounceOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_bounce_out") },
+					bounceInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_bounce_in_out") }
 				}, {
-					name: "Easing",
+					name: loc("ve.registry.localisation.AxisSymbol_easing"),
 					selected: (this.value.animationEasing) ? this.value.animationEasing : "cubicOut",
 					onuserchange: (v) => this.value.animationEasing = v
 				}),
 				easing_update: new ve.Select({
-					linear: { name: "Linear" },
-					quadraticIn: { name: "Quadratic In" },
-					quadraticOut: { name: "Quadratic Out" },
-					quadraticInOut: { name: "Quadratic In Out" },
-					cubicIn: { name: "Cubic In" },
-					cubicOut: { name: "Cubic Out" },
-					cubicInOut: { name: "Cubic In Out" },
-					quarticIn: { name: "Quartic In" },
-					quarticOut: { name: "Quartic Out" },
-					quarticInOut: { name: "Quartic In Out" },
-					quinticIn: { name: "Quintic In" },
-					quinticOut: { name: "Quintic Out" },
-					quinticInOut: { name: "Quintic In Out" },
-					sinusoidalIn: { name: "Sinusoidal In" },
-					sinusoidalOut: { name: "Sinusoidal Out" },
-					sinusoidalInOut: { name: "Sinusoidal In Out" },
-					exponentialIn: { name: "Exponential In" },
-					exponentialOut: { name: "Exponential Out" },
-					exponentialInOut: { name: "Exponential In Out" },
-					circularIn: { name: "Circular In" },
-					circularOut: { name: "Circular Out" },
-					circularInOut: { name: "Circular In Out" },
-					elasticIn: { name: "Elastic In" },
-					elasticOut: { name: "Elastic Out" },
-					elasticInOut: { name: "Elastic In Out" },
-					backIn: { name: "Back In" },
-					backOut: { name: "Back Out" },
-					backInOut: { name: "Back In Out" },
-					bounceIn: { name: "Bounce In" },
-					bounceOut: { name: "Bounce Out" },
-					bounceInOut: { name: "Bounce In Out" }
+					linear: { name: loc("ve.registry.localisation.AxisSymbol_easing_linear") },
+					quadraticIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_quadratic_in") },
+					quadraticOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_quadratic_out") },
+					quadraticInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_quadratic_in_out") },
+					cubicIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_cubic_in") },
+					cubicOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_cubic_out") },
+					cubicInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_cubic_in_out") },
+					quarticIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_quartic_in") },
+					quarticOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_quartic_out") },
+					quarticInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_quartic_in_out") },
+					quinticIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_quintic_in") },
+					quinticOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_quintic_out") },
+					quinticInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_quintic_in_out") },
+					sinusoidalIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_sinusoidal_in") },
+					sinusoidalOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_sinusoidal_out") },
+					sinusoidalInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_sinusoidal_in_out") },
+					exponentialIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_exponential_in") },
+					exponentialOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_exponential_out") },
+					exponentialInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_exponential_in_out") },
+					circularIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_circular_in") },
+					circularOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_circular_out") },
+					circularInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_circular_in_out") },
+					elasticIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_elastic_in") },
+					elasticOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_elastic_out") },
+					elasticInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_elastic_in_out") },
+					backIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_back_in") },
+					backOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_back_out") },
+					backInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_back_in_out") },
+					bounceIn: { name: loc("ve.registry.localisation.AxisSymbol_easing_bounce_in") },
+					bounceOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_bounce_out") },
+					bounceInOut: { name: loc("ve.registry.localisation.AxisSymbol_easing_bounce_in_out") }
 				}, {
-					name: "Easing Update",
+					name: loc("ve.registry.localisation.AxisSymbol_easing_update"),
 					selected: (this.value.animationEasingUpdate) ? this.value.animationEasingUpdate : "cubicOut",
 					onuserchange: (v) => this.value.animationEasingUpdate = v
 				})
-			}, { name: "Animation" }),
+			}, { name: loc("ve.registry.localisation.AxisSymbol_animation") }),
 			position: position_obj
 		}, { 
-			name: (this.options.name) ? this.options.name : "Axis Symbol",
+			name: (this.options.name) ? this.options.name : loc("ve.registry.localisation.AxisSymbol_axis_symbol"),
 			onuserchange: () => {
 				//Draw graph; fire to binding if possible
 				delete this.do_not_fire_to_binding;

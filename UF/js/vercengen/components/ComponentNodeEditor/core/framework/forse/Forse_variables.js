@@ -1,12 +1,12 @@
 ve.NodeEditor.Forse.variables_get_obj = {
-	category: "Variables",
+	category: loc("ve.registry.localisation.Forse_category_variables"),
 	input_parameters: [{
-		name: "arg0_key",
+		name: loc("ve.registry.localisation.Forse_param_arg0_key"),
 		type: "string"
 	}],
 	special_function: function (arg0_key) {
 		return {
-			display_value: `${arg0_key}: ${this.main.variables[arg0_key]}`,
+			display_value: loc("ve.registry.localisation.Forse_display_variable_value", arg0_key, this.main.variables[arg0_key]),
 			value: this.main.variables[arg0_key]
 		};
 	}
@@ -14,13 +14,13 @@ ve.NodeEditor.Forse.variables_get_obj = {
 ve.NodeEditor.Forse.variables = {
 	//Variables
 	set_any: {
-		name: "Set Any",
-		category: "Variables",
+		name: loc("ve.registry.localisation.Forse_node_set_any"),
+		category: loc("ve.registry.localisation.Forse_category_variables"),
 		input_parameters: [{
-			name: "arg0_key",
+			name: loc("ve.registry.localisation.Forse_param_arg0_key"),
 			type: "string"
 		}, {
-			name: "arg1_value",
+			name: loc("ve.registry.localisation.Forse_param_arg1_value"),
 			type: "any"
 		}],
 		output_type: "any",
@@ -34,19 +34,19 @@ ve.NodeEditor.Forse.variables = {
 			
 			//Return statement
 			return {
-				display_value: `${key}: ${value}`,
+				display_value: loc("ve.registry.localisation.Forse_display_variable_value", key, value),
 				value: value
 			};
 		}
 	},
 	set_string_array: {
-		name: "Set String Array",
-		category: "Variables",
+		name: loc("ve.registry.localisation.Forse_node_set_string_array"),
+		category: loc("ve.registry.localisation.Forse_category_variables"),
 		input_parameters: [{
-			name: "arg0_key",
+			name: loc("ve.registry.localisation.Forse_param_arg0_key"),
 			type: "string"
 		}, {
-			name: "arg1_value",
+			name: loc("ve.registry.localisation.Forse_param_arg1_value"),
 			type: "string"
 		}],
 		output_type: "string[]",
@@ -66,19 +66,19 @@ ve.NodeEditor.Forse.variables = {
 			
 			//Return statement
 			return {
-				display_value: `${key}: ${local_value.length} Elements`,
+				display_value: loc("ve.registry.localisation.Forse_display_elements", key, local_value.length),
 				value: this.main.variables[key]
 			};
 		}
 	},
 	set_number_array: {
-		name: "Set Number Array",
-		category: "Variables",
+		name: loc("ve.registry.localisation.Forse_node_set_number_array"),
+		category: loc("ve.registry.localisation.Forse_category_variables"),
 		input_parameters: [{
-			name: "arg0_key",
+			name: loc("ve.registry.localisation.Forse_param_arg0_key"),
 			type: "string"
 		}, {
-			name: "arg1_value",
+			name: loc("ve.registry.localisation.Forse_param_arg1_value"),
 			type: "string"
 		}],
 		output_type: "number[]",
@@ -93,19 +93,19 @@ ve.NodeEditor.Forse.variables = {
 			
 			//Return statement
 			return {
-				display_value: `${key}: ${local_value.length} Elements`,
+				display_value: loc("ve.registry.localisation.Forse_display_elements", key, local_value.length),
 				value: this.main.variables[key]
 			};
 		}
 	},
 	set_boolean: {
-		name: "Set Boolean",
-		category: "Variables",
+		name: loc("ve.registry.localisation.Forse_node_set_boolean"),
+		category: loc("ve.registry.localisation.Forse_category_variables"),
 		input_parameters: [{
-			name: "arg0_key",
+			name: loc("ve.registry.localisation.Forse_param_arg0_key"),
 			type: "string"
 		}, {
-			name: "arg1_value",
+			name: loc("ve.registry.localisation.Forse_param_arg1_value"),
 			type: "boolean"
 		}],
 		output_type: "boolean",
@@ -119,19 +119,19 @@ ve.NodeEditor.Forse.variables = {
 			
 			//Return statement
 			return {
-				display_value: (value) ? `${key}: True` : `${key}: False`,
+				display_value: (value) ? loc("ve.registry.localisation.Forse_display_variable_value", key, loc("ve.registry.localisation.Forse_value_true")) : loc("ve.registry.localisation.Forse_display_variable_value", key, loc("ve.registry.localisation.Forse_value_false")),
 				value: value
 			};
 		}
 	},
 	set_number: {
-		name: "Set Number",
-		category: "Variables",
+		name: loc("ve.registry.localisation.Forse_node_set_number"),
+		category: loc("ve.registry.localisation.Forse_category_variables"),
 		input_parameters: [{
-			name: "arg0_key",
+			name: loc("ve.registry.localisation.Forse_param_arg0_key"),
 			type: "string"
 		}, {
-			name: "arg1_value",
+			name: loc("ve.registry.localisation.Forse_param_arg1_value"),
 			type: "number"
 		}],
 		output_type: "number",
@@ -145,19 +145,19 @@ ve.NodeEditor.Forse.variables = {
 			
 			//Return statement
 			return {
-				display_value: `${key}: ${value}`,
+				display_value: loc("ve.registry.localisation.Forse_display_variable_value", key, value),
 				value: value
 			};
 		}
 	},
 	set_string: {
-		name: "Set String",
-		category: "Variables",
+		name: loc("ve.registry.localisation.Forse_node_set_string"),
+		category: loc("ve.registry.localisation.Forse_category_variables"),
 		input_parameters: [{
-			name: "arg0_key",
+			name: loc("ve.registry.localisation.Forse_param_arg0_key"),
 			type: "string"
 		}, {
-			name: "arg1_value",
+			name: loc("ve.registry.localisation.Forse_param_arg1_value"),
 			type: "string"
 		}],
 		output_type: "string",
@@ -171,19 +171,19 @@ ve.NodeEditor.Forse.variables = {
 			
 			//Return statement
 			return {
-				display_value: `${key}: ${value}`,
+				display_value: loc("ve.registry.localisation.Forse_display_variable_value", key, value),
 				value: value
 			};
 		}
 	},
 	set_array: {
-		name: "Set Array",
-		category: "Variables",
+		name: loc("ve.registry.localisation.Forse_node_set_array"),
+		category: loc("ve.registry.localisation.Forse_category_variables"),
 		input_parameters: [{
-			name: "arg0_key",
+			name: loc("ve.registry.localisation.Forse_param_arg0_key"),
 			type: "string"
 		}, {
-			name: "arg1_value",
+			name: loc("ve.registry.localisation.Forse_param_arg1_value"),
 			type: "string"
 		}],
 		output_type: "any[]",
@@ -198,16 +198,16 @@ ve.NodeEditor.Forse.variables = {
 			
 			//Return statement
 			return {
-				display_value: `${key}: ${local_value.length} Elements`,
+				display_value: loc("ve.registry.localisation.Forse_display_elements", key, local_value.length),
 				value: this.main.variables[key]
 			};
 		}
 	},
 	set_null: {
-		name: "Set Null",
-		category: "Variables",
+		name: loc("ve.registry.localisation.Forse_node_set_null"),
+		category: loc("ve.registry.localisation.Forse_category_variables"),
 		input_parameters: [{
-			name: "arg0_key",
+			name: loc("ve.registry.localisation.Forse_param_arg0_key"),
 			type: "string"
 		}],
 		output_type: "any",
@@ -220,19 +220,19 @@ ve.NodeEditor.Forse.variables = {
 			
 			//Return statement
 			return {
-				display_value: `${key}: null`,
+				display_value: loc("ve.registry.localisation.Forse_display_variable_value", key, loc("ve.registry.localisation.Forse_value_null")),
 				value: this.main.variables[key]
 			};
 		}
 	},
 	set_object: {
-		name: "Set Object",
-		category: "Variables",
+		name: loc("ve.registry.localisation.Forse_node_set_object"),
+		category: loc("ve.registry.localisation.Forse_category_variables"),
 		input_parameters:	[{
-			name: "arg0_key",
+			name: loc("ve.registry.localisation.Forse_param_arg0_key"),
 			type: "any"
 		}, {
-			name: "arg1_value",
+			name: loc("ve.registry.localisation.Forse_param_arg1_value"),
 			type: "string"
 		}],
 		output_type: "any",
@@ -247,7 +247,7 @@ ve.NodeEditor.Forse.variables = {
 			
 			//Return statement
 			return {
-				display_value: `${key}: ${value}`,
+				display_value: loc("ve.registry.localisation.Forse_display_variable_value", key, value),
 				value: this.main.variables[key]
 			};
 		}
@@ -255,55 +255,55 @@ ve.NodeEditor.Forse.variables = {
 	
 	//Variables (Get)
 	get_any: {
-		name: "Get Any",
+		name: loc("ve.registry.localisation.Forse_node_get_any"),
 		...ve.NodeEditor.Forse.variables_get_obj,
 		output_type: "any"
 	},
 	get_string_array: {
-		name: "Get String Array",
+		name: loc("ve.registry.localisation.Forse_node_get_string_array"),
 		...ve.NodeEditor.Forse.variables_get_obj,
 		output_type: "string[]"
 	},
 	get_number_array: {
-		name: "Get Number Array",
+		name: loc("ve.registry.localisation.Forse_node_get_number_array"),
 		...ve.NodeEditor.Forse.variables_get_obj,
 		output_type: "number[]"
 	},
 	get_boolean: {
-		name: "Get Boolean",
+		name: loc("ve.registry.localisation.Forse_node_get_boolean"),
 		...ve.NodeEditor.Forse.variables_get_obj,
 		output_type: "boolean"
 	},
 	get_number: {
-		name: "Get Number",
+		name: loc("ve.registry.localisation.Forse_node_get_number"),
 		...ve.NodeEditor.Forse.variables_get_obj,
 		output_type: "number"
 	},
 	get_string: {
-		name: "Get String",
+		name: loc("ve.registry.localisation.Forse_node_get_string"),
 		...ve.NodeEditor.Forse.variables_get_obj,
 		output_type: "string"
 	},
 	get_array: {
-		name: "Get Array",
+		name: loc("ve.registry.localisation.Forse_node_get_array"),
 		...ve.NodeEditor.Forse.variables_get_obj,
 		output_type: "any[]"
 	},
 	get_null: {
-		name: "Get Null",
+		name: loc("ve.registry.localisation.Forse_node_get_null"),
 		...ve.NodeEditor.Forse.variables_get_obj,
 		output_type: "any"
 	},
 	get_object: {
-		name: "Get Object",
+		name: loc("ve.registry.localisation.Forse_node_get_object"),
 		...ve.NodeEditor.Forse.variables_get_obj,
 		output_type: "any"
 	},
 	get_global: {
-		name: "Get Global",
-		category: "Variables",
+		name: loc("ve.registry.localisation.Forse_node_get_global"),
+		category: loc("ve.registry.localisation.Forse_category_variables"),
 		input_parameters: [{
-			name: "arg0_key",
+			name: loc("ve.registry.localisation.Forse_param_arg0_key"),
 			type: "string"
 		}],
 		output_type: "any",
@@ -316,7 +316,7 @@ ve.NodeEditor.Forse.variables = {
 			
 			//Return statement
 			return {
-				display_value: `${key}: ${obj_value}`,
+				display_value: loc("ve.registry.localisation.Forse_display_variable_value", key, obj_value),
 				value: obj_value
 			};
 		}

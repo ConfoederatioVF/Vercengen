@@ -1,10 +1,10 @@
 ve.NodeEditor.Forse.loops = {
 	//Loops (For loop, [WIP] - setInterval, setTimeout, Object.iterate (Get Iteration Key, Get Iteration Value))
 	for_loop: {
-		name: "For Loop",
-		category: "Loops",
+		name: loc("ve.registry.localisation.Forse_node_for_loop"),
+		category: loc("ve.registry.localisation.Forse_category_loops"),
 		input_parameters: [{
-			name: "arg0_times",
+			name: loc("ve.registry.localisation.Forse_param_times"),
 			type: "number"
 		}],
 		output_type: "number",
@@ -22,17 +22,17 @@ ve.NodeEditor.Forse.loops = {
 			
 			//Return statement
 			return {
-				display_value: `Iterate ${number}x`,
+				display_value: loc("ve.registry.localisation.Forse_display_iterate_x", number),
 				iterations: number,
 				value: current_index,
 			};
 		}
 	},
 	get_object_iteration_key: {
-		name: "Get Obj.Iter. Key",
-		category: "Loops",
+		name: loc("ve.registry.localisation.Forse_node_get_obj_iter_key"),
+		category: loc("ve.registry.localisation.Forse_category_loops"),
 		input_parameters: [{
-			name: "arg0_object_iteration",
+			name: loc("ve.registry.localisation.Forse_param_object_iteration"),
 			type: "object_iteration"
 		}],
 		output_type: "string",
@@ -42,16 +42,16 @@ ve.NodeEditor.Forse.loops = {
 			
 			//Return statement
 			return {
-				display_value: `.${object_iteration_obj.local_key}`,
+				display_value: loc("ve.registry.localisation.Forse_display_dot_key", object_iteration_obj.local_key),
 				value: object_iteration_obj.local_key
 			};
 		}
 	},
 	get_object_iteration_value: {
-		name: "Get Obj.Iter. Value",
-		category: "Loops",
+		name: loc("ve.registry.localisation.Forse_node_get_obj_iter_value"),
+		category: loc("ve.registry.localisation.Forse_category_loops"),
 		input_parameters: [{
-			name: "arg0_object_iteration",
+			name: loc("ve.registry.localisation.Forse_param_object_iteration"),
 			type: "object_iteration"
 		}],
 		output_type: "any",
@@ -61,16 +61,16 @@ ve.NodeEditor.Forse.loops = {
 			
 			//Return statement
 			return {
-				display_value: `Iteration Value`,
+				display_value: loc("ve.registry.localisation.Forse_display_iteration_value"),
 				value: object_iteration_obj.local_value
 			};
 		}
 	},
 	object_iterate: {
-		name: "Iterate over Object",
-		category: "Loops",
+		name: loc("ve.registry.localisation.Forse_node_iterate_over_object"),
+		category: loc("ve.registry.localisation.Forse_category_loops"),
 		input_parameters: [{
-			name: "arg0_object",
+			name: loc("ve.registry.localisation.Forse_param_object"),
 			type: "any",
 		}],
 		output_type: "object_iteration",
@@ -96,20 +96,20 @@ ve.NodeEditor.Forse.loops = {
 			
 			//Return statement
 			return {
-				display_value: key !== null ? `Key: ${key}` : "Empty Object",
+				display_value: key !== null ? loc("ve.registry.localisation.Forse_display_key", key) : loc("ve.registry.localisation.Forse_display_empty_object"),
 				iterations: iteration_count,
 				value: { local_key: key, local_value: value }
 			};
 		},
 	},
 	set_timeout: {
-		name: "Set Timeout",
-		category: "Loops",
+		name: loc("ve.registry.localisation.Forse_node_set_timeout"),
+		category: loc("ve.registry.localisation.Forse_category_loops"),
 		input_parameters: [{
-			name: "arg0_timeout",
+			name: loc("ve.registry.localisation.Forse_param_timeout"),
 			type: "number"
 		}, {
-			name: "arg1_value",
+			name: loc("ve.registry.localisation.Forse_param_value"),
 			type: "any"
 		}],
 		output_type: "any",
@@ -124,7 +124,7 @@ ve.NodeEditor.Forse.loops = {
 			
 			//Return statement
 			return {
-				display_value: `Wait ${delay_time}ms`,
+				display_value: loc("ve.registry.localisation.Forse_display_wait_ms", delay_time),
 				run: async () => {
 					await new Promise((resolve) => setTimeout(resolve, delay_time));
 					ve.NodeEditorDatatype.draw(local_node.options.node_editor, true);

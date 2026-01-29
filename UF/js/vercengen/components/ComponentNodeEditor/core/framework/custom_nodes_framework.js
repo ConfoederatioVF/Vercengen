@@ -3,14 +3,14 @@
 	/**
 	 * Generates logic for custom nodes.
 	 * - Method of: {@link ve.NodeEditor}
-	 * 
+	 *
 	 * @alias ve.Component.NodeEditor.prototype.createCustomExecutionLogic
 	 * @instance
 	 * @memberof ve.NodeEditor
 	 * @this ve.NodeEditor
-	 * 
+	 *
 	 * @param {Object} arg0_subgraph
-	 * 
+	 *
 	 * @returns {{value: Object}}
 	 */
 	ve.NodeEditor.prototype.createCustomExecutionLogic = function (arg0_subgraph) {
@@ -25,7 +25,7 @@
 				show_internal: true,
 			});
 			let subinputs = subeditor.main.nodes.filter((n) => n.value.key === "ve_input");
-				subinputs.sort((a, b) => a.value.coords.y - b.value.coords.y);
+			subinputs.sort((a, b) => a.value.coords.y - b.value.coords.y);
 			
 			//Iterate over all subinputs and fetch their runtime value
 			for (let i = 0; i < subinputs.length; i++)
@@ -45,12 +45,12 @@
 	/**
 	 * Deletes a custom node definition.
 	 * - Method of: {@link ve.NodeEditor}
-	 * 
+	 *
 	 * @alias ve.Component.NodeEditor.prototype.deleteCustomNode
 	 * @instance
 	 * @memberof ve.NodeEditor
 	 * @this ve.NodeEditor
-	 * 
+	 *
 	 * @param {string} arg0_key
 	 */
 	ve.NodeEditor.prototype.deleteCustomNode = function (arg0_key) {
@@ -67,7 +67,7 @@
 				this.drawToolbox();
 			}
 			
-			veToast("Custom Node Deleted.");
+			veToast(loc("ve.registry.localisation.NodeEditor_toast_custom_node_deleted"));
 		}
 	};
 }

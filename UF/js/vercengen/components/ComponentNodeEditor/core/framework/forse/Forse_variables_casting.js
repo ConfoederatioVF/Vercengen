@@ -1,10 +1,10 @@
 ve.NodeEditor.Forse.variables_casting = {
 	//Variables (Convert)
 	convert_to_any: {
-		name: "Convert to Any",
-		category: "Variables (Casting)",
+		name: loc("ve.registry.localisation.Forse_node_convert_to_any"),
+		category: loc("ve.registry.localisation.Forse_category_variables_casting"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}],
 		output_type: "any",
@@ -14,16 +14,16 @@ ve.NodeEditor.Forse.variables_casting = {
 			
 			//Return statement
 			return {
-				display_value: `Type: any`,
+				display_value: loc("ve.registry.localisation.Forse_display_type_any"),
 				value: variable
 			};
 		}
 	},
 	convert_to_array: {
-		name: "Convert to Array",
-		category: "Variables (Casting)",
+		name: loc("ve.registry.localisation.Forse_node_convert_to_array"),
+		category: loc("ve.registry.localisation.Forse_category_variables_casting"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}],
 		output_type: "any[]",
@@ -39,16 +39,16 @@ ve.NodeEditor.Forse.variables_casting = {
 			
 			//Return statement
 			return {
-				display_value: `any[${local_value.length}]`,
+				display_value: loc("ve.registry.localisation.Forse_display_any_array_len", local_value.length),
 				value: local_value
 			};
 		}
 	},
 	convert_to_string_array: {
-		name: "Convert to String Array",
-		category: "Variables (Casting)",
+		name: loc("ve.registry.localisation.Forse_node_convert_to_string_array"),
+		category: loc("ve.registry.localisation.Forse_category_variables_casting"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}],
 		output_type: "string[]",
@@ -74,16 +74,16 @@ ve.NodeEditor.Forse.variables_casting = {
 			
 			//Return statement
 			return {
-				display_value: `string[${local_value.length}]`,
+				display_value: loc("ve.registry.localisation.Forse_display_string_array_len", local_value.length),
 				value: local_value
 			};
 		}
 	},
 	convert_to_number_array: {
-		name: "Convert to Number Array",
-		category: "Variables (Casting)",
+		name: loc("ve.registry.localisation.Forse_node_convert_to_number_array"),
+		category: loc("ve.registry.localisation.Forse_category_variables_casting"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}],
 		output_type: "number[]",
@@ -102,16 +102,16 @@ ve.NodeEditor.Forse.variables_casting = {
 			
 			//Return statement
 			return {
-				display_value: `number[${local_value.length}]`,
+				display_value: loc("ve.registry.localisation.Forse_display_number_array_len", local_value.length),
 				value: local_value
 			};
 		}
 	},
 	convert_to_boolean: {
-		name: "Convert to Boolean",
-		category: "Variables (Casting)",
+		name: loc("ve.registry.localisation.Forse_node_convert_to_boolean"),
+		category: loc("ve.registry.localisation.Forse_category_variables_casting"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}],
 		output_type: "boolean",
@@ -121,16 +121,16 @@ ve.NodeEditor.Forse.variables_casting = {
 			
 			//Return statement
 			return {
-				display_value: (variable) ? `boolean: true` : `boolean: false`,
+				display_value: loc("ve.registry.localisation.Forse_display_boolean_value", (variable) ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false")),
 				value: (variable) ? true : false
 			};
 		}
 	},
 	convert_to_number: {
-		name: "Convert to Number",
-		category: "Variables (Casting)",
+		name: loc("ve.registry.localisation.Forse_node_convert_to_number"),
+		category: loc("ve.registry.localisation.Forse_category_variables_casting"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}],
 		output_type: "number",
@@ -149,10 +149,10 @@ ve.NodeEditor.Forse.variables_casting = {
 		}
 	},
 	convert_to_script: {
-		name: "Convert to Script",
-		category: "Variables (Casting)",
+		name: loc("ve.registry.localisation.Forse_node_convert_to_script"),
+		category: loc("ve.registry.localisation.Forse_category_variables_casting"),
 		input_parameters: [{
-			name: "arg0_file_path",
+			name: loc("ve.registry.localisation.Forse_param_arg0_file_path"),
 			type: "string"
 		}],
 		output_type: "string",
@@ -168,10 +168,10 @@ ve.NodeEditor.Forse.variables_casting = {
 		}
 	},
 	convert_to_string: {
-		name: "Convert to String",
-		category: "Variables (Casting)",
+		name: loc("ve.registry.localisation.Forse_node_convert_to_string"),
+		category: loc("ve.registry.localisation.Forse_category_variables_casting"),
 		input_parameters: [{
-			name: "arg0_variable",
+			name: loc("ve.registry.localisation.Forse_param_arg0_variable"),
 			type: "any"
 		}],
 		output_type: "string",

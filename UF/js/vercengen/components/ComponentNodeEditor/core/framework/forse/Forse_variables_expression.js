@@ -1,12 +1,12 @@
 ve.NodeEditor.Forse.variables_expression = {
 	array_concatenate: {
-		name: "Array Concat",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_array_concat"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_array",
+			name: loc("ve.registry.localisation.Forse_param_arg0_array"),
 			type: "any[]"
 		}, {
-			name: "arg1_array",
+			name: loc("ve.registry.localisation.Forse_param_arg1_array"),
 			type: "any[]"
 		}],
 		output_type: "any[]",
@@ -20,19 +20,19 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: `any[${concat_array.length}]`,
+				display_value: loc("ve.registry.localisation.Forse_display_any_array_len", concat_array.length),
 				value: concat_array
 			};
 		}
 	},
 	array_indexof: {
-		name: "Array Indexof",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_array_indexof"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_array",
+			name: loc("ve.registry.localisation.Forse_param_arg0_array"),
 			type: "any[]"
 		}, {
-			name: "arg1_element",
+			name: loc("ve.registry.localisation.Forse_param_arg1_element"),
 			type: "any"
 		}],
 		output_type: "number",
@@ -52,10 +52,10 @@ ve.NodeEditor.Forse.variables_expression = {
 		}
 	},
 	array_length: {
-		name: "Array Length",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_array_length"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_array",
+			name: loc("ve.registry.localisation.Forse_param_arg0_array"),
 			type: "any[]"
 		}],
 		output_type: "number",
@@ -71,10 +71,10 @@ ve.NodeEditor.Forse.variables_expression = {
 		}
 	},
 	array_pop: {
-		name: "Array Pop",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_array_pop"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_array",
+			name: loc("ve.registry.localisation.Forse_param_arg0_array"),
 			type: "any[]"
 		}],
 		output_type: "any[]",
@@ -87,19 +87,19 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: `any[${array.length}]`,
+				display_value: loc("ve.registry.localisation.Forse_display_any_array_len", array.length),
 				value: array
 			};
 		}
 	},
 	array_push: {
-		name: "Array Push",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_array_push"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_array",
+			name: loc("ve.registry.localisation.Forse_param_arg0_array"),
 			type: "any[]"
 		}, {
-			name: "arg1_element",
+			name: loc("ve.registry.localisation.Forse_param_arg1_element"),
 			type: "any"
 		}],
 		output_type: "any[]",
@@ -113,16 +113,16 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: `Pushed ${element}`,
+				display_value: loc("ve.registry.localisation.Forse_display_pushed_element", element),
 				value: array
 			};
 		}
 	},
 	array_reverse: {
-		name: "Array Reverse",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_array_reverse"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_array",
+			name: loc("ve.registry.localisation.Forse_param_arg0_array"),
 			type: "any[]"
 		}],
 		output_type: "any[]",
@@ -135,16 +135,16 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: `any[${local_value.length}]`,
+				display_value: loc("ve.registry.localisation.Forse_display_any_array_len", local_value.length),
 				value: local_value
 			};
 		}
 	},
 	array_shift: {
-		name: "Array Shift",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_array_shift"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_array",
+			name: loc("ve.registry.localisation.Forse_param_arg0_array"),
 			type: "any[]"
 		}],
 		output_type: "any",
@@ -157,22 +157,22 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: `Shifted: ${shifted_element}`,
+				display_value: loc("ve.registry.localisation.Forse_display_shifted_element", shifted_element),
 				value: shifted_element
 			};
 		}
 	},
 	array_splice: {
-		name: "Array Splice",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_array_splice"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_array",
+			name: loc("ve.registry.localisation.Forse_param_arg0_array"),
 			type: "any[]"
 		}, {
-			name: "arg1_index",
+			name: loc("ve.registry.localisation.Forse_param_arg1_index"),
 			type: "number"
 		}, {
-			name: "arg2_how_many",
+			name: loc("ve.registry.localisation.Forse_param_arg2_how_many"),
 			type: "number"
 		}],
 		output_type: "any[]",
@@ -187,19 +187,19 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: `Spliced ${how_many} items`,
+				display_value: loc("ve.registry.localisation.Forse_display_spliced_items", how_many),
 				value: array
 			};
 		}
 	},
 	array_unshift: {
-		name: "Array Unshift",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_array_unshift"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_array",
+			name: loc("ve.registry.localisation.Forse_param_arg0_array"),
 			type: "any[]"
 		}, {
-			name: "arg1_element",
+			name: loc("ve.registry.localisation.Forse_param_arg1_element"),
 			type: "any"
 		}],
 		output_type: "any[]",
@@ -213,19 +213,19 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: `Unshifted ${element}`,
+				display_value: loc("ve.registry.localisation.Forse_display_unshifted_element", element),
 				value: array
 			};
 		}
 	},
 	join_array: {
-		name: "Join Array",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_join_array"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_array",
+			name: loc("ve.registry.localisation.Forse_param_arg0_array"),
 			type: "any[]"
 		}, {
-			name: "arg1_separator",
+			name: loc("ve.registry.localisation.Forse_param_arg1_separator"),
 			type: "string"
 		}],
 		output_type: "string",
@@ -239,19 +239,19 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: `"${result}"`,
+				display_value: loc("ve.registry.localisation.Forse_display_quoted_string", result),
 				value: result
 			};
 		}
 	},
 	split_string: {
-		name: "Split String",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_split_string"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_string",
+			name: loc("ve.registry.localisation.Forse_param_arg0_string"),
 			type: "string"
 		}, {
-			name: "arg1_separator",
+			name: loc("ve.registry.localisation.Forse_param_arg1_separator"),
 			type: "string"
 		}],
 		output_type: "string[]",
@@ -265,7 +265,7 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: `${result.length} Elements`,
+				display_value: loc("ve.registry.localisation.Forse_display_elements_count", result.length),
 				value: result
 			};
 		}
@@ -273,13 +273,13 @@ ve.NodeEditor.Forse.variables_expression = {
 	
 	//Object
 	concatenate_objects: {
-		name: "Merge Objects",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_merge_objects"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_object",
+			name: loc("ve.registry.localisation.Forse_param_arg0_object"),
 			type: "any"
 		}, {
-			name: "arg1_object",
+			name: loc("ve.registry.localisation.Forse_param_arg1_object"),
 			type: "any"
 		}],
 		output_type: "any",
@@ -293,16 +293,16 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: `Merged Object`,
+				display_value: loc("ve.registry.localisation.Forse_display_merged_object"),
 				value: merged
 			};
 		}
 	},
 	get_object_keys: {
-		name: "Get Object Keys",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_get_object_keys"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_object",
+			name: loc("ve.registry.localisation.Forse_param_arg0_object"),
 			type: "any"
 		}],
 		output_type: "string[]",
@@ -315,16 +315,16 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: `${keys.length} Keys`,
+				display_value: loc("ve.registry.localisation.Forse_display_keys_count", keys.length),
 				value: keys
 			};
 		}
 	},
 	get_object_values: {
-		name: "Get Object Values",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_get_object_values"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_object",
+			name: loc("ve.registry.localisation.Forse_param_arg0_object"),
 			type: "any"
 		}],
 		output_type: "any[]",
@@ -337,7 +337,7 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: `${values.length} Values`,
+				display_value: loc("ve.registry.localisation.Forse_display_values_count", values.length),
 				value: values
 			};
 		}
@@ -345,13 +345,13 @@ ve.NodeEditor.Forse.variables_expression = {
 	
 	//Number
 	add_numbers: {
-		name: "Add Numbers",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_add_numbers"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_number",
+			name: loc("ve.registry.localisation.Forse_param_arg0_number"),
 			type: "number"
 		}, {
-			name: "arg1_number",
+			name: loc("ve.registry.localisation.Forse_param_arg1_number"),
 			type: "number"
 		}],
 		output_type: "number",
@@ -371,13 +371,13 @@ ve.NodeEditor.Forse.variables_expression = {
 		}
 	},
 	exponentiate_numbers: {
-		name: "Exponentiate Numbers",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_exponentiate_numbers"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_number",
+			name: loc("ve.registry.localisation.Forse_param_arg0_number"),
 			type: "number"
 		}, {
-			name: "arg1_number",
+			name: loc("ve.registry.localisation.Forse_param_arg1_number"),
 			type: "number"
 		}],
 		output_type: "number",
@@ -397,13 +397,13 @@ ve.NodeEditor.Forse.variables_expression = {
 		}
 	},
 	modulo_numbers: {
-		name: "Modulo",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_modulo"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_number",
+			name: loc("ve.registry.localisation.Forse_param_arg0_number"),
 			type: "number"
 		}, {
-			name: "arg1_number",
+			name: loc("ve.registry.localisation.Forse_param_arg1_number"),
 			type: "number"
 		}],
 		output_type: "number",
@@ -423,13 +423,13 @@ ve.NodeEditor.Forse.variables_expression = {
 		}
 	},
 	multiply_numbers: {
-		name: "Multiply Numbers",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_multiply_numbers"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_number",
+			name: loc("ve.registry.localisation.Forse_param_arg0_number"),
 			type: "number"
 		}, {
-			name: "arg1_number",
+			name: loc("ve.registry.localisation.Forse_param_arg1_number"),
 			type: "number"
 		}],
 		output_type: "number",
@@ -449,13 +449,13 @@ ve.NodeEditor.Forse.variables_expression = {
 		}
 	},
 	divide_numbers: {
-		name: "Divide Numbers",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_divide_numbers"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_number",
+			name: loc("ve.registry.localisation.Forse_param_arg0_number"),
 			type: "number"
 		}, {
-			name: "arg1_number",
+			name: loc("ve.registry.localisation.Forse_param_arg1_number"),
 			type: "number"
 		}],
 		output_type: "number",
@@ -475,13 +475,13 @@ ve.NodeEditor.Forse.variables_expression = {
 		}
 	},
 	subtract_numbers: {
-		name: "Subtract Numbers",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_subtract_numbers"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_number",
+			name: loc("ve.registry.localisation.Forse_param_arg0_number"),
 			type: "number"
 		}, {
-			name: "arg1_number",
+			name: loc("ve.registry.localisation.Forse_param_arg1_number"),
 			type: "number"
 		}],
 		output_type: "number",
@@ -503,13 +503,13 @@ ve.NodeEditor.Forse.variables_expression = {
 	
 	//String
 	add_strings: {
-		name: "Add Strings",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_add_strings"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_string",
+			name: loc("ve.registry.localisation.Forse_param_arg0_string"),
 			type: "string"
 		}, {
-			name: "arg1_string",
+			name: loc("ve.registry.localisation.Forse_param_arg1_string"),
 			type: "string"
 		}],
 		output_type: "string",
@@ -529,13 +529,13 @@ ve.NodeEditor.Forse.variables_expression = {
 		}
 	},
 	string_endswith: {
-		name: "Ends With",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_ends_with"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_string",
+			name: loc("ve.registry.localisation.Forse_param_arg0_string"),
 			type: "string"
 		}, {
-			name: "arg1_search",
+			name: loc("ve.registry.localisation.Forse_param_arg1_search"),
 			type: "string"
 		}],
 		output_type: "boolean",
@@ -549,19 +549,19 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: result ? "True" : "False",
+				display_value: result ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: result
 			};
 		}
 	},
 	string_matches: {
-		name: "Matches",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_matches"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_string",
+			name: loc("ve.registry.localisation.Forse_param_arg0_string"),
 			type: "string"
 		}, {
-			name: "arg1_regex",
+			name: loc("ve.registry.localisation.Forse_param_arg1_regex"),
 			type: "string"
 		}],
 		output_type: "string[]",
@@ -576,22 +576,22 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: `${result.length} Matches`,
+				display_value: loc("ve.registry.localisation.Forse_display_matches_count", result.length),
 				value: result
 			};
 		}
 	},
 	string_replace: {
-		name: "Replace",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_replace"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_string",
+			name: loc("ve.registry.localisation.Forse_param_arg0_string"),
 			type: "string"
 		}, {
-			name: "arg1_pattern",
+			name: loc("ve.registry.localisation.Forse_param_arg1_pattern"),
 			type: "string"
 		}, {
-			name: "arg2_replacement",
+			name: loc("ve.registry.localisation.Forse_param_arg2_replacement"),
 			type: "string"
 		}],
 		output_type: "string",
@@ -612,16 +612,16 @@ ve.NodeEditor.Forse.variables_expression = {
 		}
 	},
 	string_replace_all: {
-		name: "Replace All",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_replace_all"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_string",
+			name: loc("ve.registry.localisation.Forse_param_arg0_string"),
 			type: "string"
 		}, {
-			name: "arg1_pattern",
+			name: loc("ve.registry.localisation.Forse_param_arg1_pattern"),
 			type: "string"
 		}, {
-			name: "arg2_replacement",
+			name: loc("ve.registry.localisation.Forse_param_arg2_replacement"),
 			type: "string"
 		}],
 		output_type: "string",
@@ -642,10 +642,10 @@ ve.NodeEditor.Forse.variables_expression = {
 		}
 	},
 	string_length: {
-		name: "String Length",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_string_length"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_string",
+			name: loc("ve.registry.localisation.Forse_param_arg0_string"),
 			type: "string"
 		}],
 		output_type: "number",
@@ -661,13 +661,13 @@ ve.NodeEditor.Forse.variables_expression = {
 		}
 	},
 	string_startswith: {
-		name: "Starts With",
-		category: "Variables (Expressions)",
+		name: loc("ve.registry.localisation.Forse_node_starts_with"),
+		category: loc("ve.registry.localisation.Forse_category_variables_expressions"),
 		input_parameters: [{
-			name: "arg0_string",
+			name: loc("ve.registry.localisation.Forse_param_arg0_string"),
 			type: "string"
 		}, {
-			name: "arg1_search",
+			name: loc("ve.registry.localisation.Forse_param_arg1_search"),
 			type: "string"
 		}],
 		output_type: "boolean",
@@ -681,7 +681,7 @@ ve.NodeEditor.Forse.variables_expression = {
 			
 			//Return statement
 			return {
-				display_value: result ? "True" : "False",
+				display_value: result ? loc("ve.registry.localisation.Forse_value_true") : loc("ve.registry.localisation.Forse_value_false"),
 				value: result
 			};
 		}
