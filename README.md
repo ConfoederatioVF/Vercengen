@@ -27,8 +27,8 @@ Vercengen supports built-in file explorers, nested hierarchies, delta action und
   </tr>
   <tr>
     <td width = "50%">
-      <img src = "https://i.postimg.cc/2CGNN0n5/constele-red-02.png">
-      <div align = "center">(Constele Red/Stadestér)</div>
+      <img src = "https://i.postimg.cc/3wYyfwcB/vercengen-naissance-hgis.png">
+      <div align = "center">(Naissance GIS)</div>
     </td>
     <td width = "50%">
       <img src = "https://i.postimg.cc/HpPGVjSb/constele-red-01.png">
@@ -37,8 +37,8 @@ Vercengen supports built-in file explorers, nested hierarchies, delta action und
   </tr>
   <tr>
     <td>
-      <img src = "https://i.postimg.cc/3wYyfwcB/vercengen-naissance-hgis.png">
-      <div align = "center">(Naissance GIS)</div>
+      <img src = "https://i.postimg.cc/2CGNN0n5/constele-red-02.png">
+      <div align = "center">(Constele Red/Stadestér)</div>
     </td>
     <td>
       <img src = "https://i.postimg.cc/bvy0MPCY/vercengen-datavis-suite-02.png">
