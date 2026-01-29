@@ -66,7 +66,7 @@ Default **Components** (45):
 - Button, Checkbox, Colour, Datalist, DatavisSuite, Date, DateLength, File, FileExplorer, FlexInterface, Graph, GraphLegend, GraphText, HTML, Hierarchy, HierarchyDatatype, Interface, List, Map, MultiTag, NodeEditor, NodeEditorDatatype, Number, ObjectEditor, ObjectInspector, PageMenu, Password, Radio, Range, RawInterface, RichText, ScriptManager, ScriptManagerBlockly, ScriptManagerMonaco, SearchSelect, Select, Spreadsheet, Table, Telephone, Text, Time, Toggle, URL, UndoRedo, WordProcessor
 
 > [!NOTE]
-> A corresponding GIS for ve.Map is available at [Naissance](https://github.com/Confoederatio/Naissance).
+> A corresponding GIS for ve.Map is available at [Naissance HGIS](https://github.com/Confoederatio/Naissance).
 
 <br>
 <img src = "https://confoederatio.org/Vercengen/autodoc/images/undo_redo_preview.png">
