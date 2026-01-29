@@ -38,7 +38,7 @@ global.path = require("path");
 				 * Defaults to '' for EN-GB
 				 * @type {string}
 				 */
-				locale: "de",
+				locale: "",
 				/**
 				 * Localisation strings used inside of Vercengen.
 				 * @type {Object}
