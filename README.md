@@ -21,7 +21,7 @@ Vercengen supports built-in file explorers, nested hierarchies, delta action und
 <table>
   <tr>
     <td colspan = "2">
-      <img src = "https://i.postimg.cc/Cwfj1BCG/vercengen-scriptly-ide.png">
+      <img src = "https://i.postimg.cc/ZT5y1wYy/vercengen-scriptly-ide-02.png">
       <div align = "center">(Scriptly IDE)</div>
     </td>
   </tr>
