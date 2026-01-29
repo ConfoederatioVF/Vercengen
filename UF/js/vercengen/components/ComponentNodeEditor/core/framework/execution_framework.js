@@ -111,8 +111,8 @@
 			
 			//Reset DAG draws if preview_mode = false
 			if (this._is_running_non_preview)
-				for (let i = 0; i < dag_sequence.length; i++) {
-					for (let x = 0; x < dag_sequence[i].length; x++)
+				for (let i = 0; i < dag_sequence.length; i++)
+					for (let x = 0; x < dag_sequence[i].length; x++) {
 						delete dag_sequence[i][x].ui.information.status;
 						dag_sequence[i][x].draw();
 					}

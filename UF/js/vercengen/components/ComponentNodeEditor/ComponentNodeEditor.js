@@ -150,7 +150,7 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 						limit: () => (this._is_running_non_preview)
 					})
 				}, {
-					name: "Run Settings",
+					name: "Run Window",
 					can_rename: false
 				});
 			}, {
