@@ -175,9 +175,7 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 		this.scene_interface = new ve.FlexInterface({
 			type: "horizontal",
 			file_explorer: (!options.disable_file_explorer) ? new ve.FileExplorer(options.project_folder, {
-				style: {
-					maxHeight: "40rem",
-				},
+				style: { flex: 1, maxHeight: "40rem" },
 				load_function: (arg0_data) => {
 					//Convert from parameters
 					let local_data = arg0_data;
@@ -188,7 +186,7 @@ ve.NodeEditor = class extends ve.Component { //[WIP] - How do we handle iteratio
 				save_function: () => this.v,
 			}) : undefined,
 			map_el: new ve.HTML(this.map_el, {
-				style: { minHeight: "8rem", height: "100%", padding: 0 }
+				style: { flex: 3, minHeight: "8rem", height: "100%", padding: 0 }
 			})
 		});
 		this.scene_interface.bind(this.element);

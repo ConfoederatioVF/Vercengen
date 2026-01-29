@@ -1,7 +1,7 @@
 /**
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
  * 
- * Flex interface used for partitions within the same window that can be automatically resized by the user, similar to sub-windows.
+ * Flex interface used for partitions within the same window that can be automatically resized by the user, similar to sub-windows. The `.arg1_options.style.flex` attribute of the descendant Component will determine its flex size.
  * - Functional binding: <span color=00ffff>veFlexInterface</span>().
  * 
  * ##### Constructor:
@@ -253,7 +253,7 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 		//Iterate over all keys in value
 		Object.iterate(value, (local_key, local_value, local_index) => {
 			let flex_item_el = document.createElement("flex-item");
-				flex_item_el.style.flex = (local_index + 1).toString();
+				flex_item_el.style.flex = "1";
 			let flex_resizer_el = document.createElement("flex-resizer");
 			
 			if (typeof local_value === "object" && local_key !== "options" && !(local_value instanceof ve.Component)) {
@@ -267,6 +267,7 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 					root_el.appendChild(flex_resizer_el);
 				
 				local_value.bind(flex_item_el);
+				flex_item_el.style.flex = Math.returnSafeNumber(parseFloat(local_value?.options?.style?.flex), 1);
 				root_el.appendChild(flex_item_el);
 			}
 		});
