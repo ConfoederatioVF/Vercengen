@@ -11,7 +11,7 @@
 > [!NOTE]
 > Read our documentation [website](https://confoederatio.org/Vercengen)! 
 
-### Abstract.
+## Abstract.
 
 Vercengen is an immediate mode frontend software engine developed for Confoederatio wth a focus on rapid application development (RAD), in which UI/UX is simply part of your state. It is used as the main frontend for most Confoederatio applications and provides simple adjustable CSS themes by tinkering with variables.
 
@@ -72,7 +72,16 @@ Default **Components** (45):
 <img src = "https://confoederatio.org/Vercengen/autodoc/images/undo_redo_preview.png">
 <div align = "center"><b>Note.</b> Undo/Redo supports both a Timeline view as well as a graphical Tree view.</div>
 
-### Example:
+## Dataflow:
+
+Vercengen provides directional bindings for your data, without the risk of race conditions, as the program and user agent can never be the same.
+- `.binding`: string, UI <-> State, fires `.onchange(v, e)` Event.
+- `.from_binding`: string, UI <- State, fires `.onprogramchange(v, e)` Event.
+- `.to_binding`: string, UI -> State, fires `.onuserchange(v, e)` Event.
+
+`global`, `this`, and `window` are all acceptable prefixes for binding strings, and a reflection engine automatically ensures directional synchronisation. `v` contains the value, and `e` the referenced <a href = "ve.Component.html">ve.Component</a>.
+
+## Examples:
 
 Editing Vercengen inside Vercengen with functional bindings (1 line):
 ```js
@@ -118,7 +127,7 @@ word_editor = veWindow({
 }, { name: "Word Editor", width: "40rem" });
 ```
 
-### Getting Started.
+## Getting Started.
 
 Bootstrap:
 1. Download the current repository.
