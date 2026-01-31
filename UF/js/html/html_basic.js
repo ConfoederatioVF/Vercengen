@@ -10,6 +10,7 @@
 	
 	/**
 	 * Returns a list of all parent elements from a given child.
+	 * @alias HTML.getAllParentsElements
 	 * 
 	 * @param {HTMLElement} arg0_el
 	 * 
@@ -37,6 +38,7 @@
 	
 	/**
 	 * Converts a set anchor, and x/y_coord to a valid CSS {@link Object}.
+	 * @alias HTML.getCSSPosition
 	 * 
 	 * @param {HTMLElement} arg0_anchor - Either 'top_left'/'top_right'/'bottom_left'/'bottom_right'.
 	 * @param {number} arg1_x
@@ -76,6 +78,7 @@
 	
 	/**
 	 * Converts width, height numbers into a valid CSS {@link Object}.
+	 * @alias HTML.getCSSSize
 	 * 
 	 * @param {number} arg0_width
 	 * @param {number} arg1_height
@@ -96,12 +99,13 @@
 	
 	/**
 	 * Returns actual rendered dimensions.
+	 * @alias HTML.getElementDimensions
 	 * 
 	 * @param {HTMLElement} element
 	 * 
 	 * @returns {{hidden, height: number, width: number}}
 	 */
-	HTML.getElementDimensions = function (arg0_element) { //[WIP] - Refactor later
+	HTML.getElementDimensions = function (arg0_element) {
 		//Convert from parameters
 		let element = arg0_element
 		
@@ -176,6 +180,7 @@
 	
 	/**
 	 * Returns an escaped string in HTML terms such that it renders properly.
+	 * @alias HTML.getEscapedString
 	 * 
 	 * @param {any|string} arg0_string
 	 * 
@@ -199,6 +204,7 @@
 	
 	/**
 	 * Returns the actual `.innerText` content of a given element.
+	 * @alias HTML.getInnerText
 	 * 
 	 * @param {HTMLElement} arg0_el
 	 * 
@@ -225,6 +231,7 @@
 	
 	/**
 	 * Traverses an ordered list with `arg1_function` executing in sequential order.
+	 * @alias HTML.listToObject
 	 * 
 	 * @param {HTMLElement} arg0_ol_el
 	 * @param {function} arg1_function - (arg0_el:{@link HTMLElement}) - Defines what to do with each <li>/<ol> node.
@@ -260,6 +267,7 @@
 	
 	/**
 	 * Converts an object into an HTML attributes string.
+	 * @alias HTML.objectToAttributes
 	 * 
 	 * @param {Object|{"<attribute_key>": string}} arg0_object
 	 * 
@@ -287,6 +295,7 @@
 	
 	/**
 	 * Sets the attributes of a given element based off of an {@link Object}.
+	 * @alias HTML.setAttributesObject
 	 * 
 	 * @param {HTMLElement} arg0_element
 	 * 
@@ -314,6 +323,7 @@
 	
 	/**
 	 * Traverses the DOM recursively from a given root element.
+	 * @alias HTML.traverseDOM
 	 * 
 	 * @param {HTMLElement} arg0_element
 	 * @param {function} arg1_function - Accepts (arg0_local_el, arg1_return_obj) as parameters.

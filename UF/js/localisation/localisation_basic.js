@@ -2,6 +2,7 @@
 {
 	/**
 	 * Performs a localisation replacement for the text in question.
+	 * @alias loc
 	 * 
 	 * @memberof global
 	 * @param {string} arg0_localisation_key - Starts from the `global` root {@link Object}.

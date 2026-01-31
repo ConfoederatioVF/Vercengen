@@ -79,6 +79,7 @@
 	
 	/**
 	 * Returns a blank date template starting at '0AD'.
+	 * @alias Date.getBlankDate
 	 * 
 	 * @returns {{year: number, month: number, day: number, hour: number, minute: number}}
 	 */
@@ -89,6 +90,7 @@
 	
 	/**
 	 * Returns the present Date.
+	 * @alias Date.getCurrentDate
 	 * 
 	 * @returns {{year: number, month, day: number, hour: number, minute: number}}
 	 */
@@ -108,6 +110,7 @@
 	
 	/**
 	 * Returns the number of days in the `.months` value within a Date object.
+	 * @alias Date.getDaysInMonths
 	 * 
 	 * @param {Object} arg0_date_object
 	 * 
@@ -132,6 +135,7 @@
 	
 	/**
 	 * Fetches the number of leap years before a certain year.
+	 * @alias Date.getLeapYearsBefore
 	 * 
 	 * @param {number} arg0_year
 	 * 
@@ -147,6 +151,7 @@
 	
 	/**
 	 * Fetches the number of leap years between two years.
+	 * @alias Date.getLeapYearsBetween
 	 * 
 	 * @param {number|string} arg0_start_year
 	 * @param {number|string} arg1_end_year
@@ -164,6 +169,7 @@
 	
 	/**
 	 * Fetches the month index from its name.
+	 * @alias Date.getMonth
 	 * 
 	 * @param {string} arg0_month_name
 	 * 
@@ -191,6 +197,7 @@
 	
 	/**
 	 * Returns the number of months from the number of `.day` within the date object.
+	 * @alias Date.getMonthsFromDays
 	 * 
 	 * @param {Object} arg0_date_object
 	 * 
@@ -231,6 +238,7 @@
 	
 	/**
 	 * Returns a numeric timestamp from a specific Date object. Number of minutes from 1 January, 00:00 on 1AD.
+	 * @alias Date.getTimestamp
 	 * 
 	 * @param {Object} arg0_date_object
 	 * 
@@ -304,6 +312,7 @@
 	
 	/**
 	 * Whether the given year is a leap year.
+	 * @alias Date.isLeapYear
 	 * 
 	 * @param {number} arg0_year
 	 * 
@@ -320,6 +329,7 @@
 	
 	/**
 	 * Parses a {@link float} number of years into a specific Date object.
+	 * @alias Date.parseYears
 	 * 
 	 * @param {number} arg0_years
 	 * 

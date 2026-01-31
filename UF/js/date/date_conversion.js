@@ -2,6 +2,7 @@
 {
 	/**
 	 * Converts a given string to a Date object if possible.
+	 * @alias Date.convertStringToDate
 	 * 
 	 * @param {string} arg0_date_string
 	 * @param [arg1_delimiter="."]
@@ -34,6 +35,7 @@
 	
 	/**
 	 * Converts a timestamp to a Date object.
+	 * @alias Date.convertTimestampToDate
 	 * 
 	 * @param {number|string} arg0_timestamp
 	 * 
@@ -136,6 +138,7 @@
 	
 	/**
 	 * Converts a timestamp to an integer if possible.
+	 * @alias Date.convertTimestampToInt
 	 * 
 	 * @param {number|string} arg0_timestamp
 	 * 

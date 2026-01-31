@@ -4,6 +4,7 @@
 	
 	/**
 	 * Creates a foldable element that can be minimised/expanded.
+	 * @alias HTML.createSection
 	 *
 	 * @param {Object} [arg0_options]
 	 *  @param {String} [arg0_options.expand_class="uf-expanded"] - The class to add when the section is expanded.
@@ -85,6 +86,7 @@
 	
 	/**
 	 * Provides a Window interface without CSS styling for an element. .header refers to the draggable header at the top.
+	 * @alias HTML.elementDragHandler
 	 *
 	 * @param {HTMLElement} arg0_el
 	 * @param {Object} [arg1_options]

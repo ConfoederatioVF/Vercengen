@@ -9,7 +9,8 @@
 		global.Array = {};
 	
 	/**
-	 * Converts an spreadsheet cell string (e.g. 'A1', 'ZZ15') into 1-based coordinates.
+	 * Converts a spreadsheet cell string (e.g. 'A1', 'ZZ15') into 1-based coordinates.
+	 * @alias Array.fromSpreadsheetCell
 	 * 
 	 * @param {string} arg0_cell_string
 	 * 
@@ -42,6 +43,7 @@
 	
 	/**
 	 * Moves an element within an array from an old index to a new index.
+	 * @alias Array.moveElement
 	 * 
 	 * @param {Array} arg0_array
 	 * @param {number} arg1_old_index
@@ -70,6 +72,7 @@
 	
 	/**
 	 * Returns a list/{@link Array} from a given input value.
+	 * @alias Array.toArray
 	 *
 	 * @param {any|any[]} arg0_value
 	 *

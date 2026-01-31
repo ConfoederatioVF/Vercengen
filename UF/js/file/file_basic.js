@@ -10,6 +10,7 @@
 	
 	/**
 	 * Whether a file is inside a folder path.
+	 * @alias File.containsPath
 	 * 
 	 * @param {string} arg0_file_path
 	 * @param {string} arg1_folder_path
@@ -29,6 +30,7 @@
 	
 	/**
 	 * Returns all drives in the current operating system.
+	 * @alias File.getAllDrives
 	 * 
 	 * @returns {string[]}
 	 */
@@ -73,49 +75,55 @@
 		}
 	};
 	
+	/**
+	 * Returns all files in a current folder path.
+	 * @alias File.getAllFiles
+	 * 
+	 * @param {string} arg0_folder_path
+	 * @param {Object} [arg1_options]
+	 *  @param {string[]} [arg1_options.excluded_paths]
+	 * 
+	 * @returns {string[]}
+	 */
 	File.getAllFiles = async function (arg0_folder_path, arg1_options) {
-		const options = arg1_options || {};
-		// Normalize the starting path to an absolute path
-		const root_path = path.resolve(arg0_folder_path);
+		//Convert from parameters
+		let root_path = path.resolve(arg0_folder_path);
+		let options = arg1_options || {};
 		
-		// Pre-resolve all excluded paths to absolute paths for reliable comparison
-		const excluded_paths = (options.excluded_paths || []).map((p) =>
-			path.resolve(p),
-		);
+		//Declare local instance variables
+		let excluded_paths = (options.excluded_paths || []).map((p) => path.resolve(p));
 		
 		try {
-			const entries = await fs.promises.readdir(root_path, {
-				withFileTypes: true,
-			});
-			
-			const paths = await Promise.all(
+			let entries = await fs.promises.readdir(root_path, { withFileTypes: true });
+			let paths = await Promise.all(
 				entries.map(async (entry) => {
-					const fullPath = path.resolve(root_path, entry.name);
+					let full_path = path.resolve(root_path, entry.name);
 					
-					// Check if the current full path is in the excluded list
-					if (excluded_paths.includes(fullPath)) {
+					//Internal guard clause if the current full path is in the excluded list
+					if (excluded_paths.includes(full_path))
 						return [];
-					}
-					
-					if (entry.isDirectory()) {
-						// Pass the options down to the recursive call
-						return await File.getAllFiles(fullPath, options);
-					}
-					
-					return fullPath;
+					if (entry.isDirectory())
+						//Recursively call File.getAllFiles if possible
+						return await File.getAllFiles(full_path, options);
+					return full_path;
 				}),
 			);
 			
 			return paths.flat();
 		} catch (err) {
-			console.error(
-				`File.getAllFiles: Error reading directory ${root_path}:`,
-				err,
-			);
+			console.error(`File.getAllFiles: Error reading directory ${root_path}:`, err);
 			throw err;
 		}
 	};
 	
+	/**
+	 * Returns all files in a current folder synchronously.
+	 * @alias File.getAllFilesSync
+	 * 
+	 * @param {string} arg0_folder_path
+	 * 
+	 * @returns {string[]}
+	 */
 	File.getAllFilesSync = function (arg0_folder_path) {
 		//Convert from parameters
 		let folder_path = arg0_folder_path;
@@ -133,6 +141,7 @@
 	
 	/**
 	 * Whether the selected file path is a valid drive.
+	 * @alias File.isDrive
 	 * 
 	 * @param {string} arg0_file_path
 	 * 
