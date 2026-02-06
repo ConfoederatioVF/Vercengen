@@ -316,12 +316,13 @@ ve.ScriptManager = class extends ve.Component {
 		this.scene_tabs_el = document.createElement("div");
 		this.scene_tabs_el.id = "scene-tabs";
 		
-		this.scene_interface = new ve.FlexInterface({
+		//Initialise scene_interface now, but only append its components upon this.scriptmanager_initialisation_loop
+		this.scene_interface = new ve.FlexInterface({ 
 			type: "horizontal",
 			blockly: this.scene_blockly,
 			monaco: this.scene_monaco
 		}, {
-			name: "ScriptManagerInterface"
+			name: "ScriptManagerInterface",
 		});
 		
 		this.scene_el.append(this.scene_interface.element, this.scene_tabs_el);
@@ -624,6 +625,12 @@ ve.ScriptManager = class extends ve.Component {
 		this._is_file_saved = false;
 		this.logic_loop = setInterval(() => {
 			ve.ScriptManager._projectLogicLoop.call(this);
+			if (!this.element.contains(this.scene_blockly.element))
+				this.scene_interface.v = {
+					type: "horizontal",
+					blockly: this.scene_blockly,
+					monaco: this.scene_monaco
+				};
 		}, 100);
 		
 		//Populate element and initialise handlers
@@ -709,8 +716,6 @@ ve.ScriptManager = class extends ve.Component {
 	}
 	
 	_drawHeight () {
-		if (!document.body.contains(this.scene_blockly_el.querySelector("svg"))) return; //Internal guard clause if svg is not currently defined
-		
 		//Declare local instance variables
 		let svg_el = this.scene_blockly_el.querySelector("svg");
 		let svg_rect = svg_el.getBoundingClientRect();
@@ -801,11 +806,11 @@ ve.ScriptManager = class extends ve.Component {
 					this.setCodeEditorTheme(settings_obj.monaco_theme);
 				if (settings_obj.hide_blockly !== undefined) {
 					if (settings_obj.hide_blockly === true) {
-						this.scene_interface.v = {
-							type: "horizontal",
-							monaco: this.scene_monaco
-						};
-						this.scene_blockly.hide();
+						//this.scene_interface.v = {
+						//	type: "horizontal",
+						//	monaco: this.scene_monaco
+						//};
+						//this.scene_blockly.hide();
 					} else {
 						this.scene_interface.v = {
 							type: "horizontal",

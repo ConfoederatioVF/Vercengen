@@ -1,12 +1,99 @@
 //Initialise functions
 {
-	if (!global.GeoASC) global.GeoASC = {};
+	if (!global.GeoASC)
+		/**
+		 * Handles ASC files. Part of Geospatiale III.
+		 * 
+		 * @namespace GeoASC
+		 */
+		global.GeoASC = {};
 	
-	//[WIP] - This function needs a complete refactor
+	/**
+	 * Converts an .asc file to .png.
+	 * @alias GeoASC.convertToPNG
+	 * 
+	 * @param {string} arg0_input_file_path
+	 * @param {string} arg1_output_file_path
+	 * @param {Object} [arg2_options]
+	 *  @param {string} [options.mode="number"] - Either 'number'/'percentage'.
+	 *  @param {function(local_index, local_value)} [options.special_function] - Any function to pass to the iterative loop when processing. Must return a {@link number}.
+	 *  
+	 * @returns {{dataframe: Object, max_value: number}}
+	 */
 	GeoASC.convertToPNG = async function (arg0_input_file_path, arg1_output_file_path, arg2_options) {
+		//Convert from parameters
+		let input_file_path = arg0_input_file_path;
+		let output_file_path = arg1_output_file_path;
+		let options = (arg2_options) ? arg2_options : {};
 		
+		//Initialise options
+		if (!options.mode) options.mode = "number";
+		
+		//Declare local instance variables
+		let asc_dataframe = GeoASC.readFile(input_file_path);
+		let image_columns = asc_dataframe[0].length;
+		let image_rows = asc_dataframe.length;
+		let max_value = Array.getMaximum(asc_dataframe);
+		
+		//Log image_columns; image_rows
+		console.log(`Converting .asc file ${input_file_path} to ${output_file_path} with dimensions ${image_columns}x${image_rows}. Maximum value in dataframe: ${max_value}`);
+		
+		let png = new pngjs.PNG({
+			height: image_rows,
+			width: image_columns,
+			filterType: -1
+		});
+		
+		//Iterate over all rows and columns
+		for (let i = 0; i < image_rows; i++)
+			for (let x = 0; x < image_columns; x++) {
+				let local_index = (i*image_columns + x)*4; //RGBA index
+				let local_value = asc_dataframe[i][x];
+				let rgba;
+				
+				if (options.special_function)
+					local_value = options.special_function(local_index, local_value);
+				
+				if (local_value !== undefined && local_value !== -9999) {
+					if (options.mode === "number") {
+						//Encode full 32-bit integer value into RGBA
+						rgba = Colour.encodeNumberAsRGBA(local_value);
+					} else if (options.mode === "percentage") {
+						//Scale using percentage mode (0-100 mapped to G channel)
+						let local_g = Math.min(Math.round((local_value/max_value)*255), 255);
+						rgba = [0, local_g, 0, 255];
+					}
+				} else {
+					//NODATA values are fully transparent
+					rgba = [0, 0, 0, 0];
+				}
+				
+				//Set pixel values
+				png.data[local_index] = rgba[0];
+				png.data[local_index + 1] = rgba[1];
+				png.data[local_index + 2] = rgba[2];
+				png.data[local_index + 3] = rgba[3];
+			}
+		
+		//Write PNG file
+		png.pack().pipe(fs.createWriteStream(output_file_path))
+			.on("finish", () => console.log(`.PNG output file written to ${output_file_path}`));
+		
+		//Return statement
+		return {
+			dataframe: asc_dataframe,
+			max_value: max_value
+		};
 	};
 	
+	/**
+	 * Reads an ASC file into a 2D Array/dataframe.
+	 * @alias GeoASC.readFile
+	 * 
+	 * @param {string} arg0_file_path
+	 * 
+	 * @returns {Array.<any[]>}
+	 */
 	GeoASC.readFile = function (arg0_file_path) {
 		//Convert from parameters
 		let file_path = arg0_file_path;
@@ -26,7 +113,7 @@
 			let local_line = raw_data[i].trim();
 			
 			//Internal guard clause; skip empty lines
-			if (local_line == "") continue;
+			if (local_line === "") continue;
 			
 			//Header parsing
 			if (is_header) {
@@ -58,7 +145,7 @@
 			let local_values = local_line.split(/\s+/);
 			
 			for (let x = 0; x < data_columns; x++)
-				data_frame[row_index][x] = (local_values[x] == no_data_value) ?
+				data_frame[row_index][x] = (local_values[x] === no_data_value) ?
 					undefined : parseFloat(local_values[x]);
 			
 			row_index++;

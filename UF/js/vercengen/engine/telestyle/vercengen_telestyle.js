@@ -2,7 +2,7 @@
 {
 	/**
 	 * Applies dynamic (function-based) styles recursively for each frame.
-	 * 
+	 *
 	 * @param {HTMLElement} arg0_el
 	 * @param {Object} arg1_style_obj - Telestyle object for dynamic styles.
 	 */
@@ -10,7 +10,7 @@
 		let el = arg0_el;
 		let dynamic_obj = arg1_style_obj;
 		
-		//Iterate over all values in dyanmic_obj
+		//Iterate over all values in dynamic_obj
 		Object.iterate(dynamic_obj, (local_key, local_value) => {
 			if (typeof local_value === "object" && !Array.isArray(local_value)) {
 				let targets = HTML.resolveSelector(el, local_key);
@@ -22,10 +22,14 @@
 				let computed_style = local_value(el);
 				
 				if (computed_style !== undefined && computed_style !== null) {
+					let val_str = computed_style.toString();
+					
 					if (local_key.startsWith("--")) {
-						el.style.setProperty(local_key, computed_style.toString());
+						if (el.style.getPropertyValue(local_key) !== val_str)
+							el.style.setProperty(local_key, val_str);
 					} else {
-						el.style[local_key] = computed_style.toString();
+						if (el.style[local_key] !== val_str)
+							el.style[local_key] = val_str;
 					}
 				}
 			}
@@ -34,7 +38,7 @@
 	
 	/**
 	 * Applies static (non-function) styles recursively, once.
-	 * 
+	 *
 	 * @param {HTMLElement} arg0_el
 	 * @param {Object} arg1_style_obj - Telestyle object for static styles.
 	 */
@@ -49,22 +53,30 @@
 				for (let i = 0; i < targets.length; i++)
 					HTML.applyStaticTelestyle(targets[i], local_value);
 			} else if (typeof local_value !== "function") {
-				if (local_key.startsWith("--"))
-					el.style.setProperty(local_key, local_value.toString());
-				else el.style[local_key] = local_value.toString();
+				let val_str = local_value.toString();
+				
+				//Performance optimization: check if update is actually necessary
+				if (local_key.startsWith("--")) {
+					if (el.style.getPropertyValue(local_key) !== val_str)
+						el.style.setProperty(local_key, val_str);
+				} else {
+					if (el.style[local_key] !== val_str)
+						el.style[local_key] = val_str;
+				}
 			}
 		});
 	};
 	
 	/**
 	 * Applies Telestyle to a given element, accepting both {@link Object} and {@link string} formats.
-	 * 
+	 *
 	 * @param {HTMLElement} arg0_el
 	 * @param {Object|string} arg1_style
 	 */
 	HTML.applyTelestyle = function (arg0_el, arg1_style) {
 		//Convert from parameters
-		let el = (typeof arg0_el === "object") ? arg0_el : document.querySelector(arg0_el);
+		let el =
+			typeof arg0_el === "object" ? arg0_el : document.querySelector(arg0_el);
 		let style = arg1_style;
 		
 		//Apply CSS style to el
@@ -77,32 +89,41 @@
 	
 	/**
 	 * Applies a persistent Telestyle {@link Object} to an element.
-	 * 
+	 *
 	 * @param {HTMLElement} arg0_el
 	 * @param {Object} arg1_style_obj
 	 */
-	HTML.applyTelestyleObject = function (arg0_el, arg1_style_obj) { //[WIP] - To be refactored at a later date
+	HTML.applyTelestyleObject = function (arg0_el, arg1_style_obj) {
 		// Convert arguments
 		let el =
-			typeof arg0_el === "object" ? arg0_el : document.querySelector(arg0_el.toString());
+			typeof arg0_el === "object"
+				? arg0_el
+				: document.querySelector(arg0_el.toString());
 		let style_obj = arg1_style_obj ? arg1_style_obj : {};
 		
 		if (!el) return; //Internal guard clause if element could not be found
 		
 		//Declare local instance variables
 		let mutated_style_obj = style_obj;
-		let { static: staticStyles, dynamic: dynamic_styles } =
-			HTML.splitStaticDynamicTelestyle(mutated_style_obj);
+		let split_styles = HTML.splitStaticDynamicTelestyle(mutated_style_obj);
+		let static_styles = split_styles.static;
+		let dynamic_styles = split_styles.dynamic;
 		let registry = HTML.ve_css_registry;
+		let is_applying = false;
 		
 		//Apply existing static styles immediately to current subtree
-		HTML.applyStaticTelestyle(el, staticStyles);
-		registry.set(el, { mutated_style_obj, dynamic: dynamic_styles });
+		HTML.applyStaticTelestyle(el, static_styles);
+		if (registry)
+			registry.set(el, { mutated_style_obj, dynamic: dynamic_styles });
 		
 		//Set up smart, silent observers to detect element/attribute mutations
 		if (el._telestyleObserver) el._telestyleObserver.disconnect();
 		
 		let observer = new MutationObserver((all_mutations) => {
+			//Guard clause to prevent infinite loops from attribute changes
+			if (is_applying) return;
+			
+			is_applying = true;
 			//Iterate over all observed mutations
 			for (let local_mutation of all_mutations) {
 				if (local_mutation.type === "childList") {
@@ -110,20 +131,22 @@
 					for (let local_added_node of local_mutation.addedNodes) {
 						if (!(local_added_node instanceof HTMLElement)) continue;
 						
-						let nodes_to_check = [local_added_node, ...local_added_node.querySelectorAll("*")];
+						let nodes_to_check = [
+							local_added_node,
+							...local_added_node.querySelectorAll("*"),
+						];
 						
 						//Iterate over all nodes_to_check
 						for (let node of nodes_to_check) {
 							//Reapply static and dynamic styles for any match
-							Object.iterate(staticStyles, (selector, local_value) => {
+							Object.iterate(static_styles, (selector, local_value) => {
 								if (
 									typeof local_value === "object" &&
 									typeof selector === "string"
 								) {
 									try {
-										if (node.matches(selector)) {
+										if (node.matches(selector))
 											HTML.applyStaticTelestyle(node, local_value);
-										}
 									} catch (err) {}
 								}
 							});
@@ -133,9 +156,8 @@
 									typeof selector === "string"
 								) {
 									try {
-										if (node.matches(selector)) {
+										if (node.matches(selector))
 											HTML.applyDynamicTelestyle(node, local_value);
-										}
 									} catch (err) {}
 								}
 							});
@@ -144,28 +166,29 @@
 					
 					//Iterate over all .removedNodes if cleanup registry needed
 					for (let local_removed_node of local_mutation.removedNodes)
-						if (HTML.ve_css_registry?.has(local_removed_node))
-							HTML.ve_css_registry.delete(local_removed_node);
+						if (registry?.has(local_removed_node))
+							registry.delete(local_removed_node);
 				} else if (local_mutation.type === "attributes") {
 					//Re-trigger style application when attributes change
 					let target = local_mutation.target;
 					
 					//Iterate over all static styles and apply them to target if match
-					Object.iterate(staticStyles, (selector, local_value) => {
+					Object.iterate(static_styles, (selector, local_value) => {
 						try {
-							if (target.matches(selector)) {
+							if (target.matches(selector))
 								HTML.applyStaticTelestyle(target, local_value);
-							}
 						} catch (err) {}
 					});
 				}
 			}
+			is_applying = false;
 		});
 		
 		observer.observe(el, {
 			childList: true,
 			subtree: true,
 			attributes: true,
+			attributeFilter: ["class", "id", "type", "disabled"], //Ignore 'style'
 		});
 		
 		el._telestyleObserver = observer;
@@ -179,7 +202,7 @@
 	/**
 	 * Resolves a selector relative to an element.
 	 * Supports :nth-parent(n) and normal query selectors.
-	 * 
+	 *
 	 * @param {HTMLElement} arg0_el
 	 * @param {string} arg1_selector
 	 */
@@ -196,8 +219,7 @@
 			let target = el;
 			
 			//While loop until parent element is found
-			while (n-- > 0 && target.parentElement) 
-				target = target.parentElement;
+			while (n-- > 0 && target.parentElement) target = target.parentElement;
 			
 			//Return statement
 			return target ? [target] : [];
@@ -207,16 +229,15 @@
 		try {
 			return el.querySelectorAll(selector);
 		} catch (e) {
-			console.error(e);
 			return [];
 		}
-	}
+	};
 	
 	/**
 	 * Splits static and dynamic properties into two trees.
-	 * 
-	 * @param {Object} arg0_object - Telestyle object to split into static/dynamic objects.
-	 * @returns {{dynamic: Object, static: Object}} - Static and dynamic Telestyle objects.
+	 *
+	 * @param {Object} arg0_object - Telestyle object to split.
+	 * @returns {{dynamic: Object, static: Object}} - Static and dynamic objects.
 	 */
 	HTML.splitStaticDynamicTelestyle = function (arg0_object) {
 		//Convert from parameters
@@ -243,7 +264,7 @@
 		//Return statement
 		return {
 			dynamic: dynamic_obj,
-			static: static_obj
+			static: static_obj,
 		};
-	}
+	};
 }

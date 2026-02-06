@@ -1,6 +1,140 @@
 //Initialise functions
 {
-	if (!global.GeoPNG) global.GeoPNG = {};
+	if (!global.GeoPNG)
+		/**
+		 * Analogous to a GeoTIFF file format, but in PNG form for easier editing. Single variable. Part of Geospatiale III.
+		 * 
+		 * @namespace GeoPNG
+		 */
+		global.GeoPNG = {};
+		
+	//[QUARANTINE]
+	/**
+	 * Transforms a PNG raster map to GeoJSON MultiPolygons, ignoring specified colours.
+	 * @param {string} arg0_file_path - Input PNG file path
+	 * @param {string} arg1_file_path - Output GeoJSON file path
+	 * @param {Object} arg2_options - Options object
+	 * @param {Array<Array<number>>} arg2_options.ignore_colours - List of [R,G,B,A] to skip
+	 */
+	GeoPNG.convertToGeoJSON = async function (arg0_file_path, arg1_file_path, arg2_options) {
+		const yieldToEventLoop = () =>
+			new Promise((resolve) => setImmediate(resolve));
+		
+		const input_file_path = arg0_file_path;
+		const output_file_path = arg1_file_path;
+		
+		// Initialize ignore set
+		const ignore_set = new Set(
+			(arg2_options?.ignore_colours || []).map((c) => c.join(","))
+		);
+		ignore_set.add("0,0,0,0");
+		
+		// Load and Parse PNG Asynchronously
+		const buffer = await fs.promises.readFile(input_file_path);
+		const png_obj = await new Promise((resolve, reject) => {
+			new pngjs.PNG().parse(buffer, (err, data) =>
+				err ? reject(err) : resolve(data)
+			);
+		});
+		
+		const { width, height } = png_obj;
+		const res_x = 360 / width;
+		const res_y = 180 / height;
+		
+		function getPixel(x, y) {
+			if (x < 0 || y < 0 || x >= width || y >= height) return "0,0,0,0";
+			const idx = (width * y + x) << 2;
+			return `${png_obj.data[idx]},${png_obj.data[idx + 1]},${png_obj.data[idx + 2]},${png_obj.data[idx + 3]}`;
+		}
+		
+		const edge_maps = new Map();
+		
+		function addEdge(rgba, x1, y1, x2, y2) {
+			if (!edge_maps.has(rgba)) edge_maps.set(rgba, new Map());
+			const color_map = edge_maps.get(rgba);
+			const start = `${x1},${y1}`;
+			const end = `${x2},${y2}`;
+			if (!color_map.has(start)) color_map.set(start, []);
+			color_map.get(start).push(end);
+		}
+		
+		
+		for (let y = 0; y <= height; y++) {
+			// Yield every 500 rows to keep the process responsive
+			if (y % 500 === 0) await yieldToEventLoop();
+			
+			for (let x = 0; x <= width; x++) {
+				const current = getPixel(x, y);
+				const left = getPixel(x - 1, y);
+				const up = getPixel(x, y - 1);
+				
+				if (current !== up) {
+					if (!ignore_set.has(current)) addEdge(current, x, y, x + 1, y);
+					if (!ignore_set.has(up)) addEdge(up, x + 1, y, x, y);
+				}
+				if (current !== left) {
+					if (!ignore_set.has(current)) addEdge(current, x, y + 1, x, y);
+					if (!ignore_set.has(left)) addEdge(left, x, y, x, y + 1);
+				}
+			}
+		}
+		
+		const features = [];
+		
+		for (const [rgba, node_map] of edge_maps.entries()) {
+			const multi_polygon_coords = [];
+			
+			while (node_map.size > 0) {
+				const ring = [];
+				const start_node = node_map.keys().next().value;
+				let current_node = start_node;
+				
+				while (true) {
+					const [px, py] = current_node.split(",").map(Number);
+					ring.push([-180 + px * res_x, 90 - py * res_y]);
+					
+					const neighbors = node_map.get(current_node);
+					if (!neighbors || neighbors.length === 0) break;
+					
+					const next_node = neighbors.pop();
+					if (neighbors.length === 0) node_map.delete(current_node);
+					
+					current_node = next_node;
+					if (current_node === start_node) {
+						const [sx, sy] = start_node.split(",").map(Number);
+						ring.push([-180 + sx * res_x, 90 - sy * res_y]);
+						break;
+					}
+				}
+				
+				if (ring.length >= 4) {
+					multi_polygon_coords.push([ring]);
+				}
+			}
+			
+			const [r, g, b, a] = rgba.split(",").map(Number);
+			features.push({
+				type: "Feature",
+				properties: {
+					colour: { r, g, b, a },
+					rgba: `rgba(${r},${g},${b},${a / 255})`,
+				},
+				geometry: {
+					type: "MultiPolygon",
+					coordinates: multi_polygon_coords,
+				},
+			});
+		}
+		
+		const geojson_obj = { type: "FeatureCollection", features };
+		
+		// Use a stringify with null/0 indentation to save space
+		const output_data = JSON.stringify(geojson_obj);
+		await fs.promises.writeFile(output_file_path, output_data);
+		
+		//Return statement
+		return geojson_obj;
+	};
 	
 	/**
 	 * Fetches the total sum of all int values within an image.
@@ -30,7 +164,7 @@
 	 * @param {Object} arg0_image_object
 	 * @param {number} arg1_index
 	 *
-	 * @returns {[number, number, number, number]}
+	 * @returns {number[]}
 	 */
 	GeoPNG.getRGBAFromPixel = function (arg0_image_object, arg1_index) {
 		//Convert from parameters
@@ -111,6 +245,142 @@
 		
 		//Return statement
 		return { width: png.width, height: png.height, data: pixel_values };
+	};
+	
+	//[QUARANTINE]
+	/**
+	 * Robustly eliminates specific colours by binning them to the nearest available non-binned colour.
+	 * @param {string} arg0_input_path
+	 * @param {string} arg1_output_path
+	 * @param {Object} arg2_options
+	 * @param {Array<Array<number>>} arg2_options.bin_colours - Colours to be destroyed.
+	 * @param {Array<Array<number>>} arg2_options.ignore_colours - Colours to leave untouched.
+	 */
+	GeoPNG.kNNBin = async function (arg0_input_path, arg1_output_path, arg2_options) {
+		const yieldToEventLoop = () =>
+			new Promise((resolve) => setImmediate(resolve));
+		
+		const bin_set = new Set(
+			(arg2_options.bin_colours || []).map((c) => c.join(","))
+		);
+		const ignore_set = new Set(
+			(arg2_options.ignore_colours || []).map((c) => c.join(","))
+		);
+		
+		const buffer = await fs.promises.readFile(arg0_input_path);
+		const png = await new Promise((resolve, reject) => {
+			new pngjs.PNG().parse(buffer, (err, data) =>
+				err ? reject(err) : resolve(data)
+			);
+		});
+		
+		const { width, height, data } = png;
+		const seedMap = new Array(width * height);
+		let fallback_seed = null;
+		
+		// Step 1: Initialize Seed Map
+		for (let y = 0; y < height; y++) {
+			if (y % 500 === 0) await yieldToEventLoop();
+			for (let x = 0; x < width; x++) {
+				const idx = (width * y + x) << 2;
+				const rgba = `${data[idx]},${data[idx + 1]},${data[idx + 2]},${data[idx + 3]}`;
+				
+				if (!bin_set.has(rgba) && !ignore_set.has(rgba)) {
+					seedMap[width * y + x] = { sx: x, sy: y, dist: 0 };
+					if (!fallback_seed) fallback_seed = { x, y };
+				} else {
+					seedMap[width * y + x] = { sx: -1, sy: -1, dist: Infinity };
+				}
+			}
+		}
+		
+		const checkNeighbor = (x, y, curData, neighbor) => {
+			if (neighbor && neighbor.sx !== -1) {
+				const dx = x - neighbor.sx;
+				const dy = y - neighbor.sy;
+				const d2 = dx * dx + dy * dy;
+				if (d2 < curData.dist) {
+					curData.sx = neighbor.sx;
+					curData.sy = neighbor.sy;
+					curData.dist = d2;
+				}
+			}
+		};
+		
+		// Step 2: Forward Raster Scan
+		for (let y = 0; y < height; y++) {
+			if (y % 500 === 0) await yieldToEventLoop();
+			for (let x = 0; x < width; x++) {
+				const idx = width * y + x;
+				const curData = seedMap[idx];
+				if (curData.dist === 0) continue;
+				
+				if (x > 0) checkNeighbor(x, y, curData, seedMap[idx - 1]);
+				if (y > 0) checkNeighbor(x, y, curData, seedMap[idx - width]);
+				if (x > 0 && y > 0) checkNeighbor(x, y, curData, seedMap[idx - width - 1]);
+				if (x < width - 1 && y > 0)
+					checkNeighbor(x, y, curData, seedMap[idx - width + 1]);
+			}
+		}
+		
+		// Step 3: Backward Raster Scan
+		for (let y = height - 1; y >= 0; y--) {
+			if (y % 500 === 0) await yieldToEventLoop();
+			for (let x = width - 1; x >= 0; x--) {
+				const idx = width * y + x;
+				const curData = seedMap[idx];
+				if (curData.dist === 0) continue;
+				
+				if (x < width - 1) checkNeighbor(x, y, curData, seedMap[idx + 1]);
+				if (y < height - 1) checkNeighbor(x, y, curData, seedMap[idx + width]);
+				if (x < width - 1 && y < height - 1)
+					checkNeighbor(x, y, curData, seedMap[idx + width + 1]);
+				if (x > 0 && y < height - 1)
+					checkNeighbor(x, y, curData, seedMap[idx + width - 1]);
+			}
+		}
+		
+		// Step 4: Apply Transformation
+		const fallback_rgba = [0, 0, 0, 0];
+		for (let y = 0; y < height; y++) {
+			if (y % 500 === 0) await yieldToEventLoop();
+			for (let x = 0; x < width; x++) {
+				const idx = (width * y + x) << 2;
+				const rgba = `${data[idx]},${data[idx + 1]},${data[idx + 2]},${data[idx + 3]}`;
+				
+				if (bin_set.has(rgba)) {
+					const seed = seedMap[width * y + x];
+					let finalIdx = -1;
+					
+					if (seed.sx !== -1) {
+						finalIdx = (width * seed.sy + seed.sx) << 2;
+					} else if (fallback_seed) {
+						finalIdx = (width * fallback_seed.y + fallback_seed.x) << 2;
+					}
+					
+					if (finalIdx !== -1) {
+						data[idx] = data[finalIdx];
+						data[idx + 1] = data[finalIdx + 1];
+						data[idx + 2] = data[finalIdx + 2];
+						data[idx + 3] = data[finalIdx + 3];
+					} else {
+						data[idx] = fallback_rgba[0];
+						data[idx + 1] = fallback_rgba[1];
+						data[idx + 2] = fallback_rgba[2];
+						data[idx + 3] = fallback_rgba[3];
+					}
+				}
+			}
+		}
+		
+		// Step 5: Save Output
+		await new Promise((resolve, reject) => {
+			png
+			.pack()
+			.pipe(fs.createWriteStream(arg1_output_path))
+			.on("finish", resolve)
+			.on("error", reject);
+		});
 	};
 	
 	/**
@@ -246,7 +516,7 @@
 	 * @param {number} arg1_index - The index of the pixel to save the number to.
 	 * @param {number} arg2_number - The number to save to the pixel.
 	 *
-	 * @returns {[number, number, number, number]}
+	 * @returns {number[]}
 	 */
 	GeoPNG.saveNumberToPixel = function (arg0_image_object, arg1_index, arg2_number) {
 		//Convert from parameters

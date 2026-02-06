@@ -385,9 +385,6 @@ ve.Component = class {
 			if (this.options.binding && from_value === undefined)
 				Object.setValue(initial_object, variable_string, this.v);
 			from_value = Object.getValue(initial_object, variable_string);
-			this.from_binding_fire_silently = true;
-			this.v = from_value;
-			delete this.from_binding_fire_silently;
 			
 			//Add getter/setter
 			Object.addGetterSetter(initial_object, variable_string, {
@@ -396,11 +393,13 @@ ve.Component = class {
 					let local_value = arg0_value;
 					if (this.from_binding_fire_silently) return;
 					
-					//Declare local instance variables
-					this.v = local_value;
-					
 					let is_same_value = Boolean.strictEquality(local_value, this.v);
 					if (is_same_value) return;
+					
+					//Declare local instance variables
+					this.from_binding_fire_silently = true;
+					this.v = local_value;
+					delete this.from_binding_fire_silently;
 					
 					//Traverse up the .owners tree and fire onchange/onprogramchange
 					if (this.owners)
@@ -418,7 +417,7 @@ ve.Component = class {
 						this.options.onchange(local_value, this);
 					if (typeof this.options.onprogramchange === "function") //Fire onprogramchange (unidirectional)
 						this.options.onprogramchange(local_value, this);
-					this.v = local_value;
+					//this.v = local_value;
 				}
 			});
 			let temp = from_value;

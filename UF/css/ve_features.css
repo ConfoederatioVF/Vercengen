@@ -276,6 +276,7 @@
 
         transition: all 0.5s ease;
     }
+    #window-name::spelling-error { text-decoration: none; }
     #window-name:before {
         content: "\200b"; /* Zero width space */
     }

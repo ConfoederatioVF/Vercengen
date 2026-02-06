@@ -42,6 +42,31 @@
 	};
 	
 	/**
+	 * Returns a filled domain range between [min, max].
+	 * @alias Array.getFilledDomain
+	 * 
+	 * @param {number} arg0_min
+	 * @param {number} arg1_max
+	 * 
+	 * @returns {number[]}
+	 */
+	Array.getFilledDomain = function (arg0_min, arg1_max) {
+		//Convert from parameters
+		let min = Math.returnSafeNumber(arg0_min);
+		let max = Math.returnSafeNumber(arg1_max);
+		
+		//Declare local instance variables
+		let array = [];
+		
+		//Iterate between min and max
+		for (let i = min; i <= max; i++)
+			array.push(i);
+		
+		//Return statement
+		return array;
+	};
+	
+	/**
 	 * Moves an element within an array from an old index to a new index.
 	 * @alias Array.moveElement
 	 * 

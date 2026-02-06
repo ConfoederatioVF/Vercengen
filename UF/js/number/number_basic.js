@@ -36,6 +36,20 @@
 		return alphabetised_string;
 	};
 	
+	Math.geometricMean = function (arg0_values) {
+		//Convert from parameters
+		let values = Array.toArray(arg0_values);
+		
+		//Guard clause if array is empty
+		if (values.length === 0) return 0;
+		
+		//Declare local instance variables
+		let product = values.reduce((acc, val) => acc*val, 1);
+		
+		//Return statement
+		return Math.pow(product, 1/values.length);
+	};
+	
 	/**
 	 * Numerises a given string back into a number (a0-j9).
 	 * @alias Math.numerise
@@ -122,5 +136,26 @@
 		
 		//Declare local instance variables
 		return number.toFixed(places);
+	};
+	
+	Math.weightedGeometricMean = function (arg0_values) {
+		//Convert from parameters
+		let values = Array.toArray(arg0_values);
+		
+		//Guard clause if no values are present
+		if (values.length === 0) return 0;
+		
+		//Declare local instance variables
+		let negatives = values.filter(v => v < 0).map(Math.abs);
+		let positives = values.filter(v => v > 0);
+		
+		//Guard clause if there are only zeroes
+		if (negatives.length + positives.length === 0) return 0;
+		
+		let negative_gm = negatives.length > 0 ? Math.geometricMean(negatives) : 0;
+		let positive_gm = positives.length > 0 ? Math.geometricMean(positives) : 0;
+		
+		//Return statement; weighted geometric mean
+		return (positives.length/values.length)*positive_gm - (negatives.length/values.length)*negative_gm;
 	};
 }

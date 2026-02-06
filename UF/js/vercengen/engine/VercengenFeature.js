@@ -65,17 +65,18 @@ ve.Feature = class {
 		this.class_name = this.constructor.class_name;
 		this.id = Class.generateRandomID(ve.Feature);
 		this.is_vercengen_feature = true;
-		if (typeof components_obj === "function" || typeof components_obj === "string") {
-			this.components_obj = {
-				html: new ve.HTML(components_obj)
-			};
-		} else if (components_obj.is_vercengen_component) {
-			this.components_obj = {
-				component: components_obj
-			};
-		} else {
-			this.components_obj = components_obj;
-		}
+		if (components_obj !== undefined)
+			if (typeof components_obj === "function" || typeof components_obj === "string") {
+				this.components_obj = {
+					html: new ve.HTML(components_obj)
+				};
+			} else if (components_obj.is_vercengen_component) {
+				this.components_obj = {
+					component: components_obj
+				};
+			} else {
+				this.components_obj = components_obj;
+			}
 		this.options = (options) ? options : {};
 		
 		//Destructure this.components_obj into available variables

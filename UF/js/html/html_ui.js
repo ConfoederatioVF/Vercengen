@@ -14,6 +14,11 @@
 	 *  @param {String} [arg0_options.src="./UF/gfx/chevron_icon.png"] - The source of the chevron image.
 	 *  @param {Boolean} [arg0_options.is_collapsed=false] - Whether the section should start in a collapsed state.
 	 *  
+	 *  @param {HTMLElement[]} [arg0_options.bottom_elements]
+	 *  @param {HTMLElement[]} [arg0_options.left_elements]
+	 *  @param {HTMLElement[]} [arg0_options.right_elements]
+	 *  @param {HTMLElement[]} [arg0_options.top_elements]
+	 *  
 	 * @returns {HTMLElement}
 	 */
 	HTML.createSection = function (arg0_options) {
@@ -196,9 +201,29 @@
 			//Declare local instance variables
 			let e = (arg0_e || window.event);
 			let min_height = 50;
+			let min_left = 0;
 			let min_width = 50;
+			let min_top = 0;
 			let viewport_height = window.innerHeight;
 			let viewport_width = window.innerWidth;
+			
+			//Handle options.subtract_height_elements
+			if (options.bottom_elements)
+				for (let i = 0; i < options.bottom_elements.length; i++)
+					if (options.bottom_elements[i])
+						viewport_height -= options.bottom_elements[i].offsetHeight;
+			if (options.left_elements)
+				for (let i = 0; i < options.left_elements.length; i++)
+					if (options.left_elements[i])
+						min_left += options.left_elements[i].offsetWidth;
+			if (options.right_elements)
+				for (let i = 0; i < options.right_elements.length; i++)
+					if (options.right_elements[i])
+						viewport_width -= options.right_elements[i].offsetWidth;
+			if (options.top_elements)
+				for (let i = 0; i < options.top_elements.length; i++)
+					if (options.top_elements[i])
+						min_top += options.top_elements[i].offsetHeight;
 			
 			e.preventDefault();
 			
@@ -274,8 +299,8 @@
 				let new_left = el.offsetLeft - position_one;
 				let new_top = el.offsetTop - position_two;
 				
-				new_top = Math.max(0, Math.min(new_top, viewport_height - el_height));
-				new_left = Math.max(0, Math.min(new_left, viewport_width - el_width));
+				new_top = Math.max(min_top, Math.min(new_top, viewport_height - el_height));
+				new_left = Math.max(min_left, Math.min(new_left, viewport_width - el_width));
 				
 				//Set element position
 				el.style.top = `${new_top}px`;

@@ -98,7 +98,7 @@ ve.FileExplorer = class extends ve.Component {
 				disable_actions: true,
 				file_components_obj: {},
 				folder_components_obj: {},
-				onload: (e) => e.name = ""
+				onload: (v, e) => e.name = ""
 			};
 		
 		//Declare local instance variables
