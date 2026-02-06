@@ -215,7 +215,7 @@
 	 * loadNumberRasterImage() - Loads a number raster image into the assigned variable.
 	 * @param {String} arg0_file_path
 	 *
-	 * @returns {width: number, height: number, data: number[]}
+	 * @returns {{width: number, height: number, data: number[]}}
 	 */
 	GeoPNG.loadNumberRasterImage = function (arg0_file_path) {
 		//Convert from parameters
