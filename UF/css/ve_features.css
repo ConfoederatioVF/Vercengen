@@ -217,6 +217,15 @@
 .tippy-arrow {
     display: none;
 }
+.tippy-box {
+    background-color: var(--bg-primary-colour);
+    border-radius: 0;
+    bottom: var(--cell-padding);
+    color: var(--body-colour);
+    font-weight: var(--body-font-weight);
+    font-size: var(--body-font-size);
+    padding: var(--cell-padding);
+}
 .tippy-content {
     font-family: var(--body-font-family);
     padding: var(--cell-padding);

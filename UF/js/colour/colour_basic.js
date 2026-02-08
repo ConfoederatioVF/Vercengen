@@ -211,7 +211,18 @@
 		
 		//Return statement
 		return (i < 0) ? 0 : Math.sqrt(i);
-	}
+	};
+	
+	/**
+	 * Returns a random [R, G, B] colour.
+	 * @alias Colour.generateRandomColour
+	 * 
+	 * @returns {number[]}
+	 */
+	Colour.generateRandomColour = function () {
+		//Return statement
+		return [Math.randomNumber(0, 255), Math.randomNumber(0, 255), Math.randomNumber(0, 255)];
+	};
 	
 	/**
 	 * Encodes a number as an RGBA pixel.

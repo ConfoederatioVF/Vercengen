@@ -42,7 +42,7 @@ ve.Tooltip = class extends ve.Feature {
 		this.v = components_obj;
 		
 		//Set tippy tooltip based on element
-		tippy(this.anchor_element, { allowHTML: true, content: this.element, interactive: true });
+		tippy(this.anchor_element, { allowHTML: true, appendTo: document.body, content: this.element, interactive: true });
 	}
 	
 	/**

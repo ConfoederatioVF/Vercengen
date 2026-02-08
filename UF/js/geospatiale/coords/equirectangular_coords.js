@@ -2,6 +2,16 @@
 {
 	if (!global.Geospatiale) global.Geospatiale = {};
 	
+	/**
+	 * Returns a [lat, lng] array for a given pixel coordinate.
+	 * 
+	 * @param {number} arg0_x
+	 * @param {number} arg1_y
+	 * @param {number} [arg2_width=4320]
+	 * @param {number} [arg3_height=2160]
+	 * 
+	 * @returns {number[]}
+	 */
 	Geospatiale.getEquirectangularPixelCoords = function (arg0_x, arg1_y, arg2_width, arg3_height) {
 		//Convert from parameters
 		let x_coord = arg0_x;
@@ -14,11 +24,13 @@
 		let lng = (x_coord/width)*360 - 180;
 		
 		//Return statement
-		return [lat, lng];
+		return [lng, lat];
 	};
 	
 	/**
-	 * getEquirectangularCoordsPixel - Fetches the x, y coordinate pair for a given pixel given latitude and longitude coordinates for WGS84 Equirectangular.
+	 * Fetches the x, y coordinate pair for a given pixel given latitude and longitude coordinates for WGS84 Equirectangular.
+	 * @alias Geospatiale.getEquirectangularCoordsPixel
+	 * 
 	 * @param {number} arg0_latitude
 	 * @param {number} arg1_longitude
 	 * @param {Object} [arg2_options]
