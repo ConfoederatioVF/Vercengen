@@ -176,30 +176,4 @@
 			return all_strings;
 		} catch (e) {}
 	};
-	
-	/**
-	 * Truncates a string after a given max. character length.
-	 * @alias String.truncate
-	 * 
-	 * @param {string} arg0_string
-	 * @param {number} [arg1_length=80]
-	 * @param {boolean} arg2_do_not_show_dots
-	 * 
-	 * @returns {string}
-	 */
-	String.truncate = function (arg0_string, arg1_length, arg2_do_not_show_dots) {
-		//Convert from parameters
-		let string = arg0_string;
-		let number = (arg1_length) ? arg1_length : 80;
-		let do_not_show_dots = arg2_do_not_show_dots;
-		
-		//Return statement
-		if (string.length > number) {
-			let substring = string.substring(0, number);
-			
-			return (!do_not_show_dots) ? substring + " ..." : substring;
-		} else {
-			return string;
-		}
-	};
 }
