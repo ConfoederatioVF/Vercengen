@@ -169,6 +169,7 @@ ve.Window = class extends ve.Feature {
 					
 				this.setCoords(this._x, this._y);
 				this.setSize(options.width, options.height);
+				this.updateOwner();
 				
 				if (this.options.theme)
 					HTML.applyTelestyle(this.element, ve.registry.themes[this.options.theme]);

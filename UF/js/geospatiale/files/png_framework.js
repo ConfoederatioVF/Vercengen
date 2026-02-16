@@ -213,32 +213,44 @@
 	
 	/**
 	 * loadNumberRasterImage() - Loads a number raster image into the assigned variable.
-	 * @param {String} arg0_file_path
+	 * @param {string} arg0_file_path
+	 * @param {Object} [arg1_options]
+	 *  @param {string} [arg1_options.type="32bit_int_positive"] - Either '32bit_int_positive'/'greyscale'.
 	 *
-	 * @returns {{width: number, height: number, data: number[]}}
+	 * @returns {{width: number, height: number, data: number[]}|string}
 	 */
-	GeoPNG.loadNumberRasterImage = function (arg0_file_path) {
+	GeoPNG.loadNumberRasterImage = function (arg0_file_path, arg1_options) {
 		//Convert from parameters
 		let file_path = arg0_file_path;
+		let options = (arg1_options) ? arg1_options : {};
+		
+		//Initialise options
+		if (!options.type) options.type = "32bit_int_positive";
 		
 		//Guard clause if file_path is already object
 		if (typeof file_path == "object") return file_path;
 		
 		//Declare local instance variables
 		let rawdata = fs.readFileSync(file_path);
-		
 		let pixel_values = [];
 		let png = pngjs.PNG.sync.read(rawdata);
 		
 		//Iterate over all pixels
 		for (let i = 0; i < png.width*png.height; i++) {
 			let colour_index = i*4;
-			let colour_value = Colour.decodeRGBAAsNumber([
+			let colour_value;
+			let local_rgba = [
 				png.data[colour_index],
 				png.data[colour_index + 1],
 				png.data[colour_index + 2],
 				png.data[colour_index + 3]
-			]);
+			];
+			
+			if (options.type === "32bit_int_positive") {
+				colour_value = Colour.decodeRGBAAsNumber(local_rgba);
+			} else if (options.type === "greyscale") {
+				colour_value = local_rgba[0]/255;
+			}
 			
 			pixel_values.push(colour_value);
 		}
@@ -250,7 +262,7 @@
 	/**
 	 * operateNumberRasterImage() - Runs an operation on a raster image for a file.
 	 * @param {Object} [arg0_options]
-	 *  @param {String} [arg0_options.file_path] - The file path to save the image to.
+	 *  @param {String} [arg0_options.file_path] - The file path to load from.
 	 *  @param {Function} [arg0_options.function] - (arg0_index, arg1_number)
 	 */
 	GeoPNG.operateNumberRasterImage = function (arg0_options) {
@@ -258,7 +270,7 @@
 		let options = (arg0_options) ? arg0_options : {};
 		
 		//Declare local instance variables
-		let image_obj = PNG.loadNumberRasterImage(options.file_path);
+		let image_obj = GeoPNG.loadNumberRasterImage(options.file_path);
 		
 		for (let i = 0; i < image_obj.data.length; i++)
 			if (options.function)
@@ -268,10 +280,12 @@
 	/**
 	 * saveNumberRasterImage() - Saves a number raster image to a file.
 	 * @param {Object} [arg0_options]
-	 *  @param {String} [arg0_options.file_path] - The file path to save the image to.
-	 *  @param {Number} [arg0_options.width=1] - The width of the image to save.
-	 *  @param {Number} [arg0_options.height=1] - The height of the image to save.
-	 *  @param {Function} [arg0_options.function] - (arg0_index) - The function to apply to each pixel. Must return a number. [0, 0, 0, 0] if undefined.
+	 *  @param {string} [arg0_options.file_path] - The file path to save the image to.
+	 *  @param {string} [arg0_options.type="32bit_int_positive"] - How to save colours to the end image. Either '32bit_int_positive'/'greyscale'.
+	 *
+	 *  @param {number} [arg0_options.height=1] - The height of the image to save.
+	 *  @param {number} [arg0_options.width=1] - The width of the image to save.
+	 *  @param {function} [arg0_options.function] - (arg0_index) - The function to apply to each pixel. Must return a number. [0, 0, 0, 0] if undefined.
 	 */
 	GeoPNG.saveNumberRasterImage = function (arg0_options) {
 		//Convert from parameters
@@ -280,6 +294,8 @@
 		//Initialise options
 		options.height = Math.returnSafeNumber(options.height, 1);
 		options.width = Math.returnSafeNumber(options.width, 1);
+		
+		if (!options.type) options.type = "32bit_int_positive";
 		
 		//Declare local instance variables
 		let png = new pngjs.PNG({
@@ -293,7 +309,7 @@
 			for (let x = 0; x < options.width; x++) {
 				let local_index = (i*options.width + x); //RGBA index to be multiplied by 4
 				
-				GeoPNG.saveNumberToPixel(png, local_index, options.function(local_index));
+				GeoPNG.saveNumberToPixel(png, local_index, options.function(local_index), options.type);
 			}
 		
 		//Write PNG file
@@ -376,24 +392,30 @@
 	
 	/**
 	 * saveNumberToPixel() - Saves an int value to a pixel based on the corresponding index.
-	 * @param {String} arg0_image_object - The image object to use.
+	 * @param {string} arg0_image_object - The image object to use.
 	 * @param {number} arg1_index - The index of the pixel to save the number to.
-	 * @param {number} arg2_number - The number to save to the pixel.
+	 * @param {number|string} arg2_number - The number to save to the pixel.
+	 * @param {string} [arg3_type="32bit_int_positive"] - Either '32bit_int_positive'/'greyscale'.
 	 *
 	 * @returns {number[]}
 	 */
-	GeoPNG.saveNumberToPixel = function (arg0_image_object, arg1_index, arg2_number) {
+	GeoPNG.saveNumberToPixel = function (arg0_image_object, arg1_index, arg2_number, arg3_type) {
 		//Convert from parameters
 		let image_obj = (typeof arg0_image_object != "string") ? 
 			arg0_image_object : GeoPNG.loadNumberRasterImage(arg0_image_object);
 		let index = arg1_index*4;
 		let number = arg2_number;
+		let type = (arg3_type) ? arg3_type : "32bit_int_positive";
 		
 		//Declare local instance variables
-		let rgba = (number) ?
-			Colour.encodeNumberAsRGBA(number) : [0, 0, 0, 0];
+		let rgba;
 		
-		//Set pixel values
+		if (type === "greyscale") {
+			rgba = [parseInt(number*255), parseInt(number*255), parseInt(number*255), 255];
+		} else {
+			rgba = (number) ? Colour.encodeNumberAsRGBA(number) : [0, 0, 0, 0];
+		}
+		
 		image_obj.data[index] = rgba[0];
 		image_obj.data[index + 1] = rgba[1];
 		image_obj.data[index + 2] = rgba[2];

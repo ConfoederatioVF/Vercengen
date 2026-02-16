@@ -21,6 +21,40 @@
 		return [sum_x/pixels.length, sum_y/pixels.length];
 	};
 	
+	GeoPNG.getRasterNeighbourAverage = function (arg0_geopng_array, arg1_x, arg2_y, arg3_height, arg4_width) {
+		//Convert from parameters
+		let geopng_array = arg0_geopng_array;
+		let local_x = arg1_x;
+		let local_y = arg2_y;
+		let height = arg3_height;
+		let width = arg4_width;
+		
+		//Declare local instance variables
+		let count = 0;
+		let sum = 0;
+		
+		for (let i = -1; i <= 1; i++)
+			for (let x = -1; x <= 1; x++) {
+				if (i === 0 && x === 0) continue;
+				
+				let neighbour_x = local_x + i;
+				let neighbour_y = local_y + x;
+				
+				if (neighbour_x >= 0 && neighbour_x < height && neighbour_y >= 0 && neighbour_y < width) {
+					let local_index = neighbour_x*width + neighbour_y;
+					let local_value = geopng_array[local_index];
+					
+					if (!isNaN(local_value)) {
+						sum += local_value;
+						count++;
+					}
+				}
+			}
+		
+		//Return statement
+		return (count > 0) ? sum/count : NaN;
+	};
+	
 	//[QUARANTINE]
 	/**
 	 * Robustly eliminates specific colours by binning them to the nearest available non-binned colour.

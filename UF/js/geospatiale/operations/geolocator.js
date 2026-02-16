@@ -33,6 +33,7 @@
 		}
 		
 		let gmaps_obj = JSON.parse(stdout);
+		console.log(gmaps_obj);
 		try {
 			let location_obj = gmaps_obj.results[0].geometry.location;
 			

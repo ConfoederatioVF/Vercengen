@@ -205,52 +205,28 @@
 	 * 
 	 * @returns {number}
 	 */
+	//[QUARANTINE]
 	Array.cubicSplineInterpolation = function (arg0_x_values, arg1_y_values, arg2_x_to_interpolate) {
-		//Convert from parameters
 		let x_values = Array.toArray(arg0_x_values);
-		let y_values = Array.toArray(arg1_y_values);
-			y_values = y_values.map((y) => (y > 0) ? Math.log(y) : Math.log(1e-6));
+		let y_values = Array.toArray(arg1_y_values).map(y => (y > 0 ? Math.log(y) : Math.log(1e-6)));
 		let x_to_interpolate = parseInt(arg2_x_to_interpolate);
 		
-		//Declare local instance variables
+		// 1. Calculate the Spline in log-space
 		let interpolation = new cubic_spline(x_values, y_values);
-		let log_interpolated = interpolation.at(x_to_interpolate);
+		let interpolated_value = Math.exp(interpolation.at(x_to_interpolate));
 		
-		let interpolated_value = Math.exp(log_interpolated);
-		
-		//Find bounding values (before & after)
-		let prev_known_value = -Infinity;
-		let next_known_value = Infinity;
-		let prev_known_point = null;
-		let next_known_point = null;
-		
-		//Iterate over all x_values to find bounding years and values
+		// 2. Find bounds only for clamping
+		let prev_val = -Infinity, next_val = Infinity;
 		for (let i = 0; i < x_values.length; i++) {
-			if (x_values[i] < x_to_interpolate) {
-				prev_known_point = x_values[i];
-				prev_known_value = Math.exp(y_values[i]);
-			} else if (x_values[i] > x_to_interpolate) {
-				next_known_point = x_values[i];
-				next_known_value = Math.exp(y_values[i]);
-				break;
-			}
+			if (x_values[i] <= x_to_interpolate) prev_val = Math.exp(y_values[i]);
+			if (x_values[i] >= x_to_interpolate) { next_val = Math.exp(y_values[i]); break; }
 		}
 		
-		//If we have valid bounding values, perform linear interpolation
-		if (prev_known_point !== null && next_known_point !== null &&
-			prev_known_value !== -Infinity && next_known_value !== Infinity) {
-			interpolated_value = prev_known_value +
-				((x_to_interpolate - prev_known_point)/ 
-				(next_known_point - prev_known_point))*(next_known_value - prev_known_value);
-		}
+		// 3. Clamp the SPLINE value, don't overwrite it with a linear one
+		let lower = Math.min(prev_val, next_val);
+		let upper = Math.max(prev_val, next_val);
 		
-		//Cap within bounds (prevents overshoot)
-		if (prev_known_value !== -Infinity && next_known_value !== Infinity) {
-			interpolated_value = Math.max(prev_known_value, Math.min(interpolated_value, next_known_value));
-		}
-		
-		//Return statement
-		return interpolated_value;
+		return Math.max(lower, Math.min(interpolated_value, upper));
 	};
 	
 	/**

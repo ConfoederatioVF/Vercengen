@@ -88,6 +88,7 @@ ve.FlexInterface = class extends ve.Component { //[WIP] - Finish CSS and JS hand
 		let value = (arg0_value) ? arg0_value : {};
 		
 		//Set this.value and refresh flex interface
+		this.components_obj = this.value;
 		this.value = value;
 		this.element.innerHTML = "";
 		this.element.appendChild(ve.FlexInterface.generateHTMLRecursively(undefined, this.value, {

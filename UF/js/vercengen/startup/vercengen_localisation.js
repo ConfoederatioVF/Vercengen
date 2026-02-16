@@ -1124,7 +1124,7 @@ ve.registry.localisation = {
 	ObjectInspector_view_source: "View Source",
 	
 	//SearchSelect
-	SearchSelect_no_elements_found: "No elements available to search for.",
+	SearchSelect_no_elements_found: "No elements available to filter for.",
 	SearchSelect_search_filter: "Search Filter",
 	
 	//Table

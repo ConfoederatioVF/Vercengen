@@ -328,7 +328,7 @@
 		let default_value = (arg1_default !== undefined) ? arg1_default : 0;
 		
 		//Return statement
-		return (!isNaN(number)) ? number : default_value;
+		return (!isNaN(number) && isFinite(number)) ? number : default_value;
 	};
 	
 	/**

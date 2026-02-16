@@ -176,7 +176,33 @@
 			height: height,
 			width: width,
 		};
-	}
+	};
+	
+	HTML.getTableAsDataframe = function (arg0_table_el, arg1_options) {
+		//Convert from parameters
+		let table_el = arg0_table_el;
+		let options = (arg1_options) ? arg1_options : {};
+		
+		//Initialise options
+		if (!options.property) options.property = "innerHTML";
+		
+		//Declare local instance variables
+		let all_tr_els = table_el.querySelectorAll(`tr`);
+		let dataframe_array = [];
+		
+		//Iterate over all_tr_els and the tds in each row, first row is header
+		for (let i = 0; i < all_tr_els.length; i++) {
+			let local_row = [];
+			let local_td_els = all_tr_els[i].querySelectorAll(`td, th`);
+			
+			for (let x = 0; x < local_td_els.length; x++)
+				local_row.push(local_td_els[x][options.property]);
+			dataframe_array.push(local_row);
+		}
+		
+		//Return statement
+		return dataframe_array;
+	};
 	
 	/**
 	 * Returns an escaped string in HTML terms such that it renders properly.

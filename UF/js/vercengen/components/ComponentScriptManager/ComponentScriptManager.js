@@ -60,7 +60,7 @@ ve.ScriptManager = class extends ve.Component {
 		//Convert from parameters
 		let value = arg0_value;
 		let options = (arg1_options) ? arg1_options : {};
-		super(options);
+			super(options);
 		
 		//Initialise options
 		options.attributes = (options.attributes) ? options.attributes : {};
@@ -142,9 +142,9 @@ ve.ScriptManager = class extends ve.Component {
 			this.console_el.appendChild(local_msg_el);
 		};
 		this.element = document.createElement("div");
-		this.element.setAttribute("component", "ve-script-manager");
-		this.element.instance = this;
-		this.element.style.padding = "0";
+			this.element.setAttribute("component", "ve-script-manager");
+			this.element.instance = this;
+			this.element.style.padding = "0";
 		if (this.options.attributes)
 			Object.iterate(this.options.attributes, (local_key, local_value) => {
 				this.element.setAttribute(local_key, local_value.toString());

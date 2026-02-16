@@ -59,6 +59,15 @@ global.path = require("path");
 					
 					//Component-wide settings
 					
+					Channel: {
+						default_bg_colour: "#2196F3",
+						default_text_colour: "auto"
+					},
+					
+					Log: {
+						default_console_height: "40vh"
+					},
+					
 					/**
 					 * Component settings for {@link ve.MultiTag}.
 					 * @type {{"<registry_key>": string[]}}

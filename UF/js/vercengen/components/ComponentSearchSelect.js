@@ -217,7 +217,7 @@ ve.SearchSelect = class extends ve.Component {
 		//If name and filters are nothing, restore visibility to all hidden results
 		if (this.search_value.length === 0 && Object.keys(this.filters).length === 0) {
 			for (let i = 0; i < all_search_select_els.length; i++)
-				all_search_select_els[i].style.display = (this.options.display) ? this.options.display : "inline";
+				all_search_select_els[i].style.display = (this.options.display) ? this.options.display : "inherit";
 		} else {
 			//Iterate over all search_select_els
 			for (let i = 0; i < all_search_select_els.length; i++) {

@@ -225,6 +225,79 @@
 	};
 	
 	/**
+	 * Returns the actual [R, G, B, A] colour of a given string. Depends on a browser/HTML context to work.
+	 * @alias Colour.getColour
+	 * 
+	 * @param {any} arg0_colour
+	 * 
+	 * @returns {number[]|any}
+	 */
+	Colour.getColour = function (arg0_colour) {
+		//Convert from parameters
+		let colour = arg0_colour;
+		
+		if (Array.isArray(colour)) return colour; //Internal guard clause if the colour is already an array
+		
+		try {
+			//Declare local instance variables
+			let colour_el = document.createElement("div");
+				colour_el.style.color = colour;
+			document.body.appendChild(colour_el);	
+			
+			let actual_colour = window.getComputedStyle(colour_el).color;
+				colour_el.remove();
+			
+			if (actual_colour.startsWith("rgb(") || actual_colour.startsWith("rgba(")) {
+				actual_colour = actual_colour.replace("rgb(", "")
+					.replace("rgba(", "")
+					.replace(")", "");
+				actual_colour = actual_colour.split(",");
+				
+				//Iterate over actual_colour and set it
+				for (let i = 0; i < actual_colour.length; i++)
+					actual_colour[i] = parseFloat(actual_colour[i].trim());
+				if (actual_colour.length >= 4)
+					actual_colour[3] *= 255;
+			}
+			
+			//Return statement
+			return actual_colour;
+		} catch (e) { console.error(e); }
+		
+		//Return statement
+		if (Colour._map[colour]) colour = Colour._map[colour];
+		return Colour.convertHexToRGBA(colour);
+	};
+	
+	/**
+	 * Returns the best text colour given a certain colour background. Either 'black'/'white'.
+	 * @alias Colour.getBestTextColour
+	 * 
+	 * @param {number[]|string} arg0_colour
+	 * @param {Object} [arg1_options]
+	 *  @param {boolean} [arg1_options.return_rgb=false]
+	 * 
+	 * @returns {number[]|string}
+	 */
+	Colour.getBestTextColour = function (arg0_colour, arg1_options) { //[WIP] - Finish function body
+		//Convert from parameters
+		let colour = Colour.getColour(arg0_colour);
+		let options = (arg1_options) ? arg1_options : {};
+		
+		//Declare local instance variables
+		let luminance = Colour.getLuminance(colour);
+		
+		let best_colour = (luminance > 0.179) ? "black" : "white";
+		
+		//Return statement
+		if (options.return_rgb) {
+			if (best_colour === "black") return [0, 0, 0];
+			if (best_colour === "white") return [255, 255, 255];
+		}
+		return best_colour;
+	};
+	
+	/**
 	 * Encodes a number as an RGBA pixel.
 	 * @alias Colour.encodeNumberAsRGBA
 	 * 
@@ -243,6 +316,28 @@
 		
 		//Return statement
 		return [r, g, b, a];
+	};
+	
+	/**
+	 * Returns the luminance of a given colour.
+	 * @alias Colour.getLuminance
+	 * 
+	 * @param {number[]|string} arg0_colour
+	 * 
+	 * @returns {number}
+	 */
+	Colour.getLuminance = function (arg0_colour) {
+		//Convert from parameters
+		let colour = Colour.getColour(arg0_colour);
+		
+		//Declare local instance variables
+		let a = colour.map((v) => {
+			v /= 255;
+			return v <= 0.03928 ? v/12.92 : Math.pow((v + 0.055)/1.055, 2.4);
+		});
+		
+		//Return statement
+		return a[0]*0.2126 + a[1]*0.7152 + a[2]*0.0722;
 	};
 	
 	/**
