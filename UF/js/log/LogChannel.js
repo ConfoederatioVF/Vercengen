@@ -7,7 +7,39 @@
 		 * @namespace log
 		 */
 		global.log = {};
-		
+	
+	/**
+	 * Creates a new log channel that can be accessed by log.<channel_key>() for logging. Should ideally be initialised upon startup. This is used for custom multi-channel logging. Channels are mirrored in DevTools as well as having DOM-facing viewports and consoles via {@link ve.Log}, {@link ve.ScriptManager}.
+	 * 
+	 * ##### Constructor:
+	 * - `arg0_key`; {@link string} - The key to use for channel logging. log.<channel_key>, log.<channel_key>_warn, log.<channel_key>_error are valid channels afterwards.
+	 * - `arg1_options`: {@link Object}
+	 *   - `.colour`: {@link Array}<{@link number}, {@link number}, {@link number}, {@link number}>|{@link string} - The colour to use for the background.
+	 *   - `.text_colour`: {@link Array}<{@link number}, {@link number}, {@link number}, {@link number}>|{@link string} - The text colour to use for the foreground. Detected as either 'white/'black' based on luminance by default.
+	 * 
+	 * ##### Instance:
+	 * - `.log_el`: {@link HTMLElement}
+	 * - `.key`: {@link string}
+	 * - `.options`: {@link Object}
+	 * 
+	 * ##### Methods:
+	 * - <span color=00ffff>{@link ve.Log.clear|clear}</span>()
+	 * - <span color=00ffff>{@link ve.Log.close|close}</span>()
+	 * - <span color=00ffff>{@link ve.Log.error|error}</span>(argn_arguments:{@link any})
+	 * - <span color=00ffff>{@link ve.Log.log|log}</span>(argn_arguments:{@link any})
+	 * - <span color=00ffff>{@link ve.Log.open|open}</span>()
+	 * - <span color=00ffff>{@link ve.Log.warn|warn}</span>(argn_arguments:{@link any})
+	 * - <span color=00ffff>{@link ve.Log.print|print}</span>(arg0_type:{@link string}, argn_arguments:{@link any})
+	 * - <span color=00ffff>{@link ve.Log.remove|remove}</span>()
+	 * 
+	 * ##### Static Fields:
+	 * - `.instances`: {@link Array}<{@link log.Channel}>
+	 *   
+	 * ##### Static Methods:
+	 * - <span color=00ffff>{@link ve.Log.update|update}</span>() - Updates all {@link ve.Log} instances and alphabetically sorts channel order.
+	 * 
+	 * @type {log.Channel}
+	 */
 	log.Channel = class {
 		static instances = [];
 		
@@ -38,6 +70,8 @@
 			//Internal guard clause if duplicate
 			if (!log[key]) {
 				log[key] = this.log.bind(this);
+				log[`${key}_error`] = this.error.bind(this);
+				log[`${key}_warn`] = this.warn.bind(this);
 			} else {
 				console.warn(`log.${key} already exists as a custom logging channel. It cannot be overridden.`);
 			}
@@ -47,14 +81,38 @@
 			log.Channel.update();
 		}
 		
+		/**
+		 * Clears the current console channel.
+		 * - Method of: {@link log.Channel}
+		 */
 		clear () { this.log_el.innerHTML = ""; }
 		
+		/**
+		 * Closes the available console window if already open.
+		 * - Method of: {@link log.Channel}
+		 */
 		close () { if (this.console_window) this.console_window.close(); }
 		
+		/**
+		 * Prints an error message to the console channel, analogous to {@link console.error}.
+		 * - Method of: {@link log.Channel}
+		 * 
+		 * @param argn_arguments
+		 */
 		error (...argn_arguments) { this.print("error", argn_arguments); }
 		
+		/**
+		 * Prints a log message to the console channel, analogous to {@link console.log}.
+		 * - Method of: {@link log.Channel}
+		 * 
+		 * @param argn_arguments
+		 */
 		log (...argn_arguments) { this.print("log", argn_arguments); }
 		
+		/**
+		 * Opens a UI for the given console channel. DOM-facing.
+		 * - Method of: {@link log.Channel}
+		 */
 		open () {
 			if (this.console_window) this.console_window.close();
 			this.console_window = new ve.Window({
@@ -66,10 +124,19 @@
 			});
 		}
 		
+		/**
+		 * Prints a warning message to the console channel, analogous to {@link console.warn}.
+		 * - Method of: {@link log.Channel}
+		 *
+		 * @param argn_arguments
+		 */
 		warn (...argn_arguments) { this.print("warn", argn_arguments); }
 		
 		/**
-		 * @param {string} arg0_type - The console type (log, warn, error, info)
+		 * Prints a message to the given console channel.
+		 * - Method of: {@link log.Channel}
+		 * 
+		 * @param {string} arg0_type - The console type. Either 'log'/'warn'/'error'.
 		 * @param {any[]} argn_arguments - The arguments passed to the log function
 		 */
 		print (arg0_type, argn_arguments) {
@@ -137,6 +204,10 @@
 			this.log_el.appendChild(local_msg_el);
 		}
 		
+		/**
+		 * Removes the given console channel.
+		 * - Method of: {@link log.Channel}
+		 */
 		remove () {
 			//Iterate over all channels and remove it
 			for (let i = 0; i < log.Channel.instances.length; i++)
@@ -149,9 +220,15 @@
 		}
 		
 		/**
-		 * Updates all associated {@link ve.Log} components to ensure that they remain in-sync.
+		 * Updates all associated {@link log.Channel} components to ensure that they remain in-sync.
+		 * 
+		 * @alias #update
+		 * @memberof log.Channel
 		 */
 		static update () {
+			//Sort ve.Log.instances first
+			ve.Log.instances.sort((a, b) => a.key.localeCompare(b.key));
+			
 			//Iterate over all ve.Log.instances and draw them
 			for (let i = 0; i < ve.Log.instances.length; i++)
 				ve.Log.instances[i].draw();

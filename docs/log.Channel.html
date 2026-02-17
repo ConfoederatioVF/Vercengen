@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>ve.FileExplorer - Documentation</title>
+    <title>Channel - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,7 +32,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">ve.FileExplorer</h1>
+    <h1 class="page-title">Channel</h1>
     
 
     
@@ -45,60 +45,46 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="ve.html">ve</a><a href="ve.Component.html">.Component</a>.</span>
+            <span class="ancestors"><a href="log.html">log</a>.</span>
         
-        ve.FileExplorer
+        Channel
         </h2>
         
-            <div class="class-description"><p>Refer to <span color = "yellow"><a href="ve.Component.html">ve.Component</a></span> for methods or fields inherited from this Component's parent such as <code>.options.attributes</code> or <code>.element</code>.</p>
-<p>File explorer used either for navigation (i.e. saving/loading) or as a generic file explorer primitive.</p>
-<ul>
-<li>Functional binding: <span color=00ffff>veFileExplorer</span>().</li>
-</ul>
+            <div class="class-description"><p>Creates a new log channel that can be accessed by log.&lt;channel_key&gt;() for logging. Should ideally be initialised upon startup. This is used for custom multi-channel logging. Channels are mirrored in DevTools as well as having DOM-facing viewports and consoles via ve.Log, ve.ScriptManager.</p>
 <h5 id="constructor%3A">Constructor:</h5>
 <ul>
-<li><code>arg0_value</code>: string - The file path in which the FileExplorer should be initialised.</li>
+<li><code>arg0_key</code>; string - The key to use for channel logging. log.&lt;channel_key&gt;, log.&lt;channel_key&gt;_warn, log.&lt;channel_key&gt;_error are valid channels afterwards.</li>
 <li><code>arg1_options</code>: <a href="Object.html">Object</a>
 <ul>
-<li><code>.actions_components_obj</code>: <a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt; - Appended components in the topbar action meny, usually at the end.</li>
-<li><code>.file_components_obj={select: ...}</code>: <a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt;</li>
-<li><code>.file_icon=&quot;&lt;icon&gt;description&lt;/icon&gt;&quot;</code>: string</li>
-<li><code>.file_options</code>: <a href="Object.html">Object</a></li>
-<li><code>.folder_components_obj={select: ...}</code>: <a href="Object.html">Object</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt;</li>
-<li><code>.folder_icon=&quot;&lt;icon&gt;folder&lt;/icon&gt;&quot;</code>: string</li>
-<li><code>.folder_options</code>: <a href="Object.html">Object</a></li>
-<li><code>.name</code>: string</li>
-<li><code>.navigation_only=false</code>: boolean</li>
-<li><code>.onrefresh</code>: function(v:ve.FileExplorer.v, arg1_e:ve.FileExplorer)</li>
-<li></li>
-<li><code>.load_function</code>: function(arg0_data:string, arg1_file_path:string) - Automatically loads the text content of a valid extension into this function.</li>
-<li><code>.save_extension</code>: <a href="Array.html">Array</a>&lt;string&gt;|string - The save dot extension that files can be loaded from. <code>.*</code> refers to all file extensions.</li>
-<li><code>.save_function</code>: function(arg0_save_file_name:string) - Returns the value of the current savedata state.</li>
+<li><code>.colour</code>: <a href="Array.html">Array</a>&lt;number, number, number, number&gt;|string - The colour to use for the background.</li>
+<li><code>.text_colour</code>: <a href="Array.html">Array</a>&lt;number, number, number, number&gt;|string - The text colour to use for the foreground. Detected as either 'white/'black' based on luminance by default.</li>
 </ul>
 </li>
 </ul>
 <h5 id="instance%3A">Instance:</h5>
 <ul>
-<li><code>.clipboard</code>: <a href="Array.html">Array</a>&lt;string&gt; - The list of full file paths currently stored in the clipboard.</li>
-<li><code>.selected</code>: <a href="Array.html">Array</a>&lt;string&gt; - The list of selected file paths.</li>
-<li><code>.v</code>: string - Accessor. The current file path.</li>
+<li><code>.log_el</code>: <a href="HTMLElement.html">HTMLElement</a></li>
+<li><code>.key</code>: string</li>
+<li><code>.options</code>: <a href="Object.html">Object</a></li>
 </ul>
 <h5 id="methods%3A">Methods:</h5>
 <ul>
-<li><span color=00ffff>clearClipboard</span>()</li>
-<li><span color=00ffff>deselect</span>(arg0_file_path:string, arg1_options:{do_not_modify_classes: boolean}) | <a href="Array.html">Array</a>&lt;string&gt;</li>
-<li><span color=00ffff>deselectAll</span>()</li>
-<li><span color=00ffff>fireSelectToggle(v:boolean, e:ve.Toggle) - Internal handler for toggling file/folder selection.</li>
-<li><span color=00ffff>select</span>(arg0_file_path:string) | <a href="Array.html">Array</a>&lt;string&gt;</li>
-<li><span color=00ffff>selectAll</span>()</li>
-<li><span color=00ffff>setClipboard</span>() - Sets the clipboard to currently selected file paths.</li>
-<li><span color=00ffff>refresh</span>() - Refreshes the current ve.FileExplorer display. Handled automatically.</li>
-<li></li>
-<li><span color=00ffff>getFiles</span>(arg0_file_paths:<a href="Array.html">Array</a>&lt;string&gt;) | <a href="Array.html">Array</a>&lt;string&gt; - Returns all the subpaths in the set of file/folder paths given.</li>
-<li><span color=00ffff>copy</span>(arg0_file_paths:<a href="Array.html">Array</a>&lt;string&gt;, arg1_file_path:string, arg2_function:function) - Opens a copy files modal with a callback function.</li>
-<li><span color=00ffff>delete</span>(arg0_file_paths:<a href="Array.html">Array</a>&lt;string&gt;, arg1_file_path:string, arg2_function:function) - Opens a delete files modal with a callback function.</li>
-<li><span color=00ffff>move</span>(arg0_file_paths:<a href="Array.html">Array</a>&lt;string&gt;, arg1_file_path:string, arg2_function:function) - Opens a move files modal with a callback function.</li>
-<li><span color=00ffff>rename</span>(arg0_file_path:string, arg1_function:function) - Opens a rename file modal with a callback function.</li>
+<li><span color=00ffff>clear</span>()</li>
+<li><span color=00ffff>close</span>()</li>
+<li><span color=00ffff>error</span>(argn_arguments:any)</li>
+<li><span color=00ffff>log</span>(argn_arguments:any)</li>
+<li><span color=00ffff>open</span>()</li>
+<li><span color=00ffff>warn</span>(argn_arguments:any)</li>
+<li><span color=00ffff>print</span>(arg0_type:string, argn_arguments:any)</li>
+<li><span color=00ffff>remove</span>()</li>
+</ul>
+<h5 id="static-fields%3A">Static Fields:</h5>
+<ul>
+<li><code>.instances</code>: <a href="Array.html">Array</a>&lt;<a href="log.Channel.html">log.Channel</a>&gt;</li>
+</ul>
+<h5 id="static-methods%3A">Static Methods:</h5>
+<ul>
+<li><span color=00ffff>update</span>() - Updates all ve.Log instances and alphabetically sorts channel order.</li>
 </ul></div>
         
     
@@ -114,7 +100,7 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="ve.FileExplorer"><span class="type-signature"></span>new ve.FileExplorer<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Channel"><span class="type-signature"></span>new Channel<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
@@ -153,7 +139,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html">vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js</a>, <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html#line50">line 50</a>
+        <a href="log_LogChannel.js.html">log/LogChannel.js</a>, <a href="log_LogChannel.js.html#line44">line 44</a>
     </li></ul></dd>
     
 
@@ -191,17 +177,6 @@
     </div>
 
     
-        <h3 class="subsection-title">Extends</h3>
-
-        
-
-
-    <ul>
-        <li><a href="ve.Component.html">ve.Component</a></li>
-    </ul>
-
-
-    
 
     
 
@@ -211,525 +186,6 @@
 
     
 
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="v"><span class="type-signature"></span>v<span class="type-signature"> :string</span></h4>
-
-
-
-
-<div class="description">
-    <p>Returns the present file path.</p>
-<ul>
-<li>Accessor of ve.FileExplorer</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html">vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js</a>, <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html#line160">line 160</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code>string</code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="v"><span class="type-signature"></span>v<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Sets the present file path.</p>
-<ul>
-<li>Accessor of ve.FileExplorer</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html">vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js</a>, <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html#line173">line 173</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="clipboard"><span class="type-signature"></span>clipboard<span class="type-signature"> :<a href="Array.html">Array</a>.&lt;string></span></h4>
-
-
-
-
-<div class="description">
-    <p>Contains all file paths currently in the clipboard.</p>
-<ul>
-<li>Field of: ve.FileExplorer</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html">vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js</a>, <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html#line124">line 124</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;string></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="from_binding"><span class="type-signature"></span>from_binding<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Internal <code>.from_binding</code> setter for handling .options.from_binding. Accepts a string literal that is then parsed to a variable reference.</p>
-<p><code>.to_binding</code> counterparts are manually handled child-side.</p>
-<ul>
-<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#from_binding">ve.Component#from_binding</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line364">line 364</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="limit"><span class="type-signature"></span>limit<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Tests the current this.limit by calling this.limit_function(this.v, <a href="this.html">this</a>). Otherwise resolves to true if no <code>.options.limit</code> is set.</p>
-<ul>
-<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#limit">ve.Component#limit</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line182">line 182</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="name"><span class="type-signature"></span>name<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Returns the visual name of the present <a href="ve.Component.html">ve.Component</a>,</p>
-<ul>
-<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#name">ve.Component#name</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line223">line 223</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="selected"><span class="type-signature"></span>selected<span class="type-signature"> :<a href="Array.html">Array</a>.&lt;string></span></h4>
-
-
-
-
-<div class="description">
-    <p>Contains all currently selected file paths.</p>
-<ul>
-<li>Field of: ve.FileExplorer</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html">vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js</a>, <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html#line131">line 131</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;string></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
     
 
     
@@ -741,17 +197,14 @@
 
     
 
-    <h4 class="name" id="#copy"><span class="type-signature"></span>#copy<span class="signature">(arg0_file_paths, arg1_file_path, arg2_function)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="#update"><span class="type-signature"></span>#update<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Copies specific file paths in <code>arg0_file_paths</code> to <code>arg1_file_path</code>.</p>
-<ul>
-<li>Method of: ve.FileExplorer</li>
-</ul>
+    <p>Updates all associated <a href="log.Channel.html">log.Channel</a> components to ensure that they remain in-sync.</p>
 </div>
 
 
@@ -787,874 +240,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_file_operations_ui.js.html">vercengen/components/ComponentFileExplorer/file_operations_ui.js</a>, <a href="vercengen_components_ComponentFileExplorer_file_operations_ui.js.html#line16">line 16</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_file_paths</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;string></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>The file paths to copy.</p>
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_file_path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>Where to copy the file paths to.</p>
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg2_function</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>function</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>Callback function once the copy operation is finished.</p>
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="#delete"><span class="type-signature"></span>#delete<span class="signature">(arg0_file_paths, arg1_function)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Deletes selected file paths in <code>arg0_file_paths</code> recursively with error logging.</p>
-<ul>
-<li>Method of: ve.FileExplorer</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_file_operations_ui.js.html">vercengen/components/ComponentFileExplorer/file_operations_ui.js</a>, <a href="vercengen_components_ComponentFileExplorer_file_operations_ui.js.html#line203">line 203</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_file_paths</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;string></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>The file paths to delete.</p>
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_function</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>function</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>Callback function once the delete operation is finished.</p>
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="#getFiles"><span class="type-signature"></span>#getFiles<span class="signature">(arg0_file_paths)</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;string>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Returns all the subpaths in the set of file/folder paths given.</p>
-<ul>
-<li>Method of: ve.FileExplorer</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_file_operations_ui.js.html">vercengen/components/ComponentFileExplorer/file_operations_ui.js</a>, <a href="vercengen_components_ComponentFileExplorer_file_operations_ui.js.html#line332">line 332</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_file_paths</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;string></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;string></code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="#move"><span class="type-signature"></span>#move<span class="signature">(arg0_file_paths, arg1_file_path, arg2_function)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Moves files from selected file paths in <code>arg0_file_paths</code> to <code>arg1_file_path</code>.</p>
-<ul>
-<li>Method of: ve.FileExplorer</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_file_operations_ui.js.html">vercengen/components/ComponentFileExplorer/file_operations_ui.js</a>, <a href="vercengen_components_ComponentFileExplorer_file_operations_ui.js.html#line367">line 367</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_file_paths</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;string></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>The file paths to move.</p>
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_file_path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>The folder path to move to.</p>
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg2_function</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>function</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>Callback function once the move operation is finished.</p>
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="#rename"><span class="type-signature"></span>#rename<span class="signature">(arg0_file_path, arg1_function)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Creates a modal for renaming a specific file path in <code>arg0_file_path</code>.</p>
-<ul>
-<li>Method of: ve.FileExplorer</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_file_operations_ui.js.html">vercengen/components/ComponentFileExplorer/file_operations_ui.js</a>, <a href="vercengen_components_ComponentFileExplorer_file_operations_ui.js.html#line404">line 404</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_file_path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>The file path to rename.</p>
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_function</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>function</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>Callback function after the rename operation is complete.</p>
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="clearClipboard"><span class="type-signature"></span>clearClipboard<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Clears the present keyboard.</p>
-<ul>
-<li>Method of ve.FileExplorer</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html">vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js</a>, <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html#line191">line 191</a>
+        <a href="log_LogChannel.js.html">log/LogChannel.js</a>, <a href="log_LogChannel.js.html#line229">line 229</a>
     </li></ul></dd>
     
 
@@ -1694,16 +280,16 @@
 
     
 
-    <h4 class="name" id="deselect"><span class="type-signature"></span>deselect<span class="signature">(arg0_file_path, arg1_options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="clear"><span class="type-signature"></span>clear<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Deselects a specific file path and removes it from this.selected.</p>
+    <p>Clears the current console channel.</p>
 <ul>
-<li>Method of ve.FileExplorer</li>
+<li>Method of: <a href="log.Channel.html">log.Channel</a></li>
 </ul>
 </div>
 
@@ -1740,7 +326,179 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html">vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js</a>, <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html#line208">line 208</a>
+        <a href="log_LogChannel.js.html">log/LogChannel.js</a>, <a href="log_LogChannel.js.html#line89">line 89</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="close"><span class="type-signature"></span>close<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Closes the available console window if already open.</p>
+<ul>
+<li>Method of: <a href="log.Channel.html">log.Channel</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="log_LogChannel.js.html">log/LogChannel.js</a>, <a href="log_LogChannel.js.html#line95">line 95</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="error"><span class="type-signature"></span>error<span class="signature">(&hellip;argn_arguments)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Prints an error message to the console channel, analogous to console.error.</p>
+<ul>
+<li>Method of: <a href="log.Channel.html">log.Channel</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="log_LogChannel.js.html">log/LogChannel.js</a>, <a href="log_LogChannel.js.html#line103">line 103</a>
     </li></ul></dd>
     
 
@@ -1786,15 +544,10 @@
 
         <tr>
             
-                <td class="name"><code>arg0_file_path</code></td>
+                <td class="name"><code>argn_arguments</code></td>
             
 
             <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
             
             </td>
 
@@ -1804,6 +557,8 @@
 
                 
 
+                
+                    &lt;repeatable><br>
                 
                 </td>
             
@@ -1817,39 +572,98 @@
         </tr>
 
     
+    </tbody>
+</table>
 
-        <tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
             
-                <td class="name"><code>arg1_options</code></td>
-            
+<div class="section-method">
 
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
+    
+
+    <h4 class="name" id="log"><span class="type-signature"></span>log<span class="signature">(&hellip;argn_arguments)</span><span class="type-signature"></span></h4>
+
+    
 
 
-            
-            </td>
 
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
+<div class="description">
+    <p>Prints a log message to the console channel, analogous to console.log.</p>
+<ul>
+<li>Method of: <a href="log.Channel.html">log.Channel</a></li>
+</ul>
+</div>
 
-                
 
-                
-                </td>
-            
 
-            
 
-            <td class="description last">
-                
-                
-                    
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="log_LogChannel.js.html">log/LogChannel.js</a>, <a href="log_LogChannel.js.html#line111">line 111</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
 
 <table class="params">
     <thead>
@@ -1865,8 +679,6 @@
         
 
         
-        <th>Default</th>
-        
 
         <th class="last">Description</th>
     </tr>
@@ -1877,36 +689,25 @@
 
         <tr>
             
-                <td class="name"><code>do_not_modify_classes</code></td>
+                <td class="name"><code>argn_arguments</code></td>
             
 
             <td class="type">
-            
-                
-<span class="param-type"><code>boolean</code></span>
-
-
             
             </td>
 
             
                 <td class="attributes">
                 
-                    &lt;optional><br>
-                
 
                 
 
+                
+                    &lt;repeatable><br>
                 
                 </td>
             
 
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
             
 
             <td class="description last">
@@ -1919,13 +720,6 @@
     </tbody>
 </table>
 
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
 
 
 
@@ -1938,20 +732,6 @@
 
 
 
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-
-<div class="param-desc">
-    <p>string[]</p>
-</div>
-
-    
-</div>
 
 
 
@@ -1962,16 +742,16 @@
 
     
 
-    <h4 class="name" id="deselectAll"><span class="type-signature"></span>deselectAll<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="open"><span class="type-signature"></span>open<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Deselects all file paths, clearing this.selected.</p>
+    <p>Opens a UI for the given console channel. DOM-facing.</p>
 <ul>
-<li>Method of ve.FileExplorer</li>
+<li>Method of: <a href="log.Channel.html">log.Channel</a></li>
 </ul>
 </div>
 
@@ -2008,7 +788,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html">vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js</a>, <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html#line236">line 236</a>
+        <a href="log_LogChannel.js.html">log/LogChannel.js</a>, <a href="log_LogChannel.js.html#line117">line 117</a>
     </li></ul></dd>
     
 
@@ -2048,16 +828,16 @@
 
     
 
-    <h4 class="name" id="fireSelectToggle"><span class="type-signature"></span>fireSelectToggle<span class="signature">(v, e)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="print"><span class="type-signature"></span>print<span class="signature">(arg0_type, argn_arguments)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Fires a select toggle element for the full path.</p>
+    <p>Prints a message to the given console channel.</p>
 <ul>
-<li>Method of: ve.FileExplorer</li>
+<li>Method of: <a href="log.Channel.html">log.Channel</a></li>
 </ul>
 </div>
 
@@ -2094,7 +874,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html">vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js</a>, <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html#line256">line 256</a>
+        <a href="log_LogChannel.js.html">log/LogChannel.js</a>, <a href="log_LogChannel.js.html#line143">line 143</a>
     </li></ul></dd>
     
 
@@ -2138,7 +918,7 @@
 
         <tr>
             
-                <td class="name"><code>v</code></td>
+                <td class="name"><code>arg0_type</code></td>
             
 
             <td class="type">
@@ -2155,7 +935,7 @@
             
 
             <td class="description last">
-                
+                <p>The console type. Either 'log'/'warn'/'error'.</p>
                 
             </td>
         </tr>
@@ -2164,13 +944,13 @@
 
         <tr>
             
-                <td class="name"><code>e</code></td>
+                <td class="name"><code>argn_arguments</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><code>ve.FileExplorer</code></span>
+<span class="param-type"><code><a href="Array.html">Array</a>.&lt;any></code></span>
 
 
             
@@ -2181,231 +961,7 @@
             
 
             <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="refresh"><span class="type-signature"></span>refresh<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Refreshes the current file explorer path, rerendering the display for folders and files within the Component.</p>
-<ul>
-<li>Method of: ve.FileExplorer</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html">vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js</a>, <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html#line273">line 273</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="select"><span class="type-signature"></span>select<span class="signature">(arg0_file_path)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Selects a specific file path, then returns this.selected.</p>
-<ul>
-<li>Method of ve.FileExplorer</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html">vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js</a>, <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html#line664">line 664</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_file_path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
+                <p>The arguments passed to the log function</p>
                 
             </td>
         </tr>
@@ -2413,607 +969,6 @@
     
     </tbody>
 </table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-
-<div class="param-desc">
-    <p>string[]</p>
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="selectAll"><span class="type-signature"></span>selectAll<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Selects all file paths in the current folder being navigated.</p>
-<ul>
-<li>Method of ve.FileExplorer</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html">vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js</a>, <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html#line686">line 686</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="setClipboard"><span class="type-signature"></span>setClipboard<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Sets the clipboard to the current selection.</p>
-<ul>
-<li>Method of ve.FileExplorer</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html">vercengen/components/ComponentFileExplorer/ComponentFileExplorer.js</a>, <a href="vercengen_components_ComponentFileExplorer_ComponentFileExplorer.js.html#line705">line 705</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="addComponent"><span class="type-signature"></span>addComponent<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Adds the current component to this.parent_el should it exist.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#addComponent">ve.Component#addComponent</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line472">line 472</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="bind"><span class="type-signature"></span>bind<span class="signature">(arg0_container_el)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Manually binds/mounts the present <span color="yellow"><a href="ve.Component.html">ve.Component</a></span> into the visual DOM.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#bind">ve.Component#bind</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line489">line 489</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_container_el</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="HTMLElement.html">HTMLElement</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="fireFromBinding"><span class="type-signature"></span>fireFromBinding<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Pseudo-setter from binding. Fires only upon program-driven changes to .v directly, which means that this has to be monitored manually component-side in set v(). This should always come last in set v().</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#fireFromBinding">ve.Component#fireFromBinding</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line266">line 266</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="fireToBinding"><span class="type-signature"></span>fireToBinding<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Pseudo-setter to binding. Fires only upon user-driven changes, which means that this has to be monitored manually component-side.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#fireToBinding">ve.Component#fireToBinding</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line303">line 303</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
 
 
 
@@ -3044,9 +999,9 @@
 
 
 <div class="description">
-    <p>Removes the component/element from the DOM.</p>
+    <p>Removes the given console channel.</p>
 <ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+<li>Method of: <a href="log.Channel.html">log.Channel</a></li>
 </ul>
 </div>
 
@@ -3062,11 +1017,6 @@
 
     
 
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#remove">ve.Component#remove</a>
-    </li></ul></dd>
     
 
     
@@ -3088,7 +1038,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line501">line 501</a>
+        <a href="log_LogChannel.js.html">log/LogChannel.js</a>, <a href="log_LogChannel.js.html#line212">line 212</a>
     </li></ul></dd>
     
 
@@ -3128,16 +1078,16 @@
 
     
 
-    <h4 class="name" id="removeComponent"><span class="type-signature"></span>removeComponent<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="warn"><span class="type-signature"></span>warn<span class="signature">(&hellip;argn_arguments)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Removes the current component from this.parent_el should it exist.</p>
+    <p>Prints a warning message to the console channel, analogous to console.warn.</p>
 <ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
+<li>Method of: <a href="log.Channel.html">log.Channel</a></li>
 </ul>
 </div>
 
@@ -3153,11 +1103,6 @@
 
     
 
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#removeComponent">ve.Component#removeComponent</a>
-    </li></ul></dd>
     
 
     
@@ -3179,98 +1124,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line528">line 528</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="setOwner"><span class="type-signature"></span>setOwner<span class="signature">(arg0_value, arg1_owner_array)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Sets the root parent and ownership tree. Influences this.parent_el, this.owner, this.owners.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#setOwner">ve.Component#setOwner</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line446">line 446</a>
+        <a href="log_LogChannel.js.html">log/LogChannel.js</a>, <a href="log_LogChannel.js.html#line134">line 134</a>
     </li></ul></dd>
     
 
@@ -3302,164 +1156,7 @@
         <th>Type</th>
 
         
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_value</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_owner_array</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="setValueFromObject"><span class="type-signature"></span>setValueFromObject<span class="signature">(arg0_object, arg1_object)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Destructures Object values and transfers them into the <code>.v</code> instance fields of each Vercengen component.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#setValueFromObject">ve.Component#setValueFromObject</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line544">line 544</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
+        <th>Attributes</th>
         
 
         
@@ -3473,50 +1170,29 @@
 
         <tr>
             
-                <td class="name"><code>arg0_object</code></td>
+                <td class="name"><code>argn_arguments</code></td>
             
 
             <td class="type">
             
-                
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-
-
-            
             </td>
 
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
             
 
             
 
             <td class="description last">
-                <p>The Vercengen object to transfer to.</p>
                 
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_object</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>The other object to transfer from.</p>
                 
             </td>
         </tr>

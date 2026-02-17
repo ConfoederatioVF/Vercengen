@@ -95,6 +95,9 @@ ve.ScriptManager = class extends ve.Component {
 		this.id = Class.generateRandomID(ve.ScriptManager);
 		this.options = options;
 		
+		//Load console channel for ScriptManager
+		if (!log.scriptmanager) new log.Channel("scriptmanager", { colour: "powderblue" });
+		
 		let scriptmanager_settings = ve.registry.settings.ScriptManager;
 		
 		//Load settings from save file if available
@@ -111,36 +114,6 @@ ve.ScriptManager = class extends ve.Component {
 			};
 		try { Blockly.mainWorkspace.clear(); } catch (e) {}
 		
-		this.console_el = document.createElement("div");
-		this.console_el.print = (arg0_message, arg1_type) => {
-			//Convert from parameters
-			let message = (arg0_message) ? arg0_message : "";
-			let type = (arg1_type) ? arg1_type : "message";
-			
-			//Declare local instance variables
-			let local_msg_el = document.createElement("div");
-				local_msg_el.classList.add(type);
-				if (type === "error" && typeof message === "object" && message?.stack)
-					message = message.stack;
-					
-				if (typeof message === "string") {
-					local_msg_el.innerText = message;
-				} else {
-					let local_object_inspector = new ve.ObjectInspector(message);
-					
-					if (
-						local_object_inspector.element.innerHTML.length > 10000 && 
-						this._settings.log_large_objects_in_console === false
-					) {
-						veConfirm(loc("ve.registry.localisation.ScriptManager_object_to_be_logged", 10000/1000), {
-							special_function: () => local_object_inspector.bind(local_msg_el)
-						});
-					} else {
-						local_object_inspector.bind(local_msg_el);
-					}
-				}
-			this.console_el.appendChild(local_msg_el);
-		};
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-script-manager");
 			this.element.instance = this;
@@ -329,10 +302,6 @@ ve.ScriptManager = class extends ve.Component {
 		this.topbar_el = document.createElement("div");
 		this.topbar_el.id = "topbar";
 		
-		this.console_html = new ve.HTML(this.console_el, {
-			attributes: { "class": "ve-script-manager-console" },
-			x: 0, y: 0
-		});
 		this.topbar_interface = new ve.RawInterface({
 			name_el: new ve.HTML(() => {
 				return [
@@ -532,7 +501,7 @@ ve.ScriptManager = class extends ve.Component {
 						try {
 							eval(this.v);
 						} catch (e) {
-							this.console_el.print(e, "error");
+							log.scriptmanager_error(e, "error");
 						}
 					}, { name: loc("ve.registry.localisation.ScriptManager_run_current_file") })
 				}, { id: "script_manager_run" });
@@ -540,49 +509,7 @@ ve.ScriptManager = class extends ve.Component {
 			console: new ve.Button(() => {
 				if (this.local_console) this.local_console.close();
 				this.local_console = new ve.Window({
-					console_el: this.console_html,
-					actions_bar: new ve.RawInterface({
-						console_command: new ve.Text("", {
-							attributes: { placeholder: loc("ve.registry.localisation.ScriptManager_enter_console_command") },
-							name: " ",
-							style: { 
-								display: "inline",
-								'input[type="text"]': {
-									maxWidth: "30rem"
-								}
-							}
-						}),
-						send_command: new ve.Button(() => {
-							//Declare local instance variables
-							let command_value = this.local_console.actions_bar.console_command.v;
-							
-							if (command_value.length > 0) try {
-								this.console_el.print(command_value, "user-command");
-								eval(command_value);
-							} catch (e) {
-								this.console_el.print(e, "error");
-							}
-						}, { name: loc("ve.registry.localisation.ScriptManager_send") }),
-						information: new ve.Button(() => {
-							this.console_el.print(loc("ve.registry.localisation.ScriptManager_help_menu"));
-							this.console_el.print(loc("ve.registry.localisation.ScriptManager_help_print"));
-							this.console_el.print(loc("ve.registry.localisation.ScriptManager_help_types"));
-						}, {
-							name: loc("ve.registry.localisation.ScriptManager_help"),
-							tooltip: loc("ve.registry.localisation.ScriptManager_prints_help_information")
-						}),
-						clear_console: new ve.Button(() => {
-							let local_confirm_modal = new ve.Confirm(loc("ve.registry.localisation.ScriptManager_are_you_sure_clear_console"), {
-								special_function: () => this.console_el.innerHTML = ""
-							});
-						}, { name: loc("ve.registry.localisation.ScriptManager_clear_console") }),
-					}, {
-						style: {
-							alignItems: "center",
-							display: "flex"
-						},
-						name: " "
-					})
+					log: new ve.Log("scriptmanager")
 				}, {
 					can_rename: false,
 					do_not_wrap: true,
@@ -697,7 +624,7 @@ ve.ScriptManager = class extends ve.Component {
 				
 				//Log error to console if this._settings.display_load_errors is true
 				if (this._settings.display_load_errors)
-					this.console_el.print(loc("ve.registry.localisation.ScriptManager_error_parsing_es6", e.toString()), "error");
+					log.scriptmanager(loc("ve.registry.localisation.ScriptManager_error_parsing_es6", e.toString()), "error");
 				
 				//Hide Blockly workspace, then clear it
 				this.scene_blockly.hide();
