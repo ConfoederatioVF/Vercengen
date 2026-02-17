@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>vercengen/components/ComponentConsole.js - Documentation</title>
+    <title>vercengen/components/ComponentLog.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,7 +32,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">vercengen/components/ComponentConsole.js</h1>
+    <h1 class="page-title">vercengen/components/ComponentLog.js</h1>
     
 
     
@@ -80,7 +80,7 @@ ve.Log = class extends ve.Component { //[WIP] - Finish Component body
 		
 		this.actions_bar_el = new ve.RawInterface({
 			console_command: new ve.Text("", {
-				attributes: { placeholder: loc("ve.registry.localisation.ScriptManager_enter_console_command") },
+				attributes: { placeholder: loc("ve.registry.localisation.Log_enter_console_command") },
 				name: " ",
 				style: {
 					display: "inline",
@@ -105,9 +105,9 @@ ve.Log = class extends ve.Component { //[WIP] - Finish Component body
 				} catch (e) {
 					log_obj.error(e);
 				}
-			}, { name: "Send" }),
+			}, { name: loc("ve.registry.localisation.Log_send") }),
 			clear_console: new ve.Button(() => {
-				let local_confirm_modal = new ve.Confirm("Are you sure you want to clear the present console?", {
+				let local_confirm_modal = new ve.Confirm(loc("ve.registry.localisation.Log_enter_console_confirmation"), {
 					special_function: () => { try { this.getChannel().clear(); } catch (e) {} }
 				});
 			}, { name: "Clear Console" }),

@@ -36,7 +36,7 @@ ve.Log = class extends ve.Component { //[WIP] - Finish Component body
 		
 		this.actions_bar_el = new ve.RawInterface({
 			console_command: new ve.Text("", {
-				attributes: { placeholder: loc("ve.registry.localisation.ScriptManager_enter_console_command") },
+				attributes: { placeholder: loc("ve.registry.localisation.Log_enter_console_command") },
 				name: " ",
 				style: {
 					display: "inline",
@@ -61,9 +61,9 @@ ve.Log = class extends ve.Component { //[WIP] - Finish Component body
 				} catch (e) {
 					log_obj.error(e);
 				}
-			}, { name: "Send" }),
+			}, { name: loc("ve.registry.localisation.Log_send") }),
 			clear_console: new ve.Button(() => {
-				let local_confirm_modal = new ve.Confirm("Are you sure you want to clear the present console?", {
+				let local_confirm_modal = new ve.Confirm(loc("ve.registry.localisation.Log_enter_console_confirmation"), {
 					special_function: () => { try { this.getChannel().clear(); } catch (e) {} }
 				});
 			}, { name: "Clear Console" }),

@@ -973,7 +973,6 @@ ve.registry.localisation = {
 	ScriptManager_display_load_errors: "Display load errors",
 	ScriptManager_editor_code: "Editor (Code)",
 	ScriptManager_editor_theme: "Editor Theme",
-	ScriptManager_enter_console_command: "Enter console command ...",
 	ScriptManager_error_compatibility: "Are you sure this file is £1£ compatible? Blockly has been disabled, and the file is only editable via CodeMirror.",
 	ScriptManager_error_loading_settings: "Error loading settings",
 	ScriptManager_error_parsing_es6: "On parsing file: £1£. The loaded file is not ES6-compatible.",
@@ -1085,6 +1084,14 @@ ve.registry.localisation = {
 	List_shift: "Shift",
 	List_shift_left: "Shift Left",
 	List_shift_right: "Shift Right",
+	
+	//Log
+	Log_enter_console_command: "Enter console command ..",
+	Log_clear_console: "Clear Console",
+	Log_clear_console_confirmation: "Are you sure you want to clear the present console?",
+	Log_large_object_confirmation: "Are you sure you want to view this large object? It has a length of £1£ character(s).",
+	Log_send: "Send",
+	Log_show_large_object: "Show large object ..",
 	
 	//ObjectEditor
 	ObjectEditor_add_array_info: "Select the type of item to push to the array.",
@@ -2008,7 +2015,6 @@ ve.registry.localisation = {
 	ScriptManager_display_load_errors_de: "Ladefehler anzeigen",
 	ScriptManager_editor_code_de: "Editor (Code)",
 	ScriptManager_editor_theme_de: "Editor-Theme",
-	ScriptManager_enter_console_command_de: "Konsolenbefehl eingeben ...",
 	ScriptManager_error_compatibility_de: "Sind Sie sicher, dass diese Datei £1£-kompatibel ist? Blockly wurde deaktiviert und die Datei ist nur über CodeMirror bearbeitbar.",
 	ScriptManager_error_loading_settings_de: "Fehler beim Laden der Einstellungen",
 	ScriptManager_error_parsing_es6_de: "Beim Parsen der Datei: £1£. Die geladene Datei ist nicht ES6-kompatibel.",
@@ -2120,6 +2126,14 @@ ve.registry.localisation = {
 	List_shift_de: "Verschieben",
 	List_shift_left_de: "Nach links verschieben",
 	List_shift_right_de: "Nach rechts verschieben",
+	
+	//Log
+	Log_clear_console_de: "Konsole leeren",
+	Log_clear_console_confirmation_de: "Sind Sie sicher, dass Sie die aktuelle Konsole leeren möchten?",
+	Log_enter_console_command_de: "Konsolenbefehl eingeben ...",
+	Log_large_object_confirmation_de: "Sind Sie sicher, dass Sie dieses große Objekt anzeigen möchten? Es hat eine Länge von £1£ Zeichen.",
+	Log_send_de: "Senden",
+	Log_show_large_object_de: "Großes Objekt anzeigen ..",
 	
 	//ObjectEditor
 	ObjectEditor_add_array_info_de: "Wählen Sie den Typ des Elements, das dem Array hinzugefügt werden soll.",
@@ -3043,7 +3057,6 @@ ve.registry.localisation = {
 	ScriptManager_display_load_errors_fr: "Afficher les erreurs de chargement",
 	ScriptManager_editor_code_fr: "Éditeur (Code)",
 	ScriptManager_editor_theme_fr: "Thème de l'éditeur",
-	ScriptManager_enter_console_command_fr: "Entrer une commande...",
 	ScriptManager_error_compatibility_fr: "Êtes-vous sûr que ce fichier est compatible £1£ ? Blockly a été désactivé et le fichier n'est modifiable que via CodeMirror.",
 	ScriptManager_error_loading_settings_fr: "Erreur de chargement des paramètres",
 	ScriptManager_error_parsing_es6_fr: "Lors de l'analyse du fichier : £1£. Le fichier n'est pas compatible ES6.",
@@ -3155,6 +3168,14 @@ ve.registry.localisation = {
 	List_shift_fr: "Décaler",
 	List_shift_left_fr: "Décaler à gauche",
 	List_shift_right_fr: "Décaler à droite",
+	
+	//Log
+	Log_clear_console_fr: "Effacer la console",
+	Log_clear_console_confirmation_fr: "Êtes-vous sûr de vouloir effacer la console actuelle ?",
+	Log_enter_console_command_fr: "Entrer une commande...",
+	Log_large_object_confirmation_fr: "Êtes-vous sûr de vouloir afficher cet objet volumineux ? Il a une longueur de £1£ caractère(s).",
+	Log_send_fr: "Envoyer",
+	Log_show_large_object_fr: "Afficher un objet volumineux ..",
 	
 	//ObjectEditor
 	ObjectEditor_add_array_info_fr: "Sélectionnez le type d'élément à ajouter au tableau.",

@@ -15,6 +15,7 @@
 	 * - `arg0_key`; {@link string} - The key to use for channel logging. log.<channel_key>, log.<channel_key>_warn, log.<channel_key>_error are valid channels afterwards.
 	 * - `arg1_options`: {@link Object}
 	 *   - `.colour`: {@link Array}<{@link number}, {@link number}, {@link number}, {@link number}>|{@link string} - The colour to use for the background.
+	 *   - `.large_object_limit=10000`: {@link number} - The limit at which large object warnings should be emitted.
 	 *   - `.text_colour`: {@link Array}<{@link number}, {@link number}, {@link number}, {@link number}>|{@link string} - The text colour to use for the foreground. Detected as either 'white/'black' based on luminance by default.
 	 * 
 	 * ##### Instance:
@@ -51,6 +52,7 @@
 			//Initialise options
 			let bg_colour = (options.colour) ? 
 				options.colour : ve.registry.settings.Channel.default_bg_colour;
+			options.large_object_limit = Math.returnSafeNumber(options.large_object_limit, 10000);
 			let text_colour = (options.text_colour) ? 
 				options.text_colour : ve.registry.settings.Channel.default_text_colour;
 				if (text_colour === "auto") text_colour = Colour.getBestTextColour(bg_colour);
@@ -181,11 +183,11 @@
 							style: { padding: 0 }
 						});
 						
-						if (local_object_inspector.element.innerHTML.length > 10000) {
+						if (local_object_inspector.element.innerHTML.length > this.options.large_object_limit) {
 							let placeholder = document.createElement("button");
-							placeholder.innerText = "Show large object ..";
+							placeholder.innerText = loc("ve.registry.localisation.Log_show_large_object");
 							placeholder.onclick = () => {
-								let local_confirm_modal = new ve.Confirm(`Are you sure you want to view this large object? It has a length of ${String.formatNumber(local_object_inspector.element.innerHTML.length)} character(s).`, {
+								let local_confirm_modal = new ve.Confirm(loc("ve.registry.localisation.Log_large_object_confirmation", String.formatNumber(local_object_inspector.element.innerHTML.length)), {
 									special_function: () => {
 										placeholder.replaceWith(local_object_inspector.element);
 										local_object_inspector.bind(part_el);
