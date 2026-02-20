@@ -236,4 +236,23 @@
 				ve.Log.instances[i].draw();
 		}
 	};
+	
+	/**
+	 * Returns logging functions, resolving them either to a custom logging channel or to the default console.
+	 * 
+	 * @param {string} [arg0_channel_key="console"]
+	 * 
+	 * @returns {{error_fn: function, log_fn: function, warn_fn: function}}
+	 */
+	log.getLoggingFunctions = function (arg0_channel_key) {
+		//Convert from parameters
+		let channel_key = (arg0_channel_key) ? arg0_channel_key : "console";
+		
+		//Return statement
+		return {
+			error_fn: (channel_key !== "console") ? log[`${channel_key}_error`] : console.error,
+			log_fn: (channel_key !== "console") ? log[`${channel_key}_log`] : console.log,
+			warn_fn: (channel_key !== "console") ? log[`${channel_key}_warn`] : console.warn
+		};
+	};
 }

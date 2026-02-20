@@ -9,21 +9,6 @@
 		global.Blacktraffic = {};
 	
 	/**
-	 * Returns the current operating system. Either 'lin'/'mac'/'win'.
-	 * 
-	 * @returns {string}
-	 */
-	Blacktraffic.getOS = function () {
-		//Declare local instance variables
-		let process_platform = process.platform;
-		
-		//Return statement
-		if (process_platform === "win32") return "win";
-		if (["freebsd", "linux", "openbsd"].includes(process_platform)) return "lin";
-		return "mac";
-	};
-	
-	/**
 	 * Executes a shell command.
 	 * 
 	 * @param {string} arg0_command
@@ -83,5 +68,53 @@
 				}
 			});
 		});
+	};
+	
+	/**
+	 * Returns any available port that can be used by Puppeteer/Selenium agents, or for server work.
+	 * 
+	 * @returns {Promise<number>}
+	 */
+	Blacktraffic.getFreePort = async function () {
+		//Return statement
+		return new Promise((resolve, reject) => {
+			let server = net.createServer();
+				server.unref();
+				server.on("error", reject);
+				server.listen(0, () => {
+					let port = server.address().port;
+					server.close(() => resolve(port));
+				});
+		});
+	};
+	
+	/**
+	 * Returns the current operating system. Either 'lin'/'mac'/'win'.
+	 *
+	 * @returns {string}
+	 */
+	Blacktraffic.getOS = function () {
+		//Declare local instance variables
+		let process_platform = process.platform;
+		
+		//Return statement
+		if (process_platform === "win32") return "win";
+		if (["freebsd", "linux", "openbsd"].includes(process_platform)) return "lin";
+		return "mac";
+	};
+	
+	/**
+	 * Waits a certain number of ms before continuing with the current process as a synchronous command.
+	 * 
+	 * @param {number} arg0_ms
+	 * 
+	 * @returns {Promise<unknown>}
+	 */
+	Blacktraffic.sleep = function (arg0_ms) {
+		//Convert from parameters
+		let ms = arg0_ms;
+		
+		//Return statement
+		return new Promise(resolve => setTimeout(resolve, ms));
 	};
 }
