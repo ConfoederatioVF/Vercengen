@@ -3,12 +3,23 @@ if (!global.Blacktraffic) global.Blacktraffic = {};
 /**
  * <span color = "yellow">{@link ve.Feature}</span>: UF feature used for browser automation, with matching Puppeteer/Selenium distributions. Note that Puppeteer is recommended for most automation use-cases, as it is more effective at spoofing user traffic.
  * 
- * @class
- * @memberof Blacktraffic
- * @namespace Blacktraffic.AgentBrowser
+ * ##### Constructor:
+ * - `arg0_key`: {@link string}
+ * - `arg1_options`: {@link Object}
+ * 
+ * ##### Instance:
+ * - `.key`: {@link string}
+ * - `.options`: {@link Object}
+ * 
+ * ##### Methods:
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowser.remove|remove}</span>()
+ * 
+ * ##### Static Fields:
+ * - `.instances`: {@link Array}<{@link Blacktraffic.AgentBrowser}>
+ * 
  * @type {Blacktraffic.AgentBrowser}
  */
-Blacktraffic.AgentBrowser = class {
+Blacktraffic.AgentBrowser = class { //[WIP] - Finish documentation
 	//Declare local static variables
 	
 	/**
@@ -32,6 +43,9 @@ Blacktraffic.AgentBrowser = class {
 	/**
 	 * Removes the current AgentBrowser from the super class.
 	 * - Method of: {@link Blacktraffic.AgentBrowser}
+	 * 
+	 * @alias remove
+	 * @memberof Blacktraffic.AgentBrowser
 	 */
 	remove () {
 		//Iterate over all Blacktraffic.AgentBrowser.instances and remove the current instance

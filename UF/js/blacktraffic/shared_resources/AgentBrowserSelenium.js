@@ -1,6 +1,8 @@
 if (!global.Blacktraffic) global.Blacktraffic = {};
 
 /**
+ * Refer to <span color = "yellow">{@link Blacktraffic.AgentBrowser}</span> for methods or fields inherited from automatic destructuring.
+ * 
  * Creates a new Selenium browser agent (Firefox) used for scraping tasks and purposes. Requires npm selenium-webdriver.
  *
  * **Note.** This shared resource type is currently a beta test, and may not be equivalent to Puppeteer logic, which is recommended for production use.
@@ -17,12 +19,40 @@ if (!global.Blacktraffic) global.Blacktraffic = {};
  *   -
  *   - `.connection_attempts_threshold=3`: {@link number} - The number of connection attempts to use when opening the browser.
  *   - `.log_channel="console"`: {@link string}
+ * 
+ * ##### Instance:
+ * - `.key`: {@link string}
+ * - `.options`: {@link Object}
+ *   - `.onload`: {@link function}
+ * - `.tab_obj`: {@link Object}<{@link Object}>
+ *
+ * ##### Methods:
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.captureConsoleToChannel|captureConsoleToChannel}</span>(arg0_tab_key:{@link Object}|{@link string}, arg1_channel_key:{@link string})
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.close|close}</span>() | {@link Blacktraffic.AgentBrowserSelenium}
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.closeTab|closeTab}</span>(arg0_tab_key:{@link Object}|{@link string}) | {@link Blacktraffic.AgentBrowserSelenium}
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.closeUserTabs|closeUserTabs}</span>() | {@link Blacktraffic.AgentBrowserSelenium}
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.focusTab|focusTab}</span>(arg0_tab_key:{@link Object}|{@link string}) | {@link Object}
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.getElement|getElement}</span>(arg0_tab_key:{@link Object}|{@link string}, arg1_selector:{@link string}, arg2_options:{@link Object}) | {@link HTMLElement}
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.getTab|getTab}</span>(arg0_tab_key:{@link Object}|{@link string}) | {@link Object}
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.getTabs|getTabs}</span>() | {@link Array}<{@link Object}>
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.injectScript|injectScript}</span>(arg0_tab_key:{@link Object}|{@link string}, arg1_function:{@link function}, arg2_options:{@link Object}) | {@link Object}
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.injectScriptOnload|injectScriptOnload}</span>(arg0_tab_key:{@link Object}|{@link string}, arg1_function:{@link function}, arg2_options:{@link Object}) | {@link Object}
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.open|open}</span>() | {@link Blacktraffic.AgentBrowserSelenium}
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.openTab|openTab}</span>(arg0_tab_key:{@link Object}|{@link string}, arg1_url:{@link string}) | {@link Object}
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.reloadTab|reloadTab}</span>(arg0_tab_key:{@link Object}|{@link string}) | {@link Object}
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.remove|remove}</span>()
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.tabExists|tabExists}</span>(arg0_tab_key:{@link Object}|{@link string}, arg1_options:{@link Object})
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.updateLogChannel|updateLogChannel}</span>(arg0_channel_key:{@link string})
+ * - <span color=00ffff>{@link Blacktraffic.AgentBrowserSelenium.waitForStableContent|waitForStableContent}</span>(arg0_tab_key:{@link Object}|{@link string}, arg1_selector:{@link string}, arg2_interval=3000:{@link number}) | {@link boolean}
+ *
+ * ##### Static Fields:
+ * - `.instances`: {@link Array}<{@link Blacktraffic.AgentBrowserPuppeteer}>
  *
  * @augments Blacktraffic.AgentBrowser
  * @memberof Blacktraffic.AgentBrowser
  * @type {Blacktraffic.AgentBrowserSelenium}
  */
-Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
+Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser { //[WIP] - Finish documentation and method refactoring
 	static instances = [];
 	
 	constructor (arg0_key, arg1_options) {
@@ -52,6 +82,7 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	
 	/**
 	 * Captures the current tab's console and feeds it into a {@link log.Channel}.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias captureConsoleToChannel
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -78,6 +109,7 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	
 	/**
 	 * Closes the browser currently mounted to the AgentBrowser.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias close
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -95,6 +127,7 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	
 	/**
 	 * Closes the tab specified.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias closeTab
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -106,6 +139,8 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	async closeTab (arg0_tab_key) {
 		//Convert from parameters
 		let tab_obj = this.getTab(arg0_tab_key);
+		
+		//Closes the given tab if possible
 		if (tab_obj) {
 			let target_handle = await tab_obj.getWindowHandle();
 			await this.browser.switchTo().window(target_handle);
@@ -118,11 +153,14 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 				this.browser = undefined;
 			}
 		}
+		
+		//Return statement
 		return this;
 	}
 	
 	/**
 	 * Closes all user tabs from the current browser.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias closeUserTabs
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -144,6 +182,7 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	
 	/**
 	 * Focuses the specified tab.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias focusTab
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -172,6 +211,7 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	
 	/**
 	 * Fetches a specific element handle using CSS selectors.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias getElement
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -186,20 +226,26 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	async getElement (arg0_tab_key, arg1_selector, arg2_options) {
 		//Convert from parameters
 		let tab_obj = this.getTab(arg0_tab_key);
+		let selector = arg1_selector;
 		let options = arg2_options ? arg2_options : {};
 		
-		
+		//Initialise options
 		options.timeout = Math.returnSafeNumber(options.timeout, 10000);
 		
-		let condition = until.elementLocated(By.css(arg1_selector));
+		//Declare local instance variables
+		let condition = until.elementLocated(By.css(selector));
 		let element = await tab_obj.wait(condition, options.timeout);
+		
 		await tab_obj.wait(until.elementIsVisible(element), options.timeout);
 		await tab_obj.wait(until.elementIsEnabled(element), options.timeout);
+		
+		//Return statement
 		return element;
 	}
 	
 	/**
 	 * Returns a tab object based on its key.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias getTab
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -209,13 +255,18 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	 * @returns {Object}
 	 */
 	getTab (arg0_tab_key) {
+		//Convert from parameters
 		let tab_key = arg0_tab_key;
-		if (typeof tab_key === "object") return tab_key;
+		
+		if (typeof tab_key === "object") return tab_key; //Internal guard clause if tab already exists
+		
+		//Return statement
 		return this.tab_obj[tab_key];
 	}
 	
 	/**
 	 * Returns all tabs in the current browser.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias getTabs
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -223,12 +274,14 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	 * @returns {Promise<Object[]>}
 	 */
 	async getTabs () {
+		//Return statement
 		if (this.browser) return await this.browser.getAllWindowHandles();
 	}
 	
 	/**
 	 * Injects a script within the current tab.
 	 * **Note.** Contexts are fully isolated when passing a function.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias injectScript
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -247,10 +300,7 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 		
 		//Execute function if possible
 		if (tab_obj && local_function)
-			await tab_obj.executeScript(
-				local_function,
-				options.options ? options.options : {}
-			);
+			await tab_obj.executeScript(local_function, (options.options) ? options.options : {});
 		
 		//Return statement
 		return tab_obj;
@@ -259,6 +309,7 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	/**
 	 * Registers an onload script for future page visits using the mounted tab.
 	 * **Note.** Contexts are fully isolated when passing a function.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias injectScriptOnload
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -272,22 +323,25 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	 * @returns {Promise<Object>}
 	 */
 	async injectScriptOnload (arg0_tab_key, arg1_function, arg2_options) {
+		//Convert from parameters
 		let tab_obj = this.getTab(arg0_tab_key);
+		let local_function = arg1_function;
 		let options = arg2_options ? arg2_options : {};
-		if (tab_obj && arg1_function) {
+		
+		//Execute script on load
+		if (tab_obj && arg1_function)
 			if (options.url) {
 				await tab_obj.get(options.url);
-				await tab_obj.executeScript(
-					arg1_function,
-					options.options ? options.options : {}
-				);
+				await tab_obj.executeScript(local_function, (options.options) ? options.options : {});
 			}
-		}
+		
+		//Return statement
 		return tab_obj;
 	}
 	
 	/**
 	 * Initialises a Firefox instance and connects Selenium.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias open
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -295,13 +349,15 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	 * @returns {Promise<Blacktraffic.AgentBrowserSelenium>}
 	 */
 	async open () {
+		//Declare local instance variables
 		let attempts = 0;
 		
+		//Iterate over all connection attempts to make sure Firefox is initialised
 		for (let i = 0; i < this.options.connection_attempts_threshold; i++) {
 			try {
 				let target_port = await Blacktraffic.getFreePort();
 				
-				// Firefox uses --marionette for remote control on a specific port
+				//Firefox uses --marionette for remote control on a specific port
 				this.launch_cmd = `"${Blacktraffic.getFirefoxBinaryPath()}" --marionette --start-debugger-server ${target_port}${
 					this.options.user_data_folder ? ` -profile "${this.options.user_data_folder}"` : ""
 				}${this.options.headless ? " -headless" : ""}`;
@@ -317,29 +373,25 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 				.setFirefoxOptions(firefox_options)
 				.build();
 				
-				this.log_fn(
-					`Blacktraffic.AgentBrowserSelenium: ${this.key} (Firefox) started.`
-				);
+				this.log_fn(`Blacktraffic.AgentBrowserSelenium: ${this.key} (Firefox) started.`);
 				break;
 			} catch (e) {
 				attempts++;
-				this.warn_fn(
-					`Launch failure, retrying .. ${attempts}/${this.options.connection_attempts_threshold}`
-				);
+				this.warn_fn(`Launch failure, retrying .. ${attempts}/${this.options.connection_attempts_threshold}`);
 				await Blacktraffic.sleep(500);
 			}
 		}
 		
 		if (!this.browser)
-			this.error_fn(
-				`Blacktraffic.AgentBrowserSelenium: ${this.key} failed to connect to Firefox.`
-			);
+			this.error_fn(`Blacktraffic.AgentBrowserSelenium: ${this.key} failed to connect to Firefox.`);
 		
+		//Return statement
 		return this;
 	}
 	
 	/**
 	 * Opens a tab at the corresponding URL. Corresponding URLs are optional.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias openTab
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -350,18 +402,25 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	 * @returns {Promise<Object>}
 	 */
 	async openTab (arg0_tab_key, arg1_url) {
+		//Convert from parameters
 		let tab_key = arg0_tab_key ? arg0_tab_key : Object.generateRandomID(this.tab_obj);
+		let url = arg1_url;
+		
+		//Make sure browser is open first
 		if (!this.browser) await this.open();
 		
 		await this.browser.switchTo().newWindow("tab");
 		this.tab_obj[tab_key] = this.browser;
 		this.tab_obj[tab_key]["_blacktraffic_key"] = tab_key;
 		
-		if (arg1_url) await this.browser.get(arg1_url);
+		if (url) await this.browser.get(url);
+		
+		//Return statement
 		return this.tab_obj[tab_key];
 	}
 	/**
 	 * Reloads the given tab.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias reloadTab
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -371,13 +430,19 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	 * @returns {Promise<Object>}
 	 */
 	async reloadTab (arg0_tab_key) {
+		//Convert from parameters
 		let tab_obj = this.getTab(arg0_tab_key);
+		
+		//Refresh the current tab
 		await tab_obj.navigate().refresh();
+		
+		//Return statement
 		return tab_obj;
 	}
 	
 	/**
 	 * Checks if a given tab exists.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias tabExists
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -389,8 +454,11 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	 * @returns {Promise<boolean>}
 	 */
 	async tabExists (arg0_tab_key, arg1_options) {
+		//Convert from parameters
 		let tab_obj = this.getTab(arg0_tab_key);
 		let options = arg1_options ? arg1_options : {};
+		
+		//Declare local instance variables
 		let is_connected = false;
 		
 		if (tab_obj && options.strict) {
@@ -399,19 +467,24 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 				is_connected = true;
 			} catch (e) {}
 		}
+		
+		//Return statement
 		if (!options.strict && tab_obj) return true;
 		if (options.strict && is_connected) return true;
 	}
 	
 	/**
 	 * Removes the current {@link Blacktraffic.AgentBrowser}.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias remove
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
 	 */
 	async remove () {
-		await this.close();
+		await this.close(); //Close browser first
 		super.remove();
+		
+		//Iterate over all Blacktraffic.AgentBrowserSelenium.instances and remove the current instances
 		for (let i = 0; i < Blacktraffic.AgentBrowserSelenium.instances.length; i++) {
 			let local_browser = Blacktraffic.AgentBrowserSelenium.instances[i];
 			if (local_browser.key === this.key) {
@@ -423,6 +496,7 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	
 	/**
 	 * Updates the default logging channel for the current agent.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias updateLogChannel
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -430,15 +504,18 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	 * @param {string} arg0_channel_key
 	 */
 	updateLogChannel (arg0_channel_key) {
+		//Convert from parameters
 		let channel_key = arg0_channel_key;
+		
 		this.log_obj = log.getLoggingFunctions(channel_key);
-		this.error_fn = this.log_obj.error_fn;
-		this.log_fn = this.log_obj.log_fn;
-		this.warn_fn = this.log_obj.warn_fn;
+			this.error_fn = this.log_obj.error_fn;
+			this.log_fn = this.log_obj.log_fn;
+			this.warn_fn = this.log_obj.warn_fn;
 	}
 	
 	/**
 	 * Waits for content to stop changing within a selector.
+	 * - Method of: {@link Blacktraffic.AgentBrowserSelenium}
 	 *
 	 * @alias waitForStableSelector
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserSelenium
@@ -447,32 +524,40 @@ Blacktraffic.AgentBrowserSelenium = class extends Blacktraffic.AgentBrowser {
 	 * @param {string} arg1_selector
 	 * @param {number} [arg2_interval=3000]
 	 */
-	async waitForStableContent (arg0_tab_key, arg1_selector, arg2_interval) {
+	async waitForStableContent(arg0_tab_key, arg1_selector, arg2_interval) {
+		// Convert from parameters
 		let tab_obj = this.getTab(arg0_tab_key);
+		let selector = arg1_selector;
+		let interval = Math.returnSafeNumber(arg2_interval, 3000);
+		
+		//Wait for function inside of tab should it exist
 		if (tab_obj) {
-			let state_key = `_Blacktraffic_stable_${arg1_selector.replace(/\W/g, "")}`;
-			await tab_obj.wait(async (driver) => {
-				return await driver.executeScript(
-					function (selector, state_key) {
-						var local_els = document.querySelectorAll(selector);
-						if (local_els.length === 0) return false;
-						var last_el = local_els[local_els.length - 1];
-						var current_html = last_el.innerHTML;
-						if (!window[state_key]) {
-							window[state_key] = current_html;
-							return false;
-						}
-						if (current_html === window[state_key]) {
-							return true;
-						} else {
-							window[state_key] = current_html;
-							return false;
-						}
-					},
-					arg1_selector,
-					state_key
-				);
-			}, 0);
+			let state_key = `_Blacktraffic_stable_${selector.replace(/\W/g, "")}`;
+			
+			await tab_obj.waitForFunction((selector, state_key) => {
+				let local_els = document.querySelectorAll(selector);
+				if (local_els.length === 0) return false;
+				
+				let last_el = local_els[local_els.length - 1];
+				let current_html = last_el.innerHTML;
+				
+				//Check if this is the first execution
+				if (window[state_key] === undefined) {
+					window[state_key] = current_html;
+					return false;
+				}
+				
+				//Compare current state to previous state
+				if (current_html === window[state_key]) {
+					//Cleanup the global variable before finishing
+					delete window[state_key];
+					return true;
+				} else {
+					//Update the state and continue polling
+					window[state_key] = current_html;
+					return false;
+				}
+			}, { polling: interval, timeout: 0 }, selector, state_key);
 		}
 	}
 };
