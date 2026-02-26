@@ -29,6 +29,22 @@
 	};
 	
 	/**
+	 * Converts an image, preferably `.png`, to a Base64 string for inline embedding.
+	 * @alias File.convertImageToBase64
+	 * 
+	 * @param {string} arg0_file_path
+	 * 
+	 * @returns {string}
+	 */
+	File.convertImageToBase64 = function (arg0_file_path) {
+		//Convert from parameters
+		let file_buffer = fs.readFileSync(arg0_file_path);
+		
+		//Return statement
+		return file_buffer.toString("base64");
+	};
+	
+	/**
 	 * Returns all drives in the current operating system.
 	 * @alias File.getAllDrives
 	 * 
@@ -137,6 +153,36 @@
 		//Return statement
 		return all_files.filter((entry) => entry.isFile())
 			.map((entry) => path.join(entry.path, entry.name));
+	};
+	
+	/**
+	 * Returns the time at which a file was last modified.
+	 * @alias File.getLastModified
+	 * 
+	 * @param {string} arg0_file_path
+	 * 
+	 * @returns {Promise<{last_modified: Date, seconds: number}>}
+	 */
+	File.getLastModified = function (arg0_file_path) {
+		//Convert from parameters
+		let file_path = arg0_file_path;
+		
+		//Check if file_path exists, then extract last modified time
+		if (fs.existsSync(file_path)) {
+			//Declare local instance variables
+			let date_obj = new Date();
+			let stats = fs.statSync(file_path);
+			
+			let last_modified = stats.mtime;
+			
+			let diff_in_seconds = Math.floor((date_obj.getTime() - last_modified.getTime())/1000);
+			
+			//Return statement
+			return {
+				last_modified: last_modified,
+				seconds: diff_in_seconds
+			};
+		}
 	};
 	
 	/**

@@ -14,6 +14,7 @@
  *   - `.y=HTML.mouse_y`: {@link function}|{@link number} - If the type is a function, it must return a number.
  *   -
  *   - `.do_not_wrap=false`: {@link boolean} - Whether to disable wrapping in an always open {@link ve.Interface}.
+ *   - `.element`: {@link HTMLElement}
  *   - `.id`: {@link string}
  *   - `.mode="window"`: {@link string} - Either 'static_ui'/'static_window'/'window'.
  *   - `.name=""`: {@link string} - Auto-resolves to 'Window' instead if `.can_rename=true`.

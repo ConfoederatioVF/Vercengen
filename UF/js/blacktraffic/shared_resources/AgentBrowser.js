@@ -26,6 +26,7 @@ Blacktraffic.AgentBrowser = class { //[WIP] - Finish documentation
 	 * @type Blacktraffic.AgentBrowser[]
 	 */
 	static instances = [];
+	static webapi = {};
 	
 	constructor (arg0_key, arg1_options) {
 		//Convert from parameters

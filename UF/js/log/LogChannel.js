@@ -27,11 +27,14 @@
 	 * - <span color=00ffff>{@link ve.Log.clear|clear}</span>()
 	 * - <span color=00ffff>{@link ve.Log.close|close}</span>()
 	 * - <span color=00ffff>{@link ve.Log.error|error}</span>(argn_arguments:{@link any})
+	 * - <span color=00ffff>{@link ve.Log.fromJSON|fromJSON}</span>(arg0_json:{@link string})
 	 * - <span color=00ffff>{@link ve.Log.log|log}</span>(argn_arguments:{@link any})
 	 * - <span color=00ffff>{@link ve.Log.open|open}</span>()
 	 * - <span color=00ffff>{@link ve.Log.warn|warn}</span>(argn_arguments:{@link any})
 	 * - <span color=00ffff>{@link ve.Log.print|print}</span>(arg0_type:{@link string}, argn_arguments:{@link any})
 	 * - <span color=00ffff>{@link ve.Log.remove|remove}</span>()
+	 * - <span color=00ffff>{@link ve.Log.save|save}</span>(arg0_file_path:{@link string}, arg1_options:{@link Object}) | {@link string}
+	 * - <span color=00ffff>{@link ve.Log.toJSON|toJSON}</span>() | {@link string}
 	 * 
 	 * ##### Static Fields:
 	 * - `.instances`: {@link Array}<{@link log.Channel}>
@@ -73,6 +76,7 @@
 			if (!log[key]) {
 				log[key] = this.log.bind(this);
 				log[`${key}_error`] = this.error.bind(this);
+				log[`${key}_instance`] = this;
 				log[`${key}_warn`] = this.warn.bind(this);
 			} else {
 				console.warn(`log.${key} already exists as a custom logging channel. It cannot be overridden.`);
@@ -102,6 +106,22 @@
 		 * @param argn_arguments
 		 */
 		error (...argn_arguments) { this.print("error", argn_arguments); }
+		
+		/**
+		 * Loads a log history from a JSON string and restores the internal HTML.
+		 * - Method of: {@link log.Channel}
+		 *
+		 * @param {string} arg0_json - The JSON string to load.
+		 */
+		fromJSON (arg0_json) {
+			//Convert from parameters
+			let data = JSON.parse(arg0_json);
+			
+			//Hydrate current log from data
+			if (data.key) this.key = data.key;
+			if (data.options) this.options = data.options;
+			if (data.html !== undefined) this.log_el.innerHTML = data.html;
+		}
 		
 		/**
 		 * Prints a log message to the console channel, analogous to {@link console.log}.
@@ -218,7 +238,62 @@
 			
 			//Remove log[key]
 			delete log[this.key];
+			delete log[`${this.key}_error`];
+			delete log[`${this.key}_instance`];
+			delete log[`${this.key}_warn`];
 			log.Channel.update();
+		}
+		
+		/**
+		 * Saves the present log to a given file path. Returns the output text written.
+		 * - Method of: {@link log.Channel}
+		 * 
+		 * @param {string} arg0_file_path
+		 * @param {Object} [arg1_options]
+		 *   @param {string} [arg1_options.format="plaintext"] - Either 'json'/'plaintext'.
+		 *   
+		 * @returns {string}
+		 */
+		save (arg0_file_path, arg1_options) {
+			//Convert from parameters
+			let file_path = path.resolve(arg0_file_path);
+			let options = (arg1_options) ? arg1_options : {};
+			
+			//Initialise options
+			if (!options.format) options.format = "plaintext";
+			
+			//Declare local instance variables
+			let output_folder = path.dirname(file_path); 
+			let output_text;
+			
+			//Make sure folder exists first
+			if (!fs.existsSync(output_folder))
+				fs.mkdirSync(output_folder, { recursive: true });
+			
+			if (options.format === "json") {
+				output_text = this.toJSON();
+			} else {
+				output_text = this.log_el.innerText;
+			}
+			fs.writeFileSync(file_path, output_text, "utf8");
+			
+			//Return statement
+			return file_path;
+		}
+		
+		/**
+		 * Serialises the current log channel's entire history and configuration to a JSON string.
+		 * - Method of: {@link log.Channel}
+		 *
+		 * @returns {string}
+		 */
+		toJSON () {
+			//Return statement
+			return JSON.stringify({
+				key: this.key,
+				options: this.options,
+				html: this.log_el.innerHTML
+			});
 		}
 		
 		/**

@@ -337,6 +337,12 @@ global.path = require("path");
 			"UF/libraries/mapbox-gl.js",
 			"UF/libraries/mapbox-gl.css",
 			"UF/libraries/maptalks.mapboxgl.min.js",
+			"UF/libraries/maptalks.formats.js",
+			
+			//Leaflet
+			"UF/libraries/leaflet.css",
+			"UF/libraries/leaflet.js",
+			"UF/libraries/leaflet_kmz.js",
 			
 			//Univer
 			"UF/libraries/univer/react.production.min.js",

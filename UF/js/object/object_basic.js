@@ -846,6 +846,45 @@
 	};
 	
 	/**
+	 * Serialises a given object into a compatible object for hydration (i.e. browser-side).
+	 * @alias Object.serialise
+	 * 
+	 * @param {Array|Object} arg0_object
+	 * 
+	 * @returns {Object}
+	 */
+	Object.serialise = function (arg0_object) {
+		//Convert from parameters
+		let object = (arg0_object) ? arg0_object : {};
+		
+		//Internal guard clause for null object or non-objects
+		if (object === null || typeof object !== "object") 
+			return (typeof object === "function") ? object.toString() : object;
+		
+		//Declare local instance variables
+		let return_obj = (Array.isArray(object)) ? [] : {};
+		
+		//Iterate over object and serialise it
+		for (let local_key in object) {
+			let local_value = object[local_key];
+			
+			if (typeof local_value === "function") {
+				return_obj[local_key] = {
+					__type: "function",
+					source: local_value.toString()
+				};
+			} else if (typeof local_value === "object" && local_value !== null) {
+				return_obj[local_key] = Object.serialise(local_value);
+			} else {
+				return_obj[local_key] = local_value;
+			}
+		}
+		
+		//Return statement
+		return return_obj;
+	}
+	
+	/**
 	 * Sets a given value with a root object and variable string.
 	 * @alias Object.setValue
 	 * 

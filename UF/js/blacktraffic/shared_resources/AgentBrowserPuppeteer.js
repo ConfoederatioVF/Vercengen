@@ -17,6 +17,7 @@ if (!global.Blacktraffic) global.Blacktraffic = {};
  *   - 
  *   - `.connection_attempts_threshold=3`: {@link number} - The number of connection attempts to use when opening the browser.
  *   - `.log_channel="console"`: {@link string}
+ *   - `.unique_ports=false`: {@link boolean}
  *   
  * ##### Instance:
  * - `.key`: {@link string}
@@ -63,6 +64,7 @@ Blacktraffic.AgentBrowserPuppeteer = class extends Blacktraffic.AgentBrowser { /
 		//Initialise options
 		if (options.debug_console === undefined) options.debug_console = false;
 		if (options.headless === undefined) options.headless = false;
+		if (options.unique_ports === undefined) options.unique_ports = false;
 		
 		options.connection_attempts_threshold = Math.returnSafeNumber(options.connection_attempts_threshold, 3);
 		
@@ -307,7 +309,7 @@ Blacktraffic.AgentBrowserPuppeteer = class extends Blacktraffic.AgentBrowser { /
 	 * @alias injectScriptOnload
 	 * @memberof Blacktraffic.AgentBrowser.Blacktraffic.AgentBrowserPuppeteer
 	 * 
-	 * @param {string} arg0_tab_key
+	 * @param {Object|string} arg0_tab_key
 	 * @param {function} arg1_function
 	 * @param {Object} [arg2_options]
 	 *  @param {Object} [arg2_options.options] - Any options to pass down to the local function.
@@ -347,10 +349,22 @@ Blacktraffic.AgentBrowserPuppeteer = class extends Blacktraffic.AgentBrowser { /
 		//Iterate over all attempts until threshold or the for loop exits
 		for (let i = 0; i < this.options.connection_attempts_threshold; i++)
 			try {
-				let target_port = await Blacktraffic.getFreePort();
+				let target_port = (!this.options.unique_ports) ? 
+					9222 : await Blacktraffic.getFreePort();
+					
+				let flags = [
+					`--remote-debugging-port=${Math.returnSafeNumber(this.options.debugging_port, target_port)}`,
+					`--no-first-run`,
+					`--no-default-browser-check`
+				];
+				
+				if (this.options.user_data_folder) {
+					flags.push(`--user-data-dir="${this.options.user_data_folder}"`);
+					flags.push(`--remote-allow-origins=*`);
+				}
 				
 				//1. Run launch command
-				this.launch_cmd = `"${Blacktraffic.getChromeBinaryPath()}" --remote-debugging-port=${Math.returnSafeNumber(this.options.debugging_port, target_port)}${(this.options.user_data_folder) ? ` --user-data-dir="${this.options.user_data_folder}" --remote-allow-origins=*` : ""}`;
+				this.launch_cmd = `"${Blacktraffic.getChromeBinaryPath()}" ${flags.join(" ")}`;
 				exec(this.launch_cmd);
 				
 				//2. Connect to browser instance
@@ -396,6 +410,28 @@ Blacktraffic.AgentBrowserPuppeteer = class extends Blacktraffic.AgentBrowser { /
 			this.tab_obj[tab_key][`_blacktraffic_key`] = tab_key;
 		let tab_obj = this.tab_obj[tab_key];
 		
+		//Load WebAPI in tab
+		let serialised_api = Object.serialise(Blacktraffic.AgentBrowser.webapi);
+		
+		await tab_obj.evaluateOnNewDocument((encoded_api) => {
+			//HELPER: Recursive Rehydrator
+			const rehydrate = (obj) => {
+				if (obj === null || typeof obj !== "object") return obj;
+				
+				if (obj.__type === "function") {
+					// Reconstruct the function/class using indirect eval
+					return (0, eval)(`(${obj.source})`);
+				}
+				
+				const result = Array.isArray(obj) ? [] : {};
+				for (const key in obj) {
+					result[key] = rehydrate(obj[key]);
+				}
+				return result;
+			};
+			
+			window.webapi = rehydrate(encoded_api);
+		}, serialised_api);
 		if (url) await tab_obj.goto(url, { waitUntil: "networkidle2" });
 		
 		//Return statement
@@ -666,4 +702,60 @@ Blacktraffic.getChromeBinaryPath = function () {
 				if (chrome_path && fs.existsSync(chrome_path)) return chrome_path;
 			} catch (e) {} //Which returns non-zero exit code if not found
 	}
+};
+
+/**
+ * Attempts to return the default Chrome profile path.
+ * 
+ * @param {string} [arg0_profile]
+ * 
+ * @returns {string}
+ */
+Blacktraffic.getChromeDefaultProfilePath = function (arg0_profile) {
+	//Convert from parameters
+	let profile = arg0_profile;
+	
+	//Declare local instance variables
+	let os_platform = Blacktraffic.getOS();
+	let profile_name = (profile) ? profile : "Profile 1";
+	let user_home = process.env.HOME || process.env.USERPROFILE;
+	
+	//Handle Windows
+	if (os_platform === "win") {
+		if (process.env.LOCALAPPDATA) {
+			let profile_path = path.join(
+				process.env.LOCALAPPDATA,
+				"Google/Chrome/User Data",
+				profile_name
+			);
+			if (fs.existsSync(profile_path)) return profile_path;
+		}
+	} else if (os_platform === "lin") {
+		if (user_home) {
+			let profile_path = path.join(user_home, "Library/Application Support/Google/Chrome", profile_name);
+			if (fs.existsSync(profile_path)) return profile_path;
+		}
+	} else {
+		if (user_home) {
+			//Check for both official Google Chrome and Chromium paths
+			let potential_paths = [
+				path.join(user_home, ".config/google-chrome", profile_name),
+				path.join(user_home, ".config/chromium", profile_name),
+			];
+			
+			//Iterate over all potential_paths
+			for (let local_path of potential_paths)
+				if (fs.existsSync(local_path)) return local_path;
+		}
+	}
+	
+	//Fallback after Profile 1 to Default
+	if (profile !== "Default") {
+		let default_profile_path = Blacktraffic.getChromeDefaultProfilePath("Default");
+		if (default_profile_path) return default_profile_path;
+	}
+	
+	//Return statement; fallback return if no path is found
+	console.error(`Blacktraffic.getChromeDefaultProfile() called, but path could not be found.`);
+	return undefined;
 };
