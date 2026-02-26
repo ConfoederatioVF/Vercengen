@@ -48,6 +48,8 @@ if (!global.Blacktraffic) global.Blacktraffic = {};
  * - `.workers_id_obj`: {@link Object}<{@link number}>
  * - `.workers_obj`: {@link Object}<{@link Array}<{@link Object}>>
  * 
+ * @augments Blacktraffic
+ * @memberof Blacktraffic
  * @type {Blacktraffic.Worker}
  */
 Blacktraffic.Worker = class {
