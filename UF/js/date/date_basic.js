@@ -78,6 +78,27 @@
 		Date.months[Date.all_months[i]].month = i;
 	
 	/**
+	 * Returns a UF Date object from a proper {@link Date} object.
+	 * @alias Date.fromDate
+	 * 
+	 * @param arg0_date
+	 * @returns {{year: number, month, day: *|number, hour: number, minute: number}}
+	 */
+	Date.fromDate = function (arg0_date) {
+		//Convert from parameters
+		let date = Date.getDate(arg0_date);
+		
+		//Return statement
+		return {
+			year: date.getFullYear(),
+			month: date.getMonth() + 1,
+			day: date.getDate(),
+			hour: date.getHours(),
+			minute: date.getMinutes()
+		}
+	};
+	
+	/**
 	 * Returns a blank date template starting at '0AD'.
 	 * @alias Date.getBlankDate
 	 * 
@@ -95,17 +116,33 @@
 	 * @returns {{year: number, month, day: number, hour: number, minute: number}}
 	 */
 	Date.getCurrentDate = function () {
+		//Return statement
+		return Date.fromDate(new Date());
+	};
+	
+	/**
+	 * Returns a Date object from a variable type.
+	 * @alias Date.getDate
+	 * 
+	 * @param {Date|Object|number|string} arg0_date
+	 * 
+	 * @returns {Date}
+	 */
+	Date.getDate = function (arg0_date) {
+		//Convert from parameters
+		let date = arg0_date;
+		
 		//Declare local instance variables
-		let current_date = new Date();
+		if (typeof date === "string" && !isNaN(parseInt(date))) date = parseInt(date);
+		if (typeof date === "number") date = new Date(date);
+		if (typeof date === "string") date = Date.parse(date);
+		
+		if (typeof date === "object" && !(date instanceof Date))
+			if (Object.hasKeys(date, ["year", "month", "day", "hour", "minute"], { mode: "any" }))
+				date = new Date(date.year, date.month, date.day, date.hour, date.minute);
 		
 		//Return statement
-		return {
-			year: current_date.getFullYear(),
-			month: current_date.getMonth() + 1,
-			day: current_date.getDate(),
-			hour: current_date.getHours(),
-			minute: current_date.getMinutes()
-		};
+		return date;
 	};
 	
 	/**

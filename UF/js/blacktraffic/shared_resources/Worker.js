@@ -8,7 +8,7 @@ if (!global.Blacktraffic) global.Blacktraffic = {};
  * - `arg1_options`: {@link Object}
  *   - `.config_file_path`: {@link string} - The config JSON5 file to load. Accessible at `.config`.
  *   - `.do_not_close_tab`: {@link boolean}
- *   - `.interval`: {@link number} - The interval in ms at which to execute run().
+ *   - `.interval`: {@link number} - The interval in seconds at which to execute run().
  *   - `.log_channel="${worker}_type"`: {@link string}
  *   - `.special_function`: {@link function}(arg0_tab_obj:{@link Object}, arg1_instance:this) | {@link Array}<{@link Ontology}>
  *   - `.tags=[]`: {@link Array}<{@link string}>
@@ -474,13 +474,23 @@ Blacktraffic.Worker = class {
 	startInterval () {
 		//Clear interval first before starting a new one
 		if (this._interval_timer) clearInterval(this._interval_timer);
-		if (this.options.interval > 0)
-			this._interval_timer = setInterval(async () => {
-				//Only trigger run() if the previous one finished
-				if (this.current_job_status !== "running") {
-					await this.run();
-				}
-			}, this.options.interval);
+		
+		//Declare local instance variables
+		let checkAndRun = async () => {
+			if (!this.is_enabled || this.current_job_status === "running") return;
+			
+			let last_job = (this.jobs.length > 0) ? 
+				this.jobs[this.jobs.length - 1] : undefined;
+			let now = Date.now();
+			
+			//If never run before, or if time elapsed since last run > interval
+			if (!last_job || now - last_job.getTime() >= this.options.interval*1000)
+				await this.run();
+		};
+		
+		//Run check first
+		checkAndRun();
+		this._interval_timer = setInterval(checkAndRun, 1000);
 	}
 	
 	/**

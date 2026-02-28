@@ -646,6 +646,47 @@
 	};
 	
 	/**
+	 * Determines whether an object has all the keys mentioned.
+	 * @alias Object.hasKeys
+	 * 
+	 * @param {Object} arg0_object
+	 * @param {string[]} arg1_keys
+	 * @param {Object} [arg2_options]
+	 *  @param {string} [arg2_options.mode="all"] - Either 'all'/'any'.
+	 * 
+	 * @returns {boolean}
+	 */
+	Object.hasKeys = function (arg0_object, arg1_keys, arg2_options) {
+		//Convert from parameters
+		let object = (arg0_object) ? arg0_object : {};
+		let keys = (arg1_keys) ? arg1_keys : [];
+		let options = (arg2_options) ? arg2_options : {};
+		
+		//Initialise options
+		if (!options.mode) options.mode = "all";
+		
+		//Declare local instance variables
+		let has_any_key = false;
+		let has_all_keys = true;
+		let object_keys = Object.keys(object);
+		
+		//Iterate over all keys
+		for (let i = 0; i < keys.length; i++)
+			if (!object_keys.includes(keys[i])) {
+				//Return statement
+				has_all_keys = false;
+				if (options.mode === "all") break;
+			} else {
+				has_any_key = true;
+				if (options.mode === "any") break;
+			}
+		
+		//Return statement
+		if (options.mode === "all") return has_all_keys;
+		if (options.mode === "any") return has_any_key;
+	};
+	
+	/**
 	 * Fetches a given value with a root object and variable string.
 	 * @alias Object.getValue
 	 * 
