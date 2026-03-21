@@ -128,6 +128,53 @@
 	};
 	
 	/**
+	 * Expands a target value to its natural [min, max] boundaries, i.e. zero-values.
+	 * @alias Object.expandValue
+	 * 
+	 * @param {Object<number>} arg0_object
+	 * @param {Object} [arg1_options]
+	 *  @param {boolean} [arg1_options.expand_max=true]
+	 *  @param {boolean} [arg1_options.expand_min=true]
+	 *  @param {number} [arg1_options.value=0] - The value to expand.
+	 */
+	Object.expandValue = function (arg0_object, arg1_options) {
+		//Convert from parameters
+		let object = (arg0_object) ? arg0_object : {};
+		let options = (arg1_options) ? arg1_options : {};
+		
+		if (options.expand_max === undefined) options.expand_max = true;
+		if (options.expand_min === undefined) options.expand_min = true;
+		options.value = Math.returnSafeNumber(options.value);
+		
+		//Declare local instance variables
+		let all_keys = Object.keys(object).map(Number).sort((a, b) => a - b);
+		let return_obj = { ...object };
+		
+		//Iterate over all keys and expand options.value
+		for (let i = 0; i < all_keys.length; i++)
+			if (object[all_keys[i]] === options.value) {
+				//Expand left: look for a neighbour that is not the target value
+				if (options.expand_min && i > 0) {
+					let left_key = all_keys[i - 1];
+					
+					if (object[left_key] !== options.value)
+						return_obj[left_key + 1] = options.value;
+				}
+				
+				//Expand right: look for a neighbour that is not the target value
+				if (options.expand_max && i < all_keys.length - 1) {
+					let right_key = all_keys[i + 1];
+					
+					if (object[right_key] !== options.value)
+						return_obj[right_key - 1] = options.value;
+				}
+			}
+		
+		//Return statement
+		return return_obj;
+	};
+	
+	/**
 	 * Calculates the average deviation of one object from another based on domain.
 	 * @alias Object.getAverageDeviationFromObject
 	 *
@@ -296,6 +343,106 @@
 	};
 	
 	/**
+	 * Interpolates and normalises data given an absolute Ground Truth (GT) and an absolute, but relativistic rates map.
+	 * @alias Object.interpolateGT
+	 *
+	 * @param {Object<number>} arg0_object - The Ground Truth (GT) map
+	 * @param {Object<number>} arg1_object - The Relativistic Rates (RR) map
+	 */
+	//[QUARANTINE]
+	Object.interpolateGT = function (arg0_object, arg1_object) {
+		// Convert from parameters
+		let object = { ...arg0_object };
+		let ot_object = arg1_object;
+	
+		// Declare local instance variables
+		let object_keys = Object.keys(object)
+			.map(Number)
+			.sort((a, b) => a - b);
+		let ot_object_keys = Object.keys(ot_object)
+			.map(Number)
+			.sort((a, b) => a - b);
+		let return_obj = {};
+	
+		// Create a sorted union of all unique keys from both objects
+		let union_keys = [...new Set([...object_keys, ...ot_object_keys])].sort(
+			(a, b) => a - b
+		);
+	
+		// Handle extraneous values:
+		// If RR contains years outside the GT range, add them to our GT anchors
+		let min_gt = object_keys[0];
+		let max_gt = object_keys[object_keys.length - 1];
+	
+		for (let i = 0; i < ot_object_keys.length; i++) {
+			let current_rr_year = ot_object_keys[i];
+			if (current_rr_year < min_gt || current_rr_year > max_gt) {
+				object[current_rr_year] = ot_object[current_rr_year];
+			}
+		}
+	
+		// Re-evaluate object keys after adding extraneous RR values
+		let all_anchor_keys = Object.keys(object)
+			.map(Number)
+			.sort((a, b) => a - b);
+	
+		let getRRValue = (ot_key) => {
+			if (ot_object[ot_key] !== undefined) return ot_object[ot_key];
+			if (ot_key <= ot_object_keys[0]) return ot_object[ot_object_keys[0]];
+			if (ot_key >= ot_object_keys[ot_object_keys.length - 1])
+				return ot_object[ot_object_keys[ot_object_keys.length - 1]];
+	
+			let lower_key = ot_object_keys.findLast((local_key) => local_key < ot_key);
+			let upper_key = ot_object_keys.find((local_key) => local_key > ot_key);
+			let weight = (ot_key - lower_key) / (upper_key - lower_key);
+	
+			return (
+				ot_object[lower_key] +
+				weight * (ot_object[upper_key] - ot_object[lower_key])
+			);
+		};
+	
+		// Iterate through GT segments (including augmented RR anchors)
+		for (let i = 0; i < all_anchor_keys.length - 1; i++) {
+			let start_key = all_anchor_keys[i];
+			let end_key = all_anchor_keys[i + 1];
+	
+			let start_value_gt = object[start_key];
+			let end_value_gt = object[end_key];
+	
+			let start_value_rr = getRRValue(start_key);
+			let end_value_rr = getRRValue(end_key);
+	
+			// Calculate the correction ratios at anchor points
+			// Safety check: if RR is 0, we treat the ratio as 0 if GT is 0, otherwise 1
+			let start_ratio =
+				start_value_rr === 0 ? (start_value_gt === 0 ? 0 : 1) : start_value_gt / start_value_rr;
+			let end_ratio =
+				end_value_rr === 0 ? (end_value_gt === 0 ? 0 : 1) : end_value_gt / end_value_rr;
+	
+			// Filter union_keys to only those that fall within this segment
+			let segment_keys = union_keys.filter((k) => k >= start_key && k <= end_key);
+	
+			for (let x of segment_keys) {
+				// If we already processed this year in a previous segment, skip it
+				if (x === start_key && i > 0) continue;
+	
+				let current_rr = getRRValue(x);
+				let progress = (x - start_key) / (end_key - start_key);
+	
+				// Linearly interpolate the discrepancy ratio
+				let interpolated_ratio =
+					start_ratio + progress * (end_ratio - start_ratio);
+	
+				return_obj[x] = current_rr * interpolated_ratio;
+			}
+		}
+	
+		// Return statement
+		return return_obj;
+	};
+	
+	/**
 	 * Interpolates negative values by carrying over the last positive value found.
 	 * @alias Object.interpolateNegatives
 	 *
@@ -349,6 +496,71 @@
 		}
 		
 		//Return statement
+		return object;
+	};
+	
+	/**
+	 * linearInterpolationObject() - Performs a linear interpolation operation on an object.
+	 * @param {Object} arg0_object - The object to perform the linear interpolation on.
+	 * @param {Object} [arg1_options]
+	 *  @param {boolean} [arg1_options.all_years=false] - Optional. Whether to interpolate for every single year in the domain.
+	 *  @param {Array<number>} [arg1_options.years] - Optional. The years to interpolate over if possible.
+	 *
+	 * @return {Object}
+	 */
+	Object.linearInterpolation = function (arg0_object, arg1_options) {
+		// Convert from parameters
+		let object = arg0_object;
+		let options = arg1_options ? arg1_options : {};
+		
+		// Declare local instance variables
+		let sorted_indices = Object.sortYearValues(object);
+		let values = sorted_indices.values;
+		let years = sorted_indices.years;
+		
+		// Guard clause if there are less than 2 years
+		if (years.length < 2) return object;
+		
+		// Initialise target years for interpolation
+		let target_years = options.years ? Array.toArray(options.years) : years;
+		
+		if (options.all_years) {
+			var object_domain = Object.getDomain(object);
+			target_years = [];
+			
+			// Iterate between object_domain[0] and object_domain[1]
+			for (var i = object_domain[0]; i <= object_domain[1]; i++)
+				target_years.push(i);
+		}
+		
+		// Iterate over all requested years
+		for (let i = 0; i < target_years.length; i++) {
+			let current_year = target_years[i];
+			let min_year = Math.returnSafeNumber(years[0]);
+			let max_year = Math.returnSafeNumber(years[years.length - 1]);
+			
+			if (current_year >= min_year && current_year <= max_year) {
+				// Find the two bounding points for linear interpolation
+				let left_index = 0;
+				
+				for (let j = 0; j < years.length - 1; j++)
+					if (current_year >= years[j] && current_year <= years[j + 1]) {
+						left_index = j;
+						break;
+					}
+				
+				let pair_x = [years[left_index], years[left_index + 1]];
+				let pair_y = [values[left_index], values[left_index + 1]];
+				
+				object[current_year] = Array.linearInterpolation(
+					pair_x,
+					pair_y,
+					current_year,
+				);
+			}
+		}
+		
+		// Return statement
 		return object;
 	};
 	
@@ -663,5 +875,65 @@
 		
 		//Return statement
 		return Object.operateObjects(object, ot_object, `i = i - x`, options);
+	};
+	
+	/**
+	 * Trims a specific value from the start and/or end of an object map.
+	 * @alias Object.trimValue
+	 *
+	 * @param {Object<number>} arg0_object
+	 * @param {Object} [arg1_options]
+	 *  @param {boolean} [arg1_options.trim_start=true] - Remove leading target values.
+	 *  @param {boolean} [arg1_options.trim_end=true] - Remove trailing target values.
+	 *  @param {number} [arg1_options.value=0] - The value to trim.
+	 */
+	Object.trimValue = function (arg0_object, arg1_options) {
+		// Convert from parameters
+		let object = arg0_object ? arg0_object : {};
+		let options = arg1_options ? arg1_options : {};
+		
+		if (options.trim_start === undefined) options.trim_start = true;
+		if (options.trim_end === undefined) options.trim_end = true;
+		options.value =
+			typeof Math.returnSafeNumber === "function"
+				? Math.returnSafeNumber(options.value)
+				: options.value || 0;
+		
+		// Declare local instance variables
+		let all_keys = Object.keys(object)
+		.map(Number)
+		.sort((a, b) => a - b);
+		let return_obj = {};
+		
+		let start_index = 0;
+		let end_index = all_keys.length - 1;
+		
+		// Find the first index that is NOT the target value
+		if (options.trim_start) {
+			while (
+				start_index < all_keys.length &&
+				object[all_keys[start_index]] === options.value
+				) {
+				start_index++;
+			}
+		}
+		
+		// Find the last index that is NOT the target value
+		if (options.trim_end) {
+			while (
+				end_index >= start_index &&
+				object[all_keys[end_index]] === options.value
+				) {
+				end_index--;
+			}
+		}
+		
+		// Build the new object from the sliced range
+		for (let i = start_index; i <= end_index; i++) {
+			let current_key = all_keys[i];
+			return_obj[current_key] = object[current_key];
+		}
+		
+		return return_obj;
 	};
 }

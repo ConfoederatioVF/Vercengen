@@ -17,7 +17,8 @@
  *   - `.element`: {@link HTMLElement}
  *   - `.id`: {@link string}
  *   - `.mode="window"`: {@link string} - Either 'static_ui'/'static_window'/'window'.
- *   - `.name=""`: {@link string} - Auto-resolves to 'Window' instead if `.can_rename=true`.
+ *   - `.name=""`: {@link string} - Auto-resolves to 'Window' instead if `.can_rename=true`.#
+ *   - `.name_class=""`: {@link string}
  *   - `.theme`: {@link string} - The CSS theme to apply to the Feature.
  *   -
  *   - `.can_close`: {@link boolean}
@@ -183,7 +184,7 @@ ve.Window = class extends ve.Feature {
 		this.element.id = this.id;
 		this.element.innerHTML = `
 			${(!options.headless) ? `<div id = "feature-header" class = "feature-header">
-				<span id = "window-name"${(this.options.can_rename) ? ` contenteditable = "plaintext-only"` : ""}>${this.name}</span>
+				<span id = "window-name"${(this.options.can_rename) ? ` contenteditable = "plaintext-only"` : ""} class = "${(this.options.name_class) ? this.options.name_class : ""}">${this.name}</span>
 			</div>` : ""}
 			<div id = "feature-body" class = "feature-body"></div>
 		`;
@@ -387,18 +388,22 @@ ve.Window = class extends ve.Feature {
 	 */
 	setCoords (arg0_x, arg1_y) {
 		//Convert from parameters
-		let x = parseInt(arg0_x);
-		let y = parseInt(arg1_y);
+		let x = arg0_x;
+		let y = arg1_y;
 		
-		//Set element X, Y position
+		let coords_obj = HTML.getCSSPosition(this.options.anchor, x, y);
+		
+		//Set element X, Y position; reset position first
 		this.element.style.position = "absolute";
 		this.element.style.bottom = "";
 		this.element.style.left = "";
 		this.element.style.right = "";
 		this.element.style.top = "";
-		HTML.applyTelestyle(this.element, {
-			...HTML.getCSSPosition(this.options.anchor, x, y)
-		});
+		
+		if (coords_obj.bottom) this.element.style.bottom = coords_obj?.bottom;
+		if (coords_obj.left) this.element.style.left = coords_obj?.left;
+		if (coords_obj.right) this.element.style.right = coords_obj?.right;
+		if (coords_obj.top) this.element.style.top = coords_obj?.top;
 	}
 	
 	/**

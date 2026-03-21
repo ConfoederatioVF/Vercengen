@@ -12,10 +12,15 @@ Geospatiale.maptalks_GeoKMZ = class {
 		
 		//Load KMZ
 		this.geometries_obj = {};
-		this.layer = new maptalks.VectorLayer(kmz_file, { zIndex: 100 });
+		this.layer = new maptalks.VectorLayer(kmz_file);
 		
 		//Populate this.kmz
-		if (kmz_file) this.loadKMZ(kmz_file, options);
+		if (kmz_file) this.loadKMZ(kmz_file, {
+			window_options: {
+				width: "25rem",
+			},
+			...options
+		});
 	}
 	
 	addTo (arg0_map_obj) { try { arg0_map_obj.addLayer(this.layer); } catch (e) {} }
@@ -26,7 +31,9 @@ Geospatiale.maptalks_GeoKMZ = class {
 	 * @param {string} arg0_input_file_path
 	 * @param {Object} [arg1_options]
 	 *  @param {string[]} [arg1_options.exclude_types] - Any types to exclude. Either 'polygon'/'line'/'point'.
+	 *  @param {boolean} [arg1_options.do_not_display_popups=false]
 	 *  @param {function} [arg1_options.onload] - (arg0_geokmz_obj, arg1_geometries). The method to call once loading is finished.
+	 *  @param {Object} [arg1_options.window_options]
 	 */
 	loadKMZ (arg0_input_file_path, arg1_options) {
 		//Convert from parameters
@@ -86,13 +93,19 @@ Geospatiale.maptalks_GeoKMZ = class {
 			});
 			
 			//Iterate over all geometries and add it to the map
-			for (let i = 0; i < geometries.length; i++) {
+			for (let i = 0; i < geometries.length; i++) { //[WIP] - Use Vercengen popups instead
 				let local_geometry = maptalks.GeoJSON.toGeometry(geometries[i].geometry);
+				let local_properties = geometries[i].properties;
+				
 				try {
-					local_geometry.setInfoWindow({
-						title: geometries[i].properties.popup_title,
-						content: geometries[i].properties.popup_description
-					});
+					if (!options.do_not_display_popups)
+						local_geometry.addEventListener("click", (e) => {
+							veWindow(local_properties.popup_description, {
+								name: (local_properties.popup_title) ? local_properties.popup_title : "",
+								width: "20rem",
+								...options.window_options
+							});
+						});
 				} catch (e) {}
 				local_geometry.updateSymbol(geometries[i].symbol);
 				local_geometry.addTo(this.layer);

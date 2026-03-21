@@ -274,6 +274,22 @@
 	};
 	
 	/**
+	 * Returns the modern timestamp (UNIX-based) for a given date.
+	 * @alias Date.getModernTimestamp
+	 * 
+	 * @param {Date|any} arg0_date
+	 * 
+	 * @returns {number}
+	 */
+	Date.getModernTimestamp = function (arg0_date) {
+		//Convert from parameters
+		let date = Date.getDate(arg0_date);
+		
+		//Return statement
+		return date.getTime();
+	};
+	
+	/**
 	 * Returns a numeric timestamp from a specific Date object. Number of minutes from 1 January, 00:00 on 1AD.
 	 * @alias Date.getTimestamp
 	 * 
@@ -282,23 +298,18 @@
 	 * @returns {number}
 	 */
 	Date.getTimestamp = function (arg0_date_object) {
-		//Convert from parameters
-		let date = (arg0_date_object) ? arg0_date_object : Date.getBlankDate();
+		let date = arg0_date_object ? arg0_date_object : Date.getBlankDate();
 		
-		//Internal guard clause for string
 		if (typeof date === "string")
-			if (!isNaN(parseFloat(date)))
-				return parseFloat(date);
+			if (!isNaN(parseFloat(date))) return parseFloat(date);
 		
-		// Merge with defaults (1-indexed months)
 		let date_obj = {
 			...Date.getBlankDate(),
 			...date,
 		};
-		
 		let minutes = 0;
 		
-		// --- Normalise minor overflows ---
+		// Normalise minor overflows
 		if (date_obj.minute >= 60) {
 			date_obj.hour += Math.floor(date_obj.minute / 60);
 			date_obj.minute %= 60;
@@ -316,32 +327,32 @@
 			date_obj.year--;
 		}
 		
-		// --- 1. Add full years before the current one ---
-		const target_year = date_obj.year - 1; // sum only years completed
-		if (target_year >= 0) {
-			for (let y = 0; y <= target_year; y++) {
-				minutes += (Date.isLeapYear(y) ? 366 : 365) * 24 * 60;
-			}
-		} else {
-			for (let y = -1; y >= target_year; y--) {
-				minutes -= (Date.isLeapYear(y) ? 366 : 365) * 24 * 60;
-			}
+		// 1. Add full years before the current one
+		//    Epoch = start of year 0, so we sum years [0 .. year-1] or
+		//    subtract years [-1 .. year] depending on direction.
+		if (date_obj.year > 0) {
+			for (let i = 0; i < date_obj.year; i++)
+				minutes += (Date.isLeapYear(i) ? 366 : 365) * 24 * 60;
+		} else if (date_obj.year < 0) {
+			for (let i = -1; i >= date_obj.year; i--)
+				minutes -= (Date.isLeapYear(i) ? 366 : 365) * 24 * 60;
 		}
+		// year === 0 contributes 0 full-year minutes (we're inside year 0)
 		
-		// --- 2. Add completed months of current year ---
+		// 2. Add completed months of current year
 		let all_months = Object.keys(Date.months);
 		for (let i = 1; i < date_obj.month; i++) {
-			let m = Date.months[all_months[i - 1]];
+			let local_month = Date.months[all_months[i - 1]];
 			let dim = Date.isLeapYear(date_obj.year)
-				? m.leap_year_days || m.days
-				: m.days;
+				? local_month.leap_year_days || local_month.days
+				: local_month.days;
 			minutes += dim * 24 * 60;
 		}
 		
-		// --- 3. Add completed days ---
+		// 3. Add completed days
 		minutes += (date_obj.day - 1) * 24 * 60;
 		
-		// --- 4. Add partial day ---
+		// 4. Add partial day
 		minutes += date_obj.hour * 60 + date_obj.minute;
 		
 		return minutes;

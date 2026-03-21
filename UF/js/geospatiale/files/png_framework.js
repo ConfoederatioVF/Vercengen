@@ -217,46 +217,41 @@
 	 * @param {Object} [arg1_options]
 	 *  @param {string} [arg1_options.type="32bit_int_positive"] - Either '32bit_int_positive'/'greyscale'.
 	 *
-	 * @returns {{width: number, height: number, data: number[]}|string}
+	 * @returns {{width: number, height: number, data: Float64Array}|string}
 	 */
 	GeoPNG.loadNumberRasterImage = function (arg0_file_path, arg1_options) {
-		//Convert from parameters
 		let file_path = arg0_file_path;
-		let options = (arg1_options) ? arg1_options : {};
-		
-		//Initialise options
+		let options = arg1_options ? arg1_options : {};
 		if (!options.type) options.type = "32bit_int_positive";
-		
-		//Guard clause if file_path is already object
 		if (typeof file_path == "object") return file_path;
 		
-		//Declare local instance variables
 		let rawdata = fs.readFileSync(file_path);
-		let pixel_values = [];
 		let png = pngjs.PNG.sync.read(rawdata);
 		
-		//Iterate over all pixels
-		for (let i = 0; i < png.width*png.height; i++) {
-			let colour_index = i*4;
-			let colour_value;
+		// PRE-ALLOCATE a Typed Array instead of a standard Array []
+		// Float64Array is safe for your scaling calculations
+		let pixel_values = new Float64Array(png.width * png.height);
+		
+		for (let i = 0; i < png.width * png.height; i++) {
+			let colour_index = i * 4;
 			let local_rgba = [
 				png.data[colour_index],
 				png.data[colour_index + 1],
 				png.data[colour_index + 2],
-				png.data[colour_index + 3]
+				png.data[colour_index + 3],
 			];
 			
 			if (options.type === "32bit_int_positive") {
-				colour_value = Colour.decodeRGBAAsNumber(local_rgba);
+				pixel_values[i] = Colour.decodeRGBAAsNumber(local_rgba);
 			} else if (options.type === "greyscale") {
-				colour_value = local_rgba[0]/255;
+				pixel_values[i] = local_rgba[0] / 255;
 			}
-			
-			pixel_values.push(colour_value);
 		}
 		
-		//Return statement
-		return { width: png.width, height: png.height, data: pixel_values };
+		// Explicitly nullify the heavy PNG buffer so it can be GC'd immediately
+		png = null;
+		
+		return { width: 4320, height: 2160, data: pixel_values };
 	};
 	
 	/**

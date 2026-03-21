@@ -218,8 +218,10 @@
     display: none;
 }
 .tippy-box {
-    background-color: var(--bg-primary-colour);
+    background-color: color-mix(in srgb, var(--bg-primary-colour), transparent 50%);
+    backdrop-filter: blur(8px);
     border-radius: 0;
+    box-shadow: 0 0 0.5rem black;
     bottom: var(--cell-padding);
     color: var(--body-colour);
     font-weight: var(--body-font-weight);

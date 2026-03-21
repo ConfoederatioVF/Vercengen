@@ -42,10 +42,12 @@
 	 * - <span color=00ffff>{@link Ontology.getState|getState}</span>(arg0_date:{@link Date}) | {@link Object}
 	 * - <span color=00ffff>{@link Ontology.getTimelineElement|getTimelineElement}</span>(arg0_options:{@link Object})
 	 * - <span color=00ffff>{@link Ontology.jumpToKeyframe|jumpToKeyframe}</span>(arg0_date:{@link Date}) | {@link Object}|{@link null}
+	 * - <span color=00ffff>{@link Ontology.mergeState|mergeState}</span>(arg0_state:{@link Array}<{@link Object}>)
 	 * - <span color=00ffff>{@link Ontology.moveKeyframe|moveKeyframe}</span>(arg0_date:{@link Date}, arg1_date:{@link Date}) | {@link boolean}
 	 * - <span color=00ffff>{@link Ontology.remove|remove}</span>()
 	 * - <span color=00ffff>{@link Ontology.removeRelation|removeRelation}</span>(arg0_relation:{@link string}, arg1_date:{@link Date})
 	 * - <span color=00ffff>{@link Ontology.removeRleations|removeRelations}</span>(arg0_relations:{@link Array}<{@link string}>, arg1_date:{@link Date})
+	 * - <span color=00ffff>{@link Ontology.saveToDatabase|saveToDatabase}</span>()
 	 * 
 	 * ##### Static Fields:
 	 * - `.initialised=false`: {@link boolean}
@@ -55,20 +57,17 @@
 	 * 
 	 * ##### Static Methods:
 	 * - <span color=00ffff>{@link Ontology.applyMutations|applyMutations}</span>(arg0_resolved_data:{@link Object}, arg1_mutations:{@link Object}) | {@link Object}
+	 * - <span color=00ffff>{@link Ontology.fromDatabase|fromDatabase}</span>()
+	 * - <span color=00ffff>{@link Ontology.getOntologyFromDatabase}</span>(arg0_ontology_id:{@link string})
 	 * - <span color=00ffff>{@link Ontology.getOntologyID|getOntologyID}</span>() | {@link string}
 	 * - <span color=00ffff>{@link Ontology.initialise|initialise}</span>()
 	 * 
 	 * @type {Ontology}
 	 */
 	global.Ontology = class {
-		/**
-		 * [WIP] - Ontology needs a way to stream data to/from daily files.
-		 * - static fromDatabase()
-		 * - static getOntologyFromDatabase(arg0_ontology_id)
-		 * - saveToDatabase()
-		 * [WIP] - Ontologies with the same ID when constructed should have their states diffed and merged.
-		 * [WIP] - Modify logic loop to also save current Ontologies to databases.
-		 */
+		static dirty_instances = new Set();
+		static _instances_set = new Set();
+		static _is_flushing = false;
 		
 		/**
 		 * @type {boolean}
@@ -83,7 +82,7 @@
 		/**
 		 * @type {string}
 		 */
-		static ontology_folder_path = "";
+		static ontology_folder_path = ve.registry.settings.Blacktraffic.ontology_saves_folder;
 		
 		/**
 		 * @type {Ontology[]}
@@ -100,10 +99,22 @@
 			if (!Ontology.initialised) Ontology.initialise();
 			
 			//Declare local instance variables
+			this.is_ontology = true;
 			this.options = options;
 			this.type = type;
 			
 			this.id = (this.options.id) ? this.options.id : Ontology.getOntologyID();
+			
+			//Existing instance state
+			let existing_instance = (
+				Ontology.instances.find((local_ontology) => local_ontology.id === this.id) || 
+				Ontology.queue.find((local_ontology) => local_ontology.id === this.id)
+			);
+			if (existing_instance) {
+				existing_instance.mergeState(state_array);
+				return existing_instance; //Return the old instance; new instance is discarded
+			}
+			
 			this.geometries = [];
 			this.state = (state_array) ? state_array : [];
 				if (!Array.isArray(this.state)) {
@@ -117,6 +128,7 @@
 			//Queue-based ID assignment
 			Ontology.queue.push(this);
 		}
+		
 		
 		/**
 		 * Given an array of fully-resolved snapshots (one per keyframe, indexed automatically to `this.state`), rewrite every keyframe's data so that the last entry is the full snapshot and every earlier entry is a negative diff against its successor.
@@ -142,8 +154,10 @@
 			for (let i = last_index - 1; i >= 0; i--)
 				this.state[i].data = Object.computeNegativeDiff(snapshots[i], snapshots[i + 1]);
 			
-			//Strip mutation fielkds - they've already been baked in
+			//Strip mutation fields - they've already been baked in
 			for (let local_keyframe of this.state) {
+				delete local_keyframe._saved; //Mark as dirty for the logic loop
+				
 				delete local_keyframe.add_relations;
 				delete local_keyframe.add_tags;
 				delete local_keyframe.remove_relations;
@@ -151,6 +165,7 @@
 				delete local_keyframe.set_relations;
 				delete local_keyframe.set_tags;
 			}
+			Ontology.dirty_instances.add(this);
 			
 			//Return statement
 			return this.state;
@@ -213,7 +228,9 @@
 		 * Sorts `this.state` in ascending order by `.date`. Last = head.
 		 * @private
 		 */
-		_sortState () { this.state.sort((a, b) => a.date - b.date); }
+		_sortState () { 
+			this.state.sort((a, b) => a.date - b.date);
+		}
 		
 		/**
 		 * Adds a new keyframe/state mutation at the given date, typically the head state. The provided `arg1_data` and optional relation/tag mutations are merged into the resolved timeline, and the entire diff chain is rebuilt so the head remains the latest full snapshot.
@@ -329,7 +346,20 @@
 		/**
 		 * Draws the Ontology. Should be overridden by subclasses.
 		 */
-		draw () { return this.geometries; }
+		draw () {
+			try {
+				if (this.type !== "Ontology" && global[`Ontology_${this.type}`]) {
+					let target_class = global[`Ontology_${this.type}`];
+					
+					//Only delegate if this is not already an instance of that class to prevent infinite loops
+					if (!(this instanceof target_class) && typeof target_class.prototype.draw === "function")
+						return target_class.prototype.draw.call(this);
+				}
+			} catch (e) {
+				console.error(`[Ontology] Error in delegated draw for ${this.id}:`, e);
+			}
+			return this.geometries;
+		}
 		
 		/**
 		 * Returns an HTMLElement representing this Ontology.
@@ -497,6 +527,7 @@
 		 * Jumps to a specific keyframe and calls the draw function for the Ontology.
 		 * 
 		 * @param arg0_date
+		 * 
 		 * @returns {{data: Object, date: Date, index: number}|null}
 		 */
 		jumpToKeyframe (arg0_date) {
@@ -529,6 +560,54 @@
 				date: this.state[best_index].date,
 				index: best_index
 			};
+		}
+		
+		/**
+		 * Merges an incoming state array into the current Ontology. Resolves both snates to snapshots, merges them, and rebuilds the diff chain.
+		 * 
+		 * @param {Object[]} arg0_state_array
+		 */
+		mergeState (arg0_state_array) {
+			//Convert from parameters
+			let state = (arg0_state_array) ? arg0_state_array : [];
+				if (state.length === 0) return; //Internal guard clause if state being merged doesn't exist
+			
+			//Declare local instance variables
+			let current_snapshots = this._resolveAllSnapshots();
+			let snapshot_map = {};
+		
+			//Iterate over the current state and populate snapshot_map
+			for (let i = 0; i < this.state.length; i++)
+				snapshot_map[this.state[i].date] = current_snapshots[i];
+			
+			//Resolve incoming snapshots with a temp_context to reuse resolution logic without affecting this instance
+			let temp_context = {
+				state: state,
+				_resolveStateAtIndex: this._resolveStateAtIndex
+			};
+			temp_context._resolveAllSnapshots = this._resolveAllSnapshots.bind(temp_context);
+			temp_context._resolveStateAtIndex = this._resolveStateAtIndex.bind(temp_context);
+			
+			let incoming_snapshots = temp_context._resolveAllSnapshots();
+			
+			//Merge snapshots into the map (incoming takes precedence)
+			for (let i = 0; i < state.length; i++) {
+				let local_date = state[i].date;
+				
+				if (snapshot_map[local_date]) {
+					snapshot_map[local_date] = Object.assign(snapshot_map[local_date], incoming_snapshots[i]);
+				} else {
+					snapshot_map[local_date] = incoming_snapshots[i];
+				}
+			}
+			
+			//Reconstruct state skeleton
+			let sorted_dates = Object.keys(snapshot_map).map(Number).sort((a, b) => a - b);
+			
+			this.state = sorted_dates.map((date) => ({ date: date, data: {} }));
+			
+			let final_snapshots = sorted_dates.map((date) => snapshot_map[date]);
+			this._rebuildDiffsFromSnapshots(final_snapshots);
 		}
 		
 		/**
@@ -565,7 +644,9 @@
 			let index = Ontology.instances.indexOf(this);
 				if (index !== -1) Ontology.instances.splice(index, 1);
 			let queue_index = Ontology.queue.indexOf(this);
-				if (queue_index !== -1) Ontology.queue.splice(index, 1);
+				if (queue_index !== -1) Ontology.queue.splice(queue_index, 1);
+			Ontology._instances_set.delete(this);
+			Ontology.dirty_instances.delete(this);
 			
 			//Remove geometries from any map layer
 			for (let local_geometry of this.geometries)
@@ -609,6 +690,35 @@
 			let relation_ids = relations.map((r) => (typeof r === "string") ? r : r.id);
 			
 			this.addKeyframe(date, current_state, { remove_relations: relation_ids });
+		}
+		
+		/**
+		 * Collects dirty keyframes into a write-batch map.
+		 * Does NOT perform I/O itself; called by the logic loop.
+		 *
+		 * @param {Map<string, {lines: string[], keyframes: Object[]}>} arg0_batch_map
+		 */
+		saveToDatabase(arg0_batch_map) {
+			let all_clean = true;
+			
+			for (let local_keyframe of this.state) {
+				if (local_keyframe._saved) continue;
+				all_clean = false;
+				
+				let filename = `${String.getDateString()}.ontology`;
+				
+				if (!arg0_batch_map.has(filename))
+					arg0_batch_map.set(filename, { lines: [], keyframes: [] });
+				
+				let entry = arg0_batch_map.get(filename);
+				let save_data = Object.assign({ type: this.type }, local_keyframe);
+				delete save_data._saved;
+				
+				entry.lines.push(`${this.id} ${JSON.stringify(save_data)}\n`);
+				entry.keyframes.push(local_keyframe);
+			}
+			
+			if (all_clean) Ontology.dirty_instances.delete(this);
 		}
 		
 		/**
@@ -659,6 +769,114 @@
 		}
 		
 		/**
+		 * Loads all .ontology files from the folder path and hydrates the static instances.
+		 * 
+		 * @alias #fromDatabase
+		 * @memberof Ontology
+		 */
+		//[QUARANTINE]
+		static async fromDatabase () {
+			const fs_promises = fs.promises;
+			
+			// 1. Check if the directory exists
+			try {
+				await fs_promises.access(Ontology.ontology_folder_path);
+			} catch (e) {
+				console.warn(`[Ontology] Database folder not found at ${Ontology.ontology_folder_path}`);
+				return;
+			}
+			
+			// 2. Get and sort files chronologically (DD.MM.YYYY.ontology)
+			let files = (await fs_promises.readdir(Ontology.ontology_folder_path))
+			.filter((f) => f.endsWith(".ontology"))
+			.sort((a, b) => {
+				let parts_a = a.split(".");
+				let parts_b = b.split(".");
+				let date_a = new Date(Number(parts_a[2]), Number(parts_a[1]) - 1, Number(parts_a[0]));
+				let date_b = new Date(Number(parts_b[2]), Number(parts_b[1]) - 1, Number(parts_b[0]));
+				return date_a - date_b;
+			});
+			
+			let database_states = {}; // Map<id, state_array>
+			
+			// 3. Process files asynchronously
+			for (let file of files) {
+				try {
+					let filePath = path.join(Ontology.ontology_folder_path, file);
+					let content = await fs_promises.readFile(filePath, "utf8");
+					let lines = content.split("\n");
+					
+					for (let line of lines) {
+						if (!line.trim()) continue;
+						
+						// FIXED: Find the first '{' to correctly separate ID from JSON
+						let json_start = line.indexOf("{");
+						if (json_start === -1) continue;
+						
+						let id = line.substring(0, json_start).trim();
+						let data_string = line.substring(json_start);
+						
+						try {
+							let keyframe = JSON.parse(data_string);
+							
+							// Mark as saved so we don't immediately try to write it back to disk
+							keyframe._saved = true;
+							
+							if (!database_states[id]) database_states[id] = [];
+							database_states[id].push(keyframe);
+						} catch (e) {
+							console.error(`[Ontology] Failed to parse JSON for ID "${id}" in ${file}`, e);
+						}
+					}
+				} catch (e) {
+					console.error(`[Ontology] Failed to read file ${file}:`, e);
+				}
+			}
+			
+			// 4. Hydrate instances
+			for (let id in database_states) {
+				let state_array = database_states[id];
+				if (state_array.length === 0) continue;
+				
+				// In negative diffing, the head state (containing the full data/type) is at the end
+				let head_state = state_array[state_array.length - 1];
+				let type = head_state.type || "Ontology";
+				
+				let target_class = global[`Ontology_${type}`] || Ontology;
+				
+				// Instantiate. Constructor handles merging, sorting, and diffing.
+				if (type === "Ontology") {
+					new target_class(type, state_array, { id: id });
+				} else {
+					new target_class(state_array, { id: id });
+				}
+			}
+			
+			console.log(`[Ontology] Successfully hydrated ${Object.keys(database_states).length} ontologies.`);
+		}
+		
+		/**
+		 * Fetches a specific Ontology from the database by ID.
+		 * 
+		 * @alias #getOntologyFromDatabase
+		 * @memberof Ontology
+		 *
+		 * @param {string} arg0_ontology_id
+		 * 
+		 * @returns {Ontology|null}
+		 */
+		//[QUARANTINE]
+		static getOntologyFromDatabase (arg0_ontology_id) {
+			// In a streaming architecture, we check current instances first
+			let existing = Ontology.instances.find(i => i.id === arg0_ontology_id);
+			if (existing) return existing;
+			
+			// If not loaded, we trigger a full load (or a filtered load)
+			Ontology.fromDatabase();
+			return Ontology.instances.find(i => i.id === arg0_ontology_id) || null;
+		}
+		
+		/**
 		 * Returns an Ontology ID/hash reflective of the current date.
 		 * 
 		 * @alias #getOntologyID
@@ -679,10 +897,62 @@
 		 */
 		static initialise () {
 			Ontology.initialised = true;
-			Ontology.logic_loop = setInterval(() => {
-				for (let i = 0; i < Ontology.queue.length; i++)
-					Ontology.instances.push(Ontology.queue[i]);
-				Ontology.queue = [];
+			
+			if (!fs.existsSync(Ontology.ontology_folder_path))
+				fs.mkdirSync(Ontology.ontology_folder_path, { recursive: true });
+			
+			Ontology.logic_loop = setInterval(async () => {
+				if (Ontology._is_flushing) return;
+				Ontology._is_flushing = true;
+				
+				try {
+					// 1. Flush queue → instances (O(1) membership via shadow Set)
+					for (let local_instance of Ontology.queue) {
+						if (!Ontology._instances_set.has(local_instance)) {
+							Ontology._instances_set.add(local_instance);
+							Ontology.instances.push(local_instance);
+						}
+					}
+					Ontology.queue = [];
+					
+					// 2. Early-exit if nothing is dirty
+					if (Ontology.dirty_instances.size === 0) return;
+					
+					// 3. Collect all dirty writes into a per-file batch
+					let batch_map = new Map();
+					
+					for (let local_instance of Ontology.dirty_instances)
+						local_instance.saveToDatabase(batch_map);
+					
+					// 4. One async write per file
+					let write_promises = [];
+					
+					for (let [filename, { lines, keyframes }] of batch_map) {
+						let file_path = path.join(
+							Ontology.ontology_folder_path,
+							filename
+						);
+						let payload = lines.join("");
+						
+						write_promises.push(
+							fs.promises
+							.appendFile(file_path, payload, "utf8")
+							.then(() => {
+								for (let kf of keyframes) kf._saved = true;
+							})
+							.catch((e) => {
+								console.error(
+									`[Ontology] Batch write failed for ${filename}:`,
+									e
+								);
+							})
+						);
+					}
+					
+					await Promise.all(write_promises);
+				} finally {
+					Ontology._is_flushing = false;
+				}
 			}, 100);
 		}
 	};

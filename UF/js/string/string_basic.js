@@ -163,7 +163,6 @@
 	/**
 	 * Formats a Date object into a default string.
 	 * @alias String.formatDate
-	 * @memberof String
 	 * 
 	 * @param {Object} arg0_date
 	 * 
@@ -172,6 +171,7 @@
 	String.formatDate = function (arg0_date) {
 		//Convert from parameters
 		let date = (arg0_date) ? arg0_date : Date.getCurrentDate();
+		if (typeof date === "number") date = Date.convertTimestampToDate(date);
 		
 		//Declare local instance variables
 		let day_name = String.ordinalise(date.day);
@@ -340,7 +340,6 @@
 	/**
 	 * Returns spreadsheet formatted coords (i.e. 'A1', 'ZZ15') given a numeric coords pair (1-indexed).
 	 * @alias String.getSpreadsheetCell
-	 * @memberof String
 	 * 
 	 * @param {number} arg0_x
 	 * @param {number} arg1_y
@@ -362,7 +361,6 @@
 	/**
 	 * Returns the spreadsheet column (i.e. 'A', 'ZZ') given an X coordinate number.
 	 * @alias String.getSpreadsheetColumn
-	 * @memberof String
 	 * 
 	 * @param {number} arg0_x
 	 * 
@@ -386,6 +384,33 @@
 	};
 	
 	/**
+	 * Hashes a string for later checks whether a string is equivalent to another.
+	 * @alias String.hash
+	 * 
+	 * @param {string} arg0_string
+	 * 
+	 * @returns {string}
+	 */
+	String.hash = function (arg0_string) {
+		//Convert from parameters
+		let string = arg0_string;
+		
+		//Declare local instance variables
+		let hash = 0;
+		
+		for (let i = 0; i < string.length; i++) {
+			let char = string.charCodeAt(i);
+			
+			//Set hash
+			hash = (hash << 5) - hash + char;
+			hash |= 0;
+		}
+		
+		//Return statement
+		return Math.abs(hash).toString(16);
+	};
+	
+	/**
 	 * Checks if the given link is that of a compatible image.
 	 * @alias String.isImage
 	 *
@@ -402,7 +427,6 @@
 	/**
 	 * Checks whether a given string is loosely a valid URL.
 	 * @alias String.isURL
-	 * @memberof String
 	 *
 	 * @returns {boolean}
 	 */
@@ -422,7 +446,6 @@
 	/**
 	 * Ordinalises a given number and returns it as a string.
 	 * @alias String.ordinalise
-	 * @memberof String
 	 * 
 	 * @param {number} arg0_number
 	 * 

@@ -306,7 +306,7 @@
 	 */
 	Colour.encodeNumberAsRGBA = function (arg0_number) {
 		//Convert from parameters
-		let number = Math.returnSafeNumber(Math.round(arg0_number));
+		let number = Math.returnSafeNumber(Math.ceil(arg0_number));
 		
 		//Declare local instance variables
 		let r = (number >> 24) & 0xFF; //Extract highest 8 bits

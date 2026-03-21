@@ -216,15 +216,8 @@
     width: 100%;
 }
 
-/* -- ve.Hierarchy -- */
-[component="ve-hierarchy"] {
-    overflow: clip;
-}
-
 /* -- ve.Interface -- */
 [component="ve-interface"] {
-    height: 100%;
-    
     summary#name {
         padding-bottom: calc(var(--padding)*0.5);
     }
@@ -272,6 +265,48 @@
     > #name {
         margin-right: var(--padding);
     }
+}
+
+/* -- ve.Log -- */
+table:has([component="ve-log"]) { table-layout: fixed; }
+[component="ve-log"] {
+    height: 100%;
+    padding: 0;
+    
+    #console {
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+        
+        .log-element { 
+            flex: 1; 
+            overflow: auto;
+            scrollbar-color: var(--body-colour) transparent;
+            scrollbar-width: thin;
+            width: 100%;
+            
+            .log-part {
+                word-break: break-all;
+            }
+        }
+    }
+    [log-button="true"] {
+        background: none;
+        border-radius: 0;
+        border: 0;
+        display: block;
+        padding: var(--padding);
+        text-align: left;
+        width: 100%;
+        
+        transition: all 0.5s ease;
+    }
+    [log-button="true"].active {
+        background-color: var(--body-colour);
+        color: var(--bg-primary-colour);
+    }
+    
+    pre { white-space: break-spaces; }
 }
 
 /* -- ve.Number -- */

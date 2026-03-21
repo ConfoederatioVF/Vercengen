@@ -15,6 +15,7 @@
 	 * - `arg0_key`; {@link string} - The key to use for channel logging. log.<channel_key>, log.<channel_key>_warn, log.<channel_key>_error are valid channels afterwards.
 	 * - `arg1_options`: {@link Object}
 	 *   - `.colour`: {@link Array}<{@link number}, {@link number}, {@link number}, {@link number}>|{@link string} - The colour to use for the background.
+	 *   - `.do_not_print=false`: {@link boolean} - Whether to not print to console.
 	 *   - `.large_object_limit=10000`: {@link number} - The limit at which large object warnings should be emitted.
 	 *   - `.text_colour`: {@link Array}<{@link number}, {@link number}, {@link number}, {@link number}>|{@link string} - The text colour to use for the foreground. Detected as either 'white/'black' based on luminance by default.
 	 * 
@@ -63,6 +64,7 @@
 			let default_post_css = `background: transparent; color: inherit;`;
 			let default_pre_css = `background: ${bg_colour}; color: ${text_colour}; padding: 2px 5px; border-radius: 3px; font-weight: bold;`;
 			
+			if (options.do_not_print === undefined) options.do_not_print = false;
 			options.post_css = (options.post_css) ? `${default_post_css} ${options.post_css}` : default_post_css;
 			options.pre_css = (options.pre_css) ? `${default_pre_css} ${options.pre_css}` : default_pre_css;
 			
@@ -170,17 +172,18 @@
 			let template = `%c${this.key.toUpperCase()}%c `;
 			
 			//If the first argument is a string, we can merge it into the template; this allows the user to still use %s, %d, etc. in their own messages
-			if (typeof args[0] === "string") {
-				let message = args.shift();
-				console[type](
-					`${template}${message}`,
-					this.options.pre_css,
-					this.options.post_css,
-					...args,
-				);
-			} else {
-				console[type](template, this.options.pre_css, this.options.post_css, ...args);
-			}
+			if (!this.options.do_not_print)
+				if (typeof args[0] === "string") {
+					let message = args.shift();
+					console[type](
+						`${template}${message}`,
+						this.options.pre_css,
+						this.options.post_css,
+						...args,
+					);
+				} else {
+					console[type](template, this.options.pre_css, this.options.post_css, ...args);
+				}
 			
 			//Push to current this.log_el
 			let local_msg_el = document.createElement("div");

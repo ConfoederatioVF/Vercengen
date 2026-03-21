@@ -15,8 +15,9 @@
 	 * @param {string} arg0_input_file_path
 	 * @param {string} arg1_output_file_path
 	 * @param {Object} [arg2_options]
-	 *  @param {string} [options.mode="number"] - Either 'number'/'percentage'.
-	 *  @param {function(local_index, local_value)} [options.special_function] - Any function to pass to the iterative loop when processing. Must return a {@link number}.
+	 *  @param {string} [arg2_options.mode="number"] - Either 'number'/'percentage'.
+	 *  @param {boolean} [arg2_options.ceil=true] - Whether to ceiling ASC integers.
+	 *  @param {function(local_index, local_value)} [arg2_options.special_function] - Any function to pass to the iterative loop when processing. Must return a {@link number}.
 	 *  
 	 * @returns {{dataframe: Object, max_value: number}}
 	 */
@@ -28,6 +29,7 @@
 		
 		//Initialise options
 		if (!options.mode) options.mode = "number";
+		if (options.ceil === undefined) options.ceil = true;
 		
 		//Declare local instance variables
 		let asc_dataframe = GeoASC.readFile(input_file_path);
@@ -57,6 +59,8 @@
 				if (local_value !== undefined && local_value !== -9999) {
 					if (options.mode === "number") {
 						//Encode full 32-bit integer value into RGBA
+						if (options.ceil)
+							local_value = Math.ceil(local_value);
 						rgba = Colour.encodeNumberAsRGBA(local_value);
 					} else if (options.mode === "percentage") {
 						//Scale using percentage mode (0-100 mapped to G channel)

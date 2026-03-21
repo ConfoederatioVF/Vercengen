@@ -351,6 +351,29 @@
 	};
 	
 	/**
+	 * Performs a Fisher-Yates shuffle on an input array and returns the shuffle.
+	 * @alias Array.shuffle
+	 * 
+	 * @param {any[]} arg0_input_array
+	 * 
+	 * @returns {any[]}
+	 */
+	Array.shuffle = function (arg0_input_array) {
+		//Convert from parameters
+		let input_array = [...arg0_input_array];
+		
+		//Iterate over input_array and shuffle it
+		for (let i = input_array.length - 1; i > 0; i--) {
+			let j = Math.floor(Math.random()*(i + 1));
+			
+			[input_array[i], input_array[j]] = [input_array[j], input_array[i]];
+		}
+		
+		//Return statement
+		return input_array;
+	};
+	
+	/**
 	 * Returns a list/{@link Array} from a given input value.
 	 * @alias Array.toArray
 	 *

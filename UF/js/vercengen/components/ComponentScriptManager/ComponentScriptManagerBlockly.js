@@ -167,10 +167,12 @@ ve.ScriptManagerBlockly = class extends ve.Component {
 		delete window.workspace;
 		this.element.classList.add("disabled");
 		
-		this.blockly_tooltip_parent_el = this.blockly_tooltip_el.parentElement;
-		this.blockly_tooltip_el.parentElement.removeChild(this.blockly_tooltip_el);
-		this.blockly_widget_parent_el = this.blockly_widget_el.parentElement;
-		this.blockly_widget_el.parentElement.removeChild(this.blockly_widget_el);
+		try {
+			this.blockly_tooltip_parent_el = this.blockly_tooltip_el.parentElement;
+			this.blockly_tooltip_el.parentElement.removeChild(this.blockly_tooltip_el);
+			this.blockly_widget_parent_el = this.blockly_widget_el.parentElement;
+			this.blockly_widget_el.parentElement.removeChild(this.blockly_widget_el);
+		} catch (e) {}
 	}
 	
 	/**

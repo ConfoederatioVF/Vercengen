@@ -3,7 +3,7 @@
 	if (!global.Geospatiale) global.Geospatiale = {};
 	
 	/**
-	 * Calculates the haversine distance between two [lng, lat] coords.
+	 * Calculates the haversine distance in km between two [lng, lat] coords.
 	 * @alias Geospatiale.haversineDistance
 	 * 
 	 * @param {number[]} arg0_coords

@@ -41,21 +41,21 @@
 	 * @alias HTML.getCSSPosition
 	 * 
 	 * @param {HTMLElement} arg0_anchor - Either 'top_left'/'top_right'/'bottom_left'/'bottom_right'.
-	 * @param {number} arg1_x
-	 * @param {number} arg2_y
+	 * @param {number|string} arg1_x
+	 * @param {number|string} arg2_y
 	 * 
 	 * @returns {{bottom: number, left: number, right: number, top: number}}
 	 */
 	HTML.getCSSPosition = function (arg0_anchor, arg1_x, arg2_y) {
 		//Convert from parameters
 		let anchor = (arg0_anchor) ? arg0_anchor : "top_left";
-		let x_coord = parseInt(arg1_x);
-		let y_coord = parseInt(arg2_y);
+		let x_coord = arg1_x;
+		let y_coord = arg2_y;
 		
 		//Declare local instance variables
 		let return_obj = {};
-		let x_string = (typeof x_coord === "string") ? x_coord : `${x_coord}px`;
-		let y_string = (typeof y_coord === "string") ? y_coord : `${y_coord}px`;
+		let x_string = (typeof x_coord === "string") ? `calc(${x_coord})` : `${x_coord}px`;
+		let y_string = (typeof y_coord === "string") ? `calc(${y_coord})` : `${y_coord}px`;
 		
 		//Set return_obj styles based on anchor
 		if (anchor === "top_left") {
