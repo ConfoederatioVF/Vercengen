@@ -42,7 +42,7 @@ ve.Tooltip = class extends ve.Feature {
 		this.v = components_obj;
 		
 		//Set tippy tooltip based on element
-		tippy(this.anchor_element, { 
+		this.tippy = tippy(this.anchor_element, { 
 			allowHTML: true, 
 			appendTo: document.body, 
 			content: this.element, 
@@ -95,6 +95,34 @@ ve.Tooltip = class extends ve.Feature {
 		} else if (typeof components_obj === "string") {
 			this.element.innerHTML = components_obj;
 		}
+	}
+	
+	/**
+	 * Removes any redundant tooltips.
+	 * - Static method of: {@link ve.Tooltip}
+	 * 
+	 * @alias #refresh
+	 */
+	static refresh () {
+		for (let i = ve.Feature.instances.length - 1; i >= 0; i--)
+			if (ve.Feature.instances[i] instanceof ve.Tooltip) {
+				let local_feature = ve.Feature.instances[i];
+				
+				if (local_feature.tippy && !document.body.contains(local_feature.tippy.reference)) {
+					//1. Destroy the Tippy first
+					local_feature.tippy.destroy();
+					
+					//2. Delete everything inside the feature
+					let all_feature_keys = Object.keys(local_feature);
+					
+					for (let x = 0; x < all_feature_keys.length; x++)
+						delete local_feature[all_feature_keys[x]];
+					
+					//3. Purge it from the .instances array
+					ve.Feature.instances.splice(i, 1);
+					local_feature = null;
+				}
+			}
 	}
 };
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>vercengen/components/ComponentCheckbox.js - Documentation</title>
+    <title>maptalks_GeoKMZ - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,230 +32,1014 @@
 
 <div id="main">
     
-    <h1 class="page-title">vercengen/components/ComponentCheckbox.js</h1>
+    <h1 class="page-title">maptalks_GeoKMZ</h1>
     
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Refer to &lt;span color = "yellow">{@link ve.Component}&lt;/span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
- * 
- * Either used as a toggle (boolean) or more extensively as a nested checkbox list (Object), depending on the type.
- * - Functional binding: &lt;span color=00ffff>veCheckbox&lt;/span>().
- * 
- * ##### Constructor:
- * - `arg0_value`: {@link boolean|Object}
- *   - `&lt;checkbox_group_key>`: {@link Object}
- *     - `.name`: {@link string}
- *     - `&lt;checkbox_key>`: {@link boolean}
- *   - `&lt;checkbox_key>`: {@link boolean}
- * - `arg1_options`: {@link Object}
- * 
- * ##### Instance:
- * - `.v`: {@link boolean}|{@link Object} - Equivalent to the `arg0_value` initialiser in structure.
- * 
- * ##### Static Methods:
- * - &lt;span color=00ffff>{@link ve.Checkbox.generateHTMLRecursively}&lt;/span>(arg0_value:{@link boolean}|{@link Object}) | {@link Array}&lt;{@link string}>
- * 
- * @augments ve.Component
- * @memberof ve.Component
- * @type {ve.Checkbox}
- */
-ve.Checkbox = class extends ve.Component {
-	static demo_value = {
-		checkbox_one: true,
-		checkbox_two: false,
-		checkbox_three: false,
-		checkbox_four: {
-			name: "Nested Checkboxes:",
-			checkbox_five: true,
-			checkbox_six: false
-		}
-	};
-	
-	constructor (arg0_value, arg1_options) {
-		//Convert from parameters
-		let value = (arg0_value !== undefined) ? arg0_value : false;
-		let options = (arg1_options) ? arg1_options : {};
-			super(options);
-			
-		//Initialise options
-		options.attributes = (options.attributes) ? options.attributes : {};
-		
-		//Declare local instance variables
-		this.element = document.createElement("div");
-			this.element.setAttribute("component", "ve-checkbox");
-			this.element.instance = this;
-		
-		this.options = options;
-		this.value = value;
-		
-		//Format html_string
-		let html_string = [];
-		html_string.push(`&lt;div id = "name">&lt;/div>`);
-		
-		if (typeof value === "boolean") {
-			html_string.push(`&lt;input type = "checkbox">`);
-			this.element.innerHTML = html_string.join("");
-			
-			this.element.querySelector(`input[type="checkbox"]`).addEventListener("change", (e) => {
-				this.fireToBinding();
-				this.value = this.v;
-				this.from_binding_fire_silently = true;
-				this.v = this.value; //Needs to run setter
-				this.from_binding_fire_silently = false;
-			});
-		} else if (typeof value === "object") {
-			html_string.push(`&lt;ul>`);
-			if (typeof this.value === "object") {
-				html_string.push(...ve.Checkbox.generateHTMLRecursively(this.value));
-			} else {
-				html_string.push(...ve.Checkbox.generateHTMLRecursively({ value: this.value }));
-			}
-			html_string.push(`&lt;/ul>`);
-			
-			//Populate element and initialise handlers
-			this.element.innerHTML = html_string.join("");
-			
-			let all_checkbox_els = this.element.querySelectorAll("input");
-			all_checkbox_els.forEach((el) => el.addEventListener("change", (e) => {
-				this.value = this.v;
-				this.from_binding_fire_silently = true;
-				this.v = this.value; //Needs to run setter
-				this.from_binding_fire_silently = false;
-				this.fireToBinding();
-			}));
-		}
-		
-		this.name = options.name;
-		this.v = this.value;
-	}
-	
-	/**
-	 * Returns the present ve.Checkbox list value.
-	 * - Accessor of {@link ve.Checkbox}
-	 *
-	 * @alias v
-	 * @memberof ve.Component.ve.Checkbox
-	 * @type {{"checkbox_key": boolean|{"name": string, "checkbox_key": boolean|Object|string}|string}}
-	 */
-	get v () {
-		//Declare local instance variables
-		let root_el = this.element.querySelector("ul");
-		
-		if (!root_el) return this.element.querySelector(`input[type="checkbox"]`).checked; //Internal guard clause for booleans
-		
-		//Traversal function (recursive) if typeof ve.Checkbox is object
-		let traverse = (ul_el) => {
-			let local_obj = {};
-			
-			[...ul_el.children].forEach((li_el) => {
-				if (li_el.tagName === "LI") {
-					let input_el = li_el.querySelector(`input[type="checkbox"]`);
-					if (input_el) local_obj[input_el.id] = input_el.checked;
-				} else if (li_el.tagName === "UL") {
-					local_obj[li_el.id] = traverse(li_el);
-				}
-			});
-			
-			//Return statement
-			return local_obj;
-		}
-		
-		//Return statement
-		return traverse(root_el);
-	}
-	
-	/**
-	 * Sets the present ve.Checkbox list value.
-	 * - Accessor of: {@link ve.Checkbox}
-	 *
-	 * @alias v
-	 * @memberof ve.Component.ve.Checkbox
-	 * 
-	 * @param {{"checkbox_key": boolean|{"name": string, "checkbox_key": boolean|Object|string}|string}} arg0_value
-	 */
-	set v (arg0_value) {
-		//Convert from parameters
-		let value = (typeof arg0_value !== "undefined") ? arg0_value : false;
-		
-		//Parse value
-		if (typeof value === "boolean") {
-			//Set singular checkbox value
-			this.value = value;
-			this.element.querySelector(`input[type="checkbox"]`).checked = value;
-		} else {
-			let traverse = (ul_el, values) => {
-				[...ul_el.children].forEach((li_el) => {
-					if (li_el.tagName === "LI") {
-						let input_el = li_el.querySelector(`input[type="checkbox"]`);
-						if (input_el &amp;&amp; input_el.id in values)
-							input_el.checked = (!!values[input_el.id]);
-					} else if (li_el.tagName === "UL") {
-						if (li_el.id &amp;&amp; typeof values[li_el.id] === "object")
-							traverse(li_el, values[li_el.id]);
-					}
-				})
-			};
-			
-			let root_ul = this.element.querySelector("ul");
-			traverse(root_ul, value);
-			this.value = value;
-		}
-		this.fireFromBinding();
-	}
-	
-	/**
-	 * Generates HTML recursively for a nested checkbox element.
-	 * - Static method of: {@link ve.Checkbox}
-	 *
-	 * @alias #generateHTMLRecursively
-	 * @memberof ve.Component.ve.Checkbox
-	 * 
-	 * @param {{"checkbox_key": boolean|{"name": string, "checkbox_key": boolean|Object|string}|string}} arg0_value
-	 * @returns {string[]}
-	 */
-	static generateHTMLRecursively (arg0_value) {
-		//Convert from parameters
-		let value = arg0_value;
-		
-		//Declare local instance variables
-		let html_string = [];
-		
-		//Iterate over all keys in value
-		Object.iterate(value, (local_key, local_value) => {
-			if (typeof local_value === "boolean") {
-				html_string.push(`&lt;li>&lt;input id = "${local_key}" type = "checkbox"${(local_value) ? " checked" : ""}>${(local_key) ? `&lt;label for = "${local_key}">${local_key}&lt;/label>` : ""}&lt;/li>`);
-			} else if (typeof local_value === "object") {
-				html_string.push(`&lt;ul id = "${local_key}">`);
-					html_string.push(...ve.Checkbox.generateHTMLRecursively(local_value));
-				html_string.push(`&lt;/ul>`);
-			} else if (typeof local_value === "string") {
-				html_string.push(`&lt;li>&lt;b>${local_value}&lt;/b>&lt;/li>`);
-			}
-		});
-		
-		//Return statement
-		return html_string;
-	}
-};
+        <h2>
+            <span class="ancestors"><a href="Geospatiale.html">Geospatiale</a>.</span>
+        
+        maptalks_GeoKMZ
+        </h2>
+        
+            <div class="class-description"><p>Handles GeoKMZ/KML files for Maptalks and allows them to be rendered.</p></div>
+        
+    
+</header>
 
-//Functional binding
+<article>
+    <div class="container-overview">
+    
+        
+<div class="section-method">
 
-/**
- * @returns {ve.Checkbox}
- */
-veCheckbox = function () {
-	//Return statement
-	return new ve.Checkbox(...arguments);
-};</code></pre>
-        </article>
-    </section>
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="maptalks_GeoKMZ"><span class="type-signature"></span>new maptalks_GeoKMZ<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="geospatiale_files_maptalks_kmz_framework.js.html">geospatiale/files/maptalks_kmz_framework.js</a>, <a href="geospatiale_files_maptalks_kmz_framework.js.html#line9">line 9</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="addTo"><span class="type-signature"></span>addTo<span class="signature">(arg0_map_obj)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Adds the current GeoKMZ to a Maptalks map.</p>
+<ul>
+<li>Method of: <a href="Geospatiale.maptalks_GeoKMZ.html">Geospatiale.maptalks_GeoKMZ</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="geospatiale_files_maptalks_kmz_framework.js.html">geospatiale/files/maptalks_kmz_framework.js</a>, <a href="geospatiale_files_maptalks_kmz_framework.js.html#line39">line 39</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arg0_map_obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>maptalks.Map</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="loadKMZ"><span class="type-signature"></span>loadKMZ<span class="signature">(arg0_input_file_path, arg1_options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Loads a KMZ into the current collated layer.</p>
+<ul>
+<li>Method of: <a href="Geospatiale.maptalks_GeoKMZ.html">Geospatiale.maptalks_GeoKMZ</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="geospatiale_files_maptalks_kmz_framework.js.html">geospatiale/files/maptalks_kmz_framework.js</a>, <a href="geospatiale_files_maptalks_kmz_framework.js.html#line52">line 52</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arg0_input_file_path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>arg1_options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code><a href="Object.html">Object</a></code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                
+                
+                    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>exclude_types</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code><a href="Array.html">Array</a>.&lt;string></code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">
+                <p>Any types to exclude. Either 'polygon'/'line'/'point'.</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>do_not_display_popups</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>onload</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>function</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">
+                <p>(arg0_geokmz_obj, arg1_geometries). The method to call once loading is finished.</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>window_options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code><a href="Object.html">Object</a></code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="remove"><span class="type-signature"></span>remove<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Removes the current GeoKMZ from a Maptalks map.</p>
+<ul>
+<li>Method of: <a href="Geospatiale.maptalks_GeoKMZ.html">Geospatiale.maptalks_GeoKMZ</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="geospatiale_files_maptalks_kmz_framework.js.html">geospatiale/files/maptalks_kmz_framework.js</a>, <a href="geospatiale_files_maptalks_kmz_framework.js.html#line144">line 144</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="removeFrom"><span class="type-signature"></span>removeFrom<span class="signature">(arg0_map_obj)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Removes the KMZ from the given Maptalks map if possible.</p>
+<ul>
+<li>Method of: <a href="Geospatiale.maptalks_GeoKMZ.html">Geospatiale.maptalks_GeoKMZ</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="geospatiale_files_maptalks_kmz_framework.js.html">geospatiale/files/maptalks_kmz_framework.js</a>, <a href="geospatiale_files_maptalks_kmz_framework.js.html#line155">line 155</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arg0_map_obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>maptalks.Map</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="unloadKMZ"><span class="type-signature"></span>unloadKMZ<span class="signature">(arg0_input_file_path)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Unloads the given GeoKMZ given an input path.</p>
+<ul>
+<li>Method of: <a href="Geospatiale.maptalks_GeoKMZ.html">Geospatiale.maptalks_GeoKMZ</a></li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="geospatiale_files_maptalks_kmz_framework.js.html">geospatiale/files/maptalks_kmz_framework.js</a>, <a href="geospatiale_files_maptalks_kmz_framework.js.html#line163">line 163</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arg0_input_file_path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

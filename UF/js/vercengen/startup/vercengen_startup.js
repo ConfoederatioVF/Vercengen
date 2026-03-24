@@ -79,8 +79,8 @@ global.path = require("path");
 						 */
 						default_bg_colour: "#2196f3",
 						/**
-						 * The default text colour for consoles.
-						 * @type {string} - Either 'auto' or on actual colour.
+						 * The default text colour for consoles. Either 'auto' or on actual colour.
+						 * @type {string}
 						 */
 						default_text_colour: "auto"
 					},
@@ -128,6 +128,28 @@ global.path = require("path");
 						 * @type {boolean}
 						 */
 						share_settings_across_instances: true
+					},
+					
+					/**
+					 * Component settings for {@link ve.UndoRedo}.
+					 */
+					UndoRedo: {
+						/**
+						 * Either false if no automatic save file is declared, or the file path to save settings in.
+						 * @type {boolean|string}
+						 */
+						save_file: "settings/UndoRedo_settings.json",
+						
+						/**
+						 * Whether manual commits are toggled on by default.
+						 * @type {boolean}
+						 */
+						manual_commits: false,
+						/**
+						 * The default name for manual commits.
+						 * @type {string} 
+						 */
+						manual_commit_name: "Manual"
 					}
 				}
 			}
@@ -474,6 +496,10 @@ global.path = require("path");
 					if (options.ontology_function)
 						options.ontology_function(Ontology.instances);
 				});
+				global.ve_gc_loop = setInterval(() => {
+					//Perform GC
+					if (ve?.Tooltip?.refresh) ve.Tooltip.refresh();
+				}, 1000);
 				
 				clearInterval(global.initialise_ve_loop);
 				
@@ -488,7 +514,7 @@ global.path = require("path");
 }
 
 //[WIP] - Refactor later
-function injectConcatenatedHTML(htmlMarkup) {
+function injectConcatenatedHTML (htmlMarkup) {
 	const tempContainer = document.createElement("div");
 	tempContainer.innerHTML = htmlMarkup;
 	

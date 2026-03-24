@@ -30,6 +30,9 @@ canvas, iframe { user-select: none; }
     width: 100dvw;
 }
 
+/* -- Vercengen atomics -- */
+.ve-display-none { display: none !important; }
+
 /* -- Vercengen themes -- */
 :root {
     --navbar-height: 2rem;

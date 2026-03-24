@@ -156,7 +156,7 @@ ve.Window = class extends ve.Feature {
 					this.x_position_logic_loop = setInterval(() => {
 						this._x = this.x();
 						this.setCoords(this._x, this._y);
-					})
+					}, 100);
 				} else {
 					this._x = this.x;
 				}
@@ -164,7 +164,7 @@ ve.Window = class extends ve.Feature {
 					this.y_position_logic_loop = setInterval(() => {
 						this._y = this.y();
 						this.setCoords(this._x, this._y);
-					})
+					}, 100);
 				} else {
 					this._y = this.y;
 				}

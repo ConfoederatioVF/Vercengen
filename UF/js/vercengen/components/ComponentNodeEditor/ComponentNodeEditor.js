@@ -198,7 +198,8 @@ ve.NodeEditor = class extends ve.Component {
 									});
 							}
 						}),
-						save_settings: (nodeeditor_settings.save_file === false) ? new ve.File(undefined, {
+						save_settings: (nodeeditor_settings.save_file === false) ? 
+							new ve.File(undefined, {
 								name: loc("ve.registry.localisation.NodeEditor_save_settings"),
 								do_not_display: true,
 								save_function: () => this.saveSettings()

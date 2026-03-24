@@ -94,8 +94,7 @@ li > .nst-list {
     }
     ol, ul {
         box-sizing: border-box;
-        margin-left: 1rem;
-        padding: 0;
+        padding-left: 1rem;
         width: 100%;
 
         li {

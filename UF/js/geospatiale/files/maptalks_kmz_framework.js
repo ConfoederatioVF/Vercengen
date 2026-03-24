@@ -1,4 +1,11 @@
-if (!global.Geospatiale) global.Geospatiale = {};
+if (!global.Geospatiale) 
+	global.Geospatiale = {};
+
+/**
+ * Handles GeoKMZ/KML files for Maptalks and allows them to be rendered.
+ * 
+ * @type {Geospatiale.maptalks_GeoKMZ}
+ */
 Geospatiale.maptalks_GeoKMZ = class {
 	constructor (arg0_kmz_file, arg1_options) {
 		//Convert from parameters
@@ -23,10 +30,17 @@ Geospatiale.maptalks_GeoKMZ = class {
 		});
 	}
 	
+	/**
+	 * Adds the current GeoKMZ to a Maptalks map.
+	 * - Method of: {@link Geospatiale.maptalks_GeoKMZ}
+	 * 
+	 * @param {maptalks.Map} arg0_map_obj
+	 */
 	addTo (arg0_map_obj) { try { arg0_map_obj.addLayer(this.layer); } catch (e) {} }
 	
 	/**
 	 * Loads a KMZ into the current collated layer.
+	 * - Method of: {@link Geospatiale.maptalks_GeoKMZ}
 	 * 
 	 * @param {string} arg0_input_file_path
 	 * @param {Object} [arg1_options]
@@ -123,13 +137,29 @@ Geospatiale.maptalks_GeoKMZ = class {
 		
 	}
 	
+	/**
+	 * Removes the current GeoKMZ from a Maptalks map.
+	 * - Method of: {@link Geospatiale.maptalks_GeoKMZ}
+	 */
 	remove () {
 		Object.iterate(this.geometries_obj, (local_key, local_value) => 
 			this.unloadKMZ(local_key));
 	}
 	
+	/**
+	 * Removes the KMZ from the given Maptalks map if possible.
+	 * - Method of: {@link Geospatiale.maptalks_GeoKMZ}
+	 * 
+	 * @param {maptalks.Map} arg0_map_obj
+	 */
 	removeFrom (arg0_map_obj) { try { arg0_map_obj.removeLayer(this.layer); } catch (e) {} }
 	
+	/**
+	 * Unloads the given GeoKMZ given an input path.
+	 * - Method of: {@link Geospatiale.maptalks_GeoKMZ}
+	 * 
+	 * @param {string} arg0_input_file_path
+	 */
 	unloadKMZ (arg0_input_file_path) {
 		//Convert from parameters
 		let input_file_path = arg0_input_file_path;

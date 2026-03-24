@@ -166,8 +166,15 @@ ve.Component = class {
 				this.name = this.options.name;
 			
 			//.tooltip handler
-			if (this.options.tooltip)
-				this.tooltip = new ve.Tooltip(this.options.tooltip, { element: this.element });
+			if (this.options.tooltip) {
+				let createTooltip = () => this.tooltip = new ve.Tooltip(this.options.tooltip, { 
+					element: this.element });
+				
+				this.element.addEventListener("mouseover", (e) => {
+					if (Object.keys(this.tooltip).length === 0) createTooltip();
+				});
+				createTooltip();
+			}
 		});
 	}
 	
@@ -279,17 +286,20 @@ ve.Component = class {
 		this.limit_function = arg0_function;
 		
 		if (this.limit_function !== undefined) {
-			this.limit_logic_loop = setInterval(() => {
+			let evaluateLimit = () => {
 				if (!this.limit) {
-					this.removeComponent();
+					this.element.classList.add("ve-display-none");
 					if (this.element.getAttribute("data-debug-limit"))
 						console.log(`- .limit: Removing component:`, this);
 				} else {
-					this.addComponent();
+					this.element.classList.remove("ve-display-none");
 					if (this.element.getAttribute("data-debug-limit"))
 						console.log(`- .limit: Adding component:`, this);
 				}
-			}, 100);
+			};
+			
+			evaluateLimit(); //Evaluate once immediately to prevent flickering (i.e. waiting 100ms)
+			this.limit_logic_loop = setInterval(() => evaluateLimit(), 100);
 		} else {
 			delete this.limit_function;
 			clearInterval(this.limit_logic_loop);
@@ -508,8 +518,8 @@ ve.Component = class {
 		if (this.logic_loop !== undefined)
 			clearInterval(this.logic_loop);
 		
-		//Iterate over l instances in child_class_obj.instances if available
-		if (child_class_obj.instances && this.id)
+		//Iterate over all instances in child_class_obj.instances if available
+		if (child_class_obj?.instances && this.id)
 			for (let i = 0; i < child_class_obj.instances.length; i++)
 				if (child_class_obj.instances[i].id === this.id) {
 					child_class_obj.instances.splice(i, 1);

@@ -170,6 +170,7 @@ ve.HierarchyDatatype = class extends ve.Component {
 		let has_subitems = false;
 		
 		//0. Append .nst-handle, .nst-button element
+		//console.log(`Is collapsed:`, this.element, this.options.is_collapsed)
 		this.element.innerHTML = [
 			`<div class = "nst-handle">⋯</div>`,
 			(this.type === "group" && this.options.no_folders !== true) ? `<button class = "nst-button" type = "button">${(this.options.is_collapsed) ? "+" : "-"}</button>` : ""

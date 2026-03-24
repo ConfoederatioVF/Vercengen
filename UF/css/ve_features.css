@@ -320,5 +320,10 @@
         overflow: auto;
         scrollbar-color: white transparent;
         scrollbar-width: thin;
+        
+        /* -- ve.Interface handling: if the only component has a height of 100%, it should occupy the Window -- */
+        [component="ve-interface"]:has(table > tbody > tr > td > [style*="height: 100%"]) {
+            height: 100%;
+        }
     }
 }
