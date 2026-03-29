@@ -96,7 +96,6 @@ let win;
 {
   //Launch app when ready
   app.whenReady().then(() => {
-
     //Create the window and instantiate it
     createWindow();
 
