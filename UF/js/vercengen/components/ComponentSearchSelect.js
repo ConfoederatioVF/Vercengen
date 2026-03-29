@@ -168,10 +168,10 @@ ve.SearchSelect = class extends ve.Component {
 			...this.options.header_components_obj
 		}, {
 			name: " ",
-			style: {
-				...ve.registry.themes["ve-searchbar"],
-				...this.options.searchbar_style
-			}
+			attributes: {
+				"ve-searchbar": "true"
+			},
+			style: this.options.searchbar_style
 		});
 		searchbar_interface.bind(this.element);
 		

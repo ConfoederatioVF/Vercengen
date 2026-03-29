@@ -17,6 +17,7 @@
 	 * 
 	 * @returns {boolean}
 	 */
+	//[QUARANTINE]
 	File.containsPath = function (arg0_file_path, arg1_folder_path) {
 		const resolvedFile = path.resolve(arg0_file_path);
 		const resolvedFolder = path.resolve(arg1_folder_path);
@@ -50,6 +51,7 @@
 	 * 
 	 * @returns {string[]}
 	 */
+	//[QUARANTINE]
 	File.getAllDrives = function () {
 		const platform = process.platform;
 		
@@ -246,6 +248,8 @@
 		//Convert from parameters
 		let file_path = arg0_file_path;
 		let options = arg1_options ? arg1_options : {};
+		
+		//Intialise options
 		if (!options.mode) options.mode = "vertical";
 		
 		//Declare local instance variables

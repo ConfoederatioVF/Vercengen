@@ -218,15 +218,15 @@
 
 /* -- ve.Interface -- */
 [component="ve-interface"] {
+    > details > table, > table {
+        height: 100%;
+        width: 100%;
+    }
     summary#name {
         padding-bottom: calc(var(--padding)*0.5);
     }
     summary:hover {
         cursor: pointer;
-    }
-    > table { 
-        height: 100%;
-        width: 100%;
     }
     > table:not(:has(td[colspan], :has(td[rowspan]))) {
         table-layout: fixed;

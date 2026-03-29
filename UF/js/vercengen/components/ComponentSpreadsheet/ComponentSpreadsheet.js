@@ -1,38 +1,40 @@
 /**
  * Refer to <span color = "yellow">{@link ve.Component}</span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
- * 
+ *
  * Spreadsheet editor that returns a 2D array list/object using iframes for encapsulation. Excel/Google Sheets/HTML compatible with formulas and limited styling options. Note that there might be a slight initialisation delay due to lazy-loading.
- * 
+ *
  * The reason this does not always serialise to an {@link Array} is so that formulas and format data can be preserved.
  * - Functional binding: <span color=00ffff>veSpreadsheet</span>().
- * 
+ *
  * ##### Constructor:
  * - `arg0_value`: {@link Array}<{@link Array}<{@link Array}<{@link any}>>>|{@link Object}
  *   - Nested arrays: [n1] - Container, [n2] - Sheet, [n3] - Row
  * - `arg1_options`: {@link Object}
  *   - `.dark_mode=false`: {@link boolean} - Whether the spreadsheet editor should launch in dark mode.
- * 
+ *
  * ##### Instance:
  * - `.v`: {@link Object}
- * 
+ *
  * ##### Methods:
  * - <span color=00ffff>{@link ve.Spreadsheet.convertToArray|convertToArray}</span>() | {@link Array}<{@link Array}<{@link Array}<{@link any}>>>
  * - <span color=00ffff>{@link ve.Spreadsheet.convertToSpreadsheet|convertToSpreadsheet}</span>() | {@link ve.Spreadsheet}
  * - <span color=00ffff>{@link ve.Spreadsheet.convertToTable|convertToTable}</span>() | {@link ve.Table}
  * - <span color=00ffff>{@link ve.Spreadsheet.fromArray|fromArray}</span>(arg0_array:{@link Array}<{@link Array}<{@link Array}<{@link any}>>>, arg1_do_not_display=false:{@link boolean}) | {@link Object}
+ * - <span color=00ffff>{@link ve.Spreadsheet.fromJSON|fromJSON}</span>(arg0_json:{@link Object})
  * - <span color=00ffff>{@link ve.Spreadsheet.getCellData|getCellData}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_x:{@link number}, arg2_y:{@link number}) | {f:{@link string}, v:{@link number}}
  * - <span color=00ffff>{@link ve.Spreadsheet.getSelectedRange|getSelectedRange}</span>() | [[{@link number}, {@link number}, {@link number}], [{@link number}, {@link number}, {@link number}]]
- * - <span color=00ffff>{@link ve.Spreadsheet.getSheetNames|getSheetNames}</span>() | {@link Array}<{@link string}>
+ * - <span color=00ffff>{@link ve.Spreadsheet.getSheetNames|getSheetNames}</span>() | {@link Array}<{@string}>
  * - <span color=00ffff>{@link ve.Spreadsheet.setCellData|setCellData}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_x:{@link number}, arg2_y:{@link number}, arg3_value:{f:{@link string}, v:{@link number}})
  * - <span color=00ffff>{@link ve.Spreadsheet.setDarkMode|setDarkMode}</span>(arg0_value=false:{@link boolean})
  * - <span color=00ffff>{@link ve.Spreadsheet.setSelectedRange|setSelectedRange}</span>(arg0_sheet_index:{@link number}|{@link string}, arg1_start_coords:[{@link number}, {@link number}, {@link number}], arg2_end_coords:[{@link number}, {@link number}, {@link number}])
- * 
+ * - <span color=00ffff>{@link ve.Spreadsheet.toJSON|toJSON}</span>() | {@link Object}
+ *
  * ##### Static Fields:
  * - `.instances`: {@link Array}<this:{@link ve.Spreadsheet}>
  *
  * ##### Static Methods:
  * - <span color=00ffff>{@link ve.Spreadsheet.fireToBinding|fireToBinding}</span>(arg0_table_id:{@link string})
- * 
+ *
  * @augments ve.Component
  * @memberof ve.Component
  * @type {ve.Spreadsheet}
@@ -46,33 +48,37 @@ ve.Spreadsheet = class extends ve.Component {
 		let value = arg0_value;
 		let options = (arg1_options) ? arg1_options : {};
 			super(options);
-			
+		
 		//Declare local instance variables
 		this.element = document.createElement("div");
 		this.element.setAttribute("component", "ve-spreadsheet");
 		this.element.instance = this;
 		this.element.style.height = "100%";
-			this.name_el = document.createElement("div");
-			this.name_el.id = "name";
-			this.element.appendChild(this.name_el);
+		this.name_el = document.createElement("div");
+		this.name_el.id = "name";
+		this.element.appendChild(this.name_el);
 		
-			this.iframe_el = document.createElement("iframe");
-			this.iframe_el.src = "./UF/js/vercengen/components/ComponentSpreadsheet/spreadsheet_iframe.html";
-			this.iframe_el.style.height = "100%";
-			this.iframe_el.style.width = "100%";
-			this.element.appendChild(this.iframe_el);
-			
-			if (options.attributes)
-				Object.keys(options.attributes, (local_key, local_value) => {
-					this.element.setAttribute(local_key, local_value.toString());
-				});
+		this.iframe_el = document.createElement("iframe");
+		this.iframe_el.src = "./UF/js/vercengen/components/ComponentSpreadsheet/spreadsheet_iframe.html";
+		this.iframe_el.style.height = "100%";
+		this.iframe_el.style.width = "100%";
+		this.element.appendChild(this.iframe_el);
+		
+		if (options.attributes)
+			Object.keys(options.attributes, (local_key, local_value) => {
+				this.element.setAttribute(local_key, local_value.toString());
+			});
 		this.id = Class.generateRandomID(ve.Spreadsheet);
 		this.options = options;
 		this.value = value;
 		
 		this.initialisation_loop = setInterval(() => {
 			try {
-				this.v = this.value;
+				if (this.value?.is_snapshot) {
+					this.fromJSON(this.value);
+				} else {
+					this.v = this.value;
+				}
 				
 				//Parse options
 				if (this.options.dark_mode)
@@ -103,10 +109,10 @@ ve.Spreadsheet = class extends ve.Component {
 	/**
 	 * Sets the Object value contained in the Component, including both formulas/cells.
 	 * - Accessor of: {@link ve.Spreadsheet}
-	 * 
+	 *
 	 * @alias v
 	 * @memberof ve.Component.ve.Spreadsheet
-	 * 
+	 *
 	 * @param {Object} arg0_value
 	 */
 	set v (arg0_value) {
@@ -128,7 +134,7 @@ ve.Spreadsheet = class extends ve.Component {
 	 *
 	 * @alias convertToArray
 	 * @memberof ve.Component.ve.Spreadsheet
-	 * 
+	 *
 	 * @returns {Array}
 	 */
 	convertToArray () {
@@ -162,10 +168,10 @@ ve.Spreadsheet = class extends ve.Component {
 	/**
 	 * Switches the view to the bound Table. If no Table exists, creates one.
 	 * - Method of: {@link ve.Spreadsheet}
-	 * 
+	 *
 	 * @alias convertToTable
 	 * @memberof ve.Component.ve.Table
-	 * 
+	 *
 	 * @returns {ve.Table}
 	 */
 	convertToTable () { //[WIP] - Refactor later
@@ -192,12 +198,12 @@ ve.Spreadsheet = class extends ve.Component {
 	/**
 	 * Sets the present component value from an exported 3D array.
 	 * - Method of: {@link ve.Spreadsheet}
-	 * 
+	 *
 	 * @alias fromArray
 	 * @memberof ve.Component.ve.Spreadsheet
 	 * @param {Array} arg0_array
 	 * @param {boolean} [arg1_do_not_display=false]
-	 * 
+	 *
 	 * @returns {Object}
 	 */
 	fromArray (arg0_array, arg1_do_not_display) {
@@ -252,15 +258,28 @@ ve.Spreadsheet = class extends ve.Component {
 	}
 	
 	/**
+	 * Loads a complete JSON snapshot into the workbook, restoring all sheets, styles, and cell dimensions.
+	 * - Method of: {@link ve.Spreadsheet}
+	 *
+	 * @alias fromJSON
+	 * @memberof ve.Component.ve.Spreadsheet
+	 *
+	 * @param {Object} arg0_json
+	 */
+	fromJSON (arg0_json) {
+		this.iframe_el.contentWindow.setData(arg0_json);
+	}
+	
+	/**
 	 * Returns cell data as an Object. Coords are 1-indexed.
 	 *
 	 * @alias getCellData
 	 * @memberof ve.Component.ve.Spreadsheet
-	 * 
+	 *
 	 * @param {number|string} arg0_sheet_index
 	 * @param {number} arg1_x
 	 * @param {number} arg2_y
-	 * 
+	 *
 	 * @returns {{f: string, v: number}}
 	 */
 	getCellData (arg0_sheet_index, arg1_x, arg2_y) {
@@ -269,12 +288,12 @@ ve.Spreadsheet = class extends ve.Component {
 	
 	/**
 	 * Returns the range name given a set of coordinates.
-	 * 
+	 *
 	 * @alias getRangeName
 	 * @memberof ve.Component.ve.Spreadsheet
-	 * 
+	 *
 	 * @param {Array.<number[]>} arg0_coords
-	 * 
+	 *
 	 * @returns {string}
 	 */
 	getRangeName (arg0_coords) {
@@ -297,13 +316,13 @@ ve.Spreadsheet = class extends ve.Component {
 	
 	/**
 	 * Returns the range value without padding the origin. Note that this does not return raw values unless specified.
-	 * 
+	 *
 	 * @alias getRangeValue
-	 * 
+	 *
 	 * @param {Array.<number[]>} arg0_coords
 	 * @param {Object} [arg1_options]
 	 *  @param {boolean} [arg1_options.return_raw_values=false]
-	 * 
+	 *
 	 * @returns {Array.<Object[]>}
 	 */
 	getRangeValue (arg0_coords, arg1_options) {
@@ -321,8 +340,8 @@ ve.Spreadsheet = class extends ve.Component {
 			//Iterate from start_y to end_y
 			for (let x = coords[0][2]; x < coords[1][2] + 1; x++) try {
 				let local_cell_data = this.getCellData(coords[0][0], i, x);
-					if (options.return_raw_values)
-						local_cell_data = local_cell_data?.v;
+				if (options.return_raw_values)
+					local_cell_data = local_cell_data?.v;
 				local_value_array.push(local_cell_data);
 			} catch (e) {}
 			return_array.push(local_value_array);
@@ -337,7 +356,7 @@ ve.Spreadsheet = class extends ve.Component {
 	 *
 	 * @alias getSelectedRange
 	 * @memberof ve.Component.ve.Spreadsheet
-	 * 
+	 *
 	 * @returns {Array.<number[]>}
 	 */
 	getSelectedRange () {
@@ -346,10 +365,10 @@ ve.Spreadsheet = class extends ve.Component {
 	
 	/**
 	 * Returns the name of the currently selected range.
-	 * 
+	 *
 	 * @alias getSelectedRangeName
 	 * @memberof ve.Component.ve.Spreadsheet
-	 * 
+	 *
 	 * @returns {string}
 	 */
 	getSelectedRangeName () {
@@ -362,15 +381,15 @@ ve.Spreadsheet = class extends ve.Component {
 	 *
 	 * @alias getSheetNames
 	 * @memberof ve.Component.ve.Spreadsheet
-	 * 
+	 *
 	 * @returns {string[]}
 	 */
 	getSheetNames () {
-    try {
-		  return this.iframe_el.contentWindow.getSheetNames();
-    } catch (e) {
-      return [];
-    }
+		try {
+			return this.iframe_el.contentWindow.getSheetNames();
+		} catch (e) {
+			return [];
+		}
 	}
 	
 	/**
@@ -378,7 +397,7 @@ ve.Spreadsheet = class extends ve.Component {
 	 *
 	 * @alias setCellData
 	 * @memberof ve.Component.ve.Spreadsheet
-	 * 
+	 *
 	 * @param {number|string} arg0_sheet_index
 	 * @param {number} arg1_x
 	 * @param {number} arg2_y
@@ -406,10 +425,10 @@ ve.Spreadsheet = class extends ve.Component {
 	
 	/**
 	 * Sets the currently selected range to a target coordinate range. Coords are 1-indexed.
-	 * 
+	 *
 	 * @alias setSelectedRange
 	 * @memberof ve.Component.ve.Spreadsheet
-	 * 
+	 *
 	 * @param {number[]} arg0_start_coords
 	 * @param {number[]} arg1_end_coords
 	 */
@@ -435,12 +454,36 @@ ve.Spreadsheet = class extends ve.Component {
 	}
 	
 	/**
+	 * Returns a complete JSON snapshot of the workbook, including styles, formatting, column widths, and row heights for all sheets.
+	 * - Method of: {@link ve.Spreadsheet}
+	 *
+	 * @alias toJSON
+	 * @memberof ve.Component.ve.Spreadsheet
+	 *
+	 * @returns {Object}
+	 */
+	toJSON () {
+		//Return statement
+		try {
+			let return_obj = {
+				is_snapshot: true,
+				...this.iframe_el.contentWindow.getData()
+			};
+			
+			return return_obj;
+		} catch (e) {
+			console.error("Failed to save spreadsheet snapshot:", e);
+			return {};
+		}
+	}
+	
+	/**
 	 * Fires to_binding statically, used by the embedded iframe since it has no `this` context.
 	 * - Static method of: {@link ve.Spreadsheet}
-	 * 
+	 *
 	 * @alias #fireToBinding
 	 * @memberof ve.Component.ve.Spreadsheet
-	 * 
+	 *
 	 * @param {string} arg0_table_id
 	 */
 	static fireToBinding (arg0_table_id) {

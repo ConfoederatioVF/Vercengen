@@ -164,7 +164,7 @@
 	 * Formats a Date object into a default string.
 	 * @alias String.formatDate
 	 * 
-	 * @param {Object} arg0_date
+	 * @param {Object} [arg0_date]
 	 * 
 	 * @returns {string}
 	 */

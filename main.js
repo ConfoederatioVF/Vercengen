@@ -117,4 +117,7 @@ let win;
 //Bindings handler
 {
   ipcMain.handle("dialog:openFolder", handleOpenFolder);
+  
+  let ve = require("./UF/js/vercengen/startup/vercengen_electron");
+  ve.initialiseIPC();
 }

@@ -32,6 +32,19 @@ canvas, iframe { user-select: none; }
 
 /* -- Vercengen atomics -- */
 .ve-display-none { display: none !important; }
+[ve-searchbar="true"] {
+    align-items: center;
+    background-color: var(--bg-secondary-colour);
+    border: 1px solid var(--bg-primary-colour);
+    border-radius: 3px;
+    display: flex;
+    overflow: hidden;
+    margin-bottom: calc(var(--cell-padding)*1.25);
+    padding: 0 var(--padding) 0 0;
+    width: 20rem;
+    
+    [component="ve-datalist"] { input { margin-left: 0 } }
+}
 
 /* -- Vercengen themes -- */
 :root {

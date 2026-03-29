@@ -20,8 +20,8 @@
 		if (!options.mode) options.mode = "day";
 		
 		//Return statement
-		if (options.mode === "day") return `${String(date.getDate()).padStart(2, "0")}.${String(date.getMonth() + 1).padStart(2, "0")}.${date.getFullYear()}`;
-		if (options.mode === "month") return `${String(date.getMonth() + 1).padStart(2, "0")}.${date.getFullYear()}`;
+		if (options.mode === "day") return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
+		if (options.mode === "month") return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}`;
 		if (options.mode === "year") return `${date.getFullYear()}`;
 	};
 }

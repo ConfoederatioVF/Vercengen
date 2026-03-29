@@ -149,7 +149,7 @@ global.path = require("path");
 						 * The default name for manual commits.
 						 * @type {string} 
 						 */
-						manual_commit_name: "Manual"
+						manual_commit_name: ""
 					}
 				}
 			}

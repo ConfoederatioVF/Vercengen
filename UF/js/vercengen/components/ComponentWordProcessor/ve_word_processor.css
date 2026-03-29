@@ -1,4 +1,8 @@
 /* -- ve.WordProcessor -- */
+[component="ve-word-processor"] {
+    > #name { margin-bottom: var(--padding); }
+}
+
 .wysiwyg-editor-container {
     flex-grow: 1;
     overflow-x: hidden;

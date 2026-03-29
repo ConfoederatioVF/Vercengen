@@ -142,19 +142,11 @@
   }
 	
 	function getData () {
-		//Declare local instance variables
 		let active_workbook = univerAPI.getActiveWorkbook();
+		if (!active_workbook) return null;
 		
-		if (!active_workbook) {
-			console.error("No active workbook found.");
-			return null;
-		}
-		
-		//Use the .save() method to get the raw IWorkbookData object
-		let workbook_obj = active_workbook.save();
-		
-		//Return statement
-		return workbook_obj;
+		// This returns the full IWorkbookData object including names and widths
+		return active_workbook.save();
 	}
 	
 	function getSelectedRange () {
@@ -261,31 +253,20 @@
   }
 	
 	function setData (arg0_data_obj) {
-		//Convert from parameters
 		let data_obj = arg0_data_obj;
 		if (!data_obj) data_obj = {};
 		
 		try {
-			//Declare local instance variables
 			let active_workbook = univerAPI.getActiveWorkbook();
-			let workbook_by_id = univerAPI.getWorkbook(data_obj.id);
 			
-			//1. Dispose of existing workbook to prevent memory leaks/UI clutter
-			if (workbook_by_id) {
-				workbook_by_id.dispose();
-			} else if (active_workbook) {
-				active_workbook.dispose();
-			}
+			// Dispose existing to reload meta properties properly
+			if (active_workbook) active_workbook.dispose();
 			
-			//2. Deep clone the data and remove the ID property
-			//This is the primary fix for the "[UniverInstanceService]: cannot create a unit with the same unit id" error
 			let data_to_load = JSON.parse(JSON.stringify(data_obj));
-			delete data_to_load.id;
+			delete data_to_load.id; // Force new ID generation
 			
-			//3. Initialise the new sheet
+			// createUniverSheet accepts the full IWorkbookData snapshot
 			let new_workbook = univerAPI.createUniverSheet(data_to_load);
-			
-			//Return statement
 			return new_workbook;
 		} catch (e) {
 			console.error("Failed to load workbook data:", e);
@@ -320,6 +301,7 @@
   }
 	
 	function toggleDarkMode (arg0_value) {
+		//window.parent.console.log(arg0_value);
 		univerAPI.toggleDarkMode(arg0_value);
   }
 </script>

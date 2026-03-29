@@ -48,6 +48,7 @@ ve.UndoRedo = class extends ve.Component {
 			this.canvas_container_el.id = `canvas-container`;
 			this.canvas_container_el.appendChild(this.canvas_el);
 		this.html_list_el = document.createElement("div");
+		this.loadSettings(); //Load settings upon initialisation
 		
 		//Create a ve.PageMenu with this.html_list_el, this.canvas_container_el, and mount it to this.element
 		let settings_obj = ve.registry.settings.UndoRedo;
@@ -68,7 +69,7 @@ ve.UndoRedo = class extends ve.Component {
 						//Add new DALS Action under load_save
 						new DALS.Action({
 							options: { 
-								name: `Save Commit ${(settings_obj.manual_commit_name) ? `(${settings_obj.manual_commit_name})` : ""}`, 
+								name: `Save Commit ${(settings_obj.manual_commit_name?.length > 0) ? `(${settings_obj.manual_commit_name})` : ""}<br>${String.formatDate()}`, 
 								key: `save_commit_${Date.now()}` 
 							},
 							value: {
@@ -111,7 +112,6 @@ ve.UndoRedo = class extends ve.Component {
 				}
 			}
 		});
-		this.loadSettings(); //Load settings upon initialisation
 		
 		this.page_menu = new ve.PageMenu({
 			current_timeline: {

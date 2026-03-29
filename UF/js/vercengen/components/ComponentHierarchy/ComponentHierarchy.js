@@ -91,7 +91,7 @@ ve.Hierarchy = class extends ve.Component {
 		
 		//0. Append searchbar to this.components_obj
 		if (!this.options.disable_searchbar) {
-			let searchbar_interface = new ve.RawInterface({
+			this.searchbar_interface = new ve.RawInterface({
 				searchbar_icon: new ve.HTML("<icon>search</icon>", { style: { padding: `var(--cell-padding)` } }),
 				searchbar_input: new ve.Datalist({
 					
@@ -106,12 +106,13 @@ ve.Hierarchy = class extends ve.Component {
 				})
 			}, { 
 				name: " ",
-				style: {
-					...ve.registry.themes["ve-searchbar"],
-					...this.options.searchbar_style
-				} 
+				attributes: {
+					"ve-searchbar": "true",
+					"ve-sticky": "true"
+				},
+				style: this.options.searchbar_style
 			});
-			searchbar_interface.bind(this.element);
+			this.searchbar_interface.bind(this.element);
 		}
 		
 		//1. Append all non-hierarchy datatype Vercengen components to controls; iterate over all this.components_obj

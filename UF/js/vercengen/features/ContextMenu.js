@@ -159,7 +159,8 @@ ve.ContextMenu = class extends ve.Feature {
 		if (this.windows.length === 1 && this.options.anchor === "right") {
 			actual_x -= this.windows[0].element.offsetWidth;
 			setTimeout(() => {
-				this.windows[0].element.style.left = `${actual_x}px`;
+				if (this.windows?.[0]?.element)
+					this.windows[0].element.style.left = `${actual_x}px`;
 			}, 100);
 		}
 		
