@@ -1011,6 +1011,8 @@ ve.registry.localisation = {
 	ScriptManager_send: "Send",
 	ScriptManager_settings: "Settings",
 	ScriptManager_show_blockly: "Show Blockly",
+	ScriptManager_split_instance: "Split Instance",
+	ScriptManager_split_node_editor: "Split Node Editor",
 	ScriptManager_stack_trace: "Stack Trace:",
 	ScriptManager_status_clearing_documentation: "Clearing documentation ..",
 	ScriptManager_status_indexed_progress: "Indexed £1£/£2£ file(s)",
@@ -1135,6 +1137,7 @@ ve.registry.localisation = {
 	SearchSelect_search_filter: "Search Filter",
 	
 	//Table
+	Table_max_per_page: "Max. per page",
 	Table_next: "Next",
 	Table_no_data: "No data available.",
 	Table_pagination_info: "Page £1£ of £2£",

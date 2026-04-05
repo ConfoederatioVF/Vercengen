@@ -58,11 +58,13 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
    * @alias v
 	 * @memberof ve.ScriptManager.UI_Bottombar
 	 *
-	 * @param {string} arg0_value
+	 * @param {string|string[]} arg0_value
    */
   set v (arg0_value) {
     //Convert from parameters
     let value = (arg0_value) ? arg0_value : [];
+    
+    //Internal guard clause if value is nothing
     if (value.length === 0) { 
       this.element.innerHTML = "";
       return;
@@ -135,6 +137,7 @@ ve.ScriptManager.UI_Bottombar = class extends ve.Component {
     });
     
     let file_extensions_obj = ve.ScriptManager._getFileExtensions({ return_select_obj: true });
+    
     this.search_select_obj = new ve.SearchSelect({
       list_obj: this.list_obj
     }, {
