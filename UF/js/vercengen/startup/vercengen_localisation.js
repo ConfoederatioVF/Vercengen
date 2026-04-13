@@ -1140,7 +1140,8 @@ ve.registry.localisation = {
 	Table_max_per_page: "Max. per page",
 	Table_next: "Next",
 	Table_no_data: "No data available.",
-	Table_pagination_info: "Page £1£ of £2£",
+	Table_page: "Page",
+	Table_page_of_max: "of £1£",
 	Table_previous: "Previous",
 	
 	//UndoRedo
@@ -2180,9 +2181,11 @@ ve.registry.localisation = {
 	SearchSelect_search_filter_de: "Suchfilter",
 	
 	//Table
+	Table_max_per_page_de: "Max. pro Seite",
 	Table_next_de: "Nächste",
 	Table_no_data_de: "Keine Daten verfügbar.",
-	Table_pagination_info_de: "Seite £1£ von £2£",
+	Table_page_de: "Seite",
+	Table_page_of_max_de: "von £1£",
 	Table_previous_de: "Vorherige",
 	
 	//UndoRedo
@@ -3222,9 +3225,11 @@ ve.registry.localisation = {
 	SearchSelect_search_filter_fr: "Filtre de recherche",
 	
 	//Table
+	Table_max_per_page_fr: "Max. par page",
 	Table_next_fr: "Suivant",
 	Table_no_data_fr: "Aucune donnée disponible.",
-	Table_pagination_info_fr: "Page £1£ sur £2£",
+	Table_page_fr: "Page",
+	Table_page_of_max_fr: "sur £1£",
 	Table_previous_fr: "Précédent",
 	
 	//UndoRedo

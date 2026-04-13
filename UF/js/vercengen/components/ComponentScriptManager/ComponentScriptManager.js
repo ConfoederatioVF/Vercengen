@@ -193,8 +193,10 @@ ve.ScriptManager = class extends ve.Component {
 					let new_folder_path = path.resolve(this.leftbar_file_explorer.v);
 					
 					this.config.project_folder = new_folder_path;
+					this._settings.project_folder = new_folder_path;
 					ve.ScriptManager._indexDocumentation.call(this, this.bottombar_status_el);
           ve.ScriptManager._saveConfig.call(this);
+          ve.ScriptManager.saveSettings();
 					veToast(loc("ve.registry.localisation.ScriptManager_toast_changed_project_folder", new_folder_path));
 				}, { 
 					name: "<icon>gite</icon>",
@@ -326,7 +328,7 @@ ve.ScriptManager = class extends ve.Component {
 						background: new ve.Text(this._settings.background_image, {
 							name: loc("ve.registry.localisation.ScriptManager_background"),
 							onuserchange: (v) => {
-								if (v.isURL()) v = `url(${v})`;
+								if (String.isURL()) v = `url(${v})`;
 								
 								this._settings.background_image = v;
 								this.loadSettings({ background_image: this._settings.background_image });
@@ -591,7 +593,7 @@ ve.ScriptManager = class extends ve.Component {
 			fs.existsSync(path.join(this.leftbar_file_explorer.v, ".ve-sm"))
 		) {
 			if (this.config.project_folder === "none") this.config.project_folder = this.leftbar_file_explorer.v;
-			ve.ScriptManager._loadConfig.call(this, this.options.folder_path);
+			ve.ScriptManager._loadConfig.call(this);
 		}
 		
 		ve.ScriptManager.instances.push(this);
@@ -783,9 +785,13 @@ ve.ScriptManager = class extends ve.Component {
 						this.element.style.removeProperty("--ve-sm-background-image");
 						this.element.removeAttribute("data-background-image");
 					}
-				if (settings_obj.project_folder)
-					settings_obj.project_folder = (fs.existsSync(settings_obj.project_folder) && fs.statSync(settings_obj.project_folder).isDirectory()) ?
+				if (settings_obj.project_folder) {
+          let project_folder = (fs.existsSync(settings_obj.project_folder) && fs.statSync(settings_obj.project_folder).isDirectory()) ?
 						settings_obj.project_folder : "none";
+          
+					settings_obj.project_folder = project_folder;
+          this.config.project_folder = project_folder;
+        }
 				if (settings_obj.monaco_theme)
 					this.setCodeEditorTheme(settings_obj.monaco_theme);
 				if (settings_obj.hide_blockly !== undefined) {

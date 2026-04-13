@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>ve.Button - Documentation</title>
+    <title>vercengen/components/ComponentCRUD.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,1451 +32,482 @@
 
 <div id="main">
     
-    <h1 class="page-title">ve.Button</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-            <span class="ancestors"><a href="ve.html">ve</a><a href="ve.Component.html">.Component</a>.</span>
-        
-        ve.Button
-        </h2>
-        
-            <div class="class-description"><p>Refer to <span color = "yellow"><a href="ve.Component.html">ve.Component</a></span> for methods or fields inherited from this Component's parent such as <code>.options.attributes</code> or <code>.element</code>.</p>
-<p>Generic button used to call a function upon user click. If multiple buttons are to be inline, they may be appended using ve.RawInterface as a container.</p>
-<h5 id="constructor%3A">Constructor:</h5>
-<ul>
-<li><code>arg0_value</code>: function(MouseEvent) - The function to call upon user click.</li>
-<li><code>arg1_options</code>: <a href="Object.html">Object</a></li>
-</ul>
-<h5 id="instance%3A">Instance:</h5>
-<ul>
-<li><code>.v</code>: function - Accessor. The current function stored by the ve.Button component.</li>
-</ul></div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-<div class="section-method">
-
-    
-    <h2>Constructor</h2>
-    
-
-    <h4 class="name" id="ve.Button"><span class="type-signature"></span>new ve.Button<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentButton.js.html">vercengen/components/ComponentButton.js</a>, <a href="vercengen_components_ComponentButton.js.html#line17">line 17</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-    
-    </div>
-
-    
-        <h3 class="subsection-title">Extends</h3>
-
-        
-
-
-    <ul>
-        <li><a href="ve.Component.html">ve.Component</a></li>
-    </ul>
-
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="v"><span class="type-signature"></span>v<span class="type-signature"> :function</span></h4>
-
-
-
-
-<div class="description">
-    <p>Returns the function bound to the present button.</p>
-<ul>
-<li>Accessor of: ve.Button</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentButton.js.html">vercengen/components/ComponentButton.js</a>, <a href="vercengen_components_ComponentButton.js.html#line70">line 70</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code>function</code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="v"><span class="type-signature"></span>v<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Sets the function for the present button.</p>
-<ul>
-<li>Accessor of: ve.Button</li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentButton.js.html">vercengen/components/ComponentButton.js</a>, <a href="vercengen_components_ComponentButton.js.html#line84">line 84</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="from_binding"><span class="type-signature"></span>from_binding<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Internal <code>.from_binding</code> setter for handling .options.from_binding. Accepts a string literal that is then parsed to a variable reference.</p>
-<p><code>.to_binding</code> counterparts are manually handled child-side.</p>
-<ul>
-<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#from_binding">ve.Component#from_binding</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line192">line 192</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="limit"><span class="type-signature"></span>limit<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Tests the current this.limit by calling this.limit_function(this.v, <a href="this.html">this</a>). Otherwise resolves to true if no <code>.options.limit</code> is set.</p>
-<ul>
-<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#limit">ve.Component#limit</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line273">line 273</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="name"><span class="type-signature"></span>name<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Returns the visual name of the present <a href="ve.Component.html">ve.Component</a>,</p>
-<ul>
-<li>Accessor of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#name">ve.Component#name</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line317">line 317</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-</div>
-
-        
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="addComponent"><span class="type-signature"></span>addComponent<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Adds the current component to this.parent_el should it exist.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#addComponent">ve.Component#addComponent</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line483">line 483</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="bind"><span class="type-signature"></span>bind<span class="signature">(arg0_container_el)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Manually binds/mounts the present <span color="yellow"><a href="ve.Component.html">ve.Component</a></span> into the visual DOM.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#bind">ve.Component#bind</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line500">line 500</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_container_el</code></td>
-            
-
-            <td class="type">
-            
+    <h1 class="page-title">vercengen/components/ComponentCRUD.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Refer to &lt;span color = "yellow">{@link ve.Component}&lt;/span> for methods or fields inherited from this Component's parent such as `.options.attributes` or `.element`.
+ * 
+ * Create, Read, Update, Delete (CRUD) interface used for editing complex instances.
+ * - Functional binding: &lt;span color=00ffff>veCRUD&lt;/span>().
+ *
+ * ##### Constructor:
+ * - `arg0_value`: {@link Array}&lt;{@link any}>
+ * - `arg1_options`: {@link Object}
+ *   - `.header=["Selected", "Index", ...]`: {@link Array}&lt;{@link string}>
+ *   - `.special_function`: {@link function}(v:{@link any}) | {@link Array}&lt;{@link any}> - How to parse Array elements in the dataframe into rows, excluding the selection row.
+ *
+ *   - `.filters`: {@link Array}&lt;{@link Object}> - [{ name: "All" }] by default.
+ *     - `[n].name`: {@link string} - The name of the given tab.
+ *     - `[n].special_function`: {@link function}(v:{@link any}) | {@link boolean} - Boolean determines whether to include result in tab. If this field does not exist, all elements are taken as valid.
+ *   - `.filter_interface`: {@link ve.Interface} - The interface to provide for the filter.
+ *   - `.hide_searchbar=false`: {@link boolean}
+ *   - `.onsearch`: {@link function}(v:{@link string}, e:{@link ve.CRUD})
+ *   - `.onselect`: {@link function}(v:{@link boolean}, e:{ checkbox:{@link ve.Checkbox}, value:{@link any} })
+ *   - `.searchbar_filters`: {@link Array}&lt;{@link number>} - The column indices to target when filtering search results.
+ *   - `.searchbar_header_components`: {@link Array}&lt;{@link ve.Component}>
+ *   - `.searchbar_options`: {@link Object} - The options to pass to the {@link ve.SearchSelect} for the CRUD.
+ *   - `.select_options`: {@link Object}
+ *   - `.table_options`: {@link Object} - The options to pass to the {@link ve.Table} for the CRUD.
+ *   
+ * ##### Instance:
+ * - `.do_not_draw=false`: {@link boolean} - Whether to call .draw() when set v() is fired.
+ * - `.page_menu`: {@link ve.PageMenu} - The PageMenu component responsible for containing CRUD subpages.
+ * - `.searchbar`: {@link ve.SearchSelect}
+ * - `.table`: {@link ve.Table}
+ * - `.table_array`: {@link Array}&lt;{@link Array}&lt;{@link any}>>
+ * - `.table_map`: {@link Array}&lt;{@link Object}{ &lt;value_id>: { value:{@link any}, row:{@link any}[] } }>
+ * - `.v`: {@link Array}&lt;{@link any}>
+ * 
+ * ##### Methods:
+ * - &lt;span color=00ffff>{@link ve.CRUD.draw|draw}&lt;/span>()
+ * - &lt;span color=00ffff>{@link ve.CRUD.filterTable|filterTable}&lt;/span>(arg0_search_string:{@link string}, arg1_options:{@link Object}) | {@link Array}&lt;{@link any}>
+ * - &lt;span color=00ffff>{@link ve.CRUD.getFilters|getFilters}&lt;/span>() | {@link Object}{ name:{@link string}, special_function:{@link function} }
+ * - &lt;span color=00ffff>{@link ve.CRUD.getTable|getTable}&lt;/span>(arg0_filter_function:{@link function}) | {@link Array}&lt;{@link Array}&lt;{@link any}>>
+ * - &lt;span color=00ffff>{@link ve.CRUD.redrawSelections|redrawSelections}&lt;/span>()
+ * 
+ * @augments ve.Component
+ * @memberof ve.Component
+ * @type {ve.CRUD}
+ */
+ve.CRUD = class extends ve.Component {
+  constructor (arg0_value, arg1_options) {
+    //Convert from parameters
+    let value = (arg0_value) ? Array.toArray(arg0_value) : [];
+    let options = (arg1_options) ? arg1_options : {};
+      super(options);
+    
+    //Initialise options
+    options._filters = this.getFilters();
+    let new_header = ["Selected", "Index"];
+      this.head_index = 1; //Head index of the header
+      if (options.header) new_header = new_header.concat(options.header);
+      options.header = new_header;
+      options.searchbar_filters = (options.searchbar_filters) ? 
+        Array.toArray(options.searchbar_filters) : [];
+    
+    //Declare local instance variables
+    this.element = document.createElement("div");
+      this.element.setAttribute("component", "ve-crud");
+      this.element.instance = this;
+      HTML.setAttributesObject(this.element, options.attributes);
+    this.options = options;
+    this.value = value;
+    
+    //Call this.draw()
+    this.from_binding_fire_silently = true;
+    this.v = value;
+    delete this.from_binding_fire_silently;
+  }
+  
+  /**
+   * Returns an array of current values.
+   * - Accessor of: {@link ve.CRUD}
+   * 
+   * @alias v
+   * @memberof ve.Component.ve.CRUD
+   * @type {any[]}
+   */
+  get v () {
+    //Return statement
+    return this.value;
+  }
+  
+  /**
+   * Sets the array of current values.
+   * - Accessor of: {@link ve.CRUD}
+   * 
+   * @alias v
+   * @memberof ve.Component.ve.CRUD
+   * 
+   * @param arg0_value
+   */
+  set v (arg0_value) {
+    //Convert from parameters
+    let value = Array.toArray(arg0_value);
+    
+    //Set value and call draw
+    this.value = value;
+    if (!this.options.do_not_draw) this.draw();
+  }
+  
+  /**
+   * Draws the current component and forces a re-render.
+   * - Method of: {@link ve.CRUD}
+   * 
+   * @alias draw
+   * @memberof ve.Component.ve.CRUD
+   */
+  draw () {
+    //Declare local instance variables
+    this.element.innerHTML = "";
+    this.page_obj = {};
+    
+    let last_filter;
+
+    if (!this.searchbar) this.searchbar = new ve.SearchSelect({}, {
+      header_components_obj: {
+        filter_columns_when_searching: veButton(() => {
+          if (this.filter_window) this.filter_window.close();
+          
+          //Declare local instance variables
+          let components_obj = {};
+          
+          //Iterate over all categories in header and show them for searchbar options
+          for (let i = this.head_index; i &lt; this.options.header.length; i++)
+            components_obj[i] = new ve.Checkbox(this.options.searchbar_filters.includes(i), {
+              name: this.options.header[i],
+              onuserchange: (v) => {
+                if (v === true) {
+                  if (!this.options.searchbar_filters.includes(i))
+                    this.options.searchbar_filters.push(i);
+                } else {
+                  //Iterate over this.options.searchbar_filteres and splice it
+                  for (let x = this.options.searchbar_filters.length - 1; x >= 0; x--)
+                    if (this.options.searchbar_filters[x] === i)
+                      this.options.searchbar_filters.splice(x, 1);
+                }
                 
-<span class="param-type"><code><a href="HTMLElement.html">HTMLElement</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
+                this.filterTable(this.searchbar.search_value);
+              }
+            });
+          
+          components_obj.mirror_visible_columns = new ve.Toggle(this.options.mirror_visible_columns, {
+            name: "Mirror Visible Columns",
+            onuserchange: (v) => {
+              this.options.mirror_visible_columns = v;
+              this.filterTable(this.searchbar.search_value);
+            }
+          });
+          
+          //Open this.filter_window
+          this.filter_window = new ve.Window({
+            ...components_obj
+          }, {
+            name: "Filter Search",
+            can_rename: false,
+            width: "20rem"
+          });
+        }, {
+          name: "&lt;icon>filter_alt&lt;/icon>",
+          tooltip: "Filter Columns When Searching",
+          style: {
+            display: "block",
+            marginLeft: "auto"
+          }
+        }),
+        ...this.options.searchbar_header_components
+      },
+      hide_filter: true,
+      onuserchange: (v, e) => {
+        //Declare local instance variables
+        let search_value = e.search_value;
         
-            
-<div class="section-method">
+        //Filter table by search_value
+        if (this.options.onsearch) this.options.onsearch(search_value, this);
+        this.filterTable(search_value);
+      },
+      ...this.options.searchbar_options
+    });
 
+    //Initialize table with header only; refresh logic will populate data
+    this.table_array = [this.options.header];
+    this.table = new ve.Table(this.table_array, {
+      disable_hide_columns: [0],
+      ...this.options.table_options
+    });
     
-
-    <h4 class="name" id="fireFromBinding"><span class="type-signature"></span>fireFromBinding<span class="signature">()</span><span class="type-signature"></span></h4>
-
+    //Iterate over this.options._filters and check for .name, .special_function
+    for (let i = 0; i &lt; this.options._filters.length; i++) {
+      let local_filter = this.options._filters[i];
+      
+      this.page_obj[local_filter.name] = {
+        name: local_filter.name,
+        components_obj: (i === 0) ? {
+          searchbar: this.searchbar,
+          table: this.table
+        } : {}
+      };
+    }
     
+    //Define localized update logic to prevent double execution
+    let updateView = (v, e) => {
+      if (last_filter === v) return;
+      last_filter = v;
 
-
-
-<div class="description">
-    <p>Pseudo-setter from binding. Fires only upon program-driven changes to .v directly, which means that this has to be monitored manually component-side in set v(). This should always come last in set v().</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#fireFromBinding">ve.Component#fireFromBinding</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line360">line 360</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
+      //Iterate over all this.options._filters to fetch this.filter_obj
+      for (let i = 0; i &lt; this.options._filters.length; i++) {
+        let local_filter = this.options._filters[i];
         
-            
-<div class="section-method">
+        if (local_filter.name === v) {
+          this.filter_obj = local_filter;
+          break;
+        }
+      }
+      
+      //Fetch new data and refresh table display
+      this.table_array = this.getTable(this.filter_obj?.special_function);
+      this.filterTable(this.searchbar.search_value, { do_not_refresh: true });
+      
+      this.searchbar.bind(e.element);
+      this.table.bind(e.element);
+    };
 
+    //Preserve old_starting_page if possible
+    let old_starting_page = (this.page_menu) ? this.page_menu.v : undefined;
+    this.page_menu = new ve.PageMenu(this.page_obj, {
+      do_not_wrap: true,
+      onuserchange: (v, e) => updateView(v, e.interfaces_obj[v]),
+      starting_page: old_starting_page
+    });
+
+    //Initial draw call
+    let initial_page_name = this.page_menu.v;
+    updateView(initial_page_name, this.page_menu.interfaces_obj[initial_page_name]);
     
-
-    <h4 class="name" id="fireToBinding"><span class="type-signature"></span>fireToBinding<span class="signature">()</span><span class="type-signature"></span></h4>
-
+    this.page_menu.bind(this.element);
+  }
+  
+  /**
+   * Filters the current table depending on the search string given.
+   * - Method of: {@link ve.CRUD}
+   * 
+   * @alias filterTable
+   * @memberof ve.Component.ve.CRUD
+   * 
+   * @param {string} [arg0_search_string=""]
+   * @param {Object} [arg1_options]
+   *  @param {boolean} [arg1_options.do_not_refresh=false]
+   * 
+   * @returns {any[]}
+   */
+  filterTable (arg0_search_string, arg1_options) {
+    //Convert from parameters
+    let search_string = (arg0_search_string) ? arg0_search_string : "";
+      search_string = search_string.trim().toLowerCase();
+    let options = (arg1_options) ? arg1_options : {};
     
-
-
-
-<div class="description">
-    <p>Pseudo-setter to binding. Fires only upon user-driven changes, which means that this has to be monitored manually component-side.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
+    //Declare local instance variables
+    let filtered_table_array = [];
+    let searchbar_columns = [];
     
-
+    //Internal guard clause if search_string is empty
+    if (search_string.length === 0) {
+      filtered_table_array = (!options.do_not_refresh) ? 
+        this.getTable(this.filter_obj?.special_function) : this.table_array;
+      this.table.v = filtered_table_array;
+      
+      //Return statement
+      return filtered_table_array;
+    }
     
-
+    //Set searchbar_columns
+    if (this.options.mirror_visible_columns) {
+      //Iterate over all columns in header and push anything not in hide_columns
+      for (let i = 0; i &lt; this.options.header.length; i++) try {
+        if (!this.table.options.hide_columns.includes(i))
+          searchbar_columns.push(i);
+      } catch (e) {}
+    } else {
+      if (!this.options.searchbar_filters || this.options.searchbar_filters?.length === 0) {
+        for (let i = 0; i &lt; this.options.header.length; i++)
+          searchbar_columns.push(i);
+      } else {
+        searchbar_columns = this.options.searchbar_filters;
+      }
+    }
     
-
+    //Push header to filtered_table_array first
+    filtered_table_array.push(this.options.header);
     
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#fireToBinding">ve.Component#fireToBinding</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line397">line 397</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
+    //Iterate over all rows in this.table_array
+    for (let i = 1; i &lt; this.table_array.length; i++) {
+      let is_valid = false;
+      
+      //Iterate over all searchbar_columns in this.table_array for filters to see if "data-value" or .innerText has a valid substring
+      for (let x = 0; x &lt; searchbar_columns.length; x++) {
+        let local_cell = this.table_array[i][searchbar_columns[x]];
+        let local_values = [];
         
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="remove"><span class="type-signature"></span>remove<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Removes the component/element from the DOM.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#remove">ve.Component#remove</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line512">line 512</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
+        if (local_cell instanceof HTMLElement) {
+          let data_value = local_cell.getAttribute("data-value");
+          
+          if (data_value) local_values.push(data_value);
+          local_values.push(local_cell.innerText);
+        } else {
+          local_values.push(String(local_cell));
+        }
         
+        //Iterate over local_values and determine if any of them are valid against search_string
+        for (let y = 0; y &lt; local_values.length; y++) {
+          let local_value = local_values[y].trim().toLowerCase();
+          
+          if (local_value.indexOf(search_string) !== -1) {
+            is_valid = true;
+            break;
+          }
+        }
+      }
+      
+      if (is_valid) filtered_table_array.push(this.table_array[i]);
+    }
+    
+    //Set this.table.v
+    this.table.v = filtered_table_array;
+    
+    //Return statement
+    return filtered_table_array;
+  }
+  
+  /**
+   * Returns all internal filters and sets them to `this.options._filters`.
+   * - Method of: {@link ve.CRUD}
+   * 
+   * @alias getFilters
+   * @memberof ve.Component.ve.CRUD
+   * 
+   * @returns {Array.&lt;{ name: string, special_function: function|undefined }>}
+   */
+  getFilters () {
+    //Declare local instance variables
+    let new_filters = [{ name: "All" }];
+    
+    //Concatenate new_filters
+    if (this.options.filters) new_filters = new_filters.concat(this.options.filters);
+    this.options._filters = new_filters; //Set internal cache _filters
+    
+    //Return statement
+    return new_filters;
+  }
+  
+  /**
+   * Returns the current table array for the CRUD component.
+   * - Method of: {@link ve.CRUD}
+   * 
+   * @alias getTable
+   * @memberof ve.Component.ve.CRUD
+   * 
+   * @param {function} [arg0_filter_function] - The function to filter `this.value[i]` by. Returns: {@link boolean}.
+   * 
+   * @returns {Array.&lt;any[]>}
+   */
+  getTable (arg0_filter_function) {
+    //Convert from parameteres
+    let filter_function = arg0_filter_function;
+    
+    //Declare local instance variables
+    this.table_array = []; //[[select_button, ...draw_function(value[n])], ...]
+    this.table_map = {}; //{ &lt;value_id>: { value: any, row: any[] } }
+    
+    //Set header
+    this.table_array.push(this.options.header);
+    
+    //Populate table_array from value
+    for (let i = 0; i &lt; this.value.length; i++) {
+      let is_valid = true;
+        if (filter_function !== undefined) is_valid = filter_function(this.value[i]);
+      if (!is_valid) continue; //Internal guard clause if element isn't valid
+      
+      let local_array = [];
+      let select_component;
+      
+      //Set local_array
+      //Select column
+      {
+        select_component = veCheckbox(this.value[i]?.selected, {
+          attributes: {
+            "crud-select": "true",
+            "data-value": String(this.value[i]?.selected)
+          },
+          onuserchange: (v, e) => {
+            e.element.setAttribute("data-value", String(v));
             
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="removeComponent"><span class="type-signature"></span>removeComponent<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Removes the current component from this.parent_el should it exist.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#removeComponent">ve.Component#removeComponent</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line539">line 539</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
+            if (this.options.onselect) {
+              this.options.onselect(v, {
+                checkbox: e,
+                value: this.value[i]
+              });
+            } else {
+              this.value[i].selected = v;
+            }
+            this.redrawSelections();
+          },
+          ...this.options.select_options
+        });
+        select_component.element.value = this.value[i];
         
-            
-<div class="section-method">
-
+        local_array.push(select_component.element);
+      }
+      
+      //Push index
+      local_array.push(i);
+      
+      //Push everything else from this.options.special_function
+      let row_value = this.options.special_function(this.value[i]);
+      
+      if (row_value)
+        for (let x = 0; x &lt; row_value.length; x++)
+          local_array.push(row_value[x]);
+      
+      //Push local_array to table_array
+      this.table_array.push(local_array);
+      
+      this.table_map[(this.value[i].id) ? this.value[i].id : i] = {
+        value: this.value[i],
+        row: local_array
+      };
+    }
     
-
-    <h4 class="name" id="setOwner"><span class="type-signature"></span>setOwner<span class="signature">(arg0_value, arg1_owner_array)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Sets the root parent and ownership tree. Influences this.parent_el, this.owner, this.owners.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#setOwner">ve.Component#setOwner</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line457">line 457</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_value</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_owner_array</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="setValueFromObject"><span class="type-signature"></span>setValueFromObject<span class="signature">(arg0_object, arg1_object)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Destructures Object values and transfers them into the <code>.v</code> instance fields of each Vercengen component.</p>
-<ul>
-<li>Method of: <a href="ve.Component.html">ve.Component</a></li>
-</ul>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="ve.Component.html#setValueFromObject">ve.Component#setValueFromObject</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_engine_VercengenComponent.js.html">vercengen/engine/VercengenComponent.js</a>, <a href="vercengen_engine_VercengenComponent.js.html#line555">line 555</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_object</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>The Vercengen object to transfer to.</p>
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_object</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>The other object to transfer from.</p>
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    //Return statement
+    return this.table_array;
+  }
+  
+  /**
+   * Redraws selection boxes for the present component.
+   * - Method of: {@link ve.CRUD}
+   * 
+   * @alias redrawSelections
+   * @memberof ve.Component.ve.CRUD
+   */
+  redrawSelections () {
+    Object.iterate(this.table_map, (local_key, local_value) => {
+      let is_selected = local_value.value?.selected;
+      let local_checkbox = local_value.row[0].instance;
+      
+      local_checkbox.v = is_selected;
+      local_checkbox.element.setAttribute("data-value", is_selected);
+    });
+  }
+};
+
+//Functional binding
+
+/**
+ * @returns {ve.CRUD}
+ */
+veCRUD = function () {
+  //Return statement
+  return new ve.CRUD(...arguments);
+};</code></pre>
+        </article>
+    </section>
 
 
 

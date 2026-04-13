@@ -4,7 +4,11 @@ html, head, body {
     width: 100%;
 }
 b { font-weight: 700; }
+button, input, select, textarea { font-size: inherit; } /* -- Rem fix -- */
 canvas, iframe { user-select: none; }
+input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button {
+    margin-left: var(--cell-padding);
+}
 
 .tippy-box { max-width: fit-content !important; }
 

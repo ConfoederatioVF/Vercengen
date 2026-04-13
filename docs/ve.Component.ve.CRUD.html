@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>ve.Button - Documentation</title>
+    <title>ve.CRUD - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,7 +32,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">ve.Button</h1>
+    <h1 class="page-title">ve.CRUD</h1>
     
 
     
@@ -47,19 +47,79 @@
         <h2>
             <span class="ancestors"><a href="ve.html">ve</a><a href="ve.Component.html">.Component</a>.</span>
         
-        ve.Button
+        ve.CRUD
         </h2>
         
             <div class="class-description"><p>Refer to <span color = "yellow"><a href="ve.Component.html">ve.Component</a></span> for methods or fields inherited from this Component's parent such as <code>.options.attributes</code> or <code>.element</code>.</p>
-<p>Generic button used to call a function upon user click. If multiple buttons are to be inline, they may be appended using ve.RawInterface as a container.</p>
+<p>Create, Read, Update, Delete (CRUD) interface used for editing complex instances.</p>
+<ul>
+<li>Functional binding: <span color=00ffff>veCRUD</span>().</li>
+</ul>
 <h5 id="constructor%3A">Constructor:</h5>
 <ul>
-<li><code>arg0_value</code>: function(MouseEvent) - The function to call upon user click.</li>
-<li><code>arg1_options</code>: <a href="Object.html">Object</a></li>
+<li><code>arg0_value</code>: <a href="Array.html">Array</a>&lt;any&gt;</li>
+<li><code>arg1_options</code>: <a href="Object.html">Object</a>
+<ul>
+<li>
+<p><code>.header=[&quot;Selected&quot;, &quot;Index&quot;, ...]</code>: <a href="Array.html">Array</a>&lt;string&gt;</p>
+</li>
+<li>
+<p><code>.special_function</code>: function(v:any) | <a href="Array.html">Array</a>&lt;any&gt; - How to parse Array elements in the dataframe into rows, excluding the selection row.</p>
+</li>
+<li>
+<p><code>.filters</code>: <a href="Array.html">Array</a>&lt;<a href="Object.html">Object</a>&gt; - [{ name: &quot;All&quot; }] by default.</p>
+<ul>
+<li><code>[n].name</code>: string - The name of the given tab.</li>
+<li><code>[n].special_function</code>: function(v:any) | boolean - Boolean determines whether to include result in tab. If this field does not exist, all elements are taken as valid.</li>
+</ul>
+</li>
+<li>
+<p><code>.filter_interface</code>: ve.Interface - The interface to provide for the filter.</p>
+</li>
+<li>
+<p><code>.hide_searchbar=false</code>: boolean</p>
+</li>
+<li>
+<p><code>.onsearch</code>: function(v:string, e:ve.CRUD)</p>
+</li>
+<li>
+<p><code>.onselect</code>: function(v:boolean, e:{ checkbox:ve.Checkbox, value:any })</p>
+</li>
+<li>
+<p><code>.searchbar_filters</code>: <a href="Array.html">Array</a>&lt;number&gt; - The column indices to target when filtering search results.</p>
+</li>
+<li>
+<p><code>.searchbar_header_components</code>: <a href="Array.html">Array</a>&lt;<a href="ve.Component.html">ve.Component</a>&gt;</p>
+</li>
+<li>
+<p><code>.searchbar_options</code>: <a href="Object.html">Object</a> - The options to pass to the ve.SearchSelect for the CRUD.</p>
+</li>
+<li>
+<p><code>.select_options</code>: <a href="Object.html">Object</a></p>
+</li>
+<li>
+<p><code>.table_options</code>: <a href="Object.html">Object</a> - The options to pass to the <a href="ve.Table.html">ve.Table</a> for the CRUD.</p>
+</li>
+</ul>
+</li>
 </ul>
 <h5 id="instance%3A">Instance:</h5>
 <ul>
-<li><code>.v</code>: function - Accessor. The current function stored by the ve.Button component.</li>
+<li><code>.do_not_draw=false</code>: boolean - Whether to call .draw() when set v() is fired.</li>
+<li><code>.page_menu</code>: ve.PageMenu - The PageMenu component responsible for containing CRUD subpages.</li>
+<li><code>.searchbar</code>: ve.SearchSelect</li>
+<li><code>.table</code>: <a href="ve.Table.html">ve.Table</a></li>
+<li><code>.table_array</code>: <a href="Array.html">Array</a>&lt;<a href="Array.html">Array</a>&lt;any&gt;&gt;</li>
+<li><code>.table_map</code>: <a href="Array.html">Array</a>&lt;<a href="Object.html">Object</a>{ &lt;value_id&gt;: { value:any, row:any[] } }&gt;</li>
+<li><code>.v</code>: <a href="Array.html">Array</a>&lt;any&gt;</li>
+</ul>
+<h5 id="methods%3A">Methods:</h5>
+<ul>
+<li><span color=00ffff>draw</span>()</li>
+<li><span color=00ffff>filterTable</span>(arg0_search_string:string, arg1_options:<a href="Object.html">Object</a>) | <a href="Array.html">Array</a>&lt;any&gt;</li>
+<li><span color=00ffff>getFilters</span>() | <a href="Object.html">Object</a>{ name:string, special_function:function }</li>
+<li><span color=00ffff>getTable</span>(arg0_filter_function:function) | <a href="Array.html">Array</a>&lt;<a href="Array.html">Array</a>&lt;any&gt;&gt;</li>
+<li><span color=00ffff>redrawSelections</span>()</li>
 </ul></div>
         
     
@@ -75,7 +135,7 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="ve.Button"><span class="type-signature"></span>new ve.Button<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="ve.CRUD"><span class="type-signature"></span>new ve.CRUD<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
@@ -114,7 +174,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentButton.js.html">vercengen/components/ComponentButton.js</a>, <a href="vercengen_components_ComponentButton.js.html#line17">line 17</a>
+        <a href="vercengen_components_ComponentCRUD.js.html">vercengen/components/ComponentCRUD.js</a>, <a href="vercengen_components_ComponentCRUD.js.html#line46">line 46</a>
     </li></ul></dd>
     
 
@@ -178,15 +238,15 @@
         
             
 <div class="section-members">
-<h4 class="name" id="v"><span class="type-signature"></span>v<span class="type-signature"> :function</span></h4>
+<h4 class="name" id="v"><span class="type-signature"></span>v<span class="type-signature"> :<a href="Array.html">Array</a>.&lt;any></span></h4>
 
 
 
 
 <div class="description">
-    <p>Returns the function bound to the present button.</p>
+    <p>Returns an array of current values.</p>
 <ul>
-<li>Accessor of: ve.Button</li>
+<li>Accessor of: ve.CRUD</li>
 </ul>
 </div>
 
@@ -223,7 +283,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentButton.js.html">vercengen/components/ComponentButton.js</a>, <a href="vercengen_components_ComponentButton.js.html#line70">line 70</a>
+        <a href="vercengen_components_ComponentCRUD.js.html">vercengen/components/ComponentCRUD.js</a>, <a href="vercengen_components_ComponentCRUD.js.html#line84">line 84</a>
     </li></ul></dd>
     
 
@@ -240,7 +300,7 @@
     <ul>
         <li>
             
-<span class="param-type"><code>function</code></span>
+<span class="param-type"><code><a href="Array.html">Array</a>.&lt;any></code></span>
 
 
         </li>
@@ -261,9 +321,9 @@
 
 
 <div class="description">
-    <p>Sets the function for the present button.</p>
+    <p>Sets the array of current values.</p>
 <ul>
-<li>Accessor of: ve.Button</li>
+<li>Accessor of: ve.CRUD</li>
 </ul>
 </div>
 
@@ -300,7 +360,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="vercengen_components_ComponentButton.js.html">vercengen/components/ComponentButton.js</a>, <a href="vercengen_components_ComponentButton.js.html#line84">line 84</a>
+        <a href="vercengen_components_ComponentCRUD.js.html">vercengen/components/ComponentCRUD.js</a>, <a href="vercengen_components_ComponentCRUD.js.html#line98">line 98</a>
     </li></ul></dd>
     
 
@@ -542,6 +602,746 @@
     
         <h3 class="subsection-title">Methods</h3>
 
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="draw"><span class="type-signature"></span>draw<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Draws the current component and forces a re-render.</p>
+<ul>
+<li>Method of: ve.CRUD</li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_components_ComponentCRUD.js.html">vercengen/components/ComponentCRUD.js</a>, <a href="vercengen_components_ComponentCRUD.js.html#line114">line 114</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="filterTable"><span class="type-signature"></span>filterTable<span class="signature">(arg0_search_string<span class="signature-attributes">opt</span>, arg1_options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;any>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Filters the current table depending on the search string given.</p>
+<ul>
+<li>Method of: ve.CRUD</li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_components_ComponentCRUD.js.html">vercengen/components/ComponentCRUD.js</a>, <a href="vercengen_components_ComponentCRUD.js.html#line257">line 257</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arg0_search_string</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    ""
+                
+                </td>
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>arg1_options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code><a href="Object.html">Object</a></code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">
+                
+                
+                    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>do_not_refresh</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code><a href="Array.html">Array</a>.&lt;any></code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="getFilters"><span class="type-signature"></span>getFilters<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;{<a href="ve.Component.ve.HierarchyDatatype.html">name</a>: string, special_function: (function()|undefined)}>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Returns all internal filters and sets them to <code>this.options._filters</code>.</p>
+<ul>
+<li>Method of: ve.CRUD</li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_components_ComponentCRUD.js.html">vercengen/components/ComponentCRUD.js</a>, <a href="vercengen_components_ComponentCRUD.js.html#line344">line 344</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code><a href="Array.html">Array</a>.&lt;{<a href="ve.Component.ve.HierarchyDatatype.html">name</a>: string, special_function: (function()|undefined)}></code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="getTable"><span class="type-signature"></span>getTable<span class="signature">(arg0_filter_function<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Array.html">Array</a>.&lt;<a href="Array.html">Array</a>.&lt;any>>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Returns the current table array for the CRUD component.</p>
+<ul>
+<li>Method of: ve.CRUD</li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_components_ComponentCRUD.js.html">vercengen/components/ComponentCRUD.js</a>, <a href="vercengen_components_ComponentCRUD.js.html#line367">line 367</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arg0_filter_function</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>function</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <p>The function to filter <code>this.value[i]</code> by. Returns: boolean.</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code><a href="Array.html">Array</a>.&lt;<a href="Array.html">Array</a>.&lt;any>></code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="redrawSelections"><span class="type-signature"></span>redrawSelections<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Redraws selection boxes for the present component.</p>
+<ul>
+<li>Method of: ve.CRUD</li>
+</ul>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="vercengen_components_ComponentCRUD.js.html">vercengen/components/ComponentCRUD.js</a>, <a href="vercengen_components_ComponentCRUD.js.html#line445">line 445</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
         
             
 <div class="section-method">

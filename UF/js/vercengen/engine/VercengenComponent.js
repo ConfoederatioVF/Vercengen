@@ -78,6 +78,7 @@
  * - {@link ve.Component.ve.Button|veButton}(arg0_value:{@link function}, arg1_options:{@link Object}) | {@link function}
  * - {@link ve.Component.ve.Checkbox|veCheckbox}(arg0_value:{@link boolean}|{@link Object}<{@link boolean}>\*, arg1_options: {@link Object}) | {@link boolean}|{@link Object}<{@link boolean}>\* - A recursive list of checkboxes, or a single toggleable input.
  * - {@link ve.Component.ve.Colour|veColour}(arg0_value:{@link Array}<{@link number}, {@link number}, {@link number}|{@link string}, arg1_options: {@link Object}>) | {@link Array}<{@link number}, {@link number}, {@link number}> - RGB colour selector.
+ * - {@link ve.Component.ve.CRUD|veCRUD}(arg0_value:{@link Array}<{@link Array}<{@link any}>>, arg1_options:{@link Object}) | {@link Array}<{@link Array}<{@link any}>> - CRUD interface for ediitng instances in a table.
  * - {@link ve.Component.ve.Datalist|veDatalist}(arg0_value:{@link Object}<{@link string}>, arg1_options: {@link Object})
  * - {@link ve.Component.ve.Date|veDate}(arg0_value:{@link UF.Date}, arg1_options: {@link Object}) | {@link UF.Date}
  * - {@link ve.Component.ve.DateLength|veDateLength}(arg0_value:{@link UF.Date}, arg1_options: {@link Object}) | {@link UF.Date}
@@ -347,7 +348,7 @@ ve.Component = class {
 		
 		//Return statement
 		if (name_el)
-			name_el.innerHTML = (value) ? value : "";
+			name_el.innerHTML = (value) ? value.trim() : "";
 	}
 	
 	//ve.Component dataflow functions - [WIP] - Reduce redundancy with parsing variable_string

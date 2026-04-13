@@ -57,6 +57,7 @@
         position: absolute;
         transform: translateX(-50%);
     }
+    
     button {
         padding: 0;
     }
@@ -69,6 +70,7 @@
     button:has(icon) {
         padding: calc(var(--padding)*0.5);
     }
+    #name { align-items: center; display: flex; }
 }
 
 /* -- ve.Checkbox -- */
