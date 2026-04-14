@@ -62,8 +62,8 @@ Currently supported locales: DE, EN-GB (Default), FR.
 Default **Features** (9):
 - Confirm, ContextMenu, Modal, Navbar, PageMenuWindow, Scene, Toast, Tooltip, Window
 
-Default **Components** (46):
-- Button, Checkbox, Colour, Datalist, DatavisSuite, Date, DateLength, File, FileExplorer, FlexInterface, Graph, GraphLegend, GraphText, HTML, Hierarchy, HierarchyDatatype, Interface, List, Log, Map, MultiTag, NodeEditor, NodeEditorDatatype, Number, ObjectEditor, ObjectInspector, PageMenu, Password, Radio, Range, RawInterface, RichText, ScriptManager, ScriptManagerBlockly, ScriptManagerMonaco, SearchSelect, Select, Spreadsheet, Table, Telephone, Text, Time, Toggle, URL, UndoRedo, WordProcessor
+Default **Components** (47):
+- Button, Checkbox, Colour, CRUD, Datalist, DatavisSuite, Date, DateLength, File, FileExplorer, FlexInterface, Graph, GraphLegend, GraphText, HTML, Hierarchy, HierarchyDatatype, Interface, List, Log, Map, MultiTag, NodeEditor, NodeEditorDatatype, Number, ObjectEditor, ObjectInspector, PageMenu, Password, Radio, Range, RawInterface, RichText, ScriptManager, ScriptManagerBlockly, ScriptManagerMonaco, SearchSelect, Select, Spreadsheet, Table, Telephone, Text, Time, Toggle, URL, UndoRedo, WordProcessor
 
 > [!NOTE]
 > A corresponding GIS for ve.Map is available at [Naissance HGIS](https://github.com/Confoederatio/Naissance).
