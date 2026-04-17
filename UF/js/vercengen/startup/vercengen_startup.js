@@ -25,6 +25,11 @@ global.path = require("path");
 				 * @type {boolean}
 				 */
 				debug_mode: true,
+				/**
+				 * Whether to profile {@link ve.Component}. Can be memory-intensive.
+				 * @type {boolean}
+				 */
+				debug_profile_components: false,
 				
 				/**
 				 * @type {{"<component_key>": ve.Component}}

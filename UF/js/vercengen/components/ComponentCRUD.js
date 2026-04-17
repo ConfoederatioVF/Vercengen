@@ -35,6 +35,7 @@
  * ##### Methods:
  * - <span color=00ffff>{@link ve.CRUD.draw|draw}</span>()
  * - <span color=00ffff>{@link ve.CRUD.filterTable|filterTable}</span>(arg0_search_string:{@link string}, arg1_options:{@link Object}) | {@link Array}<{@link any}>
+ * - <span color-00ffff>{@link ve.CRUD.gc|gc}</span>()
  * - <span color=00ffff>{@link ve.CRUD.getFilters|getFilters}</span>() | {@link Object}{ name:{@link string}, special_function:{@link function} }
  * - <span color=00ffff>{@link ve.CRUD.getTable|getTable}</span>(arg0_filter_function:{@link function}) | {@link Array}<{@link Array}<{@link any}>>
  * - <span color=00ffff>{@link ve.CRUD.redrawSelections|redrawSelections}</span>()
@@ -43,7 +44,15 @@
  * @memberof ve.Component
  * @type {ve.CRUD}
  */
-ve.CRUD = class extends ve.Component {
+ve.CRUD = class extends ve.Component { //[WIP] - CRUD should keep track of components and instances
+  static components = [];
+  static instances = [];
+  static registry = new FinalizationRegistry((v) => {
+    //This runs when the component is GC'd
+    let index = ve.CRUD.components.indexOf(v);
+    if (index > -1) ve.CRUD.components.splice(index, 1);
+  });
+  
   constructor (arg0_value, arg1_options) {
     //Convert from parameters
     let value = (arg0_value) ? Array.toArray(arg0_value) : [];
@@ -64,8 +73,12 @@ ve.CRUD = class extends ve.Component {
       this.element.setAttribute("component", "ve-crud");
       this.element.instance = this;
       HTML.setAttributesObject(this.element, options.attributes);
+    this.id = Class.generateRandomID(ve.CRUD);
     this.options = options;
     this.value = value;
+    
+    //Push to instances
+    ve.CRUD.instances.push(this);
     
     //Call this.draw()
     this.from_binding_fire_silently = true;
@@ -183,7 +196,7 @@ ve.CRUD = class extends ve.Component {
       ...this.options.searchbar_options
     });
 
-    //Initialize table with header only; refresh logic will populate data
+    //Initialise table with header only; refresh logic will populate data
     this.table_array = [this.options.header];
     this.table = new ve.Table(this.table_array, {
       disable_hide_columns: [0],
@@ -219,6 +232,7 @@ ve.CRUD = class extends ve.Component {
       }
       
       //Fetch new data and refresh table display
+      this.gc();
       this.table_array = this.getTable(this.filter_obj?.special_function);
       this.filterTable(this.searchbar.search_value, { do_not_refresh: true });
       
@@ -333,6 +347,35 @@ ve.CRUD = class extends ve.Component {
   }
   
   /**
+   * Garbage collects any components tied to the present CRUD.
+   * - Method of: {@link ve.CRUD}
+   * 
+   * @alias gc
+   * @memberof ve.Component.ve.CRUD
+   */
+  gc () {
+    //Iterate backwards through ve.CRUD.components to GC it
+    for (let i = ve.CRUD.components.length - 1; i >= 0; i--) {
+      let ref = ve.CRUD.components[i];
+      let local_component = ref.deref(); //Deref to see the actual component
+      
+      //Check if the component has already been garbage collected by browser
+      if (!local_component) {
+        ve.CRUD.components.splice(i, 1);
+        continue;
+      }
+      
+      //Remove components which belong to this crud_instance.id
+      if (local_component.crud_instance?.id === this.id) {
+        if (typeof local_component.remove === "function")
+          local_component.remove();
+        //Remove the WeakRef container from the array immediately
+        ve.CRUD.components.splice(i, 1);
+      }
+    }
+  }
+  
+  /**
    * Returns all internal filters and sets them to `this.options._filters`.
    * - Method of: {@link ve.CRUD}
    * 
@@ -407,7 +450,12 @@ ve.CRUD = class extends ve.Component {
           },
           ...this.options.select_options
         });
+        select_component.element.crud_instance = this;
         select_component.element.value = this.value[i];
+        
+        let ref = new WeakRef(select_component);
+        ve.CRUD.components.push(ref);
+        ve.CRUD.registry.register(this, ref);
         
         local_array.push(select_component.element);
       }
@@ -419,8 +467,15 @@ ve.CRUD = class extends ve.Component {
       let row_value = this.options.special_function(this.value[i]);
       
       if (row_value)
-        for (let x = 0; x < row_value.length; x++)
+        for (let x = 0; x < row_value.length; x++) {
+          if (row_value[x].instance) {
+            row_value[x].crud_instance = this;
+            let ref = new WeakRef(row_value[x]);
+            ve.CRUD.components.push(ref);
+            ve.CRUD.registry.register(this, ref);
+          }
           local_array.push(row_value[x]);
+        }
       
       //Push local_array to table_array
       this.table_array.push(local_array);

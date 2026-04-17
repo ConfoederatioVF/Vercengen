@@ -116,6 +116,18 @@
  * @type {ve.Component}
  */
 ve.Component = class {
+	//Declare local static variables
+	
+	/**
+	 * @type {ve.Component[]}
+	 */
+	static instances = [];
+	static registry = new FinalizationRegistry((v) => {
+		//This runs when the component is GC'd
+		let index = ve.Component.instances.indexOf(v);
+		if (index > -1) ve.Component.instances.splice(index, 1);
+	});
+	
 	constructor (arg0_options) {
 		//Convert from parameters
 		let options = (arg0_options) ? arg0_options : {};
@@ -133,11 +145,21 @@ ve.Component = class {
 		this.x = options.x;
 		this.y = options.y;
 		
+		//Push to instances if ve.registry.debug_profile_components is true
+		if (ve.registry.debug_profile_components) {
+			let ref = new WeakRef(this);
+			
+			this._id = Class.generateRandomID(ve.Component); //Private variable since sub-components have their own .id and .instances
+			
+			ve.Component.instances.push(ref);
+			ve.Component.registry.register(this, ref);
+		}
+		
 		//Binding handlers; setTimeout() is necessary to tick a frame until ve.Component child class's constructor populates
 		setTimeout(() => {
-			HTML.applyTelestyle(this.element, this.options.style);
-			if (this.options.theme)
-				HTML.applyTelestyle(this.element, ve.registry.themes[this.options.theme]);
+			if (!this.options) return; //Internal guard clause if this.options doesn't exist
+			if (this.options.style) HTML.applyTelestyle(this.element, this.options.style);
+			if (this.options.theme) HTML.applyTelestyle(this.element, ve.registry.themes[this.options.theme]);
 			
 			//Flow control handlers
 			//.binding handler (bidirectional)
@@ -288,15 +310,16 @@ ve.Component = class {
 		
 		if (this.limit_function !== undefined) {
 			let evaluateLimit = () => {
-				if (!this.limit) {
-					this.element.classList.add("ve-display-none");
-					if (this.element.getAttribute("data-debug-limit"))
-						console.log(`- .limit: Removing component:`, this);
-				} else {
-					this.element.classList.remove("ve-display-none");
-					if (this.element.getAttribute("data-debug-limit"))
-						console.log(`- .limit: Adding component:`, this);
-				}
+				if (this.element)
+					if (!this.limit) {
+						this.element.classList.add("ve-display-none");
+						if (this.element.getAttribute("data-debug-limit"))
+							console.log(`- .limit: Removing component:`, this);
+					} else {
+						this.element.classList.remove("ve-display-none");
+						if (this.element.getAttribute("data-debug-limit"))
+							console.log(`- .limit: Adding component:`, this);
+					}
 			};
 			
 			evaluateLimit(); //Evaluate once immediately to prevent flickering (i.e. waiting 100ms)
@@ -528,8 +551,21 @@ ve.Component = class {
 				}
 		
 		//Remove DOM element
-		if (this.element)
-			this.element.remove();
+		if (this.element) this.element.remove();
+		
+		//Remove everything else
+		let all_keys = Object.keys(this);
+		
+		if (this.options.onremove) this.options.onremove(this); //Fire .options.onremove if it exists
+		
+		//Iterate over this and delete it
+		if (this.components_obj)
+			Object.iterate(this.components_obj, (local_key, local_value) => local_value.remove());
+		for (let i = 0; i < all_keys.length; i++) 
+			delete this[all_keys[i]];
+		
+		//Clear freed this.instances
+		ve.Component.instances = ve.Component.instances.filter((ref) => ref.deref() !== undefined);
 	}
 	
 	/**
