@@ -44,15 +44,7 @@
  * @memberof ve.Component
  * @type {ve.CRUD}
  */
-ve.CRUD = class extends ve.Component { //[WIP] - CRUD should keep track of components and instances
-  static components = [];
-  static instances = [];
-  static registry = new FinalizationRegistry((v) => {
-    //This runs when the component is GC'd
-    let index = ve.CRUD.components.indexOf(v);
-    if (index > -1) ve.CRUD.components.splice(index, 1);
-  });
-  
+ve.CRUD = class extends ve.Component {
   constructor (arg0_value, arg1_options) {
     //Convert from parameters
     let value = (arg0_value) ? Array.toArray(arg0_value) : [];
@@ -232,7 +224,6 @@ ve.CRUD = class extends ve.Component { //[WIP] - CRUD should keep track of compo
       }
       
       //Fetch new data and refresh table display
-      this.gc();
       this.table_array = this.getTable(this.filter_obj?.special_function);
       this.filterTable(this.searchbar.search_value, { do_not_refresh: true });
       
@@ -347,35 +338,6 @@ ve.CRUD = class extends ve.Component { //[WIP] - CRUD should keep track of compo
   }
   
   /**
-   * Garbage collects any components tied to the present CRUD.
-   * - Method of: {@link ve.CRUD}
-   * 
-   * @alias gc
-   * @memberof ve.Component.ve.CRUD
-   */
-  gc () {
-    //Iterate backwards through ve.CRUD.components to GC it
-    for (let i = ve.CRUD.components.length - 1; i >= 0; i--) {
-      let ref = ve.CRUD.components[i];
-      let local_component = ref.deref(); //Deref to see the actual component
-      
-      //Check if the component has already been garbage collected by browser
-      if (!local_component) {
-        ve.CRUD.components.splice(i, 1);
-        continue;
-      }
-      
-      //Remove components which belong to this crud_instance.id
-      if (local_component.crud_instance?.id === this.id) {
-        if (typeof local_component.remove === "function")
-          local_component.remove();
-        //Remove the WeakRef container from the array immediately
-        ve.CRUD.components.splice(i, 1);
-      }
-    }
-  }
-  
-  /**
    * Returns all internal filters and sets them to `this.options._filters`.
    * - Method of: {@link ve.CRUD}
    * 
@@ -435,6 +397,7 @@ ve.CRUD = class extends ve.Component { //[WIP] - CRUD should keep track of compo
             "crud-select": "true",
             "data-value": String(this.value[i]?.selected)
           },
+          gc: true,
           onuserchange: (v, e) => {
             e.element.setAttribute("data-value", String(v));
             
@@ -450,12 +413,7 @@ ve.CRUD = class extends ve.Component { //[WIP] - CRUD should keep track of compo
           },
           ...this.options.select_options
         });
-        select_component.element.crud_instance = this;
         select_component.element.value = this.value[i];
-        
-        let ref = new WeakRef(select_component);
-        ve.CRUD.components.push(ref);
-        ve.CRUD.registry.register(this, ref);
         
         local_array.push(select_component.element);
       }
@@ -468,12 +426,7 @@ ve.CRUD = class extends ve.Component { //[WIP] - CRUD should keep track of compo
       
       if (row_value)
         for (let x = 0; x < row_value.length; x++) {
-          if (row_value[x].instance) {
-            row_value[x].crud_instance = this;
-            let ref = new WeakRef(row_value[x]);
-            ve.CRUD.components.push(ref);
-            ve.CRUD.registry.register(this, ref);
-          }
+          if (row_value[x].instance) row_value[x].instance.gc();
           local_array.push(row_value[x]);
         }
       

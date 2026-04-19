@@ -8,6 +8,7 @@
  *   - `.from_binding`: {@link string} - Related event: `.onprogramchange`. Unidirectional data binding.
  *   - `.to_binding`: {@link string} - Related event: `.onuserchange`. Unidirectional data binding.
  *   - 
+ *   - `.gc=false`: {@link boolean} - Whether to auto-remove the component upon being detached.
  *   - `.onchange`: {@link function}(this.v, this:{@link ve.Component})
  *   - `.onprogramchange`: {@link function}(this.v, this:{@link ve.Component})
  *   - `.onuserchange`: {@link function}(this.v, this:{@link ve.Component})
@@ -51,12 +52,14 @@
  * - <span color=00ffff>{@link ve.Component.bind|bind}</span>(arg0_container_el:{@link HTMLElement}) - Manually mounts the current component to arg0_container_el.
  * - <span color=00ffff>{@link ve.Component.fireFromBinding|fireFromBinding}</span>() - Pseudo-setter from binding. Fires only upon program-driven changes to `.v` directly.
  * - <span color=00ffff>{@link ve.Component.fireToBinding|fireToBinding}</span>() - Pseudo-setter to binding. Fires only upon user-driven changes to `.v`.
+ * - <span color=00ffff>{@link ve.Component.gc|gc}</span>() - Adds the component to garbage collection.
  * - <span color=00ffff>{@link ve.Component.remove|remove}</span>() - Removes the component/element from the DOM.
  * - <span color=00ffff>{@link ve.Component.removeComponent|removeComponent}</span>() - Unmounts the current component from its parent_el.
  * - <span color=00ffff>{@link ve.Component.setValueFromObject|setValueFromObject}</span>(arg0_object:{@link Object}, arg1_object:{@link Object}) - 
  * - <span color=00ffff>{@link ve.Component.setOwner|setOwner}</span>(arg0_value:{@link Object}, arg1_owner_array=[]:{@link Array}<{@link Object}>) - Used by the reflection engine in {@link ve.Class} to set the owner hierarchy automatically.
  * 
  * ##### Static Methods:
+ * - <span color=00ffff>{@link ve.Component.getElement|getElement}</span>(arg0_component_obj:{@link ve.Component}|{@link HTMLElement}) | {@link HTMLElement}
  * - <span color=00ffff>{@link ve.Component.linter|linter}</span>() - Run at startup if {@link ve.registry.debug_mode} is true. Lints all Vercengen components.
  * 
  * ##### Types:
@@ -146,14 +149,7 @@ ve.Component = class {
 		this.y = options.y;
 		
 		//Push to instances if ve.registry.debug_profile_components is true
-		if (ve.registry.debug_profile_components) {
-			let ref = new WeakRef(this);
-			
-			this._id = Class.generateRandomID(ve.Component); //Private variable since sub-components have their own .id and .instances
-			
-			ve.Component.instances.push(ref);
-			ve.Component.registry.register(this, ref);
-		}
+		if (ve.registry.debug_profile_components || this.options.gc) this.gc();
 		
 		//Binding handlers; setTimeout() is necessary to tick a frame until ve.Component child class's constructor populates
 		setTimeout(() => {
@@ -294,8 +290,10 @@ ve.Component = class {
 	 */
 	get limit () {
 		//Return statement
-		return (this.limit_function !== undefined) ? 
-			this.limit_function(this.v, this) : true;
+		try {
+			return (typeof this.limit_function === "function") ?
+				this.limit_function(this.v, this) : true;
+		} catch (e) { return false; }
 	}
 	
 	/**
@@ -471,6 +469,21 @@ ve.Component = class {
 	}
 	
 	/**
+	 * Adds the current component to the garbage collector.
+	 * - Method of: {@link ve.Component}
+	 */
+	gc () {
+		//Declare local instance variables
+		let ref = new WeakRef(this);
+		this._id = Class.generateRandomID(ve.Component); //Private variable since sub-components have their own .id and .instances
+		this._timestamp = new Date().getTime();
+		
+		//Push the component to be GC-tracked
+		ve.Component.instances.push(ref);
+		ve.Component.registry.register(this, ref);
+	}
+	
+	/**
 	 * Sets the root parent and ownership tree. Influences {@link this.parent_el}, {@link this.owner}, {@link this.owners}.
 	 * - Method of: {@link ve.Component}
 	 * 
@@ -534,7 +547,10 @@ ve.Component = class {
 	 */
 	remove () {
 		//Declare local instance variables
-		let child_class_obj = ve[this.child_class.prototype.constructor.name];
+		let all_keys = Object.keys(this);
+		if (all_keys.length === 0) return; //Internal guard clause if already cleared
+		let child_class_obj;
+		try { child_class_obj = ve[this.child_class.prototype.constructor.name]; } catch (e) {}
 		
 		//Clear element first if available
 		if (typeof this.clear === "function")
@@ -550,22 +566,27 @@ ve.Component = class {
 					break;
 				}
 		
-		//Remove DOM element
-		if (this.element) this.element.remove();
-		
 		//Remove everything else
-		let all_keys = Object.keys(this);
-		
 		if (this.options.onremove) this.options.onremove(this); //Fire .options.onremove if it exists
 		
 		//Iterate over this and delete it
 		if (this.components_obj)
-			Object.iterate(this.components_obj, (local_key, local_value) => local_value.remove());
-		for (let i = 0; i < all_keys.length; i++) 
-			delete this[all_keys[i]];
+			Object.iterate(this.components_obj, (local_key, local_value) => {
+				if (local_value && local_value.remove) local_value.remove();
+			});
+		for (let i = 0; i < all_keys.length; i++) {
+			let local_value = this[all_keys[i]];
+			
+			if (local_value === undefined) continue;
+			if (local_value instanceof HTMLElement || local_value instanceof ve.Component)
+				local_value.remove();
+			this[all_keys[i]] = undefined; //This is more performant than delete since Object shapes are preserved
+		}
+		Object.setPrototypeOf(this, null); //Set this to null - [WARN] - This might not optimise heap; remains to be seen in production
 		
 		//Clear freed this.instances
-		ve.Component.instances = ve.Component.instances.filter((ref) => ref.deref() !== undefined);
+		ve.Component.instances = ve.Component.instances.filter((ref) => (
+			ref instanceof WeakRef && ref.deref() !== undefined));
 	}
 	
 	/**
@@ -606,6 +627,26 @@ ve.Component = class {
 				}
 			} catch (e) {}
 		});
+	}
+	
+	/**
+	 * Returns the {@link HTMLElement} of a given Vercengen Component/DOM Node.
+	 * - Static method of: {@link ve.Component}
+	 * 
+	 * @param {HTMLElement|ve.Component} arg0_component_obj
+	 * 
+	 * @returns {HTMLElement}
+	 */
+	static getElement (arg0_component_obj) {
+		//Convert from parameters
+		let component_obj = arg0_component_obj;
+		
+		//Return statement
+		if (component_obj.is_vercengen_component) {
+			return component_obj.element;
+		} else if (component_obj instanceof HTMLElement) {
+			return component_obj;
+		}
 	}
 	
 	/**
