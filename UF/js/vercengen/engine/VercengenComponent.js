@@ -22,6 +22,8 @@
  *     - `<selector_key>`: {@link string} - CSS query selector. :nth-parent() is acceptable.
  *       - `<css_property>`: {@link function}|{@link string}
  *     - `<css_property>`: {@link function}|{@link string}
+ *     
+ *   - `.log_gc=false`: {@link boolean} - Whether to log Vercengen garbage collection for the given component.
  *
  * ##### DOM:
  * - Attributes:

@@ -455,8 +455,10 @@ ve.CRUD = class extends ve.Component {
       let is_selected = local_value.value?.selected;
       let local_checkbox = local_value.row[0].instance;
       
-      local_checkbox.v = is_selected;
-      local_checkbox.element.setAttribute("data-value", is_selected);
+      if (local_checkbox) {
+        local_checkbox.v = is_selected;
+        if (local_checkbox.element) local_checkbox.element.setAttribute("data-value", is_selected);
+      }
     });
   }
 };

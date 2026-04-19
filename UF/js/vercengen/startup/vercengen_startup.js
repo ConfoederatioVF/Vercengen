@@ -41,7 +41,7 @@ global.path = require("path");
 				 * The number of seconds from the current timestamp to target {@link ve.Component}/{@link ve.Feature} with heuristic free.
 				 * @type {number}
 				 */
-				debug_heuristic_free_end: 0,
+				debug_heuristic_free_end: 5,
 				
 				/**
 				 * Determines whether or not to run linters at runtime.
