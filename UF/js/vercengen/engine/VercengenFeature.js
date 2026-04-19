@@ -179,6 +179,8 @@ ve.Feature = class {
 							local_value.owners.splice(0, 1);
 					}
 			});
+		
+		if (this.element) this.element.remove();
 	}
 	
 	/**
