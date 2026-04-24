@@ -415,6 +415,9 @@ global.path = require("path");
 			"!UF/archives",
 			"UF",
 			
+			//Localisation
+			"UF/js/vercengen/engine/vercengen_localisation.js",
+			
 			//Blockly/Maptalks
 			"UF/libraries",
 			"UF/libraries/blockly.js",
@@ -461,9 +464,6 @@ global.path = require("path");
 			"UF/js/vercengen/components/ComponentScriptManager/monaco/monaco_startup.js",
 			
 			"UF/js/vercengen/features",
-			
-			//Localisation
-			"UF/js/vercengen/engine/vercengen_localisation.js",
 		] : [];
 			load_patterns = load_patterns.concat(options.load_files);
 		
