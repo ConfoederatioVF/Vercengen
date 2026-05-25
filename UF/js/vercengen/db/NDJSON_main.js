@@ -8,7 +8,7 @@ let v8 = require("node:v8");
 let readline = require("node:readline");
 let NodeWorker = require("node:worker_threads").Worker;
 
-if (!global?.NDJSON)
+if (!global.NDJSON)
 	/**
 	 * The namespace for NDJSON utility functions.
 	 * 
@@ -20,6 +20,7 @@ if (!global?.NDJSON)
 {
 	/**
 	 * Returns a diff over `.history.keyframes` for the ID in question.
+	 * IPC: `ndjson:diff` | Callback: `ndjson:diff-ready`.
 	 * 
 	 * @param {string} arg0_file_path - The .ndjson file to target for a diff.
 	 * @param {string} arg1_id
@@ -54,6 +55,7 @@ if (!global?.NDJSON)
 	
 	/**
 	 * Diffs all `.history.keyframes` for all Objects for a given ID, so long as they have that field.
+	 * IPC: `ndjson:diff-all` | Callback: `ndjson:diff-all-ready`.
 	 * 
 	 * @param {string} arg0_file_path
 	 * @param {Object} [arg1_options]
@@ -91,7 +93,35 @@ if (!global?.NDJSON)
 	};
 	
 	/**
+	 * Resolves active RAM diagnostic percentage statistics from every worker in the pool.
+	 * IPC: `ndjson:get-diagnostics` | Callback: `ndjson:get-diagnostics-ready`.
+	 *
+	 * @returns {Promise<Array<{worker_id: number, rss: number, heapUsed: number, heapTotal: number, heapLimit: number, percentage: number}>>}
+	 */
+	NDJSON.getDiagnostics = async function () {
+		//Declare local instance variables
+		let pool = NDJSON.getWorkerPool();
+		let promises = [];
+		
+		for (let i = 0; i < pool.length; i++) {
+			let task_id = global.ve.ndjson_task_id_counter++;
+			
+			promises.push(new Promise((resolve) => {
+				global.ve.ndjson_pending_tasks.set(task_id, resolve);
+				pool[i].postMessage({
+					type: "get_diagnostics",
+					task_id: task_id
+				});
+			}));
+		}
+		
+		//Return statement
+		return await Promise.all(promises);
+	};
+	
+	/**
 	 * Returns the Object value of a single ID.
+	 * IPC: `ndjson:get-value` | Callback: `ndjson:get-value-ready`.
 	 * 
 	 * @param {string} arg0_file_path
 	 * @param {string} arg1_id
@@ -122,6 +152,7 @@ if (!global?.NDJSON)
 	
 	/**
 	 * Returns the Worker ID that holds a particular ID's partition.
+	 * IPC: `ndjson:get-worker-id` | Callback: `ndjson:get-worker-id-ready`.
 	 * 
 	 * @param {string} arg0_id
 	 * @param {number} arg1_pool_length
@@ -147,6 +178,7 @@ if (!global?.NDJSON)
 	
 	/**
 	 * Returns the current NDJSON worker pool managing DBs.
+	 * IPC: `ndjson:get-worker-pool` | Callback: `ndjson:get-worker-pool-ready`.
 	 * 
 	 * @param {number} [arg0_max_workers=os.cpus().length - 1]
 	 * 
@@ -274,6 +306,7 @@ if (!global?.NDJSON)
 	
 	/**
 	 * Partitions a given file into multiple NDJSON files for use. Internal helper function.
+	 * IPC: `ndjson:partition-file` | Callback: `ndjson:partition-file-ready`.
 	 * 
 	 * @param {string} arg0_file_path
 	 * 
@@ -317,6 +350,7 @@ if (!global?.NDJSON)
 	
 	/**
 	 * Queries an NDJSON file. [WIP] - Should be refactored so that only `arg1_options` is present.
+	 * IPC: `ndjson:query` | Callback: `ndjson:query-ready`.
 	 * 
 	 * @param {string} arg0_file_path
 	 * @param {Object} [arg1_options]
@@ -370,6 +404,7 @@ if (!global?.NDJSON)
 	
 	/**
 	 * Removes a value from the NDJSON file.
+	 * IPC: `ndjson:remove-value` | Callback: `ndjson:remove-value-ready`.
 	 * 
 	 * @param {string} arg0_file_path
 	 * @param {string} arg1_id
@@ -391,6 +426,7 @@ if (!global?.NDJSON)
 	
 	/**
 	 * Removes multiple values from the NDJSON file.
+	 * IPC: `ndjson:remove-values` | Callback: `ndjson:remove-values-ready`.
 	 * 
 	 * @param {string} arg0_file_path
 	 * @param {string[]} arg1_ids
@@ -415,6 +451,7 @@ if (!global?.NDJSON)
 	
 	/**
 	 * Saves the NDJSON file back into the main directory.
+	 * IPC: `ndjson:save` | Callback: `ndjson:save-ready`.
 	 * 
 	 * @param {string} arg0_file_path
 	 * 
@@ -457,6 +494,7 @@ if (!global?.NDJSON)
 	
 	/**
 	 * Sets a key-value pair in the NDJSON file.
+	 * IPC: `ndjson:set-value` | Callback: `ndjson:set-value-ready`.
 	 * 
 	 * @param {string} arg0_file_path
 	 * @param {string} arg1_id
@@ -480,6 +518,7 @@ if (!global?.NDJSON)
 	
 	/**
 	 * Sets multiple key-value pairs for the NDJSON file.
+	 * IPC: `ndjson:set-values` | Callback: `ndjson:set-values-ready`.
 	 * 
 	 * @param {string} arg0_file_path
 	 * @param {Object} arg1_update_map

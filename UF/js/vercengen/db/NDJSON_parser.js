@@ -1,6 +1,12 @@
 //Import libraries
 if (!global.ve) global.ve = {};
-if (!global?.NDJSON) global.NDJSON = {};
+if (!global.NDJSON)
+	/**
+	 * The namespace for NDJSON utility functions.
+	 *
+	 * @namespace NDJSON
+	 */
+	global.NDJSON = {};
 
 if (!global.fs) try { fs = require("fs"); } catch (e) {}
 let { parentPort, workerData } = require("node:worker_threads");

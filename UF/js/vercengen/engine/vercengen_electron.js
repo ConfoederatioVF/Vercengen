@@ -46,12 +46,73 @@ if (!global.v8) global.v8 = require("node:v8");
 		//Declare local instance variables
 		let ipc_main = electron.ipcMain;
 		
-		//NDJSON
+		//ndjson
+		ipc_main.on("ndjson:diff", async (event, file_path, id, options) => {
+			let result = await NDJSON.diff(file_path, id, options);
+			event.sender.send("ndjson:diff_ready", result);
+		});
+		ipc_main.on("ndjson:diff-all", async (event, file_path, options) => {
+			let result = await NDJSON.diffAll(file_path, options);
+			event.sender.send("ndjson:diff_all_ready", result);
+		});
+		ipc_main.on("ndjson:get-diagnostics", async (event) => {
+			let result = await NDJSON.getDiagnostics();
+			event.sender.send("ndjson:get_diagnostics_ready", result);
+		});
+		ipc_main.on("ndjson:get-value", async (event, file_path, id) => {
+			let result = await NDJSON.getValue(file_path, id);
+			event.sender.send("ndjson:get_value_ready", result);
+		});
+		ipc_main.on("ndjson:get-worker_id", async (event, id, pool_length) => {
+			let result = NDJSON.getWorkerID(id, pool_length);
+			event.sender.send("ndjson:get_worker_id_ready", result);
+		});
+		ipc_main.on("ndjson:get-worker-pool", async (event, max_workers) => {
+			let pool = NDJSON.getWorkerPool(max_workers);
+			let serialised_pool = pool.map((w) => {
+				return {
+					threadId: w?.threadId,
+					resourceLimits: w?.resourceLimits ? {
+						maxYoungGenerationSizeMb: w.resourceLimits.maxYoungGenerationSizeMb,
+						maxOldGenerationSizeMb: w.resourceLimits.maxOldGenerationSizeMb,
+						codeRangeSizeMb: w.resourceLimits.codeRangeSizeMb,
+						stackSizeMb: w.resourceLimits.stackSizeMb
+					} : null
+				};
+			});
+			event.sender.send("ndjson:get-worker-pool-ready", serialised_pool);
+		});
 		ipc_main.on("ndjson:load", async (event, file_path) => {
-			let web_contents = event.sender;
-			
 			await NDJSON.load(file_path);
-			web_contents.send("ndjson:load_ready", `${file_path}.ndjson`);
+			event.sender.send("ndjson:load-ready", `${file_path}.ndjson`);
+		});
+		ipc_main.on("ndjson:partition_file", async (event, file_path) => {
+			await NDJSON.partitionFile(file_path);
+			event.sender.send("ndjson:partition-file-ready", `${file_path}.ndjson`);
+		});
+		ipc_main.on("ndjson:query", async (event, file_path, options) => {
+			let result = await NDJSON.query(file_path, options);
+			event.sender.send("ndjson:query-ready", result);
+		});
+		ipc_main.on("ndjson:remove-value", async (event, file_path, id) => {
+			let result = await NDJSON.removeValue(file_path, id);
+			event.sender.send("ndjson:remove-value-ready", result);
+		});
+		ipc_main.on("ndjson:remove_values", async (event, file_path, ids) => {
+			let result = await NDJSON.removeValues(file_path, ids);
+			event.sender.send("ndjson:remove-values-ready", result);
+		});
+		ipc_main.on("ndjson:save", async (event, file_path) => {
+			await NDJSON.save(file_path);
+			event.sender.send("ndjson:save-ready", `${file_path}.ndjson`);
+		});
+		ipc_main.on("ndjson:set-value", async (event, file_path, id, value) => {
+			let result = await NDJSON.setValue(file_path, id, value);
+			event.sender.send("ndjson:set-value-ready", result);
+		});
+		ipc_main.on("ndjson:set-values", async (event, file_path, update_map) => {
+			let result = await NDJSON.setValues(file_path, update_map);
+			event.sender.send("ndjson:set-values-ready", result);
 		});
 		
 		//ontology

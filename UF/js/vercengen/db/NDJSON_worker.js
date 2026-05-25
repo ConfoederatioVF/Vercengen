@@ -66,6 +66,26 @@ let queue = [];
 }
 
 parentPort.on("message", (task) => {
+	// Bypasses resource-intensive wait queues for real-time diagnostics
+	if (task.type === "get_diagnostics") {
+		let memory = process.memoryUsage();
+		let v8_stats = require("node:v8").getHeapStatistics();
+		
+		return parentPort.postMessage({
+			task_id: task.task_id,
+			results: {
+				worker_id: workerData.worker_id,
+				rss: memory.rss, // Total Resident Set Size for the whole process
+				heapUsed: memory.heapUsed,
+				heapTotal: memory.heapTotal,
+				heapLimit: v8_stats.heap_size_limit,
+				percentage: parseFloat(
+					((memory.heapUsed / v8_stats.heap_size_limit) * 100).toFixed(2)
+				)
+			}
+		});
+	}
+	
 	queue.push(task);
 	if (!processing) processQueue();
 });
@@ -77,17 +97,17 @@ async function handleTask (arg0_task) {
 	//Declare internal helper functions
 	let getCleanVal = (string) => {
 		let clean = string.trim();
-			if (clean.endsWith(",")) clean = clean.slice(0, -1);
+		if (clean.endsWith(",")) clean = clean.slice(0, -1);
 		
 		//Return statement
 		return clean;
 	};
 	let resolveHistory = (data, timestamp) => {
-		let history_obj = (typeof data.history === "string") ? 
+		let history_obj = (typeof data.history === "string") ?
 			JSON.parse(data.history) : data.history;
 		
 		//Return statement
-		if (history_obj && history_obj.keyframes) 
+		if (history_obj && history_obj.keyframes)
 			return NDJSON.resolveStateAtTimestamp(history_obj.keyframes, timestamp);
 		return null;
 	};
@@ -103,8 +123,8 @@ async function handleTask (arg0_task) {
 		let found = null;
 		
 		if (fs.existsSync(page_file)) {
-			let rl = readline.createInterface({ 
-				input: fs.createReadStream(page_file) 
+			let rl = readline.createInterface({
+				input: fs.createReadStream(page_file)
 			});
 			for await (let line of rl) {
 				let match = line.match(/^"([^"]+)"\s*:/);
