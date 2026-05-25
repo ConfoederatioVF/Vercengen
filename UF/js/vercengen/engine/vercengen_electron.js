@@ -1,11 +1,26 @@
 //Import libraries
 if (!global.ve) global.ve = {};
+
 if (!global.electron) try { electron = require("electron"); } catch (e) {}
+if (!global.file_read) try { file_read = require("../../file/file_read"); } catch (e) {}
 if (!global.fs) try { fs = require("fs"); } catch (e) {}
+if (!global.os) global.os = require("node:os");
 if (!global.path) try { path = require("path"); } catch (e) {}
 if (!global.readline) try { readline = require("readline"); } catch (e) {}
+if (!global.v8) global.v8 = require("node:v8");
 
-if (!global.file_read) try { file_read = require("../../file/file_read"); } catch (e) {}
+//Math utils - [WIP] - Override at a later date
+{
+	if (!global.Math) global.Math = {};
+	Math.returnSafeNumber = function (arg0_number, arg1_default) {
+		//Convert from parameters
+		let number = parseFloat(arg0_number);
+		let default_value = (arg1_default !== undefined) ? arg1_default : 0;
+		
+		//Return statement
+		return (!isNaN(number) && isFinite(number)) ? number : default_value;
+	};
+}
 
 //Initialise functions
 {
@@ -31,6 +46,15 @@ if (!global.file_read) try { file_read = require("../../file/file_read"); } catc
 		//Declare local instance variables
 		let ipc_main = electron.ipcMain;
 		
+		//NDJSON
+		ipc_main.on("ndjson:load", async (event, file_path) => {
+			let web_contents = event.sender;
+			
+			await ve.loadNDJSON(file_path);
+			web_contents.send("ndjson:load_ready", `${file_path}.ndjson`);
+		});
+		
+		//ontology
 		ipc_main.on("ontology:initialise", async (event, folder_path) => {
 			//Declare local instance variables
 			if (!fs.existsSync(folder_path)) fs.mkdirSync(folder_path, { recursive: true });
@@ -92,8 +116,25 @@ if (!global.file_read) try { file_read = require("../../file/file_read"); } catc
 			await sendNextBatch();
 		});
 	};
+	
+	try {
+		require("../db/NDJSON_main.js");
+	} catch (e) {} //NDJSON handling
 }
 
 module.exports = { 
-	initialiseIPC: ve.initialiseIPC 
+	initialiseIPC: ve.initialiseIPC,
+	
+	NDJSON_checkIndex: ve.NDJSON_checkIndex,
+	NDJSON_diff: ve.NDJSON_diff,
+	NDJSON_diffAll: ve.NDJSON_diffAll,
+	NDJSON_getValue: ve.NDJSON_getValue,
+	NDJSON_getWorkerPool: ve.NDJSON_getWorkerPool,
+	NDJSON_index: ve.NDJSON_index,
+	NDJSON_load: ve.NDJSON_load,
+	NDJSON_query: ve.NDJSON_query,
+	NDJSON_removeValue: ve.NDJSON_removeValue,
+	NDJSON_save: ve.NDJSON_save,
+	NDJSON_setValue: ve.NDJSON_setValue,
+	NDJSON_setValues: ve.NDJSON_setValues
 };
