@@ -50,7 +50,7 @@ if (!global.v8) global.v8 = require("node:v8");
 		ipc_main.on("ndjson:load", async (event, file_path) => {
 			let web_contents = event.sender;
 			
-			await ve.loadNDJSON(file_path);
+			await NDJSON.load(file_path);
 			web_contents.send("ndjson:load_ready", `${file_path}.ndjson`);
 		});
 		
@@ -123,18 +123,5 @@ if (!global.v8) global.v8 = require("node:v8");
 }
 
 module.exports = { 
-	initialiseIPC: ve.initialiseIPC,
-	
-	NDJSON_checkIndex: ve.NDJSON_checkIndex,
-	NDJSON_diff: ve.NDJSON_diff,
-	NDJSON_diffAll: ve.NDJSON_diffAll,
-	NDJSON_getValue: ve.NDJSON_getValue,
-	NDJSON_getWorkerPool: ve.NDJSON_getWorkerPool,
-	NDJSON_index: ve.NDJSON_index,
-	NDJSON_load: ve.NDJSON_load,
-	NDJSON_query: ve.NDJSON_query,
-	NDJSON_removeValue: ve.NDJSON_removeValue,
-	NDJSON_save: ve.NDJSON_save,
-	NDJSON_setValue: ve.NDJSON_setValue,
-	NDJSON_setValues: ve.NDJSON_setValues
+	initialiseIPC: ve.initialiseIPC
 };

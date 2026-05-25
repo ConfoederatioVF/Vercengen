@@ -6,6 +6,7 @@ let path = require("node:path");
 let readline = require("node:readline");
 let { parentPort, workerData } = require("node:worker_threads");
 
+if (!global?.NDJSON) global.NDJSON = {};
 if (!global.ve) global.ve = {};
 
 //Declare variables
@@ -23,7 +24,7 @@ let queue = [];
 		return variable_string.split(".")
 		.reduce((local_object, local_key) => local_object?.[local_key], object);
 	};
-	ve.NDJSON_resolveStateAtTimestamp = function (arg0_keyframes, arg1_timestamp) {
+	NDJSON.resolveStateAtTimestamp = function (arg0_keyframes, arg1_timestamp) {
 		//Convert from parameters
 		let keyframes = arg0_keyframes;
 		let timestamp = parseInt(arg1_timestamp);
@@ -87,7 +88,7 @@ async function handleTask (arg0_task) {
 		
 		//Return statement
 		if (history_obj && history_obj.keyframes) 
-			return ve.NDJSON_resolveStateAtTimestamp(history_obj.keyframes, timestamp);
+			return NDJSON.resolveStateAtTimestamp(history_obj.keyframes, timestamp);
 		return null;
 	};
 	
