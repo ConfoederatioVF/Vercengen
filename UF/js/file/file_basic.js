@@ -281,77 +281,25 @@
 		return (resolved === path.parse(resolved).root);
 	};
 	
-	//[QUARANTINE]
-	File.loadCSVAsJSON = function (arg0_file_path, arg1_options) {
+	/**
+	 * Resolves and parses a JSON file if given a file path, or passes an already parsed object through.
+	 * @alias File.loadJSON
+	 * 
+	 * @param {string|Object} arg0_file_path
+	 * @param {Object} [arg1_options]
+	 * 
+	 * @returns {Object}
+	 */
+	File.loadJSON = function (arg0_file_path, arg1_options) {
 		//Convert from parameters
 		let file_path = arg0_file_path;
-		let options = arg1_options ? arg1_options : {};
+		let options = (arg1_options) ? arg1_options : {};
 		
-		//Intialise options
-		if (!options.mode) options.mode = "vertical";
-		
-		//Declare local instance variables
-		let csv_string = fs.readFileSync(file_path, "utf8");
-		let csv_array = csv_string.trim().split(/\r?\n/);
-		let parsed_rows = csv_array.map(parseCSVLine);
-		let return_obj = {};
-		
-		if (options.mode === "vertical") {
-			let headers = parsed_rows[0];
-			for (let i = 1; i < parsed_rows.length; i++) {
-				let row = parsed_rows[i];
-				let key = row[0];
-				if (!key) continue;
-				if (!return_obj[key]) {
-					return_obj[key] = {};
-					for (let j = 1; j < headers.length; j++) {
-						return_obj[key][headers[j]] = [];
-					}
-				}
-				for (let j = 1; j < headers.length; j++) {
-					return_obj[key][headers[j]].push(row[j] !== undefined ? row[j] : null);
-				}
-			}
-		} else if (options.mode === "horizontal") {
-			// In horizontal mode, each column after the first is a key
-			let property_names = parsed_rows[0];
-			for (let col = 1; col < property_names.length; col++) {
-				var key = property_names[col];
-				if (!key) continue;
-				if (!return_obj[key]) {
-					return_obj[key] = {};
-					// Initialize arrays for each row label (excluding the first row)
-					for (let row = 1; row < parsed_rows.length; row++) {
-						var row_label = parsed_rows[row][0];
-						return_obj[key][row_label] = [];
-					}
-				}
-				for (let row = 1; row < parsed_rows.length; row++) {
-					var row_label = parsed_rows[row][0];
-					var value = parsed_rows[row][col] !== undefined ? parsed_rows[row][col] : null;
-					return_obj[key][row_label].push(value);
-				}
-			}
+		//Return statement
+		if (typeof file_path === "string") {
+			let resolved_path = path.resolve(file_path);
+			return JSON.parse(fs.readFileSync(resolved_path, "utf8"));
 		}
-		
-		function parseCSVLine (line) {
-			let current = "";
-			let in_quotes = false;
-			let result = [];
-			for (let i = 0; i < line.length; i++) {
-				if (line[i] === '"' && (i === 0 || line[i - 1] !== "\\")) {
-					in_quotes = !in_quotes;
-				} else if (line[i] === "," && !in_quotes) {
-					result.push(current.trim().replace(/^"|"$/g, "").replace(/""/g, '"'));
-					current = "";
-				} else {
-					current += line[i];
-				}
-			}
-			result.push(current.trim().replace(/^"|"$/g, "").replace(/""/g, '"'));
-			return result;
-		}
-		
-		return return_obj;
+		return file_path;
 	};
 }

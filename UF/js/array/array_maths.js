@@ -196,6 +196,30 @@
 	};
 	
 	/**
+	 * Allocates a rows x cols 2D array, optionally filled with a value.
+	 * @alias Array.createMatrix
+	 * 
+	 * @param {number} arg0_rows
+	 * @param {number} arg1_cols
+	 * @param {Object} [arg2_options]
+	 *  @param {any} [arg2_options.fill_value=0]
+	 * 
+	 * @returns {Array<Array<any>>}
+	 */
+	Array.createMatrix = function (arg0_rows, arg1_cols, arg2_options) {
+		//Convert from parameters
+		let rows = Math.returnSafeNumber(arg0_rows, 0);
+		let cols = Math.returnSafeNumber(arg1_cols, 0);
+		let options = (arg2_options) ? arg2_options : {};
+		
+		//Initialise options
+		let fill_value = (options.fill_value !== undefined) ? options.fill_value : ((options.fill !== undefined) ? options.fill : 0);
+		
+		//Return statement
+		return new Array(rows).fill(0).map(() => new Array(cols).fill(fill_value));
+	};
+	
+	/**
 	 * Cubic spline interpolates a given X position, assuming that points to be interpolated are along the X-axis.
 	 * @alias Array.cubicSplineInterpolation
 	 * 
@@ -205,27 +229,29 @@
 	 * 
 	 * @returns {number}
 	 */
-	//[QUARANTINE]
 	Array.cubicSplineInterpolation = function (arg0_x_values, arg1_y_values, arg2_x_to_interpolate) {
+		//Convert from parameters
 		let x_values = Array.toArray(arg0_x_values);
-		let y_values = Array.toArray(arg1_y_values).map(y => (y > 0 ? Math.log(y) : Math.log(1e-6)));
+		let y_values = Array.toArray(arg1_y_values).map(y =>
+			(y > 0 ? Math.log(y) : Math.log(1e-6)));
 		let x_to_interpolate = parseInt(arg2_x_to_interpolate);
 		
-		//1. Calculate the Spline in log-space
+		//Declare local instance variables
 		let interpolation = new cubic_spline(x_values, y_values);
 		let interpolated_value = Math.exp(interpolation.at(x_to_interpolate));
-		
-		//2. Find bounds only for clamping
 		let prev_val = -Infinity, next_val = Infinity;
+		
+		//Iterate over all x_values
 		for (let i = 0; i < x_values.length; i++) {
 			if (x_values[i] <= x_to_interpolate) prev_val = Math.exp(y_values[i]);
 			if (x_values[i] >= x_to_interpolate) { next_val = Math.exp(y_values[i]); break; }
 		}
 		
-		//3. Clamp the spline value, don't overwrite it with a linear one
+		//Clamp the spline value, don't overwrite it with a linear one
 		let lower = Math.min(prev_val, next_val);
 		let upper = Math.max(prev_val, next_val);
 		
+		//Return statement
 		return Math.max(lower, Math.min(interpolated_value, upper));
 	};
 	
@@ -1398,6 +1424,28 @@
 		
 		//Return statement
 		return transposed_matrix;
+	};
+	
+	/**
+	 * Unwraps a mathjs Matrix to its underlying array, passing plain arrays through.
+	 * @alias Array.unwrapMatrix
+	 * 
+	 * @param {Matrix|Array} arg0_matrix
+	 * @param {Object} [arg1_options]
+	 * 
+	 * @returns {Array}
+	 */
+	Array.unwrapMatrix = function (arg0_matrix, arg1_options) {
+		//Convert from parameters
+		let matrix = arg0_matrix;
+		let options = (arg1_options) ? arg1_options : {};
+		
+		//Return statement
+		try {
+			return (matrix && matrix._data) ? matrix._data : matrix;
+		} catch (e) {
+			return matrix;
+		}
 	};
 	
 	//KEEP AT BOTTOM! Initialise function aliases

@@ -21,7 +21,7 @@
 		let N = X.length;
 		let K = X[0].length;
 		
-		let XT_X = new Array(K).fill(0).map(() => new Array(K).fill(0));
+		let XT_X = Array.createMatrix(K, K);
 		
 		//Optimisation: Halved loop multiplications taking advantage of reflectional symmetry
 		for (let i = 0; i < N; i++) {
@@ -31,7 +31,7 @@
 				for (let k = j; k < K; k++) {
 					XT_X[j][k] += x_j * rowX[k];
 				}
-			}
+			}	
 		}
 		
 		//Mirror the computed lower half logic to the upper half logic
@@ -103,11 +103,15 @@
 	 * 
 	 * @param {string} arg0_input_folder_path
 	 * @param {string} arg1_ols_prefix
+	 * @param {Object} [arg2_options]
+	 *  @param {function} [arg2_options.weighting_function] - (arg0_coefficient:{@link number}) | {@link number}
+	 *  
 	 * @returns {Promise<{coefficients: {}, raw_coefficients: {}}>}
 	 */
-	Statistics.geomeanOLSModels = async function (arg0_input_folder_path, arg1_ols_prefix) { 
+	Statistics.geomeanOLSModels = async function (arg0_input_folder_path, arg1_ols_prefix, arg2_options) { 
 		let input_folder_path = arg0_input_folder_path;
 		let ols_prefix = arg1_ols_prefix;
+		let options = (arg2_options) ? arg2_options : {};
 		
 		//Declare local instance variables
 		let all_coefficients = {};
@@ -139,8 +143,11 @@
 		let format_slug = ols_prefix.split("_").join(" ").trim().split(" ").join("_");
 		let hybrid_coefficients = {};
 		
-		for (let key in all_coefficients)
+		for (let key in all_coefficients) {
 			hybrid_coefficients[key] = Math.weightedGeometricMean(all_coefficients[key]);
+			if (options.weighting_function)
+				hybrid_coefficients[key] = options.weighting_function(hybrid_coefficients[key]);
+		}
 		
 		let output_data = {
 			coefficients: hybrid_coefficients,
@@ -178,67 +185,11 @@
 		let output_file_path = arg0_output_file_path;
 		let options = (arg1_options) ? arg1_options : {};
 		
-		//Initialise options
-		if (!options.format) options.format = "float32";
-		if (!options.formatting_parameters) options.formatting_parameters = [];
-		options.height = Math.returnSafeNumber(options.height, 2160);
-		options.width = Math.returnSafeNumber(options.width, 4320);
-		
-		//Declare local instance variables
-		let covariates_obj = options.covariates_obj;
-		let model_obj = (typeof options.model_obj === "string") ? 
-			JSON.parse(fs.readFileSync(path.resolve(options.model_obj), "utf8")) : options.model_obj;
-		let coefficients_obj = model_obj.coefficients;
-		let rasters_obj = {};
-		
-		//Iterate over covariates_obj and load rasters
-		Object.iterate(covariates_obj, (local_key, local_value) => {
-			let local_file_path = (typeof local_value === "function") ? 
-				local_value(...options.formatting_parameters) : local_value;
-			let local_format = "int32";
-			
-			//Destructure if array is returned
-			if (Array.isArray(local_file_path)) {
-				local_format = local_file_path[1];
-				local_file_path = local_file_path[0];
-			}
-			
-			//Load existing rasters into rasters_obj
-			if (fs.existsSync(local_file_path))
-				rasters_obj[local_key] = GeoPNG.loadNumberRasterImage(local_file_path, {
-					format: local_format
-				});
+		//Return statement
+		return await Statistics.LearningFramework.predictRaster(output_file_path, options.model_obj, {
+			...options,
+			mode: "ols"
 		});
-		
-		//Write output file from rasters_obj
-		GeoPNG.saveNumberRasterImage({
-			file_path: output_file_path,
-			format: options.format,
-			width: options.width,
-			height: options.height,
-			function: (local_index) => {
-				//Evaluate guard function if present
-				if (options.guard_clause) {
-					let should_process = options.guard_clause(local_index, rasters_obj);
-					if (!should_process) return 0;
-				}
-				
-				//Declare local instance variables
-				let local_sum = 0;
-				
-				Object.iterate(rasters_obj, (local_key, local_value) => {
-					let local_coefficient = Math.returnSafeNumber(coefficients_obj[local_key]);
-					
-					local_sum += (local_value?.data) ? 
-						(local_value.data[local_index]*local_coefficient) : 0;
-				});
-				
-				//Return statement
-				return local_sum;
-			}
-		});
-		
-		console.log(`Saved OLS for ${output_file_path}.`);
 	};
 	
 	/**
@@ -248,94 +199,48 @@
 	 * @param {string} arg0_utility_file_path
 	 * @param {Object} [arg1_options]
 	 *  @param {Object} arg1_options.covariates_obj
-	 *  @param {Array} [arg1_options.formatting_parameters]
+	 *  @param {any[]} [arg1_options.formatting_parameters]
 	 *  @param {string} [arg1_options.utility_format="int32"]
 	 *  
-	 * @returns {Promise<void>}
+	 * @returns {Promise<Object>}
 	 */
 	Statistics.loadOLSCovariates = async function (arg0_utility_file_path, arg1_options) {
 		//Convert from parameters
-		let utility_file_path = path.resolve(arg0_utility_file_path);
+		let utility_file_path = arg0_utility_file_path;
 		let options = (arg1_options) ? arg1_options : {};
 		
-		//Initialise options
-		if (!options.formatting_parameters) options.formatting_parameters = [];
-		
-		//Declare local instance variables
-		let input_data = [];
-		let utility_image = GeoPNG.loadNumberRasterImage(utility_file_path, {
-			format: options.utility_format
-		});
-		let utility_data = utility_image.data;
-		let valid_keys = [];
-		
-		//Iterate over all input stocks; load each input variable as a predictor
-		Object.iterate(options.covariates_obj, (local_key, local_value) => {
-			let local_file_path = local_value(...options.formatting_parameters);
-			let local_format = "int32";
-			
-			//Destructure if array is returned
-			if (Array.isArray(local_file_path)) {
-				local_format = local_file_path[1];
-				local_file_path = local_file_path[0];
-			}
-			
-			//Attempt to load the covariate raster; drop it on failure
-			try {
-				let local_rawdata = GeoPNG.loadNumberRasterImage(local_file_path, {
-					format: local_format
-				}).data;
-				
-				input_data.push(local_rawdata);
-				valid_keys.push(local_key);
-			} catch (e) {
-				console.log(`- Missing covariate raster for ${local_key} at ${local_file_path}. Dropping coefficient for this run.`);
-			}
-		});
-		
-		//Transpose input data to match format [samples, features], discarding zeroes and NaNs safely
-		let feature_count = input_data.length;
-		let sample_count = utility_data.length;
-		let X = [];
-		let Y = [];
-		
-		//Iterate over sample_count
-		for (let i = 0; i < sample_count; i++) {
-			let has_data = false;
-			let is_valid = true;
-			let utility_value = utility_data[i];
-			
-			if (isNaN(utility_value)) {
-				is_valid = false;
-			} else if (utility_value !== 0) {
-				has_data = true;
-			}
-			
-			//Iterate over feature_count
-			let local_row = new Array(feature_count);
-			
-			for (let x = 0; x < feature_count; x++) {
-				let local_value = input_data[x][i];
-				if (isNaN(local_value)) {
-					is_valid = false;
-					break;
-				}
-				local_row[x] = local_value;
-				if (local_value !== 0) has_data = true;
-			}
-			
-			if (has_data && is_valid) {
-				X.push(local_row);
-				Y.push([utility_value]);
-			}
-		}
-		
 		//Return statement
-		return { keys: valid_keys, X, Y };
+		return await Statistics.LearningFramework.extractImageDataset(utility_file_path, {
+			...options,
+			mode: "ols"
+		});
 	};
 	
 	/**
-	 * Processes and adjusts OLS model coefficients against target and covariate rasters via bidirectional weighted average adjustment.
+	 * Loads a stack of covariates for point-based data for OLS training for a specific year.
+	 * @alias Statistics.loadPointOLSCovariates
+	 *
+	 * @param {Array<Object>} arg0_points - Array of objects with { coords: [lng, lat], target: number, year: number }
+	 * @param {number} arg1_year - The target year to load covariates and sample points for.
+	 * @param {Object} [arg2_options]
+	 *  @param {Object} arg2_options.covariates_obj
+	 *  @param {number} [arg2_options.covariates_year] - Mapped year to override path resolution.
+	 *  @param {Function} [arg2_options.get_pixel_function] - Custom coordinate-to-pixel mapping function.
+	 *
+	 * @returns {Promise<Object>}
+	 */
+	Statistics.loadPointOLSCovariates = async function (arg0_points, arg1_year, arg2_options) {
+		//Convert from parameters
+		let points_list = arg0_points;
+		let target_year = arg1_year;
+		let options = (arg2_options) ? arg2_options : {};
+		
+		//Return statement
+		return await Statistics.LearningFramework.extractPointDataset(points_list, target_year, options);
+	};
+	
+	/**
+	 * Processes and adjusts OLS model coefficients against target and covariate rasters using Multiplicative Update Rules (NMF).
 	 * @alias Statistics.processOLSModel
 	 *
 	 * @param {string|Object} arg0_model - JSON model object or file path to JSON model.
@@ -351,7 +256,7 @@
 	 */
 	Statistics.processOLSModel = async function (arg0_model, arg1_options) {
 		//Convert from parameters
-		let processed_model = (typeof arg0_model === "string") ? JSON.parse(fs.readFileSync(path.resolve(arg0_model), "utf8")) : arg0_model;
+		let processed_model = File.loadJSON(arg0_model);
 		let options = (arg1_options) ? arg1_options : {};
 		
 		//Initialise options
@@ -379,7 +284,6 @@
 			}
 			
 			let local_covariate_images = {};
-			let total_logs = {};
 			let valid_covariate_keys = [];
 			
 			for (let key in covariates_obj) {
@@ -412,67 +316,68 @@
 				continue;
 			}
 			
+			//Initialise accumulators for Multiplicative Update Rule
+			let numerators = {};
+			let denominators = {};
+			for (let k = 0; k < valid_covariate_keys.length; k++) {
+				numerators[valid_covariate_keys[k]] = 0;
+				denominators[valid_covariate_keys[k]] = 0;
+			}
+			
 			//Iterate over all pixels
-			console.log(`- Processing weights (bidirectional weighted average adjustment) ..`);
+			console.log(`- Aggregating global gradients (Multiplicative Update) ..`);
 			let pixel_count = local_target_image.width * local_target_image.height;
 			
 			for (let x = 0; x < pixel_count; x++) {
-				//Compute predicted_value based on covariate stocks
-				let predicted_value = 0;
-				let total_weight = 0;
+				let observed_value = local_target_image.data[x] || 0;
+				if (isNaN(observed_value)) observed_value = 0;
 				
+				//Compute total predicted_value for this pixel
+				let predicted_value = 0;
 				for (let k = 0; k < valid_covariate_keys.length; k++) {
 					let key = valid_covariate_keys[k];
 					let covariate_value = local_covariate_images[key].data[x] || 0;
 					if (isNaN(covariate_value)) covariate_value = 0;
 					
-					let coefficient = processed_model.coefficients[key] ?? 1;
-					if (isNaN(coefficient)) coefficient = 1;
-					
-					let weighted_contribution = covariate_value * coefficient;
-					
-					predicted_value += weighted_contribution;
-					total_weight += covariate_value;
-					
-					if (options.debug && covariate_value > 0) {
-						total_logs[key] = total_logs[key] || 0;
-						if (total_logs[key] < 100)
-							console.log(`- Covariate: Pixel ${x}: ${key}: Value: ${covariate_value}, Coefficient: ${coefficient}, Weighted contribution: ${weighted_contribution}`);
-					}
+					let coefficient = processed_model.coefficients[key] || 0;
+					predicted_value += covariate_value * coefficient;
 				}
 				
-				let observed_value = local_target_image.data[x] || 0;
-				if (isNaN(observed_value)) observed_value = 0;
-				
-				let residual = observed_value - predicted_value;
-				let correction_factor = predicted_value !== 0 ? residual / predicted_value : 0;
-				
-				//Adjust coefficients proportionally based on each category's weight in that pixel
-				if (total_weight > 0)
+				//If there is data interaction in this pixel, accumulate global sums
+				if (predicted_value > 0 || observed_value > 0) {
 					for (let k = 0; k < valid_covariate_keys.length; k++) {
 						let key = valid_covariate_keys[k];
 						let covariate_value = local_covariate_images[key].data[x] || 0;
-						if (isNaN(covariate_value)) covariate_value = 0;
 						
-						if (covariate_value === 0) continue;
+						if (isNaN(covariate_value) || covariate_value === 0) continue;
 						
-						let local_coefficient = processed_model.coefficients[key];
-						let weight_fraction = covariate_value / total_weight;
-						let update_amount = local_coefficient * correction_factor * weight_fraction;
-						
-						if (!(correction_factor < 0 && local_coefficient < 1)) {
-							if (options.debug) {
-								total_logs[key] = total_logs[key] || 0;
-								if (total_logs[key] < 100) {
-									total_logs[key]++;
-									console.log(`- Target Adj: Pixel ${x}: ${key}, Update Amount: ${update_amount}, Weight Fraction: ${weight_fraction}, Residual: ${residual}, Correction Factor: ${correction_factor}`);
-								}
-							}
-							processed_model.coefficients[key] += (isNaN(update_amount) ? 0 : update_amount);
-						}
+						numerators[key] += observed_value * covariate_value;
+						denominators[key] += predicted_value * covariate_value;
 					}
+				}
 			}
 			
+			//Apply exact multiplicative updates
+			console.log(`- Applying global scaling multipliers ..`);
+			for (let k = 0; k < valid_covariate_keys.length; k++) {
+				let key = valid_covariate_keys[k];
+				
+				if (denominators[key] > 0) {
+					// Mathematically optimal ratio for this step
+					let multiplier = numerators[key] / denominators[key];
+					processed_model.coefficients[key] *= multiplier;
+					
+					if (options.debug) {
+						console.log(`  - ${key}: Numerator: ${numerators[key].toExponential(2)}, Denominator: ${denominators[key].toExponential(2)} -> Multiplier: ${multiplier.toFixed(5)}`);
+					}
+				} else if (denominators[key] === 0 && numerators[key] > 0) {
+					// Edge case: Model predicted 0, but target exists. 
+					// (Very rare if initial OLS coefficients > 0)
+					if (options.debug) console.log(`  - ${key}: Missed prediction. Numerator > 0 but Denominator is 0.`);
+				}
+			}
+			
+			await Blacktraffic.yield();
 			console.log(`- New coefficients:`, processed_model.coefficients);
 		} catch (e) {
 			console.error(`Statistics.processOLSModel(): Error when processing step:`);
@@ -514,7 +419,7 @@
 	};
 	
 	/**
-	 * Performs Ridge Regression on two matrices.
+	 * Performs Ridge Regression on two matrices with RMS scale stabilization and pseudo-inverse fallbacks.
 	 * @alias Statistics.ridgeRegression
 	 *
 	 * @param {Matrix|Array} arg0_X
@@ -534,19 +439,42 @@
 		
 		//Declare local instance variables
 		let N = X.length;
-		let K = X[0].length;
+		if (N === 0) return [];
 		
-		let XT_X = new Array(K).fill(0).map(() => new Array(K).fill(0));
-		let XT_Y = new Array(K).fill(0).map(() => [0]);
+		let K = X[0].length;
+		if (K === 0) return [];
+		
+		//Compute column-wise RMS scales to prevent scale-mismatch singularity
+		let scales = new Array(K).fill(1);
+		let X_scaled = Array.createMatrix(N, K);
+		
+		for (let j = 0; j < K; j++) {
+			let sum_sq = 0;
+			for (let i = 0; i < N; i++) {
+				sum_sq += X[i][j] * X[i][j];
+			}
+			let rms = Math.sqrt(sum_sq / N);
+			scales[j] = (rms > 1e-12) ? rms : 1;
+		}
+		
+		//Scale covariates
+		for (let i = 0; i < N; i++) {
+			for (let j = 0; j < K; j++) {
+				X_scaled[i][j] = X[i][j] / scales[j];
+			}
+		}
+		
+		let XT_X = Array.createMatrix(K, K);
+		let XT_Y = Array.createMatrix(K, 1);
 		
 		for (let i = 0; i < N; i++) {
-			let rowX = X[i];
-			let yVal = Y[i][0];
+			let row_X = X_scaled[i];
+			let y_val = Y[i][0];
 			for (let j = 0; j < K; j++) {
-				let x_j = rowX[j];
-				XT_Y[j][0] += x_j * yVal;
+				let x_j = row_X[j];
+				XT_Y[j][0] += x_j * y_val;
 				for (let k = j; k < K; k++) {
-					XT_X[j][k] += x_j * rowX[k];
+					XT_X[j][k] += x_j * row_X[k];
 				}
 			}
 		}
@@ -560,11 +488,27 @@
 		let XT_X_mat = mathjs.matrix(XT_X);
 		let XT_Y_mat = mathjs.matrix(XT_Y);
 		let identity = mathjs.identity(K);
-		
 		let XT_X_reg = mathjs.add(XT_X_mat, mathjs.multiply(identity, lambda)); //Ridge term
 		
-		//Return statement; return beta
-		return mathjs.multiply(mathjs.inv(XT_X_reg), XT_Y_mat);
+		//Attempt standard inverse; fall back to Moore-Penrose pseudo-inverse (pinv) if determinant is zero
+		let beta_scaled;
+		try {
+			beta_scaled = mathjs.multiply(mathjs.inv(XT_X_reg), XT_Y_mat);
+		} catch (e) {
+			console.log(`- Determinant is zero or matrix is near-singular. Falling back to Moore-Penrose pseudo-inverse.`);
+			beta_scaled = mathjs.multiply(mathjs.pinv(XT_X_reg), XT_Y_mat);
+		}
+		
+		//Convert scaled coefficients back to original covariate scale: beta_j = beta_scaled_j / scale_j
+		let beta_scaled_arr = Array.unwrapMatrix(beta_scaled);
+		let beta_orig = Array.createMatrix(K, 1);
+		
+		for (let j = 0; j < K; j++) {
+			beta_orig[j][0] = beta_scaled_arr[j][0] / scales[j];
+		}
+		
+		//Return statement; return beta matrix
+		return mathjs.matrix(beta_orig);
 	};
 	
 	/**
@@ -578,6 +522,7 @@
 	 *  @param {number} [arg2_options.lambda=1e9]
 	 *  @param {boolean} [arg2_options.remove_high_vif_features=false] - Whether to remove high VIF features.
 	 *  @param {string} [arg2_options.key]
+	 *  @param {function} [arg2_options.weighting_function] - (arg0_coefficient:{@link number}) | {@link number}
 	 *
 	 * @returns {Promise<Object>}
 	 */
@@ -596,6 +541,11 @@
 		
 		console.log(`- Performing OLS for ${basename}.`);
 		
+		if (!X || X.length === 0 || !keys || keys.length === 0) {
+			console.warn(`- Empty covariate data passed for ${basename}. Skipping.`);
+			return null;
+		}
+		
 		//1. Remove multicollinear features using VIF selection if specified
 		if (options.remove_high_vif_features) {
 			X = Statistics.removeHighVIFFeatures(X, 10);
@@ -608,18 +558,21 @@
 		
 		if (options.dynamic_lambda) {
 			let condition_number = Statistics.conditionNumber(X);
-			if (condition_number > 1e6) { selected_lambda = 1e9; }
-			else if (condition_number > 1e4) { selected_lambda = 1e7; }
-			else if (condition_number > 1e2) { selected_lambda = 1e5; }
-			else { selected_lambda = 1e3; }
+			condition_number *= 1e3;
 			console.log(`- Condition Number: ${condition_number}, using Lambda = ${selected_lambda}`);
 		}
 		
 		let beta = Statistics.ridgeRegression(X, Y, selected_lambda);
+		
+		if (!beta || beta.length === 0) {
+			console.warn(`- Regression failed to produce beta coefficients for ${basename}.`);
+			return null;
+		}
+		
 		console.log(`- Applied Ridge Regression to stabilise coefficients.`);
 		
 		//3. Convert coefficients to JSON
-		let beta_arr = beta._data || (beta.toArray ? beta.toArray() : beta);
+		let beta_arr = Array.unwrapMatrix(beta);
 		let coefficients = beta_arr.flat();
 		console.log(`- Computed coefficients.`);
 		
@@ -627,7 +580,11 @@
 		let model_data_obj = {
 			key: options.key,
 			coefficients: Object.fromEntries(
-				keys.map((key, i) => [key, coefficients[i]])
+				keys.map((key, i) => [
+					key,
+					(options.weighting_function) ?
+						options.weighting_function(coefficients[i]) : coefficients[i]]
+				)
 			)
 		};
 		

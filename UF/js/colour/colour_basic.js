@@ -181,7 +181,12 @@
 			data_view.setUint8(1, rgba_input[1]);
 			data_view.setUint8(2, rgba_input[2]);
 			data_view.setUint8(3, rgba_input[3]);
-			return data_view.getFloat32(0, false);
+			
+			let float_value = data_view.getFloat32(0, false);
+			
+			//Return statement
+			if (isNaN(float_value)) return 0;
+			return float_value;
 		}
 		
 		//Declare local instance variables

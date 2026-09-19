@@ -45,10 +45,10 @@ global.path = require("path");
 				debug_heuristic_free_end: 5,
 				
 				/**
-				 * Determines whether or not to run linters at runtime.
+				 * Determines whether to run linters at runtime.
 				 * @type {boolean}
 				 */
-				debug_mode: true,
+				debug_mode: false,
 				/**
 				 * Whether to profile {@link ve.Component}. Can be memory-intensive.
 				 * @type {boolean}
@@ -509,7 +509,7 @@ global.path = require("path");
 		
 		let load_files = ve.getImportFiles(load_patterns);
 		
-		if (!ve.is_not_browser)
+		if (!ve.is_not_browser && ve.debug_mode)
 			console.log(`[VERCENGEN] Importing ${load_files.length} files.`, load_files);
 		
 		//1. Handle browser <link>/<script> tags
