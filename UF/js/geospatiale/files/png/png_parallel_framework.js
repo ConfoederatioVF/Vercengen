@@ -1,5 +1,8 @@
 //Initialise functions
 {
+	let fs = (typeof global.fs !== "undefined") ? global.fs : require("fs");
+	let path = (typeof global.path !== "undefined") ? global.path : require("path");
+
 	if (!global.GeoPNG)
 		/**
 		 * Analogous to a GeoTIFF file format, but in PNG form for easier editing. Single variable. Part of Geospatiale III.
@@ -95,9 +98,11 @@
 		let width = options.width;
 		
 		//Ensure destination directory exists
-		let parent_dir = path.dirname(path.resolve(options.file_path));
-		if (!fs.existsSync(parent_dir))
-			await fs.promises.mkdir(parent_dir, { recursive: true });
+		let node_path = (typeof path !== "undefined") ? path : require("path");
+		let parent_dir = node_path.dirname(node_path.resolve(options.file_path));
+		let node_fs = (typeof fs !== "undefined") ? fs : require("fs");
+		if (!node_fs.existsSync(parent_dir))
+			await node_fs.promises.mkdir(parent_dir, { recursive: true });
 		
 		if (options.data) {
 			let buffer_data = options.data;
@@ -216,6 +221,7 @@
 		}
 		
 		//2. CPU Chunked Parallel Execution with periodic event-loop yielding
+		chunk_size = Math.min(chunk_size, 100);
 		for (let start_row = 0; start_row < height; start_row += chunk_size) {
 			let end_row = Math.min(start_row + chunk_size, height);
 			
@@ -228,7 +234,7 @@
 			}
 			
 			if (typeof Blacktraffic !== "undefined" && Blacktraffic.yield)
-				await Blacktraffic.yield();
+				await Blacktraffic.yield(0);
 		}
 		
 		//Return statement
@@ -236,14 +242,190 @@
 	};
 	
 	/**
-	 * Concurrently processes an array of timeseries steps (e.g. years) with a controlled worker pool concurrency limit.
+	 * Initialises and retrieves the persistent worker thread pool for geoprocessing.
+	 * @alias GeoPNG.getWorkerPool
+	 * 
+	 * @param {Object} [arg0_options]
+	 *  @param {number} [arg0_options.concurrency] - Custom worker thread count.
+	 * 
+	 * @returns {Array<Worker>}
+	 */
+	GeoPNG.getWorkerPool = function (arg0_options) {
+		//Convert from parameters
+		let options = (arg0_options) ? arg0_options : {};
+		
+		//Initialise options
+		let cpu_count = (typeof require !== "undefined") ? require("os").cpus().length : 4;
+		let default_concurrency = Math.max(1, Math.min(cpu_count - 2, 16));
+		let max_workers = Math.returnSafeNumber(options.concurrency, default_concurrency);
+		
+		//Declare local instance variables
+		let child_process = (typeof require !== "undefined") ? require("child_process") : null;
+		let fs_module = (typeof require !== "undefined") ? require("fs") : ((typeof fs !== "undefined") ? fs : null);
+		let is_renderer = (typeof process !== "undefined" && process.type === "renderer");
+		let NodeWorker = (!is_renderer && typeof require !== "undefined") ? require("worker_threads").Worker : null;
+		let path_module = (typeof require !== "undefined") ? require("path") : ((typeof path !== "undefined") ? path : null);
+		let worker_candidates = (path_module) ? [
+			(typeof __dirname !== "undefined") ? path_module.join(__dirname, "png_worker.js") : null,
+			(typeof __dirname !== "undefined") ? path_module.join(__dirname, "UF/js/geospatiale/files/png/png_worker.js") : null,
+			(typeof process !== "undefined" && process.cwd) ? path_module.join(process.cwd(), "UF/js/geospatiale/files/png/png_worker.js") : null,
+			(typeof process !== "undefined" && process.cwd) ? path_module.join(process.cwd(), "png_worker.js") : null,
+			(typeof global !== "undefined" && global.main_dir) ? path_module.join(global.main_dir, "UF/js/geospatiale/files/png/png_worker.js") : null
+		] : [];
+		let worker_file_path = null;
+		
+		if (fs_module)
+			for (let i = 0; i < worker_candidates.length; i++)
+				if (worker_candidates[i] && fs_module.existsSync(worker_candidates[i])) {
+					worker_file_path = worker_candidates[i];
+					break;
+				}
+		
+		if ((!NodeWorker && !child_process) || !worker_file_path) return [];
+		
+		if (GeoPNG._active_workers === undefined) GeoPNG._active_workers = new Set();
+		if (GeoPNG._pending_tasks === undefined) GeoPNG._pending_tasks = new Map();
+		if (GeoPNG._task_id_counter === undefined) GeoPNG._task_id_counter = 0;
+		if (GeoPNG._worker_pool === undefined) GeoPNG._worker_pool = [];
+		
+		//Instantiate workers up to capacity
+		if (GeoPNG._worker_pool.length === 0)
+			for (let i = 0; i < max_workers; i++) {
+				let worker = null;
+				
+				//Attempt Node worker_threads first if not in an Electron renderer
+				if (NodeWorker) {
+					try {
+						worker = new NodeWorker(worker_file_path, {
+							workerData: { worker_id: i }
+						});
+					} catch (e) {
+						worker = null;
+					}
+				}
+				
+				//Fallback to child_process.fork (necessary for Electron renderer orchestrators where V8 platform does not support Node Workers)
+				if (!worker && child_process && child_process.fork) {
+					worker = child_process.fork(worker_file_path, [], {
+						env: {
+							...process.env,
+							ELECTRON_RUN_AS_NODE: "1",
+							WORKER_ID: String(i)
+						},
+						stdio: ["inherit", "inherit", "inherit", "ipc"]
+					});
+					
+					//Polyfill postMessage and terminate for child_process
+					worker.postMessage = (data) => worker.send(data);
+					worker.terminate = () => worker.kill();
+				}
+				
+				if (!worker) continue;
+				
+				worker.worker_id = i;
+				GeoPNG._active_workers.add(worker);
+				
+				worker.on("message", (response) => {
+					if (!response || response.task_id === undefined) return;
+					let callback = GeoPNG._pending_tasks.get(response.task_id);
+					if (callback) {
+						GeoPNG._pending_tasks.delete(response.task_id);
+						if (response.success) {
+							callback.resolve(response.result);
+						} else {
+							callback.reject(new Error(response.error || "GeoWorker error"));
+						}
+					}
+				});
+				
+				worker.on("error", (err) => {
+					console.error(`[GeoWorker ${i}] Thread error:`, err);
+					GeoPNG._active_workers.delete(worker);
+				});
+				
+				worker.on("exit", () => {
+					GeoPNG._active_workers.delete(worker);
+				});
+				
+				GeoPNG._worker_pool.push(worker);
+			}
+		
+		//Return statement
+		return GeoPNG._worker_pool;
+	};
+	
+	/**
+	 * Safely terminates all active background geoprocessing worker threads.
+	 * @alias GeoPNG.terminateAllWorkers
+	 */
+	GeoPNG.terminateAllWorkers = function () {
+		//Declare local instance variables
+		let active_workers = (GeoPNG._active_workers) ? Array.from(GeoPNG._active_workers) : [];
+		
+		//Function body
+		for (let i = 0; i < active_workers.length; i++) {
+			try {
+				active_workers[i].terminate();
+			} catch (e) {}
+		}
+		
+		if (GeoPNG._active_workers) GeoPNG._active_workers.clear();
+		if (GeoPNG._pending_tasks) {
+			GeoPNG._pending_tasks.forEach((cb) => {
+				cb.reject(new Error("Worker thread aborted: render thread closing."));
+			});
+			GeoPNG._pending_tasks.clear();
+		}
+		if (GeoPNG._worker_pool) GeoPNG._worker_pool = [];
+	};
+	
+	/**
+	 * Dispatches a single task to the next available worker in the pool.
+	 * @alias GeoPNG.executeWorkerTask
+	 * 
+	 * @param {Object} arg0_task
+	 * @param {Object} [arg1_options]
+	 * 
+	 * @returns {Promise<any>}
+	 */
+	GeoPNG.executeWorkerTask = function (arg0_task, arg1_options) {
+		//Convert from parameters
+		let task = arg0_task;
+		let options = (arg1_options) ? arg1_options : {};
+		
+		//Declare local instance variables
+		let pool = GeoPNG.getWorkerPool(options);
+		
+		//Guard clauses
+		if (!pool || pool.length === 0)
+			return Promise.reject(new Error("Worker pool unavailable."));
+		
+		if (GeoPNG._next_worker_index === undefined) GeoPNG._next_worker_index = 0;
+		let worker = pool[GeoPNG._next_worker_index % pool.length];
+		GeoPNG._next_worker_index++;
+		
+		let task_id = ++GeoPNG._task_id_counter;
+		task.task_id = task_id;
+		
+		//Return statement
+		return new Promise((resolve, reject) => {
+			GeoPNG._pending_tasks.set(task_id, { resolve: resolve, reject: reject });
+			worker.postMessage(task);
+		});
+	};
+	
+	/**
+	 * Concurrently processes an array of timeseries steps (e.g. years) with true multithreading / multiprocessing.
 	 * @alias GeoPNG.processTimeseriesParallel
 	 *
 	 * @param {Object} arg0_options
-	 *  @param {number} [arg0_options.concurrency=4] - Max concurrent async worker tasks.
-	 *  @param {function} arg0_options.handler - async (local_item: any, local_index: number) => Promise<any>.
+	 *  @param {number} [arg0_options.concurrency] - Max concurrent worker tasks. Defaults to optimal core allocation.
+	 *  @param {Object} [arg0_options.context] - Optional shared context passed to worker handlers.
+	 *  @param {function} [arg0_options.handler] - async (local_item: any, local_index: number, local_context: Object) => Promise<any>.
 	 *  @param {Array<any>} arg0_options.items - Array of years or items to process.
 	 *  @param {string} [arg0_options.name="Task"] - Task name for logging.
+	 *  @param {function} [arg0_options.task_generator] - (local_item: any, local_index: number) => task_object for worker.
+	 *  @param {boolean} [arg0_options.use_workers=true] - Whether to use worker threads.
 	 *
 	 * @returns {Promise<Array<any>>} Array of task results matching items order.
 	 */
@@ -252,20 +434,47 @@
 		let options = (arg0_options) ? arg0_options : {};
 		
 		//Initialise options
-		let concurrency = Math.returnSafeNumber(options.concurrency, 4);
+		let cpu_count = (typeof require !== "undefined") ? require("os").cpus().length : 4;
+		let default_concurrency = Math.max(1, Math.min(cpu_count - 2, 16));
+		let concurrency = Math.returnSafeNumber(options.concurrency, default_concurrency);
+		let context = (options.context) ? options.context : {};
 		let handler = options.handler;
 		let items = (options.items) ? options.items : [];
+		let task_generator = options.task_generator;
 		let task_name = (options.name) ? options.name : "Timeseries Task";
+		let use_workers = (options.use_workers !== undefined) ? options.use_workers : true;
 		
 		//Declare local instance variables
 		let active_promises = [];
+		let completed_count = 0;
 		let current_index = 0;
+		let last_logged_milestone = -1;
 		let results = new Array(items.length);
 		let total_items = items.length;
 		
 		if (total_items === 0) return [];
 		
-		console.log(`- [${task_name}] Launching parallel processing over ${total_items} items (Concurrency: ${concurrency}) ..`);
+		//Check whether worker threads are supported and operational
+		let can_use_worker_threads = false;
+		if (use_workers && (task_generator || options.allow_eval_handler) && typeof require !== "undefined") {
+			try {
+				let pool = GeoPNG.getWorkerPool({ concurrency: concurrency });
+				if (pool && pool.length > 0) can_use_worker_threads = true;
+			} catch (err) {
+				console.warn(`[${task_name}] Worker threads could not be initialised, falling back to local runner:`, err.message);
+			}
+		}
+		
+		let effective_concurrency = can_use_worker_threads ?
+			Math.min(concurrency, total_items) :
+			Math.min(4, total_items);
+		
+		console.log(`- [${task_name}] Launching ${can_use_worker_threads ? "multithreaded worker" : "local cooperative"} processing over ${total_items} items (Concurrency: ${effective_concurrency}) ..`);
+		
+		//Serialise handler if worker threads are used and handler is provided without explicit task_generator
+		let serialised_handler = null;
+		if (can_use_worker_threads && !task_generator && options.allow_eval_handler && typeof handler === "function")
+			serialised_handler = handler.toString();
 		
 		//Worker queue runner
 		let runNext = async () => {
@@ -275,25 +484,76 @@
 				let item = items[index_to_run];
 				
 				try {
-					results[index_to_run] = await handler(item, index_to_run);
+					if (can_use_worker_threads) {
+						let task_payload;
+						if (task_generator) {
+							task_payload = task_generator(item, index_to_run);
+						} else if (serialised_handler) {
+							task_payload = {
+								type: "eval_handler",
+								item: item,
+								index: index_to_run,
+								context: context,
+								handler_source: serialised_handler
+							};
+						}
+						
+						if (task_payload) {
+							try {
+								results[index_to_run] = await GeoPNG.executeWorkerTask(task_payload, { concurrency: concurrency });
+							} catch (worker_err) {
+								console.warn(`- [${task_name}] Worker task failed for item ${item}:`, worker_err.message || worker_err);
+								//Fallback to local handler on serialization or worker failure
+								if (typeof handler === "function") {
+									console.warn(`- [${task_name}] Falling back to local execution for item ${item} ..`);
+									results[index_to_run] = await handler(item, index_to_run, context);
+								} else {
+									throw worker_err;
+								}
+							}
+						} else if (typeof handler === "function") {
+							results[index_to_run] = await handler(item, index_to_run, context);
+						}
+					} else {
+						//Local async execution with cooperative yield
+						results[index_to_run] = await handler(item, index_to_run, context);
+					}
 				} catch (e) {
 					console.error(`- [${task_name}] Error processing item ${item} at index ${index_to_run}:`, e);
 				}
 				
+				completed_count++;
+				
+				//Throttled milestone progress logging to protect Chrome DevTools
+				let percent = Math.floor((completed_count/total_items)*100);
+				if (percent % 25 === 0 && percent !== last_logged_milestone) {
+					last_logged_milestone = percent;
+					console.log(`- [${task_name}] Progress: ${percent}% (${completed_count}/${total_items} items)`);
+				}
+				
+				//Yield to the event loop between queue items to maintain 60 FPS and prevent DevTools disconnect
 				if (typeof Blacktraffic !== "undefined" && Blacktraffic.yield)
-					await Blacktraffic.yield();
+					await Blacktraffic.yield(0);
 			}
 		};
 		
-		//Launch worker threads up to concurrency limit
-		let pool_size = Math.min(concurrency, total_items);
-		for (let i = 0; i < pool_size; i++)
+		//Launch worker runners up to concurrency limit
+		for (let i = 0; i < effective_concurrency; i++)
 			active_promises.push(runNext());
 		
 		await Promise.all(active_promises);
-		console.log(`- [${task_name}] Completed all ${total_items} items.`);
+		console.log(`- [${task_name}] Completed all ${total_items} items successfully.`);
 		
 		//Return statement
 		return results;
 	};
+	
+	//Register automatic lifecycle termination hooks
+	if (typeof window !== "undefined") {
+		window.addEventListener("beforeunload", () => GeoPNG.terminateAllWorkers());
+		window.addEventListener("unload", () => GeoPNG.terminateAllWorkers());
+	}
+	if (typeof process !== "undefined") {
+		process.on("exit", () => GeoPNG.terminateAllWorkers());
+	}
 }

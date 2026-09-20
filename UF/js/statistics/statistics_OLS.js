@@ -594,4 +594,139 @@
 		//Return statement
 		return model_data_obj;
 	};
+
+	/**
+	 * Concurrently trains a series of OLS models across background worker processes.
+	 * @alias Statistics.trainOLSModelsParallel
+	 *
+	 * @param {Array<any>} arg0_items - Array of years, models, or tasks to train.
+	 * @param {Function} arg1_task_generator - (local_item: any, local_index: number) => { output_file_path, target_file_path, target_format, covariates_map, options, points, target_year }
+	 * @param {Object} [arg2_options]
+	 *  @param {number} [arg2_options.concurrency] - Worker thread count.
+	 *  @param {string} [arg2_options.name="OLS Model Training"]
+	 *
+	 * @returns {Promise<Array<Object>>}
+	 */
+	Statistics.trainOLSModelsParallel = async function (arg0_items, arg1_task_generator, arg2_options) {
+		//Convert from parameters
+		let items = (arg0_items) ? arg0_items : [];
+		let task_generator = arg1_task_generator;
+		let options = (arg2_options) ? arg2_options : {};
+		
+		//Declare local instance variables
+		let name = options.name || "OLS Model Training";
+		
+		if (items.length === 0) return [];
+		
+		//Return statement
+		return await GeoPNG.processTimeseriesParallel({
+			concurrency: options.concurrency,
+			items: items,
+			name: name,
+			task_generator: (item, index) => {
+				let task_def = task_generator(item, index);
+				if (!task_def) return null;
+				if (task_def.type) return task_def;
+				
+				return {
+					type: (task_def.points) ? "train_ols_points" : "train_ols",
+					covariates_map: task_def.covariates_map,
+					covariates_year: task_def.covariates_year,
+					options: task_def.options || {},
+					output_file_path: task_def.output_file_path,
+					points: task_def.points,
+					target_file_path: task_def.target_file_path,
+					target_format: task_def.target_format || "float32",
+					target_year: task_def.target_year || item
+				};
+			},
+			handler: async (item, index) => {
+				let task_def = task_generator(item, index);
+				if (!task_def) return null;
+				
+				if (task_def.points) {
+					let dataset = await Statistics.LearningFramework.extractPointDataset(task_def.points, task_def.target_year || item, {
+						covariates_obj: task_def.covariates_map,
+						covariates_year: task_def.covariates_year || item
+					});
+					if (!dataset || !dataset.X || dataset.X.length === 0) return null;
+					return Statistics.trainOLSModel(task_def.output_file_path, dataset, task_def.options || {});
+				} else {
+					let loaded_obj = await Statistics.loadOLSCovariates(task_def.target_file_path, {
+						covariates_obj: task_def.covariates_map,
+						formatting_parameters: (task_def.options && task_def.options.formatting_parameters) ? task_def.options.formatting_parameters : [],
+						utility_format: task_def.target_format || "float32"
+					});
+					if (task_def.options && task_def.options.filter_zero_targets && loaded_obj && loaded_obj.Y) {
+						let filtered_X = [];
+						let filtered_Y = [];
+						for (let j = 0; j < loaded_obj.Y.length; j++) {
+							let utility_val = loaded_obj.Y[j][0];
+							if (utility_val !== 0 && !isNaN(utility_val)) {
+								filtered_X.push(loaded_obj.X[j]);
+								filtered_Y.push(loaded_obj.Y[j]);
+							}
+						}
+						loaded_obj.X = filtered_X;
+						loaded_obj.Y = filtered_Y;
+					}
+					if (!loaded_obj || !loaded_obj.X || loaded_obj.X.length === 0) return null;
+					return Statistics.trainOLSModel(task_def.output_file_path, loaded_obj, task_def.options || {});
+				}
+			}
+		});
+	};
+
+	/**
+	 * Concurrently generates a series of OLS predicted rasters across background worker processes.
+	 * @alias Statistics.generateOLSRastersParallel
+	 *
+	 * @param {Array<any>} arg0_items - Array of years, models, or tasks to generate.
+	 * @param {Function} arg1_task_generator - (local_item: any, local_index: number) => { output_file_path, model_obj, covariates_map, options }
+	 * @param {Object} [arg2_options]
+	 *  @param {number} [arg2_options.concurrency]
+	 *  @param {string} [arg2_options.name="OLS Raster Generation"]
+	 *
+	 * @returns {Promise<Array<Object>>}
+	 */
+	Statistics.generateOLSRastersParallel = async function (arg0_items, arg1_task_generator, arg2_options) {
+		//Convert from parameters
+		let items = (arg0_items) ? arg0_items : [];
+		let task_generator = arg1_task_generator;
+		let options = (arg2_options) ? arg2_options : {};
+		
+		//Declare local instance variables
+		let name = options.name || "OLS Raster Generation";
+		
+		if (items.length === 0) return [];
+		
+		//Return statement
+		return await GeoPNG.processTimeseriesParallel({
+			concurrency: options.concurrency,
+			items: items,
+			name: name,
+			task_generator: (item, index) => {
+				let task_def = task_generator(item, index);
+				if (!task_def) return null;
+				if (task_def.type) return task_def;
+				
+				return {
+					type: "generate_ols_raster",
+					covariates_map: task_def.covariates_map,
+					model_obj: task_def.model_obj,
+					options: task_def.options || {},
+					output_file_path: task_def.output_file_path
+				};
+			},
+			handler: async (item, index) => {
+				let task_def = task_generator(item, index);
+				if (!task_def) return null;
+				return await Statistics.generateOLSRaster(task_def.output_file_path, {
+					...(task_def.options || {}),
+					covariates_obj: task_def.covariates_map,
+					model_obj: task_def.model_obj
+				});
+			}
+		});
+	};
 }

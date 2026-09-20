@@ -230,56 +230,99 @@ global.path = require("path");
 	 *
 	 * @param {string} arg0_folder_path
 	 * @param {Set<string>} arg1_evaluated_set
+	 * @param {Object} [arg2_options]
+	 *  @param {boolean} [arg2_options.all_extensions=false] - Whether to include all files instead of just code/style assets.
 	 *
 	 * @returns {Array<string>}
 	 */
-	ve.getFilesInFolder = function (arg0_folder_path, arg1_evaluated_set) {
+	ve.getFilesInFolder = function (arg0_folder_path, arg1_evaluated_set, arg2_options) {
+		//Convert from parameters
 		let folder_path = arg0_folder_path;
 		let evaluated_set = arg1_evaluated_set;
+		let options = (arg2_options) ? arg2_options : {};
 		
-		// Use readdirSync and immediately sort the entry list
-		// Strict ASCII sort ensures 'Forse.js' (dot) comes before 'Forse_conditionals.js' (_)
-		let file_list = fs.readdirSync(folder_path, { withFileTypes: true }).sort((a, b) => {
-			if (a.name < b.name) return -1;
-			if (a.name > b.name) return 1;
-			return 0;
-		});
-		
+		//Declare local instance variables
+		let file_list;
 		let return_files = [];
 		
+		//Use readdirSync and immediately sort the entry list
+		//Strict ASCII sort ensures 'Forse.js' (dot) comes before 'Forse_conditionals.js' (_)
+		try {
+			file_list = fs.readdirSync(folder_path, { withFileTypes: true }).sort((a, b) => {
+				if (a.name < b.name) return -1;
+				if (a.name > b.name) return 1;
+				return 0;
+			});
+		} catch (e) {
+			return return_files;
+		}
+		
 		for (let local_file_entry of file_list) {
-			let full_path = path.join(folder_path, local_file_entry.name);
+			let name = local_file_entry.name;
+			let full_path = path.join(folder_path, name);
 			
 			if (evaluated_set.has(full_path)) continue;
 			evaluated_set.add(full_path);
 			
 			if (local_file_entry.isDirectory()) {
+				//Skip hidden directories, dependencies, and pure data/raster directories
+				if (name.startsWith(".") || name === "node_modules" || name === "saves" || name === "temp_jobs" || name === "data_raw" || name === "uud" || name === "backups")
+					continue;
+				if (name.endsWith("_rasters") || name.includes("rasters_"))
+					continue;
+				
 				return_files = return_files.concat(
-					ve.getFilesInFolder(full_path, evaluated_set),
+					ve.getFilesInFolder(full_path, evaluated_set, options)
 				);
 			} else {
-				return_files.push(full_path);
+				if (options.all_extensions) {
+					return_files.push(full_path);
+				} else {
+					let ext = path.extname(name).toLowerCase();
+					if (ext === ".js" || ext === ".css" || ext === ".mjs")
+						return_files.push(full_path);
+				}
 			}
 		}
 		
+		//Return statement
 		return return_files;
 	};
 	
 	/**
-	 * Returns an Array<String> from a list of patterns. The last pattern
+	 * Returns a string[] from a list of patterns. The last pattern
 	 * to match a file determines its final position in the load order. This
 	 * function iterates patterns in reverse to ensure that more specific
 	 * patterns listed later correctly claim files from broader patterns
 	 * listed earlier.
 	 *
-	 * @param {Array<string>} patterns The list of patterns to resolve.
-	 * @returns {Array<string>} The final, ordered list of file paths.
+	 * @param {string[]} patterns The list of patterns to resolve.
+	 * @param {Object} [options]
+	 *  @param {boolean} [options.force_refresh=false]
+	 *  @param {boolean} [options.use_cache=true]
+	 *
+	 * @returns {string[]} The final, ordered list of file paths.
 	 */
-	ve.getImportFiles = function (patterns) { //[WIP] - Refactor from AI
+	ve.getImportFiles = function (patterns, options) {
 		let base = process.cwd();
 		let finalFiles = [];
 		let handledPaths = new Set(); // Tracks files that have already been placed.
+		let opt = (options) ? options : {};
 		const excludedPaths = new Set(); // Tracks files explicitly excluded by `!`.
+		
+		//Check disk manifest cache if caching is enabled
+		let cache_path = path.resolve(base, "settings/import_cache.json");
+		let pattern_hash = JSON.stringify(patterns);
+		
+		if (opt.use_cache !== false && !opt.force_refresh && fs.existsSync(cache_path)) {
+			try {
+				let cached_obj = JSON.parse(fs.readFileSync(cache_path, "utf8"));
+				if (cached_obj && cached_obj.pattern_hash === pattern_hash && Array.isArray(cached_obj.files)) {
+					//Fast-path return from pre-computed startup manifest
+					return cached_obj.files;
+				}
+			} catch (e) {}
+		}
 		
 		// Process patterns in reverse order (from last to first).
 		// This is the key to ensuring the "last match wins" rule.
@@ -298,7 +341,7 @@ global.path = require("path");
 				if (fs.existsSync(absolutePath)) {
 					// Use your original, RECURSIVE function for directories.
 					if (fs.statSync(absolutePath).isDirectory()) {
-						files = ve.getFilesInFolder(absolutePath, new Set());
+						files = ve.getFilesInFolder(absolutePath, new Set(), opt);
 					} else {
 						files = [absolutePath]; // It's a single file.
 					}
@@ -325,7 +368,22 @@ global.path = require("path");
 		}
 		
 		// Final pass: filter out any files that were explicitly excluded.
-		return finalFiles.filter(file => !excludedPaths.has(file));
+		let resolved_files = finalFiles.filter(file => !excludedPaths.has(file));
+		
+		//Save resolved files to cache
+		if (opt.use_cache !== false) {
+			try {
+				let cache_dir = path.dirname(cache_path);
+				if (!fs.existsSync(cache_dir)) fs.mkdirSync(cache_dir, { recursive: true });
+				fs.writeFileSync(cache_path, JSON.stringify({
+					pattern_hash: pattern_hash,
+					files: resolved_files,
+					updated_at: Date.now()
+				}, null, 2));
+			} catch (e) {}
+		}
+		
+		return resolved_files;
 	};
 	
 	/**
@@ -507,7 +565,7 @@ global.path = require("path");
 			load_patterns = load_patterns.concat(options.load_files);
 		ve.is_not_browser = (!options.is_browser);
 		
-		let load_files = ve.getImportFiles(load_patterns);
+		let load_files = ve.getImportFiles(load_patterns, options);
 		
 		if (!ve.is_not_browser && ve.debug_mode)
 			console.log(`[VERCENGEN] Importing ${load_files.length} files.`, load_files);

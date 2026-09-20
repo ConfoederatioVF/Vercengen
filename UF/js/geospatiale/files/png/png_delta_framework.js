@@ -21,54 +21,82 @@
 	 * @returns {Promise<void>}
 	 */
 	GeoPNG.generateDeltaSeries = async function (arg0_output_folder_path, arg1_options) {
-		//Declare local instance variables
+		//Convert from parameters
 		let output_folder_path = arg0_output_folder_path;
 		let options = (arg1_options) ? arg1_options : {};
 		
 		//Initialise options
+		if (!options.concurrency) options.concurrency = 8;
 		if (!options.input_format) options.input_format = "int32";
 		if (!options.prefix) options.prefix = "delta_";
 		if (!options.years) options.years = [];
 		
-		//Iterate over years to calculate yearly rate of change between steps
+		//Declare local instance variables
+		let delta_items = [];
+		let out_dir = (typeof path !== "undefined") ? path.resolve(output_folder_path) : output_folder_path;
+		let overwrite = (options.overwrite !== undefined) ? options.overwrite : true;
+		
+		//Ensure output directory exists
+		if (typeof fs !== "undefined" && !fs.existsSync(out_dir))
+			fs.mkdirSync(out_dir, { recursive: true });
+		
+		//Populate delta items for consecutive year pairs
 		for (let i = 1; i < options.years.length; i++) {
 			let current_year = options.years[i];
 			let previous_year = options.years[i - 1];
-			let year_diff = current_year - previous_year;
-			
-			let current_file_path = options.input_format_function(current_year);
-			let previous_file_path = options.input_format_function(previous_year);
-			
-			console.log(`- Generating delta raster for ${current_year} (Interval: ${year_diff} year(s)) ..`);
-			
-			//Load current and previous rasters
-			let current_raster = GeoPNG.loadNumberRasterImage(current_file_path, {
-				format: options.input_format
-			});
-			let previous_raster = GeoPNG.loadNumberRasterImage(previous_file_path, {
-				format: options.input_format
-			});
-			
 			let output_file_path = `${output_folder_path}/${options.prefix}${current_year}.png`;
 			
-			//Save the delta raster; the function calculates the slope (rate of change)
-			GeoPNG.saveNumberRasterImage({
-				file_path: output_file_path,
-				format: "float32",
-				width: current_raster.width,
-				height: current_raster.height,
-				function: (local_index) => {
-					let current_val = current_raster.data[local_index];
-					let previous_val = previous_raster.data[local_index];
-					
-					//Return yearly rate of change: (V2 - V1) / (T2 - T1)
-					return (current_val - previous_val)/year_diff;
-				}
-			});
-			
-			console.log(`- Saved delta raster to ${output_file_path}.`);
-			await Blacktraffic.yield();
+			if (overwrite || !fs.existsSync(output_file_path)) {
+				delta_items.push({
+					current_file_path: options.input_format_function(current_year),
+					current_year: current_year,
+					output_file_path: output_file_path,
+					previous_file_path: options.input_format_function(previous_year),
+					previous_year: previous_year,
+					year_diff: current_year - previous_year
+				});
+			}
 		}
+		
+		if (delta_items.length === 0) return [];
+		
+		//Return statement
+		return GeoPNG.processTimeseriesParallel({
+			concurrency: options.concurrency,
+			items: delta_items,
+			name: `Delta Timeseries (${options.prefix || "delta"})`,
+			task_generator: (item) => ({
+				format: "float32",
+				format_1: options.input_format,
+				format_2: options.input_format,
+				input_path_1: item.current_file_path,
+				input_path_2: item.previous_file_path,
+				op: "slope",
+				output_path: item.output_file_path,
+				scalar: 1/item.year_diff,
+				type: "raster_operation"
+			}),
+			handler: async (item) => {
+				let current_raster = GeoPNG.loadNumberRasterImage(item.current_file_path, {
+					format: options.input_format
+				});
+				let previous_raster = GeoPNG.loadNumberRasterImage(item.previous_file_path, {
+					format: options.input_format
+				});
+				
+				GeoPNG.saveNumberRasterImage({
+					file_path: item.output_file_path,
+					format: "float32",
+					width: current_raster.width,
+					height: current_raster.height,
+					function: (local_index) => {
+						let current_val = current_raster.data[local_index];
+						let previous_val = previous_raster.data[local_index];
+						return (current_val - previous_val)/item.year_diff;
+					}
+				});
+			}
+		});
 	};
 	
 	/**

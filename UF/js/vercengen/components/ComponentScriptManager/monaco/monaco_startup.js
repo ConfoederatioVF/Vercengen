@@ -91,5 +91,32 @@ async function initMonaco() {
 initMonaco().then(() => {
 	try {
 		global.require = global.node_require;
+		if (typeof window !== "undefined") {
+			window.require = global.node_require;
+			if (window.define) {
+				window.monaco_define = window.define;
+				try { delete window.define.amd; } catch (e) {}
+				window.define = undefined;
+			}
+		}
+		if (global.define) {
+			try { delete global.define.amd; } catch (e) {}
+			global.define = undefined;
+		}
+	} catch (e) {}
+}).catch((err) => {
+	try {
+		global.require = global.node_require;
+		if (typeof window !== "undefined") {
+			window.require = global.node_require;
+			if (window.define) {
+				try { delete window.define.amd; } catch (e) {}
+				window.define = undefined;
+			}
+		}
+		if (global.define) {
+			try { delete global.define.amd; } catch (e) {}
+			global.define = undefined;
+		}
 	} catch (e) {}
 });

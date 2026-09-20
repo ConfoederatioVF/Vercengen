@@ -298,11 +298,23 @@
 				formatting_parameters: options.formatting_parameters
 			});
 			
+			let land_raster_data = null;
+			if (options.landarea_raster_path && fs.existsSync(options.landarea_raster_path))
+				land_raster_data = GeoPNG.loadNumberRasterImage(options.landarea_raster_path, { format: "int32" })?.data;
+
 			let passes_guard = (local_index) => {
 				if (options.guard_clause)
 					return options.guard_clause(local_index, rasters_obj);
+				if (options.guard_type === "uninhabited" || options.mask_uninhabited) {
+					let local_pop = Math.returnSafeNumber(rasters_obj["popd_"]?.data[local_index], 0);
+					if (local_pop === 0) return false;
+					if (land_raster_data && land_raster_data[local_index] === 0) return false;
+				}
 				return true;
 			};
+			
+			let chunk_pixels = 100*options.width;
+			let total_pixels = options.width*options.height;
 			
 			//Branch based on mode
 			if (mode === "multinomial_logit") {
@@ -320,18 +332,30 @@
 				
 				if (output_mode === "class") {
 					let format = options.format || "int32";
+					let output_buffer = new Float32Array(total_pixels);
 					
-					GeoPNG.saveNumberRasterImage({
-						file_path: output_file_path,
-						format: format,
-						height: options.height,
-						width: options.width,
-						function: (local_index) => {
-							if (!passes_guard(local_index)) return 0;
-							return Statistics.argmaxMultinomialClass(
+					for (let start_idx = 0; start_idx < total_pixels; start_idx += chunk_pixels) {
+						let end_idx = Math.min(start_idx + chunk_pixels, total_pixels);
+						for (let local_index = start_idx; local_index < end_idx; local_index++) {
+							if (!passes_guard(local_index)) {
+								output_buffer[local_index] = 0;
+								continue;
+							}
+							output_buffer[local_index] = Statistics.argmaxMultinomialClass(
 								get_probabilities(local_index), model_obj.classes
 							);
 						}
+						
+						if (typeof Blacktraffic !== "undefined" && Blacktraffic.yield)
+							await Blacktraffic.yield(0);
+					}
+					
+					await GeoPNG.saveNumberRasterImageAsync({
+						data: output_buffer,
+						file_path: output_file_path,
+						format: format,
+						height: options.height,
+						width: options.width
 					});
 					
 					console.log(`Saved multinomial class raster for ${output_file_path}.`);
@@ -344,16 +368,28 @@
 						let local_class = target_classes[c];
 						let local_path = is_single ?
 							output_file_path : output_file_path.replace(/(\.[^.]+)$/, `_class_${local_class}$1`);
+						let output_buffer = new Float32Array(total_pixels);
 						
-						GeoPNG.saveNumberRasterImage({
+						for (let start_idx = 0; start_idx < total_pixels; start_idx += chunk_pixels) {
+							let end_idx = Math.min(start_idx + chunk_pixels, total_pixels);
+							for (let local_index = start_idx; local_index < end_idx; local_index++) {
+								if (!passes_guard(local_index)) {
+									output_buffer[local_index] = 0;
+									continue;
+								}
+								output_buffer[local_index] = get_probabilities(local_index)[local_class] || 0;
+							}
+							
+							if (typeof Blacktraffic !== "undefined" && Blacktraffic.yield)
+								await Blacktraffic.yield(0);
+						}
+						
+						await GeoPNG.saveNumberRasterImageAsync({
+							data: output_buffer,
 							file_path: local_path,
 							format: "float32",
 							height: options.height,
-							width: options.width,
-							function: (local_index) => {
-								if (!passes_guard(local_index)) return 0;
-								return get_probabilities(local_index)[local_class] || 0;
-							}
+							width: options.width
 						});
 						
 						console.log(`Saved probability raster (class ${local_class}) for ${local_path}.`);
@@ -363,26 +399,40 @@
 				//Mode 'ols': linear dot product of covariates and coefficients
 				let coefficients_obj = model_obj.coefficients || {};
 				let format = options.format || "float32";
+				let output_buffer = new Float32Array(total_pixels);
+				let valid_features = valid_keys.map((k) => ({
+					coeff: Math.returnSafeNumber(coefficients_obj[k]),
+					data: rasters_obj[k]?.data
+				}));
+				let num_features = valid_features.length;
 				
-				GeoPNG.saveNumberRasterImage({
+				for (let start_idx = 0; start_idx < total_pixels; start_idx += chunk_pixels) {
+					let end_idx = Math.min(start_idx + chunk_pixels, total_pixels);
+					for (let local_index = start_idx; local_index < end_idx; local_index++) {
+						if (!passes_guard(local_index)) {
+							output_buffer[local_index] = 0;
+							continue;
+						}
+						
+						let local_sum = 0;
+						for (let k = 0; k < num_features; k++) {
+							let f = valid_features[k];
+							if (f.data) local_sum += f.data[local_index]*f.coeff;
+						}
+						
+						output_buffer[local_index] = local_sum;
+					}
+					
+					if (typeof Blacktraffic !== "undefined" && Blacktraffic.yield)
+						await Blacktraffic.yield(0);
+				}
+				
+				await GeoPNG.saveNumberRasterImageAsync({
+					data: output_buffer,
 					file_path: output_file_path,
 					format: format,
 					height: options.height,
-					width: options.width,
-					function: (local_index) => {
-						if (!passes_guard(local_index)) return 0;
-						
-						let local_sum = 0;
-						for (let k = 0; k < valid_keys.length; k++) {
-							let key = valid_keys[k];
-							let r = rasters_obj[key];
-							let coeff = Math.returnSafeNumber(coefficients_obj[key]);
-							
-							if (r?.data) local_sum += r.data[local_index]*coeff;
-						}
-						
-						return local_sum;
-					}
+					width: options.width
 				});
 				
 				console.log(`Saved OLS raster for ${output_file_path}.`);

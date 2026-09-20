@@ -121,11 +121,13 @@
 		options.width = Math.returnSafeNumber(options.width, 4320); //5-arcminute resolution default
 		
 		//Declare local instance variables
-		let bbox = [-180, -90, 180, 90]; //Full Earth latlng
+		let bbox = (options.bbox) ? options.bbox : [-180, -90, 180, 90]; //Full Earth latlng
 		let x_coord = Math.floor(((longitude - bbox[0])/(bbox[2] - bbox[0]))*options.width);
-		let y_coord = Math.floor(((latitude - bbox[1])/(bbox[3] - bbox[1]))*options.height);
-		//South Pole is origin by default; flip it to North-facing
-		y_coord = options.height - y_coord;
+		let y_coord = Math.floor(((bbox[3] - latitude)/(bbox[3] - bbox[1]))*options.height);
+		
+		//Clamp coordinates to image boundaries
+		x_coord = Math.min(options.width - 1, Math.max(0, x_coord));
+		y_coord = Math.min(options.height - 1, Math.max(0, y_coord));
 		
 		//Return statement
 		return (!options.return_object) ?

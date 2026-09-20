@@ -195,14 +195,21 @@
 			}
 		}
 	};
-	
 	/**
 	 * Yields to the event loop inside of a synchronous processing sequence.
+	 * @alias Blacktraffic.yield
+	 * 
+	 * @param {number} [arg0_delay_ms=0]
 	 * 
 	 * @returns {Promise<unknown>}
 	 */
-	Blacktraffic.yield = function () {
+	Blacktraffic.yield = function (arg0_delay_ms) {
+		//Convert from parameters
+		let delay_ms = (arg0_delay_ms !== undefined) ? arg0_delay_ms : 0;
+		
 		//Return statement
+		if (typeof window !== "undefined" || delay_ms > 0)
+			return new Promise((resolve) => setTimeout(resolve, delay_ms));
 		return new Promise((resolve) => setImmediate(resolve));
 	};
 }

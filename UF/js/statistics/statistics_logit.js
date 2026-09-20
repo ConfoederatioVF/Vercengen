@@ -570,4 +570,193 @@
 		//Return statement
 		return model_data_obj;
 	};
+
+	/**
+	 * Concurrently trains a series of multinomial logit models across background worker processes.
+	 * @alias Statistics.trainMultinomialLogitModelsParallel
+	 *
+	 * @param {Array<any>} arg0_items - Array of tasks, years, or cohort descriptors.
+	 * @param {Function} arg1_task_generator - (local_item: any, local_index: number) => { categories, covariates_map, filter_format, filter_raster_path, model_path, options, target_paths }
+	 * @param {Object} [arg2_options]
+	 *  @param {number} [arg2_options.concurrency] - Worker thread count.
+	 *  @param {string} [arg2_options.name="Multinomial Logit Training"]
+	 *
+	 * @returns {Promise<Array<Object>>}
+	 */
+	Statistics.trainMultinomialLogitModelsParallel = async function (arg0_items, arg1_task_generator, arg2_options) {
+		//Convert from parameters
+		let items = (arg0_items) ? arg0_items : [];
+		let task_generator = arg1_task_generator;
+		let options = (arg2_options) ? arg2_options : {};
+		
+		//Declare local instance variables
+		let name = options.name || "Multinomial Logit Training";
+		
+		if (items.length === 0) return [];
+		
+		//Return statement
+		return await GeoPNG.processTimeseriesParallel({
+			concurrency: options.concurrency,
+			items: items,
+			name: name,
+			task_generator: (item, index) => {
+				let task_def = task_generator(item, index);
+				if (!task_def) return null;
+				if (task_def.type) return task_def;
+				
+				return {
+					type: "train_multinomial_logit",
+					categories: task_def.categories,
+					covariates_map: task_def.covariates_map,
+					filter_format: task_def.filter_format || "float32",
+					filter_raster_path: task_def.filter_raster_path,
+					model_path: task_def.model_path,
+					options: task_def.options || {},
+					target_paths: task_def.target_paths
+				};
+			},
+			handler: async (item, index) => {
+				let task_def = task_generator(item, index);
+				if (!task_def) return null;
+				
+				let categories = task_def.categories || [];
+				let covariates_map = task_def.covariates_map || {};
+				let model_path = path.resolve(task_def.model_path);
+				let opt = task_def.options || {};
+				let target_paths = task_def.target_paths || {};
+				
+				let cov_rasters = {};
+				let valid_keys = [];
+				for (let k in covariates_map) {
+					let entry = covariates_map[k];
+					let fmt = Array.isArray(entry) ? entry[1] : "float32";
+					let p = Array.isArray(entry) ? entry[0] : entry;
+					if (fs.existsSync(p)) {
+						cov_rasters[k] = GeoPNG.loadNumberRasterImage(p, { format: fmt });
+						valid_keys.push(k);
+					}
+				}
+				
+				let missing_target = false;
+				let target_rasters = {};
+				for (let i = 0; i < categories.length; i++) {
+					let cat = categories[i];
+					let p = target_paths[cat];
+					if (!p || !fs.existsSync(p)) {
+						missing_target = true;
+						break;
+					}
+					target_rasters[cat] = GeoPNG.loadNumberRasterImage(p, { format: "float32" });
+				}
+				
+				if (missing_target || valid_keys.length === 0) return null;
+				
+				let filter_raster = null;
+				if (task_def.filter_raster_path && fs.existsSync(task_def.filter_raster_path))
+					filter_raster = GeoPNG.loadNumberRasterImage(task_def.filter_raster_path, { format: task_def.filter_format || "float32" });
+				
+				let first_target = target_rasters[categories[0]];
+				let data_len = first_target.data.length;
+				let X = [];
+				let Y = [];
+				
+				for (let i = 0; i < data_len; i++) {
+					if (filter_raster && filter_raster.data[i] <= 0) continue;
+					
+					let cat_pops = [];
+					let total_pop = 0;
+					for (let j = 0; j < categories.length; j++) {
+						let cp = target_rasters[categories[j]].data[i];
+						cp = (isNaN(cp) || cp < 0) ? 0 : cp;
+						cat_pops.push(cp);
+						total_pop += cp;
+					}
+					if (total_pop <= 0) continue;
+					
+					let is_valid = true;
+					let x_row = [];
+					for (let j = 0; j < valid_keys.length; j++) {
+						let val = cov_rasters[valid_keys[j]].data[i];
+						if (isNaN(val)) {
+							is_valid = false;
+							break;
+						}
+						x_row.push(val);
+					}
+					if (!is_valid) continue;
+					
+					let cumulative = 0;
+					let rand = Math.random() * total_pop;
+					let selected_class = categories[categories.length - 1];
+					for (let j = 0; j < categories.length; j++) {
+						cumulative += cat_pops[j];
+						if (rand <= cumulative) {
+							selected_class = categories[j];
+							break;
+						}
+					}
+					
+					X.push(x_row);
+					Y.push([selected_class]);
+				}
+				
+				if (X.length === 0) return null;
+				
+				return await Statistics.trainMultinomialLogitModel(model_path, { keys: valid_keys, X: X, Y: Y }, opt);
+			}
+		});
+	};
+
+	/**
+	 * Concurrently generates a series of Multinomial Logit predicted rasters across background worker processes.
+	 * @alias Statistics.generateMultinomialRastersParallel
+	 *
+	 * @param {Array<any>} arg0_items - Array of years, models, or tasks to generate.
+	 * @param {Function} arg1_task_generator - (local_item: any, local_index: number) => { output_file_path, model_obj, covariates_map, options }
+	 * @param {Object} [arg2_options]
+	 *  @param {number} [arg2_options.concurrency]
+	 *  @param {string} [arg2_options.name="Multinomial Logit Raster Generation"]
+	 *
+	 * @returns {Promise<Array<Object>>}
+	 */
+	Statistics.generateMultinomialRastersParallel = async function (arg0_items, arg1_task_generator, arg2_options) {
+		//Convert from parameters
+		let items = (arg0_items) ? arg0_items : [];
+		let task_generator = arg1_task_generator;
+		let options = (arg2_options) ? arg2_options : {};
+		
+		//Declare local instance variables
+		let name = options.name || "Multinomial Logit Raster Generation";
+		
+		if (items.length === 0) return [];
+		
+		//Return statement
+		return await GeoPNG.processTimeseriesParallel({
+			concurrency: options.concurrency,
+			items: items,
+			name: name,
+			task_generator: (item, index) => {
+				let task_def = task_generator(item, index);
+				if (!task_def) return null;
+				if (task_def.type) return task_def;
+				
+				return {
+					type: "generate_multinomial_raster",
+					covariates_map: task_def.covariates_map,
+					model_obj: task_def.model_obj,
+					options: task_def.options || {},
+					output_file_path: task_def.output_file_path
+				};
+			},
+			handler: async (item, index) => {
+				let task_def = task_generator(item, index);
+				if (!task_def) return null;
+				return await Statistics.generateMultinomialRaster(task_def.output_file_path, {
+					...(task_def.options || {}),
+					covariates_obj: task_def.covariates_map,
+					model_obj: task_def.model_obj
+				});
+			}
+		});
+	};
 }

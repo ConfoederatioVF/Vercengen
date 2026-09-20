@@ -161,6 +161,118 @@
 	};
 	
 	/**
+	 * Generates or retrieves from cache a boolean mask of continental coastal water cells.
+	 * Water cells (land_area === 0) within buffer_distance of continental land (land_area > 0)
+	 * are marked as 1, while open ocean island nations and interior water remain 0.
+	 * 
+	 * @param {Object|string} arg0_land_area - Land area raster object or file path.
+	 * @param {number} [arg1_buffer_distance=5] - Coastal buffer radius in pixels.
+	 * @param {Object} [arg2_options]
+	 * 
+	 * @returns {Uint8Array}
+	 */
+	GeoPNG.getCoastalWaterMask = function (arg0_land_area, arg1_buffer_distance, arg2_options) {
+		//Convert from parameters
+		let buffer_distance = (arg1_buffer_distance !== undefined) ? arg1_buffer_distance : 5;
+		let land_area = arg0_land_area;
+		let options = (arg2_options) ? arg2_options : {};
+		
+		//Initialise options
+		if (!GeoPNG._coastal_water_cache) GeoPNG._coastal_water_cache = new Map();
+		if (!GeoPNG._coastal_land_cache) GeoPNG._coastal_land_cache = new Map();
+		
+		//Declare local instance variables
+		let cache_key = (typeof land_area === "string") ?
+			`${land_area}_${buffer_distance}` : null;
+		let coastal_land_indices = [];
+		let coastal_land_mask;
+		let coastal_water_mask;
+		let height;
+		let land_data;
+		let land_raster;
+		let total_pixels;
+		let width;
+		
+		if (cache_key && GeoPNG._coastal_water_cache.has(cache_key))
+			return GeoPNG._coastal_water_cache.get(cache_key);
+		
+		land_raster = (typeof land_area === "string") ?
+			GeoPNG.loadNumberRasterImage(land_area, { format: "int32" }) : land_area;
+		height = land_raster.height;
+		land_data = land_raster.data;
+		total_pixels = land_raster.width*height;
+		width = land_raster.width;
+		
+		coastal_land_mask = new Uint8Array(total_pixels);
+		coastal_water_mask = new Uint8Array(total_pixels);
+		
+		//Function body
+		//1. Identify all coastal land cells (land_data > 0 touching land_data === 0)
+		for (let i = 0; i < height; i++) {
+			let row_offset = i*width;
+			
+			for (let x = 0; x < width; x++) {
+				let local_index = row_offset + x;
+				
+				if (land_data[local_index] > 0) {
+					let touches_water = false;
+					
+					if (i > 0 && land_data[row_offset - width + x] === 0) touches_water = true;
+					else if (i < height - 1 && land_data[row_offset + width + x] === 0) touches_water = true;
+					else if (x > 0 && land_data[row_offset + x - 1] === 0) touches_water = true;
+					else if (x < width - 1 && land_data[row_offset + x + 1] === 0) touches_water = true;
+					
+					if (touches_water) {
+						coastal_land_indices.push(local_index);
+						coastal_land_mask[local_index] = 1;
+					}
+				}
+			}
+		}
+		
+		//2. Dilate coastal land boundary into water by buffer_distance
+		for (let i = 0; i < coastal_land_indices.length; i++) {
+			let c_idx = coastal_land_indices[i];
+			let cx = c_idx % width;
+			let cy = Math.floor(c_idx / width);
+			
+			for (let y = -buffer_distance; y <= buffer_distance; y++) {
+				let neighbour_y = cy + y;
+				
+				if (neighbour_y >= 0 && neighbour_y < height) {
+					let n_row = neighbour_y*width;
+					
+					for (let z = -buffer_distance; z <= buffer_distance; z++) {
+						let neighbour_x = cx + z;
+						
+						if (neighbour_x >= 0 && neighbour_x < width) {
+							let n_idx = n_row + neighbour_x;
+							
+							if (land_data[n_idx] === 0)
+								coastal_water_mask[n_idx] = 1;
+						}
+					}
+				}
+			}
+		}
+		
+		if (cache_key) {
+			GeoPNG._coastal_water_cache.set(cache_key, coastal_water_mask);
+			GeoPNG._coastal_land_cache.set(cache_key, coastal_land_mask);
+		}
+		
+		//Return statement
+		return coastal_water_mask;
+	};
+	
+	/**
+	 * Alias for backwards compatibility.
+	 */
+	GeoPNG.getLandwardBufferMask = function (arg0_land_area, arg1_buffer_distance, arg2_options) {
+		return GeoPNG.getCoastalWaterMask(arg0_land_area, arg1_buffer_distance, arg2_options);
+	};
+	
+	/**
 	 * Fetches the RGBA value of a pixel based on its index.
 	 * 
 	 * @param {Object|string} arg0_image_object - Image object or file path.
@@ -193,11 +305,13 @@
 	 * @param {string|Object} arg1_to_file_path
 	 * @param {string} arg2_output_file_path
 	 * @param {Object} [arg3_options]
+	 *  @param {number} [arg3_options.buffer_distance=5] - Pixel radius for coastal water buffer classification.
 	 *  @param {string} [arg3_options.format="int32"] - Either 'int32'/'float32'.
 	 *  @param {number} [arg3_options.fraction=0.5] - The fraction to interpolate between the two images.
+	 *  @param {Object|string} [arg3_options.land_area_file] - Land area raster path or object for landward/seaward masking.
+	 *  @param {Object|string} [arg3_options.land_area_raster] - Alternative alias for land area input.
 	 *  @param {number} [arg3_options.lower_value_threshold] - Lower-bound values that should not be interpolated (from raster).
 	 *  @param {number} [arg3_options.upper_value_threshold] - Upper-bound values that should not be interpolated (to raster).
-	 *  
 	 *  @param {number} [arg3_options.threshold_fraction=0] - 2nd-order fraction to interpolate for values exceeding thresholds.
 	 *
 	 * @returns {Object}
@@ -207,7 +321,7 @@
 		let from_file_path = arg0_from_file_path;
 		let to_file_path = arg1_to_file_path;
 		let output_file_path = arg2_output_file_path;
-		let options = arg3_options ? arg3_options : {};
+		let options = (arg3_options) ? arg3_options : {};
 		
 		//Initialise options
 		if (!options.format) options.format = "int32";
@@ -215,15 +329,88 @@
 		if (options.threshold_fraction === undefined) options.threshold_fraction = 0;
 		
 		//Declare local instance variables
+		let coastal_land_mask = null;
+		let coastal_water_mask = null;
 		let from_image_obj = GeoPNG.loadNumberRasterImage(from_file_path, options);
+		let height = from_image_obj.height;
+		let is_settlement = null;
+		let land_data = null;
+		let land_raster = null;
 		let to_image_obj = GeoPNG.loadNumberRasterImage(to_file_path, options);
+		let total_pixels = from_image_obj.width*height;
+		let upper_value_threshold = options.upper_value_threshold;
+		let width = from_image_obj.width;
+		
+		//Function body
+		if (options.land_area_file || options.land_area_raster) {
+			let buffer_distance = (options.buffer_distance !== undefined) ? options.buffer_distance : 5;
+			let land_input = (options.land_area_file) ? options.land_area_file : options.land_area_raster;
+			let cache_key = (typeof land_input === "string") ? `${land_input}_${buffer_distance}` : null;
+			
+			coastal_water_mask = GeoPNG.getCoastalWaterMask(land_input, buffer_distance, options);
+			
+			land_raster = (typeof land_input === "string") ?
+				GeoPNG.loadNumberRasterImage(land_input, { format: "int32" }) : land_input;
+			land_data = land_raster.data;
+			
+			if (cache_key && GeoPNG._coastal_land_cache)
+				coastal_land_mask = GeoPNG._coastal_land_cache.get(cache_key);
+			
+			//Precompute settlement mask with Moore neighbourhood average on coastal land pixels
+			if (upper_value_threshold !== undefined) {
+				is_settlement = new Uint8Array(total_pixels);
+				
+				for (let i = 0; i < height; i++) {
+					let row_offset = i*width;
+					
+					for (let x = 0; x < width; x++) {
+						let local_index = row_offset + x;
+						
+						if (land_data[local_index] > 0) {
+							let local_to_val = to_image_obj.data[local_index];
+							
+							if (local_to_val >= upper_value_threshold) {
+								is_settlement[local_index] = 1;
+							} else if (coastal_land_mask && coastal_land_mask[local_index] === 1 && local_to_val > 0) {
+								let count = 0;
+								let sum = 0;
+								
+								for (let y = -1; y <= 1; y++) {
+									let neighbour_y = i + y;
+									
+									if (neighbour_y >= 0 && neighbour_y < height) {
+										let n_row = neighbour_y*width;
+										
+										for (let z = -1; z <= 1; z++) {
+											let neighbour_x = x + z;
+											
+											if (neighbour_x >= 0 && neighbour_x < width) {
+												let n_idx = n_row + neighbour_x;
+												
+												if (land_data[n_idx] > 0 && to_image_obj.data[n_idx] > 0) {
+													sum += to_image_obj.data[n_idx];
+													count++;
+												}
+											}
+										}
+									}
+								}
+								
+								if (count > 0 && (sum / count) >= upper_value_threshold)
+									is_settlement[local_index] = 1;
+							}
+						}
+					}
+				}
+			}
+		}
 		
 		//Return statement
 		return GeoPNG.saveNumberRasterImage({
 			file_path: output_file_path,
 			format: options.format,
-			height: from_image_obj.height,
-			width: from_image_obj.width,
+			height: height,
+			width: width,
 			function: function (arg0_index) {
 				//Convert from parameters
 				let index = arg0_index;
@@ -232,13 +419,32 @@
 				let from_val = from_image_obj.data[index];
 				let to_val = to_image_obj.data[index];
 				
-				//Return statement
+				//1. Coastal water adjacent to continental land: clamp to from_val (0.0 in HYDE)
+				if (coastal_water_mask)
+					if (coastal_water_mask[index] === 1)
+						return from_val;
+				
+				//2. Oceanic island nations (land_data === 0, not in coastal water buffer): interpolate without exception
+				if (land_data)
+					if (land_data[index] === 0)
+						return from_val + (to_val - from_val)*options.fraction;
+				
+				//3. Continental land settlement centres (capped to historical baseline)
+				if (is_settlement) {
+					if (is_settlement[index] === 1)
+						return from_val + (to_val - from_val)*options.threshold_fraction;
+				} else {
+					if (options.upper_value_threshold !== undefined)
+						if (to_val >= options.upper_value_threshold)
+							return from_val + (to_val - from_val)*options.threshold_fraction;
+				}
+				
+				//4. Check lower_value_threshold if specified
 				if (options.lower_value_threshold !== undefined)
 					if (from_val <= options.lower_value_threshold)
 						return from_val + (to_val - from_val)*options.threshold_fraction;
-				if (options.upper_value_threshold !== undefined)
-					if (to_val >= options.upper_value_threshold)
-						return from_val + (to_val - from_val)*options.threshold_fraction;
+				
+				//Return statement
 				return from_val + (to_val - from_val)*options.fraction;
 			}
 		});
@@ -381,6 +587,10 @@
 				
 				GeoPNG.saveNumberToPixel(png, local_index, options.function(local_index), options);
 			}
+		
+		//Ensure destination directory exists
+		let parent_dir = path.dirname(path.resolve(options.file_path));
+		if (!fs.existsSync(parent_dir)) fs.mkdirSync(parent_dir, { recursive: true });
 		
 		//Write PNG file
 		fs.writeFileSync(options.file_path, pngjs.PNG.sync.write(png));
