@@ -1,5 +1,7 @@
-//[VERCENGEN / GEOSPATIALE]
-//Dedicated worker thread for parallel geoprocessing, timeseries raster operations, and statistical model training.
+//Guard clause: Ensure worker thread scripts never execute directly within the renderer DOM thread
+if (typeof window !== "undefined" && typeof document !== "undefined") {
+  return;
+}
 
 let fs = require("fs");
 let path = require("path");
@@ -59,7 +61,9 @@ try { global.mathjs = require("mathjs"); } catch (e) {}
 try { global.ml_matrix = require("ml-matrix"); } catch (e) {}
 
 //Load core UF dependencies
-let root_dir = path.resolve(__dirname, "../../../../../");
+let root_dir = (workerData && workerData.root_dir) ?
+  workerData.root_dir :
+  (fs.existsSync(path.join(process.cwd(), "package.json")) ? process.cwd() : path.resolve(__dirname, "../../../../../"));
 
 let loadDirectory = function (rel_dir) {
   let full_dir = path.join(root_dir, rel_dir);
@@ -76,12 +80,16 @@ let loadDirectory = function (rel_dir) {
 };
 
 loadDirectory("UF/js/number");
+loadDirectory("UF/js/string");
 loadDirectory("UF/js/colour");
 loadDirectory("UF/js/file");
 loadDirectory("UF/js/object");
 loadDirectory("UF/js/array");
 loadDirectory("UF/js/blacktraffic");
 loadDirectory("UF/js/statistics");
+loadDirectory("UF/js/geospatiale/coords");
+loadDirectory("UF/js/geospatiale/operations");
+loadDirectory("UF/js/geospatiale/files");
 loadDirectory("UF/js/geospatiale/files/png");
 
 //Define Histmap paths on global for stage modules
@@ -126,14 +134,52 @@ let handleTask = async function (task) {
     return out_file;
   }
 
+  //1c. Composite overlay (overlays top raster where top > 0 onto base raster)
+  if (task_type === "composite_overlay") {
+    let base_file = task.base_file_path;
+    let out_file = task.output_file_path || task.dest_path;
+    let top_file = task.top_file_path;
+    let out_dir = path.dirname(out_file);
+    if (!fs.existsSync(out_dir)) fs.mkdirSync(out_dir, { recursive: true });
+
+    if (!fs.existsSync(top_file)) {
+      if (fs.existsSync(base_file)) fs.copyFileSync(base_file, out_file);
+      return out_file;
+    }
+    if (!fs.existsSync(base_file)) {
+      fs.copyFileSync(top_file, out_file);
+      return out_file;
+    }
+
+    let base_raster = await GeoPNG.loadNumberRasterImageAsync(base_file, { format: "float32" });
+    let top_raster = await GeoPNG.loadNumberRasterImageAsync(top_file, { format: "float32" });
+    let out_data = new Float32Array(base_raster.data.length);
+
+    for (let i = 0; i < out_data.length; i++) {
+      let top_val = top_raster.data[i];
+      out_data[i] = (top_val > 0 && !isNaN(top_val)) ? top_val : base_raster.data[i];
+    }
+
+    await GeoPNG.saveNumberRasterImageAsync({
+      data: out_data,
+      file_path: out_file,
+      format: "float32",
+      height: base_raster.height,
+      width: base_raster.width
+    });
+
+    return out_file;
+  }
+
   //2. Linear raster interpolation between two years
   if (task_type === "linear_interpolation") {
-    return GeoPNG.linearInterpolation(
+    GeoPNG.linearInterpolation(
       task.from_file_path,
       task.to_file_path,
       task.output_file_path,
       task.options
     );
+    return task.output_file_path;
   }
 
   //3. Areal timeseries clamping
@@ -187,12 +233,36 @@ let handleTask = async function (task) {
       let data2 = raster2.data;
 
       if (op === "multiply") {
-        for (let i = 0; i < total_pixels; i++) output_data[i] = data1[i]*data2[i];
-      } else if (op === "divide") {
         for (let i = 0; i < total_pixels; i++) {
-          if (data1[i] > 0 && data2[i] > 0 && !isNaN(data1[i]) && !isNaN(data2[i])) {
-            let val = data1[i]/data2[i];
-            output_data[i] = isFinite(val) ? val : 0;
+          let v1 = data1[i];
+          let v2 = data2[i];
+          if (v1 > 0 && v2 > 0 && isFinite(v1) && isFinite(v2)) {
+            let val = v1*v2;
+            output_data[i] = (isFinite(val) && val < 3.402823466e38) ? val : 0;
+          } else {
+            output_data[i] = 0;
+          }
+        }
+      } else if (op === "divide") {
+        let max_val = (task.max_val !== undefined) ? task.max_val : 3.402823466e38;
+        let min_denom = (task.min_denominator !== undefined) ? task.min_denominator : 1e-12;
+        let threshold = task.log_compression_threshold;
+        let clamp_alpha = (threshold !== undefined) ? (task.clamp_alpha || threshold*0.1) : 0;
+
+        for (let i = 0; i < total_pixels; i++) {
+          let v1 = data1[i];
+          let v2 = data2[i];
+          if (v1 > 0 && v2 >= min_denom && isFinite(v1) && isFinite(v2)) {
+            let val = v1/v2;
+            if (isFinite(val)) {
+              if (threshold !== undefined && val > threshold) {
+                val = threshold + clamp_alpha*Math.log(1 + ((val - threshold)/clamp_alpha));
+              }
+              if (val > max_val) val = max_val;
+              output_data[i] = (isFinite(val) && val < 3.402823466e38) ? val : 0;
+            } else {
+              output_data[i] = 0;
+            }
           } else {
             output_data[i] = 0;
           }
@@ -326,18 +396,17 @@ let handleTask = async function (task) {
     return { output_file_path: output_file_path, success: true };
   }
 
-  //8. Train Multinomial Logit categorical model
+  //8. Train Multinomial Logit Model
   if (task_type === "train_multinomial_logit") {
     let categories = task.categories || [];
     let covariates_map = task.covariates_map || {};
     let model_path = path.resolve(task.model_path);
-    let options = task.options || {};
+    let opt = task.options || {};
     let target_paths = task.target_paths || {};
 
     let out_dir = path.dirname(model_path);
     if (!fs.existsSync(out_dir)) fs.mkdirSync(out_dir, { recursive: true });
 
-    //Load covariate rasters
     let cov_rasters = {};
     let valid_keys = [];
     for (let k in covariates_map) {
@@ -350,7 +419,6 @@ let handleTask = async function (task) {
       }
     }
 
-    //Load target category rasters
     let missing_target = false;
     let target_rasters = {};
     for (let i = 0; i < categories.length; i++) {
@@ -366,12 +434,10 @@ let handleTask = async function (task) {
     if (missing_target || valid_keys.length === 0)
       return { reason: "missing_inputs", success: false };
 
-    //Optional filter raster (e.g. popc_ to skip uninhabited pixels)
     let filter_raster = null;
     if (task.filter_raster_path && fs.existsSync(task.filter_raster_path))
       filter_raster = GeoPNG.loadNumberRasterImage(task.filter_raster_path, { format: task.filter_format || "float32" });
 
-    //Sample pixels
     let first_target = target_rasters[categories[0]];
     let data_len = first_target.data.length;
     let X = [];
@@ -402,26 +468,25 @@ let handleTask = async function (task) {
       }
       if (!is_valid) continue;
 
-      let cumulative = 0;
-      let rand = Math.random()*total_pop;
-      let selected_class = categories[categories.length - 1];
-      for (let j = 0; j < categories.length; j++) {
-        cumulative += cat_pops[j];
-        if (rand <= cumulative) {
-          selected_class = categories[j];
-          break;
-        }
-      }
+      let prop_row = new Float32Array(categories.length);
+      let inv_total = 1/total_pop;
+      for (let j = 0; j < categories.length; j++)
+        prop_row[j] = cat_pops[j]*inv_total;
 
       X.push(x_row);
-      Y.push([selected_class]);
+      Y.push(prop_row);
     }
 
     if (X.length === 0)
       return { reason: "no_samples", success: false };
 
-    await Statistics.trainMultinomialLogitModel(model_path, { keys: valid_keys, X: X, Y: Y }, options);
-    return { model_path: model_path, sample_count: X.length, success: true };
+    let model = await Statistics.trainMultinomialLogitModel(model_path, { keys: valid_keys, X: X, Y: Y }, {
+      ...opt,
+      classes: categories,
+      proportions: true,
+      reference_class: categories[0]
+    });
+    return { model_path: model_path, sample_count: X.length, success: !!model };
   }
 
   //9. Generate Multinomial Logit prediction raster
@@ -1215,6 +1280,470 @@ let handleTask = async function (task) {
     });
 
     return { year: task.year, success: true };
+  }
+
+
+  //7. Train ALR Compositional Model
+  if (task_type === "train_alr_model") {
+    let categories = task.categories || [];
+    let covariates_map = task.covariates_map || {};
+    let model_path = path.resolve(task.model_path);
+    let opt = task.options || {};
+    let target_paths = task.target_paths || {};
+    
+    let cov_rasters = {};
+    let valid_keys = [];
+    for (let k in covariates_map) {
+      let entry = covariates_map[k];
+      let fmt = Array.isArray(entry) ? entry[1] : "float32";
+      let p = Array.isArray(entry) ? entry[0] : entry;
+      if (fs.existsSync(p)) {
+        cov_rasters[k] = GeoPNG.loadNumberRasterImage(p, { format: fmt });
+        valid_keys.push(k);
+      }
+    }
+    
+    let missing_target = false;
+    let target_rasters = {};
+    for (let i = 0; i < categories.length; i++) {
+      let cat = categories[i];
+      let p = target_paths[cat];
+      if (!p || !fs.existsSync(p)) {
+        missing_target = true;
+        break;
+      }
+      target_rasters[cat] = GeoPNG.loadNumberRasterImage(p, { format: "float32" });
+    }
+    
+    if (missing_target || valid_keys.length === 0) return null;
+    
+    let filter_raster = null;
+    if (task.filter_raster_path && fs.existsSync(task.filter_raster_path))
+      filter_raster = GeoPNG.loadNumberRasterImage(task.filter_raster_path, { format: task.filter_format || "float32" });
+    
+    let first_target = target_rasters[categories[0]];
+    let data_len = first_target.data.length;
+    let X = [];
+    let Y = [];
+    
+    for (let i = 0; i < data_len; i++) {
+      if (filter_raster && filter_raster.data[i] <= 0) continue;
+      
+      let cat_pops = [];
+      let total_pop = 0;
+      for (let j = 0; j < categories.length; j++) {
+        let cp = target_rasters[categories[j]].data[i];
+        cp = (isNaN(cp) || cp < 0) ? 0 : cp;
+        cat_pops.push(cp);
+        total_pop += cp;
+      }
+      if (total_pop <= 0) continue;
+      
+      let is_valid = true;
+      let x_row = [];
+      for (let j = 0; j < valid_keys.length; j++) {
+        let val = cov_rasters[valid_keys[j]].data[i];
+        if (isNaN(val)) {
+          is_valid = false;
+          break;
+        }
+        x_row.push(val);
+      }
+      if (!is_valid) continue;
+      
+      let prop_row = new Float32Array(categories.length);
+      let inv_total = 1/total_pop;
+      for (let j = 0; j < categories.length; j++)
+        prop_row[j] = cat_pops[j]*inv_total;
+      
+      X.push(x_row);
+      Y.push(prop_row);
+    }
+    
+    if (X.length === 0) return null;
+    
+    let model = await Statistics.trainALRModel(model_path, {
+      categories: categories,
+      keys: valid_keys,
+      reference_category: task.reference_category || categories[0],
+      X: X,
+      Y: Y
+    }, opt);
+    return { model_path: model_path, success: !!model };
+  }
+
+  //8. Generate ALR Raster
+  if (task_type === "generate_alr_raster") {
+    let output_file_path = task.output_file_path;
+    let model_obj = task.model_obj;
+    let covariates_map = task.covariates_map;
+    let opt = task.options || {};
+    
+    await Statistics.generateALRRaster(output_file_path, {
+      ...opt,
+      covariates_obj: covariates_map,
+      model_obj: model_obj
+    });
+    return { output_file_path: output_file_path, success: true };
+  }
+
+  //9. Clamp Cohorts with PAVA Isotonic Smoothing
+  if (task_type === "clamp_cohorts_isotonic" || task_type === "clamp_cohorts_to_stadester") {
+    let cohorts = task.cohorts || [];
+    let logit_folder = task.logit_rasters_folder;
+    let output_folder = task.output_folder;
+    let popc_path = task.popc_path;
+    let year = task.year;
+
+    if (!fs.existsSync(popc_path)) return null;
+    let popc_raster = await GeoPNG.loadNumberRasterImageAsync(popc_path, { format: task.popc_format || "float32" });
+    let total_pixels = popc_raster.data.length;
+    let width = popc_raster.width;
+    let height = popc_raster.height;
+
+    let prob_rasters = {};
+    let missing_probs = false;
+    for (let i = 0; i < cohorts.length; i++) {
+      let prob_path = path.join(logit_folder, `logit_${year}_class_${cohorts[i]}.png`);
+      if (!fs.existsSync(prob_path)) { missing_probs = true; break; }
+      prob_rasters[cohorts[i]] = await GeoPNG.loadNumberRasterImageAsync(prob_path, { format: "float32" });
+    }
+    if (missing_probs) return null;
+
+    let num_cohorts = cohorts.length;
+    let band_widths = new Float32Array(num_cohorts);
+    for (let c = 0; c < num_cohorts; c++) {
+      let cohort_name = cohorts[c];
+      band_widths[c] = cohort_name.endsWith("_00") ? 1 : (cohort_name.endsWith("_01") ? 4 : 5);
+    }
+
+    let output_buffers = new Array(num_cohorts);
+    for (let c = 0; c < num_cohorts; c++)
+      output_buffers[c] = new Float32Array(total_pixels);
+
+    let f_indices = [];
+    let m_indices = [];
+    for (let c = 0; c < num_cohorts; c++) {
+      if (cohorts[c].startsWith("f_")) f_indices.push(c);
+      else m_indices.push(c);
+    }
+
+    let age_count = f_indices.length;
+    let age_band_widths = new Float32Array(age_count);
+    for (let k = 0; k < age_count; k++)
+      age_band_widths[k] = band_widths[f_indices[k]];
+
+    let raw_f = new Float32Array(age_count);
+    let raw_m = new Float32Array(age_count);
+    let f_coupled_buf = new Float32Array(age_count);
+    let m_coupled_buf = new Float32Array(age_count);
+    let tot_coupled_buf = new Float32Array(age_count);
+
+    let pava_buffers = {
+      block_counts: new Int32Array(age_count),
+      block_vals: new Float32Array(age_count),
+      block_weights: new Float32Array(age_count)
+    };
+
+    for (let i = 0; i < total_pixels; i++) {
+      let stade_pop = popc_raster.data[i];
+      if (stade_pop <= 0 || isNaN(stade_pop)) continue;
+
+      for (let k = 0; k < age_count; k++) {
+        let f_val = prob_rasters[cohorts[f_indices[k]]].data[i];
+        let m_val = prob_rasters[cohorts[m_indices[k]]].data[i];
+        raw_f[k] = (f_val > 0 && isFinite(f_val)) ? f_val : 0;
+        raw_m[k] = (m_val > 0 && isFinite(m_val)) ? m_val : 0;
+      }
+
+      Statistics.coupleAgeSexCohorts(raw_m, raw_f, age_band_widths, (task.lift_isotonic || task.do_not_smooth) ? null : 2, {
+        baseline_sex_ratios: task.baseline_sex_ratios,
+        buffers: pava_buffers,
+        do_not_smooth: task.do_not_smooth || task.lift_isotonic,
+        female_output: f_coupled_buf,
+        lift_isotonic: task.lift_isotonic,
+        male_output: m_coupled_buf,
+        preserve_sex_ratios: task.preserve_sex_ratios,
+        total_output: tot_coupled_buf
+      });
+
+      let sum_rates = 0;
+      for (let k = 0; k < age_count; k++)
+        sum_rates += tot_coupled_buf[k];
+
+      if (sum_rates > 0) {
+        let scale = stade_pop / sum_rates;
+        for (let k = 0; k < age_count; k++) {
+          output_buffers[f_indices[k]][i] = f_coupled_buf[k]*scale;
+          output_buffers[m_indices[k]][i] = m_coupled_buf[k]*scale;
+        }
+      } else {
+        let even_share = stade_pop / num_cohorts;
+        for (let c = 0; c < num_cohorts; c++)
+          output_buffers[c][i] = even_share;
+      }
+    }
+
+    if (!fs.existsSync(output_folder)) fs.mkdirSync(output_folder, { recursive: true });
+
+    for (let c = 0; c < num_cohorts; c++) {
+      let out_path = path.join(output_folder, `global_${cohorts[c]}_${year}.png`);
+      await GeoPNG.saveNumberRasterImageAsync({
+        data: output_buffers[c],
+        file_path: out_path,
+        format: "float32",
+        height: height,
+        width: width
+      });
+    }
+
+    return { year: year, success: true };
+  }
+
+  //10. Clamp Professions
+  if (task_type === "clamp_professions") {
+    let age_sex_folder = task.age_sex_folder;
+    let categories = task.categories || [];
+    let lfpr_folder = task.lfpr_folder;
+    let logit_folder = task.logit_rasters_folder;
+    let olivetti_categories = task.olivetti_categories || [];
+    let output_aggregates = task.output_aggregates;
+    let output_percentages = task.output_percentages;
+    let sexes = task.sexes || ["m", "f"];
+    let working_cohorts = task.working_cohorts || [];
+    let year = task.year;
+
+    let agg_t = {};
+    for (let i = 0; i < categories.length; i++) agg_t[categories[i]] = null;
+    let pop_t = null;
+    let width = 4320;
+    let height = 2160;
+
+    for (let s = 0; s < sexes.length; s++) {
+      let sex = sexes[s];
+      let lfpr_path = path.join(lfpr_folder, `lfpr_${sex}_${year}.png`);
+      if (!fs.existsSync(lfpr_path)) continue;
+      let lfpr_raster = await GeoPNG.loadNumberRasterImageAsync(lfpr_path, { format: "float32" });
+
+      width = lfpr_raster.width;
+      height = lfpr_raster.height;
+      let data_len = lfpr_raster.data.length;
+      let pop_raster = new Float32Array(data_len);
+
+      for (let i = 0; i < working_cohorts.length; i++) {
+        let cp = path.join(age_sex_folder, `${sex}_${working_cohorts[i]}_${year}.png`);
+        if (!fs.existsSync(cp)) cp = path.join(age_sex_folder, `global_${sex}_${working_cohorts[i]}_${year}.png`);
+        if (fs.existsSync(cp)) {
+          let c_raster = await GeoPNG.loadNumberRasterImageAsync(cp, { format: "float32" });
+          for (let j = 0; j < data_len; j++) {
+            let val = c_raster.data[j];
+            if (!isNaN(val) && val > 0) pop_raster[j] += val;
+          }
+        }
+      }
+
+      if (!pop_t) pop_t = new Float32Array(data_len);
+      for (let i = 0; i < data_len; i++) pop_t[i] += pop_raster[i];
+
+      let prob_rasters = {};
+      let missing_probs = false;
+      for (let i = 0; i < olivetti_categories.length; i++) {
+        let p_path = path.join(logit_folder, `logit_${sex}_${year}_class_${olivetti_categories[i]}.png`);
+        if (!fs.existsSync(p_path)) { missing_probs = true; break; }
+        prob_rasters[olivetti_categories[i]] = await GeoPNG.loadNumberRasterImageAsync(p_path, { format: "float32" });
+      }
+      if (missing_probs) continue;
+
+      let prob_sum_working = new Float32Array(data_len);
+      for (let i = 0; i < olivetti_categories.length; i++) {
+        let data = prob_rasters[olivetti_categories[i]].data;
+        for (let j = 0; j < data_len; j++) {
+          let val = data[j];
+          if (!isNaN(val) && val > 0) prob_sum_working[j] += val;
+        }
+      }
+
+      for (let i = 0; i < categories.length; i++) {
+        let c = categories[i];
+        if (!agg_t[c]) agg_t[c] = new Float32Array(data_len);
+
+        let pct_arr = new Float32Array(data_len);
+        let agg_arr = new Float32Array(data_len);
+        let prob_data = prob_rasters[c] ? prob_rasters[c].data : null;
+
+        for (let j = 0; j < data_len; j++) {
+          let pop = pop_raster[j];
+          if (pop <= 0) continue;
+
+          let lfpr = lfpr_raster.data[j];
+          if (isNaN(lfpr)) lfpr = 0;
+
+          let final_pct = 0;
+          if (c === "not_in_work") {
+            final_pct = Math.max(0, 1.0 - lfpr);
+          } else {
+            let sum_w = prob_sum_working[j];
+            let p_val = prob_data ? prob_data[j] : 0;
+            if (isNaN(p_val) || p_val < 0) p_val = 0;
+
+            if (sum_w <= 0) {
+              final_pct = lfpr / olivetti_categories.length;
+            } else {
+              final_pct = lfpr * (p_val / sum_w);
+            }
+          }
+
+          pct_arr[j] = final_pct;
+          agg_arr[j] = final_pct * pop;
+          agg_t[c][j] += agg_arr[j];
+        }
+
+        let ensureDir = (p) => { if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true }); };
+        ensureDir(output_percentages);
+        ensureDir(output_aggregates);
+
+        await GeoPNG.saveNumberRasterImageAsync({
+          data: pct_arr,
+          file_path: path.join(output_percentages, `${c}_${sex}_${year}.png`),
+          format: "float32",
+          height: height,
+          width: width
+        });
+        await GeoPNG.saveNumberRasterImageAsync({
+          data: agg_arr,
+          file_path: path.join(output_aggregates, `${c}_${sex}_${year}.png`),
+          format: "float32",
+          height: height,
+          width: width
+        });
+      }
+    }
+
+    if (pop_t) {
+      for (let i = 0; i < categories.length; i++) {
+        let c = categories[i];
+        let pct_t = new Float32Array(pop_t.length);
+        for (let j = 0; j < pop_t.length; j++) {
+          if (pop_t[j] > 0) pct_t[j] = agg_t[c][j] / pop_t[j];
+        }
+        await GeoPNG.saveNumberRasterImageAsync({
+          data: pct_t,
+          file_path: path.join(output_percentages, `${c}_t_${year}.png`),
+          format: "float32",
+          height: height,
+          width: width
+        });
+        await GeoPNG.saveNumberRasterImageAsync({
+          data: agg_t[c],
+          file_path: path.join(output_aggregates, `${c}_t_${year}.png`),
+          format: "float32",
+          height: height,
+          width: width
+        });
+      }
+    }
+
+    return { year: year, success: true };
+  }
+
+  //11. Aggregate Areal Covariates for Demography / Classifiers
+  if (task_type === "aggregate_areal_covariates") {
+    let year = task.year;
+    let keys = task.keys || [];
+    let geocode_path = task.geocode_path;
+    let population_path = task.population_path;
+    let population_format = task.population_format || "float32";
+    let covariate_paths = task.covariate_paths || {};
+    let colour_lookup = task.colour_lookup_packed || {};
+
+    if (!population_path || !fs.existsSync(population_path)) return {};
+
+    //Cache geocode raster across worker tasks
+    if (!global._cached_geocodes_raster || global._cached_geocodes_path !== geocode_path) {
+      if (fs.existsSync(geocode_path)) {
+        global._cached_geocodes_raster = GeoPNG.loadImage(geocode_path);
+        global._cached_geocodes_path = geocode_path;
+      }
+    }
+    let geocode_raster = global._cached_geocodes_raster;
+    if (!geocode_raster) return {};
+
+    //Build fast Map for packed colours
+    let colour_map = new Map();
+    if (Array.isArray(colour_lookup)) {
+      for (let i = 0; i < colour_lookup.length; i++)
+        colour_map.set(colour_lookup[i][0], colour_lookup[i][1]);
+    } else {
+      let entries = Object.entries(colour_lookup);
+      for (let i = 0; i < entries.length; i++)
+        colour_map.set(Number(entries[i][0]), entries[i][1]);
+    }
+
+    let pop_raster = await GeoPNG.loadNumberRasterImageAsync(population_path, { format: population_format });
+    let total_pixels = pop_raster.data.length;
+
+    let cov_rasters = {};
+    for (let k = 0; k < keys.length; k++) {
+      let key = keys[k];
+      if (covariate_paths[key] && fs.existsSync(covariate_paths[key].path)) {
+        cov_rasters[key] = await GeoPNG.loadNumberRasterImageAsync(covariate_paths[key].path, {
+          format: covariate_paths[key].format || "float32"
+        });
+      }
+    }
+
+    let aggregates = {};
+    let geocode_data = geocode_raster.data;
+    let pop_data = pop_raster.data;
+
+    for (let i = 0; i < total_pixels; i++) {
+      let pop = pop_data[i];
+      if (pop <= 0 || isNaN(pop)) continue;
+
+      let b_idx = i * 4;
+      let packed = (geocode_data[b_idx] << 16) | (geocode_data[b_idx + 1] << 8) | geocode_data[b_idx + 2];
+      let geocode = colour_map.get(packed);
+      if (!geocode) continue;
+
+      let agg = aggregates[geocode];
+      if (!agg) {
+        agg = { population: 0, sums: {} };
+        for (let k = 0; k < keys.length; k++) agg.sums[keys[k]] = 0;
+        aggregates[geocode] = agg;
+      }
+
+      agg.population += pop;
+      for (let k = 0; k < keys.length; k++) {
+        let r = cov_rasters[keys[k]];
+        if (r) {
+          let val = r.data[i];
+          if (isFinite(val)) agg.sums[keys[k]] += val * pop;
+        }
+      }
+    }
+
+    //Compute normalised features per geocode
+    let geocode_keys = Object.keys(aggregates);
+    for (let i = 0; i < geocode_keys.length; i++) {
+      let geocode = geocode_keys[i];
+      let agg = aggregates[geocode];
+      agg.features = {};
+      for (let k = 0; k < keys.length; k++) {
+        let key = keys[k];
+        agg.features[key] = agg.population > 0 ? agg.sums[key] / agg.population : 0;
+      }
+      delete agg.sums;
+
+      let local_urban = agg.features.urbc_ || 0;
+      let local_rural = agg.features.rurc_ || 0;
+      let local_total = local_urban + local_rural || agg.features.popc_ || agg.population;
+      agg.features.urban_share = local_total > 0 ? local_urban / local_total : 0;
+      agg.features.log_population_density = Math.log(Math.max(0.01, agg.features.popd_ || 0));
+      agg.features.log_gdp_ppp_pc = Math.log(Math.max(1, agg.features.gdp_ppp_pc || 0));
+      agg.features.year_scaled = year / 1000;
+    }
+
+    return aggregates;
   }
 
   throw new Error(`Unknown GeoWorker task type: ${task_type}`);

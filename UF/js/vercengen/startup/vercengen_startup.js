@@ -227,19 +227,41 @@ global.path = require("path");
 	
 	/**
 	 * Returns all non-evaluated files in a folder, so long as an evaluated set is provided.
+	/**
+	 * Recursively collects files in a folder adhering to exclusion options.
+	 * @alias ve.getFilesInFolder
 	 *
 	 * @param {string} arg0_folder_path
-	 * @param {Set<string>} arg1_evaluated_set
+	 * @param {Set<string>} [arg1_evaluated_set]
 	 * @param {Object} [arg2_options]
 	 *  @param {boolean} [arg2_options.all_extensions=false] - Whether to include all files instead of just code/style assets.
+	 *  @param {string[]} [arg2_options.ignored_directories] - Directory names to skip.
+	 *  @param {string[]} [arg2_options.ignored_directory_substrings] - Substrings of directory names to skip.
+	 *  @param {string[]} [arg2_options.ignored_file_substrings] - Substrings of file names to skip (e.g. ['worker']).
 	 *
-	 * @returns {Array<string>}
+	 * @returns {string[]}
 	 */
 	ve.getFilesInFolder = function (arg0_folder_path, arg1_evaluated_set, arg2_options) {
 		//Convert from parameters
 		let folder_path = arg0_folder_path;
-		let evaluated_set = arg1_evaluated_set;
+		let evaluated_set = (arg1_evaluated_set) ? arg1_evaluated_set : new Set();
 		let options = (arg2_options) ? arg2_options : {};
+		
+		//Initialise options
+		if (!options.ignored_directories)
+			options.ignored_directories = [
+				"node_modules",
+				"saves",
+				"temp_jobs",
+				"data_raw",
+				"uud",
+				"backups",
+				"archives"
+			];
+		if (!options.ignored_directory_substrings)
+			options.ignored_directory_substrings = ["_rasters", "rasters_", "worker"];
+		if (!options.ignored_file_substrings)
+			options.ignored_file_substrings = ["worker"];
 		
 		//Declare local instance variables
 		let file_list;
@@ -254,27 +276,43 @@ global.path = require("path");
 				return 0;
 			});
 		} catch (e) {
+			//Return statement
 			return return_files;
 		}
 		
 		for (let local_file_entry of file_list) {
 			let name = local_file_entry.name;
+			let name_lower = name.toLowerCase();
 			let full_path = path.join(folder_path, name);
 			
 			if (evaluated_set.has(full_path)) continue;
 			evaluated_set.add(full_path);
 			
 			if (local_file_entry.isDirectory()) {
-				//Skip hidden directories, dependencies, and pure data/raster directories
-				if (name.startsWith(".") || name === "node_modules" || name === "saves" || name === "temp_jobs" || name === "data_raw" || name === "uud" || name === "backups")
-					continue;
-				if (name.endsWith("_rasters") || name.includes("rasters_"))
-					continue;
+				//Skip hidden directories and configurable ignored directories
+				if (name.startsWith(".")) continue;
+				if (options.ignored_directories.some((d) => d.toLowerCase() === name_lower)) continue;
+				
+				let should_skip_directory = false;
+				for (let i = 0; i < options.ignored_directory_substrings.length; i++)
+					if (name_lower.includes(options.ignored_directory_substrings[i].toLowerCase())) {
+						should_skip_directory = true;
+						break;
+					}
+				if (should_skip_directory) continue;
 				
 				return_files = return_files.concat(
 					ve.getFilesInFolder(full_path, evaluated_set, options)
 				);
 			} else {
+				let should_skip_file = false;
+				for (let i = 0; i < options.ignored_file_substrings.length; i++)
+					if (name_lower.includes(options.ignored_file_substrings[i].toLowerCase())) {
+						should_skip_file = true;
+						break;
+					}
+				if (should_skip_file) continue;
+				
 				if (options.all_extensions) {
 					return_files.push(full_path);
 				} else {
@@ -296,93 +334,63 @@ global.path = require("path");
 	 * patterns listed later correctly claim files from broader patterns
 	 * listed earlier.
 	 *
-	 * @param {string[]} patterns The list of patterns to resolve.
-	 * @param {Object} [options]
-	 *  @param {boolean} [options.force_refresh=false]
-	 *  @param {boolean} [options.use_cache=true]
+	 * @param {string[]} arg0_patterns The list of patterns to resolve.
+	 * @param {Object} [arg1_options]
 	 *
 	 * @returns {string[]} The final, ordered list of file paths.
 	 */
-	ve.getImportFiles = function (patterns, options) {
+	ve.getImportFiles = function (arg0_patterns, arg1_options) {
+		//Convert from parameters
+		let patterns = arg0_patterns;
+		let options = (arg1_options) ? arg1_options : {};
+		
+		//Declare local instance variables
 		let base = process.cwd();
-		let finalFiles = [];
-		let handledPaths = new Set(); // Tracks files that have already been placed.
-		let opt = (options) ? options : {};
-		const excludedPaths = new Set(); // Tracks files explicitly excluded by `!`.
+		let excluded_paths = new Set();
+		let final_files = [];
+		let handled_paths = new Set();
 		
-		//Check disk manifest cache if caching is enabled
-		let cache_path = path.resolve(base, "settings/import_cache.json");
-		let pattern_hash = JSON.stringify(patterns);
-		
-		if (opt.use_cache !== false && !opt.force_refresh && fs.existsSync(cache_path)) {
-			try {
-				let cached_obj = JSON.parse(fs.readFileSync(cache_path, "utf8"));
-				if (cached_obj && cached_obj.pattern_hash === pattern_hash && Array.isArray(cached_obj.files)) {
-					//Fast-path return from pre-computed startup manifest
-					return cached_obj.files;
-				}
-			} catch (e) {}
-		}
-		
-		// Process patterns in reverse order (from last to first).
-		// This is the key to ensuring the "last match wins" rule.
+		//Function body
+		//Process patterns in reverse order (from last to first) to enforce last-match-wins
 		for (let i = patterns.length - 1; i >= 0; i--) {
 			let pattern = patterns[i];
-			const isExclusion = pattern.startsWith("!");
-			if (isExclusion) {
+			let is_exclusion = pattern.startsWith("!");
+			if (is_exclusion)
 				pattern = pattern.slice(1);
-			}
 			
 			let files = [];
-			if (pattern.includes("*")) {
-				files = ve.getWildcardsInFolder(base, pattern);
+			if (pattern.includes("*") || pattern.includes("?")) {
+				files = ve.getWildcardsInFolder(base, pattern, options);
 			} else {
-				let absolutePath = path.resolve(base, pattern);
-				if (fs.existsSync(absolutePath)) {
-					// Use your original, RECURSIVE function for directories.
-					if (fs.statSync(absolutePath).isDirectory()) {
-						files = ve.getFilesInFolder(absolutePath, new Set(), opt);
+				let absolute_path = path.resolve(base, pattern);
+				if (fs.existsSync(absolute_path)) {
+					if (fs.statSync(absolute_path).isDirectory()) {
+						files = ve.getFilesInFolder(absolute_path, new Set(), options);
 					} else {
-						files = [absolutePath]; // It's a single file.
+						files = [absolute_path];
 					}
 				}
-				// Silently ignore patterns that don't exist.
 			}
 			
-			// Since we're iterating backwards, we prepend files to maintain order.
-			// We also process the files found by a pattern in reverse to counteract
-			// the unshift, keeping the original readdir order.
+			//Prepend files in reverse order to maintain correct directory ordering
 			for (let j = files.length - 1; j >= 0; j--) {
-				const file = files[j];
-				if (isExclusion) {
-					excludedPaths.add(file);
+				let local_file = files[j];
+				
+				if (is_exclusion) {
+					excluded_paths.add(local_file);
 				} else {
-					// A file is only added if it hasn't been claimed by a later,
-					// higher-priority pattern already.
-					if (!handledPaths.has(file)) {
-						finalFiles.unshift(file);
-						handledPaths.add(file);
+					if (!handled_paths.has(local_file)) {
+						final_files.unshift(local_file);
+						handled_paths.add(local_file);
 					}
 				}
 			}
 		}
 		
-		// Final pass: filter out any files that were explicitly excluded.
-		let resolved_files = finalFiles.filter(file => !excludedPaths.has(file));
+		//Final pass: filter out any files that were explicitly excluded
+		let resolved_files = final_files.filter((file) => !excluded_paths.has(file));
 		
-		//Save resolved files to cache
-		if (opt.use_cache !== false) {
-			try {
-				let cache_dir = path.dirname(cache_path);
-				if (!fs.existsSync(cache_dir)) fs.mkdirSync(cache_dir, { recursive: true });
-				fs.writeFileSync(cache_path, JSON.stringify({
-					pattern_hash: pattern_hash,
-					files: resolved_files,
-					updated_at: Date.now()
-				}, null, 2));
-			} catch (e) {}
-		}
-		
+		//Return statement
 		return resolved_files;
 	};
 	
@@ -391,48 +399,101 @@ global.path = require("path");
 	 *
 	 * @param {string} arg0_folder_path
 	 * @param {string} arg1_wildcard_pattern
+	 * @param {Object} [arg2_options]
 	 *
 	 * @returns {Array<string>}
 	 */
-	ve.getWildcardsInFolder = function (arg0_folder_path, arg1_wildcard_pattern) {
+	ve.getWildcardsInFolder = function (arg0_folder_path, arg1_wildcard_pattern, arg2_options) {
+		//Convert from parameters
 		let folder_path = arg0_folder_path;
 		let wildcard_pattern = arg1_wildcard_pattern;
+		let options = (arg2_options) ? arg2_options : {};
 		
-		let base = path.basename(wildcard_pattern);
-		let directory = path.dirname(wildcard_pattern);
+		//Declare local instance variables
+		let normalized_pattern = wildcard_pattern.replace(/\\/g, "/").replace(/^\.\//, "");
 		
-		if (!base.includes("*")) {
-			let absolute_path = path.resolve(folder_path, wildcard_pattern);
-			if (fs.existsSync(absolute_path) && fs.statSync(absolute_path).isFile())
+		//Guard clause: no wildcards present
+		if (!normalized_pattern.includes("*") && !normalized_pattern.includes("?")) {
+			let absolute_path = path.resolve(folder_path, normalized_pattern);
+			
+			if (fs.existsSync(absolute_path)) {
+				if (fs.statSync(absolute_path).isDirectory())
+					return ve.getFilesInFolder(absolute_path, new Set(), options);
 				return [absolute_path];
-			if (
-				fs.existsSync(absolute_path) &&
-				fs.statSync(absolute_path).isDirectory()
-			)
-				return ve.getFilesInFolder(absolute_path, new Set());
+			}
 			return [];
 		}
 		
-		let absolute_dir = path.resolve(folder_path, directory);
+		//Function body
+		let first_wildcard = normalized_pattern.search(/[*?]/);
+		let prefix = normalized_pattern.slice(0, first_wildcard);
+		let last_slash = prefix.lastIndexOf("/");
+		let search_dir = (last_slash !== -1) ? path.resolve(folder_path, prefix.slice(0, last_slash)) : folder_path;
 		
-		if (!fs.existsSync(absolute_dir) || !fs.statSync(absolute_dir).isDirectory())
+		if (!fs.existsSync(search_dir) || !fs.statSync(search_dir).isDirectory())
 			return [];
 		
-		let regex = new RegExp(
-			"^" + base.replace(/\./g, "\\.").replace(/\*/g, ".*") + "$",
-		);
+		let subpattern = (last_slash !== -1) ? normalized_pattern.slice(last_slash + 1) : normalized_pattern;
 		
-		// Return strictly sorted list of files matching the wildcard
-		return fs
-			.readdirSync(absolute_dir)
-			.filter((f) => regex.test(f))
-			.sort((a, b) => {
-				if (a < b) return -1;
-				if (a > b) return 1;
-				return 0;
-			})
-			.map((f) => path.join(absolute_dir, f))
-			.filter((f) => fs.statSync(f).isFile());
+		//Fast path: single directory file wildcard without recursive subdirectories
+		if (!subpattern.includes("/") && !subpattern.includes("**")) {
+			let regex = new RegExp("^" + subpattern.replace(/\./g, "\\.").replace(/\*/g, ".*").replace(/\?/g, ".") + "$", "i");
+			
+			return fs.readdirSync(search_dir)
+				.filter((f) => regex.test(f))
+				.sort((a, b) => {
+					if (a < b) return -1;
+					if (a > b) return 1;
+					return 0;
+				})
+				.map((f) => path.join(search_dir, f))
+				.filter((f) => fs.existsSync(f) && fs.statSync(f).isFile());
+		}
+		
+		//Recursive glob matching across subdirectories
+		let files = ve.getFilesInFolder(search_dir, new Set(), options);
+		let regex_str = "^";
+		let i = 0;
+		
+		while (i < normalized_pattern.length) {
+			let char = normalized_pattern[i];
+			
+			if (char === "*" && normalized_pattern[i + 1] === "*") {
+				if (normalized_pattern[i + 2] === "/") {
+					regex_str += "(?:.*\\/)?";
+					i += 3;
+				} else {
+					regex_str += ".*";
+					i += 2;
+				}
+			} else if (char === "*") {
+				regex_str += "[^\\/]*";
+				i++;
+			} else if (char === "?") {
+				regex_str += "[^\\/]";
+				i++;
+			} else if ("+?.()|[]{}^$".includes(char)) {
+				regex_str += "\\" + char;
+				i++;
+			} else {
+				regex_str += char;
+				i++;
+			}
+		}
+		
+		if (!normalized_pattern.endsWith("/") && !normalized_pattern.endsWith("*")) {
+			regex_str += "(?:\\/.*)?$";
+		} else {
+			regex_str += "$";
+		}
+		
+		let full_regex = new RegExp(regex_str, "i");
+		
+		//Return statement
+		return files.filter((f) => {
+			let rel_path = path.relative(folder_path, f).replace(/\\/g, "/");
+			return full_regex.test(rel_path);
+		});
 	};
 	
 	/**
@@ -515,6 +576,8 @@ global.path = require("path");
 		let load_patterns = (!options.do_not_import_UF) ? [
 			"!UF/archives",
 			"!UF/js/vercengen/db",
+			"!UF/**/*worker*",
+			"!**/*worker*",
 			"UF",
 			
 			//Localisation

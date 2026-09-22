@@ -206,10 +206,14 @@
 		let output_file_path = arg0_output_file_path;
 		let options = (arg1_options) ? arg1_options : {};
 		
+		//Declare local instance variables
+		let model_obj = (typeof options.model_obj === "string") ? File.loadJSON(options.model_obj) : options.model_obj;
+		let mode = options.mode || ((model_obj && model_obj.type === "anchored_multinomial_gam") ? "anchored_multinomial_gam" : "multinomial_logit");
+
 		//Return statement
 		return await Statistics.LearningFramework.predictRaster(output_file_path, options.model_obj, {
 			...options,
-			mode: "multinomial_logit"
+			mode: mode
 		});
 	};
 	
@@ -277,6 +281,7 @@
 	 *  @param {number} [arg2_options.learning_rate=0.5]
 	 *  @param {number} [arg2_options.max_iterations=1000]
 	 *  @param {number} [arg2_options.momentum=0.9]
+	 *  @param {Array<number>} [arg2_options.sample_weights] - Non-negative observation weights.
 	 *  @param {number} [arg2_options.tolerance=1e-8]
 	 *
 	 * @returns {Object|null} - { beta, classes, converged, iterations, log_likelihood }
@@ -297,20 +302,51 @@
 		//Declare local instance variables
 		let N = X.length;
 		if (N === 0) return null;
+		let sample_weights = new Float64Array(N);
+		let total_weight = 0;
+
+		for (let i = 0; i < N; i++) {
+			let local_weight = (options.sample_weights && options.sample_weights[i] !== undefined) ?
+				Math.returnSafeNumber(options.sample_weights[i], 0) : 1;
+			sample_weights[i] = Math.max(0, local_weight);
+			total_weight += sample_weights[i];
+		}
+		if (total_weight <= 0) return null;
 		
-		let K = X[0].length;
-		if (K === 0) return null;
+		let K_in = X[0].length;
+		if (K_in === 0) return null;
+		
+		let is_proportions = (options.proportions || (Array.isArray(Y[0]) && Y[0].length > 1));
+		let use_intercept = (options.fit_intercept !== false);
+		let K = use_intercept ? K_in + 1 : K_in;
 		
 		//Build class lookup; index 0 is the reference/baseline class
 		let classes = [];
 		let class_lookup = {};
 		
-		for (let i = 0; i < N; i++) {
-			let local_class = Statistics.getClassLabel(Y, i);
-			
-			if (class_lookup[local_class] === undefined) {
-				class_lookup[local_class] = classes.length;
-				classes.push(local_class);
+		if (options.classes && options.classes.length > 0) {
+			classes = [...options.classes];
+			if (options.reference_class && classes.includes(options.reference_class)) {
+				let ref_idx = classes.indexOf(options.reference_class);
+				if (ref_idx > 0) {
+					classes.splice(ref_idx, 1);
+					classes.unshift(options.reference_class);
+				}
+			}
+			for (let c = 0; c < classes.length; c++)
+				class_lookup[classes[c]] = c;
+		} else if (is_proportions) {
+			classes = (Y[0].map) ? Y[0].map((_, idx) => idx) : [];
+			for (let c = 0; c < classes.length; c++)
+				class_lookup[classes[c]] = c;
+		} else {
+			for (let i = 0; i < N; i++) {
+				let local_class = Statistics.getClassLabel(Y, i);
+				
+				if (class_lookup[local_class] === undefined) {
+					class_lookup[local_class] = classes.length;
+					classes.push(local_class);
+				}
 			}
 		}
 		
@@ -321,22 +357,29 @@
 		}
 		
 		//Compute column-wise RMS scales to prevent scale-mismatch instability
-		let scales = new Array(K).fill(1);
+		let scales = new Array(K_in).fill(1);
 		let X_scaled = Array.createMatrix(N, K);
 		
-		for (let j = 0; j < K; j++) {
+		for (let j = 0; j < K_in; j++) {
 			let sum_sq = 0;
 			for (let i = 0; i < N; i++)
-				sum_sq += X[i][j]*X[i][j];
+				sum_sq += sample_weights[i]*X[i][j]*X[i][j];
 			
-			let rms = Math.sqrt(sum_sq/N);
+			let rms = Math.sqrt(sum_sq/total_weight);
 			scales[j] = (rms > 1e-12) ? rms : 1;
 		}
 		
-		//Scale covariates
-		for (let i = 0; i < N; i++)
-			for (let j = 0; j < K; j++)
-				X_scaled[i][j] = X[i][j]/scales[j];
+		//Scale covariates with optional prepended intercept
+		for (let i = 0; i < N; i++) {
+			if (use_intercept) {
+				X_scaled[i][0] = 1.0;
+				for (let j = 0; j < K_in; j++)
+					X_scaled[i][j + 1] = X[i][j]/scales[j];
+			} else {
+				for (let j = 0; j < K_in; j++)
+					X_scaled[i][j] = X[i][j]/scales[j];
+			}
+		}
 		
 		//Initialise coefficients (CxK) and velocity; row 0 stays zeroed (reference class)
 		let beta = Array.createMatrix(C, K);
@@ -352,26 +395,42 @@
 			
 			//Accumulate gradients over all samples
 			for (let i = 0; i < N; i++) {
+				let sample_weight = sample_weights[i];
+				if (sample_weight <= 0) continue;
 				let row_X = X_scaled[i];
-				let y_idx = class_lookup[Statistics.getClassLabel(Y, i)];
-				
 				let probabilities = Statistics.softmax(Statistics.computeMultinomialLogits(row_X, beta));
-				log_likelihood += Math.log(Math.max(probabilities[y_idx], 1e-15));
 				
-				//Gradient of NLL w.r.t. beta_c is (p_c - 1[y=c]) * x
-				for (let c = 1; c < C; c++) {
-					let residual = probabilities[c] - ((c === y_idx) ? 1 : 0);
-					for (let j = 0; j < K; j++)
-						gradient[c][j] += residual*row_X[j];
+				if (is_proportions) {
+					let prop_row = Y[i];
+					for (let c = 0; c < C; c++) {
+						let q_c = prop_row[c] || 0;
+						if (q_c > 0) log_likelihood += sample_weight*q_c*Math.log(Math.max(probabilities[c], 1e-15));
+					}
+					for (let c = 1; c < C; c++) {
+						let residual = sample_weight*(probabilities[c] - (prop_row[c] || 0));
+						for (let j = 0; j < K; j++)
+							gradient[c][j] += residual*row_X[j];
+					}
+				} else {
+					let y_idx = class_lookup[Statistics.getClassLabel(Y, i)];
+					log_likelihood += sample_weight*Math.log(Math.max(probabilities[y_idx], 1e-15));
+					
+					//Gradient of NLL w.r.t. beta_c is (p_c - 1[y=c]) * x
+					for (let c = 1; c < C; c++) {
+						let residual = sample_weight*(probabilities[c] - ((c === y_idx) ? 1 : 0));
+						for (let j = 0; j < K; j++)
+							gradient[c][j] += residual*row_X[j];
+					}
 				}
 			}
 			
-			//Apply L2 penalty and momentum update
+			//Apply L2 penalty (unpenalised intercept) and momentum update
 			let max_update = 0;
 			
 			for (let c = 1; c < C; c++)
 				for (let j = 0; j < K; j++) {
-					let local_gradient = gradient[c][j]/N + lambda*beta[c][j];
+					let penalty = (use_intercept && j === 0) ? 0 : lambda*beta[c][j];
+					let local_gradient = gradient[c][j]/total_weight + penalty;
 					
 					velocity[c][j] = momentum*velocity[c][j] - learning_rate*local_gradient;
 					beta[c][j] += velocity[c][j];
@@ -380,8 +439,8 @@
 			
 			iterations_run = iter + 1;
 			
-			if (options.debug)
-				console.log(`- Iteration ${iter}/${max_iterations}: NLL = ${(-log_likelihood/N).toFixed(6)}, max_update = ${max_update.toExponential(2)}`);
+			if (options.debug && (iter % 10 === 0 || iter === max_iterations - 1))
+				console.log(`- Iteration ${iter}/${max_iterations}: NLL = ${(-log_likelihood/total_weight).toFixed(6)}, max_update = ${max_update.toExponential(2)}`);
 			
 			if (max_update < tolerance) {
 				converged = true;
@@ -392,22 +451,82 @@
 		//Convert scaled coefficients back to original covariate scale
 		let beta_orig = Array.createMatrix(C, K);
 		
-		for (let c = 1; c < C; c++)
-			for (let j = 0; j < K; j++)
-				beta_orig[c][j] = beta[c][j]/scales[j];
+		for (let c = 1; c < C; c++) {
+			if (use_intercept) {
+				beta_orig[c][0] = beta[c][0];
+				for (let j = 0; j < K_in; j++)
+					beta_orig[c][j + 1] = beta[c][j + 1]/scales[j];
+			} else {
+				for (let j = 0; j < K_in; j++)
+					beta_orig[c][j] = beta[c][j]/scales[j];
+			}
+		}
 		
 		//Return statement
 		return {
 			beta: beta_orig,
 			classes: classes,
 			converged: converged,
+			has_intercept: use_intercept,
 			iterations: iterations_run,
-			log_likelihood: log_likelihood
+			log_likelihood: log_likelihood,
+			weight_sum: total_weight
 		};
 	};
 	
 	/**
+	 * Predicts class probabilities from an ensemble of models using a convex combination in probability space.
+	 * @alias Statistics.predictMultinomialEnsemble
+	 *
+	 * @param {Object} arg0_features_obj - Map of covariate keys to feature values.
+	 * @param {Array<Object|string>} arg1_models - Array of model objects or file paths.
+	 * @param {Array<number>} [arg2_weights] - Optional array of model weights.
+	 *
+	 * @returns {Object} - Map of class labels to blended probabilities.
+	 */
+	Statistics.predictMultinomialEnsemble = function (arg0_features_obj, arg1_models, arg2_weights) {
+		//Convert from parameters
+		let features_obj = arg0_features_obj;
+		let models = (arg1_models) ? arg1_models : [];
+		let weights = (arg2_weights) ? arg2_weights : [];
+		
+		//Guard clauses
+		if (models.length === 0) return {};
+		
+		//Declare local instance variables
+		let first_model = (typeof models[0] === "string") ? File.loadJSON(models[0]) : models[0];
+		let classes = (first_model && first_model.classes) ? first_model.classes : [];
+		let return_obj = {};
+		let total_weight = 0;
+		let valid_weights = [];
+		
+		for (let c = 0; c < classes.length; c++)
+			return_obj[String(classes[c])] = 0;
+		
+		for (let m = 0; m < models.length; m++) {
+			let w = (weights[m] !== undefined) ? Math.returnSafeNumber(weights[m], 1) : 1;
+			valid_weights.push(w);
+			total_weight += w;
+		}
+		
+		for (let m = 0; m < models.length; m++) {
+			let sub_model = (typeof models[m] === "string") ? File.loadJSON(models[m]) : models[m];
+			let norm_w = (total_weight > 0) ? (valid_weights[m]/total_weight) : (1/models.length);
+			let sub_probs = Statistics.predictMultinomialProbabilities(features_obj, sub_model);
+			
+			for (let c = 0; c < classes.length; c++) {
+				let class_key = String(classes[c]);
+				return_obj[class_key] += norm_w*Math.returnSafeNumber(sub_probs[class_key], 0);
+			}
+		}
+		
+		//Return statement
+		return return_obj;
+	};
+	
+	/**
 	 * Predicts class probabilities for a single feature object against a trained multinomial logit model.
+	 * Supports both discrete multinomial_logit models and probability-space multinomial_ensemble mixtures.
 	 * @alias Statistics.predictMultinomialProbabilities
 	 *
 	 * @param {Object} arg0_features_obj - Map of covariate keys to feature values.
@@ -420,6 +539,15 @@
 		let features_obj = arg0_features_obj;
 		let model_obj = arg1_model_obj;
 		
+		//Guard clauses
+		if (!model_obj) return {};
+		
+		if (model_obj.type === "multinomial_ensemble" && Array.isArray(model_obj.models)) {
+			let models_arr = model_obj.models.map((m) => m.model);
+			let weights_arr = model_obj.models.map((m) => m.weight);
+			return Statistics.predictMultinomialEnsemble(features_obj, models_arr, weights_arr);
+		}
+		
 		//Declare local instance variables
 		let classes = model_obj.classes;
 		let logits = new Array(classes.length).fill(0);
@@ -430,7 +558,11 @@
 			if (!local_coefficients) continue;
 			
 			Object.iterate(local_coefficients, (local_key, local_value) => {
-				logits[c] += Math.returnSafeNumber(features_obj[local_key])*local_value;
+				if (local_key === "_intercept") {
+					logits[c] += local_value;
+				} else {
+					logits[c] += Math.returnSafeNumber(features_obj[local_key])*local_value;
+				}
 			});
 		}
 		
@@ -500,7 +632,7 @@
 		
 		//Declare local instance variables
 		let basename = path.basename(output_file_path);
-		let { keys, X, Y } = covariates_obj;
+		let { keys, X, Y, weights } = covariates_obj;
 		
 		console.log(`- Performing multinomial logit for ${basename}.`);
 		
@@ -510,7 +642,10 @@
 		}
 		
 		//1. Apply regularised multinomial logit regression
-		let result = Statistics.multinomialLogitRegression(X, Y, options);
+		let regression_options = { ...options };
+		if (!regression_options.sample_weights && weights)
+			regression_options.sample_weights = weights;
+		let result = Statistics.multinomialLogitRegression(X, Y, regression_options);
 		
 		if (!result) {
 			console.warn(`- Regression failed to produce coefficients for ${basename}.`);
@@ -525,8 +660,14 @@
 		for (let c = 1; c < result.classes.length; c++) {
 			coefficients_obj[String(result.classes[c])] = {};
 			
-			for (let j = 0; j < keys.length; j++)
-				coefficients_obj[String(result.classes[c])][keys[j]] = result.beta[c][j];
+			if (result.has_intercept) {
+				coefficients_obj[String(result.classes[c])]._intercept = result.beta[c][0];
+				for (let j = 0; j < keys.length; j++)
+					coefficients_obj[String(result.classes[c])][keys[j]] = result.beta[c][j + 1];
+			} else {
+				for (let j = 0; j < keys.length; j++)
+					coefficients_obj[String(result.classes[c])][keys[j]] = result.beta[c][j];
+			}
 		}
 		
 		//3. Compute Hessian-based standard errors if specified
@@ -553,13 +694,15 @@
 			classes: result.classes,
 			reference_class: result.classes[0],
 			covariates: keys,
+			has_intercept: (result.has_intercept === true),
 			coefficients: coefficients_obj,
 			training: {
 				converged: result.converged,
 				iterations: result.iterations,
 				lambda: Math.returnSafeNumber(options.lambda, 1e-3),
 				log_likelihood: result.log_likelihood,
-				sample_count: X.length
+				sample_count: X.length,
+				weight_sum: result.weight_sum
 			}
 		};
 		if (standard_errors_obj) model_data_obj.standard_errors = standard_errors_obj;
@@ -685,24 +828,23 @@
 					}
 					if (!is_valid) continue;
 					
-					let cumulative = 0;
-					let rand = Math.random() * total_pop;
-					let selected_class = categories[categories.length - 1];
-					for (let j = 0; j < categories.length; j++) {
-						cumulative += cat_pops[j];
-						if (rand <= cumulative) {
-							selected_class = categories[j];
-							break;
-						}
-					}
+					let prop_row = new Float32Array(categories.length);
+					let inv_total = 1/total_pop;
+					for (let j = 0; j < categories.length; j++)
+						prop_row[j] = cat_pops[j]*inv_total;
 					
 					X.push(x_row);
-					Y.push([selected_class]);
+					Y.push(prop_row);
 				}
 				
 				if (X.length === 0) return null;
 				
-				return await Statistics.trainMultinomialLogitModel(model_path, { keys: valid_keys, X: X, Y: Y }, opt);
+				return await Statistics.trainMultinomialLogitModel(model_path, { keys: valid_keys, X: X, Y: Y }, {
+					...opt,
+					classes: categories,
+					proportions: true,
+					reference_class: categories[0]
+				});
 			}
 		});
 	};

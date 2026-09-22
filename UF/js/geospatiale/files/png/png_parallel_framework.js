@@ -465,9 +465,7 @@
 			}
 		}
 		
-		let effective_concurrency = can_use_worker_threads ?
-			Math.min(concurrency, total_items) :
-			Math.min(4, total_items);
+		let effective_concurrency = Math.min(concurrency, total_items);
 		
 		console.log(`- [${task_name}] Launching ${can_use_worker_threads ? "multithreaded worker" : "local cooperative"} processing over ${total_items} items (Concurrency: ${effective_concurrency}) ..`);
 		
@@ -524,11 +522,33 @@
 				
 				completed_count++;
 				
-				//Throttled milestone progress logging to protect Chrome DevTools
-				let percent = Math.floor((completed_count/total_items)*100);
-				if (percent % 25 === 0 && percent !== last_logged_milestone) {
+				let percent = Math.floor((completed_count / total_items) * 100);
+				let item_label = (typeof item === "object" && item !== null) ?
+					(item.year || item.name || item.dest || item.output_file_path || `Item ${index_to_run}`) : String(item);
+
+				if (total_items <= 250 || completed_count % 10 === 0 || completed_count === total_items) {
+					console.log(`- [${task_name}] [${completed_count}/${total_items}] Processed ${item_label} (${percent}%)`);
+				} else if (percent % 10 === 0 && percent !== last_logged_milestone) {
 					last_logged_milestone = percent;
 					console.log(`- [${task_name}] Progress: ${percent}% (${completed_count}/${total_items} items)`);
+				}
+				
+				//Forward telemetry to Electron main process
+				if (typeof require !== "undefined") {
+					try {
+						let electron_mod = require("electron");
+						let ipc = electron_mod.ipcRenderer;
+						if (ipc) {
+							ipc.send("training:telemetry", {
+								completed: completed_count,
+								current_item: item_label,
+								percent: percent,
+								progress: completed_count / total_items,
+								task_name: task_name,
+								total: total_items
+							});
+						}
+					} catch (e) {}
 				}
 				
 				//Yield to the event loop between queue items to maintain 60 FPS and prevent DevTools disconnect
@@ -543,6 +563,24 @@
 		
 		await Promise.all(active_promises);
 		console.log(`- [${task_name}] Completed all ${total_items} items successfully.`);
+		
+		//Clear taskbar progress bar
+		if (typeof require !== "undefined") {
+			try {
+				let electron_mod = require("electron");
+				let ipc = electron_mod.ipcRenderer;
+				if (ipc) {
+					ipc.send("training:telemetry", {
+						completed: total_items,
+						current_item: "Complete",
+						percent: 100,
+						progress: -1,
+						task_name: task_name,
+						total: total_items
+					});
+				}
+			} catch (e) {}
+		}
 		
 		//Return statement
 		return results;

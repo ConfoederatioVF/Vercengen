@@ -106,6 +106,8 @@
 		let image_width = image.getWidth();
 		let raster = await image.readRasters(); //Contains an array of bands
 		
+		let offset_x = Math.returnSafeNumber(options.offset_x || options.shift_x, 0);
+		let offset_y = Math.returnSafeNumber(options.offset_y || options.shift_y, 0);
 		let output_pngs = [];
 		
 		//Iterate over every band in the GeoTIFF (each band represents a year)
@@ -124,20 +126,30 @@
 			});
 			
 			//Iterate over all pixels and encode it as RGBA
-			for (let x = 0; x < image_height; x++)
+			for (let x = 0; x < image_height; x++) {
+				let src_x = x - offset_y;
+				let is_row_valid = (src_x >= 0 && src_x < image_height);
+				
 				for (let y = 0; y < image_width; y++) {
-					let local_index = x*image_width + y;
-					let local_value = original_data[local_index];
+					let src_y = y - offset_x;
+					let is_col_valid = (src_y >= 0 && src_y < image_width);
 					
-					if (options.ignore_values.includes(local_value)) local_value = 0;
-					
-					//Multiply local_value by scalar
-					local_value *= options.scalar;
+					let local_value = 0;
+					if (is_row_valid && is_col_valid) {
+						let src_index = src_x*image_width + src_y;
+						local_value = original_data[src_index];
+						
+						if (options.ignore_values.includes(local_value)) local_value = 0;
+						
+						//Multiply local_value by scalar
+						local_value *= options.scalar;
+					}
 					
 					//Encode the value as RGBA using the provided helper
 					let local_rgba = Colour.encodeNumberAsRGBA(local_value, { format: options.format });
 					
 					//Write RGBA values into the PNG data
+					let local_index = x*image_width + y;
 					let local_png_index = local_index*4;
 					
 					png.data[local_png_index] = local_rgba[0];
@@ -145,6 +157,7 @@
 					png.data[local_png_index + 2] = local_rgba[2];
 					png.data[local_png_index + 3] = local_rgba[3];
 				}
+			}
 			
 			//Write the PNG file for this specific year
 			png.pack()
