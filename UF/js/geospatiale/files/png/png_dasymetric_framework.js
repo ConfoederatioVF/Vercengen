@@ -263,7 +263,8 @@
 		
 		for (let i = 0; i < n; i++) {
 			let val = data[i];
-			if (!isNaN(val) && val > 0) {
+			let valid_val = (options.allow_zero_or_negative) ? !isNaN(val) : (!isNaN(val) && val > 0);
+			if (valid_val) {
 				if (!valid_filter || valid_filter(i))
 					valid_samples.push(val);
 			}
@@ -321,7 +322,9 @@
 		
 		for (let i = 0; i < n; i++) {
 			let val = data[i];
-			if (val <= 0 || isNaN(val) || (valid_filter && !valid_filter(i))) {
+			let is_invalid = (options.allow_zero_or_negative) ? isNaN(val) : (val <= 0 || isNaN(val));
+			
+			if (is_invalid || (valid_filter && !valid_filter(i))) {
 				output_data[i] = 0;
 			} else {
 				let reg_val = regulariseValue(val);

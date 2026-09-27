@@ -295,9 +295,9 @@
 		//Initialise options
 		let lambda = Math.returnSafeNumber(options.lambda, 1e-3);
 		let learning_rate = Math.returnSafeNumber(options.learning_rate, 0.5);
-		let max_iterations = Math.returnSafeNumber(options.max_iterations, 1000);
+		let max_iterations = Math.returnSafeNumber(options.max_iterations, 100);
 		let momentum = Math.returnSafeNumber(options.momentum, 0.9);
-		let tolerance = Math.returnSafeNumber(options.tolerance, 1e-8);
+		let tolerance = Math.returnSafeNumber(options.tolerance, 1e-5);
 		
 		//Declare local instance variables
 		let N = X.length;
@@ -800,11 +800,28 @@
 				
 				let first_target = target_rasters[categories[0]];
 				let data_len = first_target.data.length;
+				let sample_limit = opt.sample_limit || opt.max_samples || 75000;
 				let X = [];
 				let Y = [];
+				let weights = [];
 				
+				// Identify candidate valid populated indices (requiring filter >= 1.0)
+				let candidate_indices = [];
 				for (let i = 0; i < data_len; i++) {
-					if (filter_raster && filter_raster.data[i] <= 0) continue;
+					if (filter_raster && filter_raster.data[i] < 1.0) continue;
+					candidate_indices.push(i);
+				}
+				
+				let selected_indices = candidate_indices;
+				if (candidate_indices.length > sample_limit) {
+					selected_indices = [];
+					let step = candidate_indices.length / sample_limit;
+					for (let s = 0; s < sample_limit; s++)
+						selected_indices.push(candidate_indices[Math.floor(s * step)]);
+				}
+				
+				for (let s = 0; s < selected_indices.length; s++) {
+					let i = selected_indices[s];
 					
 					let cat_pops = [];
 					let total_pop = 0;
@@ -814,7 +831,7 @@
 						cat_pops.push(cp);
 						total_pop += cp;
 					}
-					if (total_pop <= 0) continue;
+					if (total_pop < 1.0) continue;
 					
 					let is_valid = true;
 					let x_row = [];
@@ -835,11 +852,12 @@
 					
 					X.push(x_row);
 					Y.push(prop_row);
+					weights.push(Math.log(1 + total_pop));
 				}
 				
 				if (X.length === 0) return null;
 				
-				return await Statistics.trainMultinomialLogitModel(model_path, { keys: valid_keys, X: X, Y: Y }, {
+				return await Statistics.trainMultinomialLogitModel(model_path, { keys: valid_keys, X: X, Y: Y, weights: weights }, {
 					...opt,
 					classes: categories,
 					proportions: true,

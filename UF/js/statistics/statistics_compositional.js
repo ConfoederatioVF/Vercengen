@@ -90,6 +90,7 @@
 		let options = (arg2_options) ? arg2_options : {};
 		
 		//Initialise options
+		let fit_intercept = (options.fit_intercept !== false);
 		let lambda = Math.returnSafeNumber(options.lambda, 1e-3);
 		let smoothing = Math.returnSafeNumber(options.smoothing, 1e-6);
 		if (!options.key) options.key = output_file_path;
@@ -114,9 +115,9 @@
 		
 		console.log(`- Training ALR Compositional Ridge Model for ${basename} (${N} samples, ${C} categories) ..`);
 		
-		//Compute scales for covariates, prepending an unscaled constant column (intercept)
-		//Total feature count = K + 1 (column 0 = intercept)
-		let total_K = K + 1;
+		//Compute scales for covariates, optionally prepending an unscaled constant column (intercept)
+		//Total feature count = fit_intercept ? K + 1 : K
+		let total_K = fit_intercept ? K + 1 : K;
 		let scales = new Array(total_K).fill(1);
 		
 		for (let j = 0; j < K; j++) {
@@ -124,15 +125,18 @@
 			for (let i = 0; i < N; i++)
 				sum_sq += X[i][j]*X[i][j];
 			let rms = Math.sqrt(sum_sq/N);
-			scales[j + 1] = (rms > 1e-12) ? rms : 1;
+			let s_idx = fit_intercept ? j + 1 : j;
+			scales[s_idx] = (rms > 1e-12) ? rms : 1;
 		}
 		
-		//Build scaled design matrix X_ext where col 0 = 1.0
+		//Build scaled design matrix X_ext
 		let X_ext = Array.createMatrix(N, total_K);
 		for (let i = 0; i < N; i++) {
-			X_ext[i][0] = 1.0;
-			for (let j = 0; j < K; j++)
-				X_ext[i][j + 1] = X[i][j]/scales[j + 1];
+			if (fit_intercept) X_ext[i][0] = 1.0;
+			for (let j = 0; j < K; j++) {
+				let s_idx = fit_intercept ? j + 1 : j;
+				X_ext[i][s_idx] = X[i][j]/scales[s_idx];
+			}
 		}
 		
 		//Accumulate X^T X
@@ -150,8 +154,9 @@
 			for (let k = 0; k < j; k++)
 				XT_X[j][k] = XT_X[k][j];
 		
-		//Add ridge penalty (do not penalise intercept col 0)
-		for (let j = 1; j < total_K; j++)
+		//Add ridge penalty (do not penalise intercept col 0 if fit_intercept is true)
+		let start_ridge = fit_intercept ? 1 : 0;
+		for (let j = start_ridge; j < total_K; j++)
 			XT_X[j][j] += lambda;
 		
 		//Invert regularised Gram matrix
@@ -203,11 +208,20 @@
 					beta_scaled[j] += XT_X_inv[j][k]*XT_Z[k];
 			
 			//Rescale beta back to original covariate scale: beta[0] unscaled, beta[j] = beta_scaled[j]/scale[j]
-			coefficients_obj[cat] = {
-				_intercept: beta_scaled[0]
-			};
-			for (let j = 0; j < K; j++)
-				coefficients_obj[cat][keys[j]] = beta_scaled[j + 1]/scales[j + 1];
+			if (fit_intercept) {
+				let intercept_val = beta_scaled[0];
+				if (options.clamp_percentage && (intercept_val > 1 || intercept_val < -1)) intercept_val = 0;
+				coefficients_obj[cat] = { _intercept: intercept_val };
+			} else {
+				coefficients_obj[cat] = {};
+			}
+			
+			for (let j = 0; j < K; j++) {
+				let s_idx = fit_intercept ? j + 1 : j;
+				let val = beta_scaled[s_idx] / scales[s_idx];
+				if (options.clamp_percentage && (val > 1 || val < -1)) val = 0;
+				coefficients_obj[cat][keys[j]] = val;
+			}
 		}
 		
 		let model_data_obj = {

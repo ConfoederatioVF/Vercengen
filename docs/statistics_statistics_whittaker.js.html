@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Ontology - Documentation</title>
+    <title>statistics/statistics_whittaker.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -32,3498 +32,638 @@
 
 <div id="main">
     
-    <h1 class="page-title">Ontology</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-            <span class="ancestors"><a href="global.html">global</a>.</span>
-        
-        Ontology
-        </h2>
-        
-            <div class="class-description"><p>Represents Ontologies which have been hydrated and streamed-in from a set database. Each Ontology line is formatted like this:
-<code>&lt;Ontology ID&gt;</code> <a href="Object.html">Object</a> - Where Object is JSON, with the following mandatory options.</p>
-<ul>
-<li><code>.date</code>: number - The date the Ontology event happened as a timestamp.</li>
-<li><code>.type</code>: string</li>
-</ul>
-<p>Ontologies are streamed from <code>.ontology</code> files at the device's maximum read-speed via inter-process communication (IPC). For most modern computers, this is ~1GB/s. They may be stream-queried in a separate process, piped to render, and disposed of as necessary.</p>
-<h5 id="constructor%3A">Constructor:</h5>
-<ul>
-<li><code>arg0_type=&quot;Ontology&quot;</code>: string - The Ontology subclass/type to reference.</li>
-<li><code>arg1_state_array</code>: <a href="Array.html">Array</a>&lt;{ date: number, data: <a href="Object.html">Object</a>, ...argn_fields }&gt;
-<ul>
-<li><code>argn_fields</code>:
-<ul>
-<li><code>.add_relations</code>: { id: string, type: string }</li>
-<li><code>.add_tags</code>: <a href="Array.html">Array</a>&lt;string&gt;</li>
-<li><code>.remove_relations</code>: { id: string, ... }|<a href="Array.html">Array</a>&lt;string&gt;</li>
-<li><code>.remove_tags</code>: <a href="Array.html">Array</a>&lt;string&gt;</li>
-<li><code>.set_tags</code>: <a href="Array.html">Array</a>&lt;string&gt; - Override.</li>
-<li><code>.set_relations</code>: { id: string, type: string } - Override.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><code>arg2_options</code>: <a href="Object.html">Object</a>
-<ul>
-<li><code>.id=Ontology.getOntologyID()</code>: string - The manual ID to override the default assignment.</li>
-<li><code>.worker_type=&quot;&quot;</code>: string - The worker from which the Ontology originated.</li>
-</ul>
-</li>
-</ul>
-<h5 id="instance%3A">Instance:</h5>
-<ul>
-<li><code>.options</code>: <a href="Object.html">Object</a></li>
-<li><code>.type</code>: string</li>
-<li></li>
-<li><code>.id</code>: string</li>
-<li><code>.geometries</code>: <a href="Array.html">Array</a>&lt;maptalks.Geometry&gt;</li>
-<li><code>.state</code>: <a href="Array.html">Array</a>&lt;<a href="Object.html">Object</a>&gt;</li>
-<li><code>.worker_type</code>: string</li>
-</ul>
-<h5 id="methods%3A">Methods:</h5>
-<ul>
-<li><span color=00ffff>_rebuildDiffsFromSnapshots</span> | <a href="Object.html">Object</a>(arg0_snapshots:<a href="Array.html">Array</a>&lt;<a href="Object.html">Object</a>&gt;)</li>
-<li><span color=00ffff>_resolveAllSnapshots</span>() | <a href="Array.html">Array</a>&lt;<a href="Object.html">Object</a>&gt;</li>
-<li><span color=00ffff>_resolveStateAtIndex</span>(arg0_index:number) | <a href="Object.html">Object</a></li>
-<li><span color=00ffff>_sortState</span>()</li>
-<li><span color=00ffff>addKeyframe</span>(arg0_date:<a href="Date.html">Date</a>, arg1_date:<a href="Date.html">Date</a>) | <a href="Object.html">Object</a></li>
-<li><span color=00ffff>addRelation</span>(arg0_date:<a href="Date.html">Date</a>, arg1_relation_obj:<a href="Object.html">Object</a>) | <a href="Object.html">Object</a></li>
-<li><span color=00ffff>deleteKeyframe</span>(arg0_date:<a href="Date.html">Date</a>) | boolean</li>
-<li><span color=00ffff>draw</span>() | <a href="Array.html">Array</a>&lt;maptalks.Geometry&gt;</li>
-<li><span color=00ffff>getElement</span>() | <a href="HTMLElement.html">HTMLElement</a></li>
-<li><span color=00ffff>getFirstKeyframeWithProperty</span>(arg0_property:<a href="Object.html">Object</a>)</li>
-<li><span color=00ffff>getLastKeyframeWithProperty</span>(arg0_property:<a href="Object.html">Object</a>)</li>
-<li><span color=00ffff>getTimelineElement</span>(arg0_options:<a href="Object.html">Object</a>) | <a href="HTMLElement.html">HTMLElement</a></li>
-<li><span color=00ffff>getState</span>(arg0_date:<a href="Date.html">Date</a>) | <a href="Object.html">Object</a></li>
-<li><span color=00ffff>getTimelineElement</span>(arg0_options:<a href="Object.html">Object</a>)</li>
-<li><span color=00ffff>jumpToKeyframe</span>(arg0_date:<a href="Date.html">Date</a>) | <a href="Object.html">Object</a>|null</li>
-<li><span color=00ffff>mergeState</span>(arg0_state:<a href="Array.html">Array</a>&lt;<a href="Object.html">Object</a>&gt;)</li>
-<li><span color=00ffff>moveKeyframe</span>(arg0_date:<a href="Date.html">Date</a>, arg1_date:<a href="Date.html">Date</a>) | boolean</li>
-<li><span color=00ffff>remove</span>()</li>
-<li><span color=00ffff>removeRelation</span>(arg0_relation:string, arg1_date:<a href="Date.html">Date</a>)</li>
-<li><span color=00ffff>removeRelations</span>(arg0_relations:<a href="Array.html">Array</a>&lt;string&gt;, arg1_date:<a href="Date.html">Date</a>)</li>
-<li><span color=00ffff>saveToDatabase</span>()</li>
-</ul>
-<h5 id="static-fields%3A">Static Fields:</h5>
-<ul>
-<li><code>.initialised=false</code>: boolean</li>
-<li><code>.instances</code>: <a href="Array.html">Array</a>&lt;<a href="Ontology.html">Ontology</a>&gt;</li>
-<li><code>.ontology_folder_path=&quot;&quot;</code>: string</li>
-<li><code>.queue</code>: <a href="Array.html">Array</a>&lt;<a href="Ontology.html">Ontology</a>&gt; - Queued Ontologies waiting to be saved and passed into <code>.instances</code>.</li>
-</ul>
-<h5 id="static-methods%3A">Static Methods:</h5>
-<ul>
-<li><span color=00ffff>applyMutations</span>(arg0_resolved_data:<a href="Object.html">Object</a>, arg1_mutations:<a href="Object.html">Object</a>) | <a href="Object.html">Object</a></li>
-<li><span color=00ffff>fromDatabase</span>()</li>
-<li><span color=00ffff>Ontology.getOntologyFromDatabase</span>(arg0_ontology_id:string)</li>
-<li><span color=00ffff>getOntologyID</span>() | string</li>
-<li><span color=00ffff>initialise</span>()</li>
-</ul></div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-<div class="section-method">
-
-    
-    <h2>Constructor</h2>
-    
-
-    <h4 class="name" id="Ontology"><span class="type-signature"></span>new Ontology<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line72">line 72</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="initialised"><span class="type-signature"></span>initialised<span class="type-signature"> :boolean</span></h4>
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line80">line 80</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code>boolean</code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="instances"><span class="type-signature"></span>instances<span class="type-signature"> :<a href="Array.html">Array</a>.&lt;<a href="Ontology.html">Ontology</a>></span></h4>
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line85">line 85</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;<a href="Ontology.html">Ontology</a>></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="ontology_folder_path"><span class="type-signature"></span>ontology_folder_path<span class="type-signature"> :string</span></h4>
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line92">line 92</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code>string</code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="queue"><span class="type-signature"></span>queue<span class="type-signature"> :<a href="Array.html">Array</a>.&lt;<a href="Ontology.html">Ontology</a>></span></h4>
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line97">line 97</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;<a href="Ontology.html">Ontology</a>></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="addKeyframe"><span class="type-signature"></span>addKeyframe<span class="signature">(arg0_date, arg1_data, arg2_options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Object.html">Object</a>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Adds a new keyframe/state mutation at the given date, typically the head state. The provided <code>arg1_data</code> and optional relation/tag mutations are merged into the resolved timeline, and the entire diff chain is rebuilt so the head remains the latest full snapshot.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line256">line 256</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_date</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Date.html">Date</a></code></span>
-|
-
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_data</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg2_options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                
-                
-                    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>add_relations</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;<a href="Object.html">Object</a>></code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>add_tags</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;string></code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>remove_relations</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;<a href="Object.html">Object</a>></code></span>
-|
-
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;string></code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>remove_tags</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;string></code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>set_relations</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;<a href="Object.html">Object</a>></code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>set_tags</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;string></code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="addRelation"><span class="type-signature"></span>addRelation<span class="signature">(arg0_date, arg1_relation_obj)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Adds a relation object to the selected date.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line313">line 313</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_date</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Date.html">Date</a></code></span>
-|
-
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_relation_obj</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="deleteKeyframe"><span class="type-signature"></span>deleteKeyframe<span class="signature">(arg0_date)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Deletes the keyframe at the given date.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line333">line 333</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_date</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Date.html">Date</a></code></span>
-|
-
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="draw"><span class="type-signature"></span>draw<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Draws the Ontology. Should be overridden by subclasses.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line355">line 355</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="getElement"><span class="type-signature"></span>getElement<span class="signature">(arg0_options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="HTMLElement.html">HTMLElement</a>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Returns an HTMLElement representing this Ontology.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line380">line 380</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                
-                
-                    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>do_not_show_timeline</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>boolean</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>end_date</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Date.html">Date</a></code></span>
-|
-
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>start_date</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Date.html">Date</a></code></span>
-|
-
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="HTMLElement.html">HTMLElement</a></code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="getFirstKeyframeWithProperty"><span class="type-signature"></span>getFirstKeyframeWithProperty<span class="signature">(arg0_property)</span><span class="type-signature"> &rarr; {<a href="Object.html">Object</a>|null}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Returns the first keyframe whose resolved state contains the given property key.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line412">line 412</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_property</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-|
-
-<span class="param-type"><code>null</code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="getLastKeyframeWithProperty"><span class="type-signature"></span>getLastKeyframeWithProperty<span class="signature">(arg0_property)</span><span class="type-signature"> &rarr; {<a href="Object.html">Object</a>|null}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Returns the last keyframe whose resolved state contains the given property key.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line438">line 438</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_property</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-|
-
-<span class="param-type"><code>null</code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="getState"><span class="type-signature"></span>getState<span class="signature">(arg0_date)</span><span class="type-signature"> &rarr; {<a href="Object.html">Object</a>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Returns the fully-resolved state at a given date. If the date fails between two keyframes, the earlier keyframe's resolved state is returned. If the date is past the head, the head snapshot is returned. If before all keyframes, an empty object is returned.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line464">line 464</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_date</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Date.html">Date</a></code></span>
-|
-
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="getTimelineElement"><span class="type-signature"></span>getTimelineElement<span class="signature">(arg0_options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="HTMLElement.html">HTMLElement</a>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Returns an <a href="HTMLElement.html">HTMLElement</a> representing this Ontology's timeline.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line495">line 495</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                
-                
-                    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>start_date</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Date.html">Date</a></code></span>
-|
-
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>end_date</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Date.html">Date</a></code></span>
-|
-
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="HTMLElement.html">HTMLElement</a></code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="jumpToKeyframe"><span class="type-signature"></span>jumpToKeyframe<span class="signature">(arg0_date)</span><span class="type-signature"> &rarr; {<a href="Object.html">Object</a>|null}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Jumps to a specific keyframe and calls the draw function for the Ontology.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line539">line 539</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_date</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-|
-
-<span class="param-type"><code>null</code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="mergeState"><span class="type-signature"></span>mergeState<span class="signature">(arg0_state_array)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Merges an incoming state array into the current Ontology. Resolves both states to snapshots, merges them, and rebuilds the diff chain.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line576">line 576</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_state_array</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Array.html">Array</a>.&lt;<a href="Object.html">Object</a>></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="moveKeyframe"><span class="type-signature"></span>moveKeyframe<span class="signature">(arg0_date, arg1_date)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Moves a keyframe from <code>arg0_date</code> to <code>arg1_date</code>.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line628">line 628</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_date</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Date.html">Date</a></code></span>
-|
-
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_date</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Date.html">Date</a></code></span>
-|
-
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>boolean</code></span>
-
-
-    </dd>
-</dl>
-
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="remove"><span class="type-signature"></span>remove<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Removes the Ontology.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line649">line 649</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="removeRelation"><span class="type-signature"></span>removeRelation<span class="signature">(arg0_relation, arg1_date)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Removes a single relation from a specified date.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
+    <h1 class="page-title">statistics/statistics_whittaker.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//Initialise functions
+{
+  if (!global.Statistics)
+    /**
+     * The namespace for all UF/Statistics utility functions, typically for static methods.
+     *
+     * @namespace Statistics
+     */
+    global.Statistics = {};
+
+  /**
+   * Performs Whittaker-Henderson graduation with weighted Huber fidelity,
+   * second-difference roughness, and optional soft non-increasing monotonicity.
+   *
+   * Penalties apply only within [start_index, values.length).
+   * Values before start_index are copied without modification.
+   *
+   * @alias Statistics.whittakerHendersonRobust
+   *
+   * @param {Float32Array|Float64Array|Array&lt;number>} arg0_values
+   * @param {Float32Array|Float64Array|Array&lt;number>} [arg1_weights]
+   * @param {number} [arg2_start_index=0]
+   * @param {Object} [arg3_options]
+   *  @param {Float32Array|Float64Array} [arg3_options.output]
+   *  @param {number} [arg3_options.huber_delta=0.05]
+   *  @param {number} [arg3_options.lambda=20.0]
+   *  @param {number} [arg3_options.max_iterations=20000]
+   *  @param {number} [arg3_options.min_value=-Infinity]
+   *  @param {number} [arg3_options.mu=0.0]
+   *  @param {number} [arg3_options.tolerance=1e-8] - Absolute KKT residual tolerance.
+   *
+   * @returns {Float32Array|Float64Array}
+   */
+  Statistics.whittakerHendersonRobust = function (arg0_values, arg1_weights, arg2_start_index, arg3_options) {
+    //Convert from parameters
+    let values = arg0_values;
+    let weights = arg1_weights;
+    let start_index = (arg2_start_index !== undefined &amp;&amp; arg2_start_index !== null) ? arg2_start_index : 0;
+    let options = arg3_options || {};
+
+    //Initialise options
+    let huber_delta = (options.huber_delta !== undefined) ? options.huber_delta : 0.05;
+    let lambda = (options.lambda !== undefined) ? options.lambda : 20.0;
+    let max_iterations = (options.max_iterations !== undefined) ? options.max_iterations : 200;
+    let min_value = (options.min_value !== undefined) ? options.min_value : -Infinity;
+    let mu = (options.mu !== undefined) ? options.mu : 0.0;
+    let tolerance = (options.tolerance !== undefined) ? options.tolerance : 1e-5;
+
+    //Validate parameters
+    if (!values || !Number.isInteger(values.length)) {
+      console.error("values must be an array or typed array.");
+      return values;
+    }
+
+    if (!Number.isInteger(start_index) || start_index &lt; 0) {
+      console.error("start_index must be a non-negative integer.");
+      return values;
+    }
+
+    if (!Number.isFinite(huber_delta) || huber_delta &lt;= 0) {
+      console.error("huber_delta must be finite and greater than zero.");
+      return values;
+    }
+
+    if (!Number.isFinite(lambda) || lambda &lt; 0) {
+      console.error("lambda must be finite and non-negative.");
+      return values;
+    }
+
+    if (!Number.isFinite(mu) || mu &lt; 0) {
+      console.error("mu must be finite and non-negative.");
+      return values;
+    }
+
+    if (!Number.isInteger(max_iterations) || max_iterations &lt; 1) {
+      console.error("max_iterations must be a positive integer.");
+      return values;
+    }
+
+    if (!Number.isFinite(tolerance) || tolerance &lt;= 0) {
+      console.error("tolerance must be finite and greater than zero.");
+      return values;
+    }
+
+    if (min_value !== -Infinity &amp;&amp; !Number.isFinite(min_value)) {
+      console.error("min_value must be finite or -Infinity.");
+      return values;
+    }
+
+    //Declare local instance variables
+    let count = values.length;
+    let k_start = Math.min(start_index, count);
+    let k_end = count - 1;
+    let output = options.output || new Float32Array(count);
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line671">line 671</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_relation</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-|
-
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_date</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Date.html">Date</a></code></span>
-|
-
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="removeRelations"><span class="type-signature"></span>removeRelations<span class="signature">(arg0_relations, arg1_date)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Removes multiple relations from a specified date.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line690">line 690</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
+    if (!(output instanceof Float32Array || output instanceof Float64Array) || output.length !== count) {
+      console.error("output must be a Float32Array or Float64Array matching values.length.");
+      return values;
+    }
 
+    if (weights &amp;&amp; weights.length !== count) {
+      console.error("weights must match values.length.");
+      return values;
+    }
 
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_relations</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Object.html">Object</a></code></span>
-|
-
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>arg1_date</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Date.html">Date</a></code></span>
-|
-
-<span class="param-type"><code>any</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="saveToDatabase"><span class="type-signature"></span>saveToDatabase<span class="signature">(arg0_batch_map)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Collects dirty keyframes into a write-batch map.
-Does NOT perform I/O itself; called by the logic loop.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ontology_Ontology.js.html">ontology/Ontology.js</a>, <a href="ontology_Ontology.js.html#line708">line 708</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
+    //Snapshot observations and weights before writing to any supplied output
+    let observations = new Float32Array(count);
+    let effective_weights = new Float32Array(count);
+    let roughness_diagonal = new Float32Array(count);
+    let solution = new Float32Array(count);
 
+    for (let i = 0; i &lt; count; i++) {
+      let y = values[i];
+      let w = weights ? weights[i] : 1.0;
 
+      if (!Number.isFinite(y)) {
+        console.error("All observations must be finite.");
+        return values;
+      }
 
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>arg0_batch_map</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Map.&lt;string, {lines: <a href="Array.html">Array</a>.&lt;string>, keyframes: <a href="Array.html">Array</a>.&lt;<a href="Object.html">Object</a>>}></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
+      if (!Number.isFinite(w) || w &lt; 0) {
+        console.error("All weights must be finite and non-negative.");
+        return values;
+      }
 
+      observations[i] = y;
+      effective_weights[i] = w;
+      solution[i] = (i >= k_start) ? Math.max(min_value, y) : y;
 
+      if (i >= k_start) {
+        if (i > k_start &amp;&amp; i &lt; k_end)
+          roughness_diagonal[i] += 4*lambda;
+
+        if (i > k_start + 1)
+          roughness_diagonal[i] += lambda;
+
+        if (i &lt; k_end - 1)
+          roughness_diagonal[i] += lambda;
+      }
+    }
+
+    //Return the roughness derivative with coordinate i replaced by x
+    function getRoughnessGradient(i, x) {
+      let gradient = 0;
+
+      if (i > k_start &amp;&amp; i &lt; k_end)
+        gradient -= 2*lambda*(solution[i + 1] - 2*x + solution[i - 1]);
+
+      if (i > k_start + 1)
+        gradient += lambda*(x - 2*solution[i - 1] + solution[i - 2]);
 
+      if (i &lt; k_end - 1)
+        gradient += lambda*(solution[i + 2] - 2*solution[i + 1] + x);
+
+      return gradient;
+    }
+
+    //Return the complete coordinate derivative
+    function getGradient(i, x) {
+      let residual = x - observations[i];
+      let gradient = effective_weights[i]*Math.max(-huber_delta, Math.min(huber_delta, residual));
+
+      gradient += getRoughnessGradient(i, x);
+
+      if (mu > 0) {
+        if (i &lt; k_end)
+          gradient += mu*Math.min(0, x - solution[i + 1]);
+
+        if (i > k_start)
+          gradient += mu*Math.max(0, x - solution[i - 1]);
+      }
+
+      if (!Number.isFinite(gradient)) {
+        console.error("Numerical overflow in graduation; rescale the observations or penalties.");
+        gradient = 0;
+      }
+
+      return gradient;
+    }
+
+    //For a lower bound, a positive derivative at the bound satisfies KKT
+    function getOptimalityResidual() {
+      let max_residual = 0;
+
+      for (let i = k_start; i &lt;= k_end; i++) {
+        let gradient = getGradient(i, solution[i]);
+
+        if (solution[i] === min_value)
+          gradient = Math.min(0, gradient);
+
+        max_residual = Math.max(max_residual, Math.abs(gradient));
+      }
+
+      return max_residual;
+    }
+
+    //Coordinate minimisation using the monotonicity of the derivative
+    let optimality_residual = getOptimalityResidual();
+
+    for (let iter = 0; iter &lt; max_iterations &amp;&amp; optimality_residual > tolerance; iter++) {
+      //Alternate sweep direction to reduce directional bias
+      let reverse = (iter % 2 === 1);
+
+      for (let offset = 0; offset &lt; count - k_start; offset++) {
+        let i = reverse ? k_end - offset : k_start + offset;
+        let current_gradient = getGradient(i, solution[i]);
 
+        if (current_gradient === 0 || (solution[i] === min_value &amp;&amp; current_gradient >= 0))
+          continue;
 
-
-
-
-
-</div>
-        
-    
-
-    
-
-    
-</article>
+        //Each derivative component changes sign at one of these centres.
+        //Their minimum and maximum therefore bracket a coordinate minimiser.
+        let lower = observations[i];
+        let upper = observations[i];
 
-</section>
+        if (roughness_diagonal[i] > 0) {
+          let roughness_centre = -getRoughnessGradient(i, 0)/roughness_diagonal[i];
+
+          if (!Number.isFinite(roughness_centre)) {
+            console.error("Numerical overflow while bracketing a coordinate.");
+            roughness_centre = 0;
+          }
+
+          lower = Math.min(lower, roughness_centre);
+          upper = Math.max(upper, roughness_centre);
+        }
+
+        if (mu > 0) {
+          if (i > k_start) {
+            lower = Math.min(lower, solution[i - 1]);
+            upper = Math.max(upper, solution[i - 1]);
+          }
+
+          if (i &lt; k_end) {
+            lower = Math.min(lower, solution[i + 1]);
+            upper = Math.max(upper, solution[i + 1]);
+          }
+        }
+
+        lower = Math.max(min_value, lower);
+        upper = Math.max(min_value, upper);
+
+        let lower_gradient = getGradient(i, lower);
+        let upper_gradient = getGradient(i, upper);
+
+        if (lower_gradient >= 0) {
+          solution[i] = lower;
+          continue;
+        }
+
+        if (upper_gradient &lt;= 0) {
+          solution[i] = upper;
+          continue;
+        }
+
+        //The derivative is continuous and non-decreasing, including at
+        //Huber and monotonicity breakpoints.
+        let candidate = solution[i];
+        let candidate_residual = Math.abs(current_gradient);
+
+        for (let step = 0; step &lt; 30; step++) {
+          let midpoint = 0.5*lower + 0.5*upper;
+
+          if (midpoint === lower || midpoint === upper)
+            break;
+
+          let midpoint_gradient = getGradient(i, midpoint);
+          let midpoint_residual = Math.abs(midpoint_gradient);
+
+          if (midpoint_residual &lt; candidate_residual) {
+            candidate = midpoint;
+            candidate_residual = midpoint_residual;
+          }
+
+          if (midpoint_gradient === 0) {
+            candidate = midpoint;
+            break;
+          }
+
+          if (midpoint_gradient &lt; 0)
+            lower = midpoint;
+          else
+            upper = midpoint;
+        }
+
+        //Include bracket endpoints in case midpoint rounding stopped progress
+        lower_gradient = getGradient(i, lower);
+        upper_gradient = getGradient(i, upper);
+
+        if (Math.abs(lower_gradient) &lt; candidate_residual) {
+          candidate = lower;
+          candidate_residual = Math.abs(lower_gradient);
+        }
+
+        if (Math.abs(upper_gradient) &lt; candidate_residual)
+          candidate = upper;
+
+        solution[i] = candidate;
+      }
+
+      optimality_residual = getOptimalityResidual();
+    }
+
+    if (optimality_residual > tolerance &amp;&amp; optimality_residual > 2.0)
+      console.warn("Whittaker-Henderson graduation did not converge. KKT residual: " + optimality_residual);
+
+    //Only write output after successful convergence
+    output.set(solution);
+
+    return output;
+  };
+
+  /**
+   * Graduates total age-cohort density and reallocates it between sexes.
+   *
+   * Defaults are appropriate for stochastic model-generated compositions:
+   * raw sex ratios are preserved, monotonicity is disabled, and the total
+   * population of the graduated suffix is preserved by final rescaling.
+   *
+   * Density is normalised by the mean density of the graduated suffix.
+   * huber_delta is therefore expressed relative to that mean.
+   *
+   * Fidelity weights default to band widths. These are integration weights,
+   * not estimated inverse-variance weights for a multinomial model.
+   *
+   * Sex-ratio allocation applies to every cohort, including the prefix.
+   * Density graduation and total rescaling apply only from start_index.
+   *
+   * Legacy options.buffers is not used; working calculations use Float64Array.
+   *
+   * @alias Statistics.coupleAgeSexCohortsWhittaker
+   *
+   * @param {Float32Array|Float64Array|Array&lt;number>} arg0_male_rates
+   * @param {Float32Array|Float64Array|Array&lt;number>} arg1_female_rates
+   * @param {Float32Array|Float64Array|Array&lt;number>} [arg2_band_widths]
+   * @param {number|null} [arg3_start_index=2] - Negative or null disables graduation.
+   * @param {Object} [arg4_options]
+   *  @param {Array&lt;number>|Float32Array|Float64Array} [arg4_options.baseline_sex_ratios]
+   *  @param {boolean} [arg4_options.do_not_smooth=false]
+   *  @param {boolean} [arg4_options.enforce_biological_sex_ratios=false] - Legacy name for applying supplied bounds.
+   *  @param {boolean} [arg4_options.enforce_fixed_sex_ratios=false]
+   *  @param {Float32Array|Float64Array} [arg4_options.female_output]
+   *  @param {number} [arg4_options.huber_delta=0.05]
+   *  @param {number} [arg4_options.lambda=20.0]
+   *  @param {Float32Array|Float64Array} [arg4_options.male_output]
+   *  @param {number} [arg4_options.max_iterations=20000]
+   *  @param {number} [arg4_options.mu=0.0]
+   *  @param {boolean} [arg4_options.preserve_sex_ratios] - Defaults to true unless another ratio policy is enabled.
+   *  @param {boolean} [arg4_options.preserve_total=true]
+   *  @param {Array&lt;Array&lt;number>>} [arg4_options.sex_ratio_bounds]
+   *  @param {number} [arg4_options.tolerance=1e-8]
+   *  @param {Float32Array|Float64Array} [arg4_options.total_output]
+   *  @param {Array&lt;number>|Float32Array|Float64Array} [arg4_options.weights]
+   *
+   * @returns {{ female: Float32Array|Float64Array, male: Float32Array|Float64Array, total: Float32Array|Float64Array }}
+   */
+  Statistics.coupleAgeSexCohortsWhittaker = function (arg0_male_rates, arg1_female_rates, arg2_band_widths, arg3_start_index, arg4_options) {
+    //Convert from parameters
+    let male_rates = arg0_male_rates;
+    let female_rates = arg1_female_rates;
+    let band_widths = arg2_band_widths;
+    let start_index = (arg3_start_index !== undefined &amp;&amp; arg3_start_index !== null) ? arg3_start_index : 2;
+    let options = arg4_options || {};
+
+    //Initialise options
+    let enforce_bounds = (options.enforce_biological_sex_ratios === true);
+    let enforce_fixed = (options.enforce_fixed_sex_ratios === true);
+    let graduate_sex_ratios = (options.graduate_sex_ratios !== undefined) ? options.graduate_sex_ratios : !enforce_fixed;
+    let preserve_sex_ratios = (options.preserve_sex_ratios !== undefined) ? options.preserve_sex_ratios : !enforce_bounds &amp;&amp; !enforce_fixed;
+    let preserve_total = (options.preserve_total !== false);
+    let sex_ratio_lambda = (options.sex_ratio_lambda !== undefined) ? options.sex_ratio_lambda : 20.0;
+    let do_not_smooth = (options.do_not_smooth !== undefined) ? options.do_not_smooth : !!options.lift_isotonic;
+
+    //Retain the legacy start-index disabling convention
+    if (arg3_start_index === null || start_index &lt; 0)
+      do_not_smooth = true;
+
+    if (!Number.isInteger(start_index)) {
+      console.error("start_index must be an integer or null.");
+      return { female: female_rates, male: male_rates, total: new Float32Array(0) };
+    }
+
+    if (!male_rates || !female_rates || !Number.isInteger(male_rates.length) || male_rates.length !== female_rates.length) {
+      console.error("Male and female arrays must have matching lengths.");
+      return { female: female_rates, male: male_rates, total: new Float32Array(0) };
+    }
+
+    if (preserve_sex_ratios &amp;&amp; (enforce_fixed || enforce_bounds)) {
+      console.error("Preserving raw sex ratios conflicts with fixed ratios or ratio bounds.");
+      preserve_sex_ratios = false;
+    }
+
+    //Declare local instance variables
+    let count = male_rates.length;
+    let k_start = Math.min(count, Math.max(0, start_index));
+    let baseline_ratios = options.baseline_sex_ratios || Statistics.default_biological_sex_ratios;
+    let bounds = options.sex_ratio_bounds || Statistics.default_sex_ratio_bounds;
+    let supplied_weights = options.weights;
+
+    let widths = new Float32Array(count);
+    let raw_totals = new Float32Array(count);
+    let raw_male_shares = new Float32Array(count);
+    let total_density = new Float32Array(count);
+    let effective_weights = new Float32Array(count);
+
+    let suffix_total = 0;
+    let suffix_width = 0;
+
+    if (band_widths &amp;&amp; band_widths.length !== count) {
+      console.error("band_widths must match the cohort arrays.");
+      return { female: female_rates, male: male_rates, total: new Float32Array(0) };
+    }
+
+    if (supplied_weights &amp;&amp; supplied_weights.length !== count) {
+      console.error("weights must match the cohort arrays.");
+      return { female: female_rates, male: male_rates, total: new Float32Array(0) };
+    }
+
+    if (enforce_fixed &amp;&amp; (!baseline_ratios || baseline_ratios.length !== count)) {
+      console.error("Fixed sex ratios require one baseline ratio per cohort.");
+      enforce_fixed = false;
+    }
+
+    if (enforce_bounds &amp;&amp; (!bounds || bounds.length !== count)) {
+      console.error("Sex-ratio bounds require one [minimum, maximum] pair per cohort.");
+      enforce_bounds = false;
+    }
+
+    function getOutput(buffer) {
+      let output = buffer || new Float32Array(count);
+
+      if (!(output instanceof Float32Array || output instanceof Float64Array) || output.length !== count) {
+        console.error("Output buffers must be floating-point typed arrays matching the cohort count.");
+        return new Float32Array(count);
+      }
+
+      return output;
+    }
+
+    function buffersOverlap(first, second) {
+      if (first.buffer !== second.buffer)
+        return false;
+
+      return first.byteOffset &lt; second.byteOffset + second.byteLength &amp;&amp;
+        second.byteOffset &lt; first.byteOffset + first.byteLength;
+    }
+
+    let female_out = getOutput(options.female_output);
+    let male_out = getOutput(options.male_output);
+    let total_out = getOutput(options.total_output);
+
+    if (buffersOverlap(female_out, male_out) || buffersOverlap(female_out, total_out) || buffersOverlap(male_out, total_out)) {
+      console.error("Female, male, and total output buffers must not overlap.");
+      return { female: female_out, male: male_out, total: total_out };
+    }
+
+    //Snapshot inputs and establish the sex-ratio allocation before writing outputs
+    for (let i = 0; i &lt; count; i++) {
+      let female_value = female_rates[i];
+      let male_value = male_rates[i];
+      let width = band_widths ? band_widths[i] : 1;
+      let weight = supplied_weights ? supplied_weights[i] : width;
+
+      if (!Number.isFinite(female_value) || female_value &lt; 0 || !Number.isFinite(male_value) || male_value &lt; 0) {
+        console.error("Cohort values must be finite and non-negative.");
+        female_value = Math.max(0, female_value || 0);
+        male_value = Math.max(0, male_value || 0);
+      }
+
+      if (!Number.isFinite(width) || width &lt;= 0) {
+        console.error("Band widths must be finite and greater than zero.");
+        width = 1;
+      }
+
+      if (!Number.isFinite(weight) || weight &lt; 0) {
+        console.error("Fidelity weights must be finite and non-negative.");
+        weight = 1;
+      }
+
+      let total = male_value + female_value;
+
+      if (!Number.isFinite(total) || !Number.isFinite(total/width)) {
+        console.error("Cohort totals or densities overflow; rescale the inputs.");
+        total = 0;
+      }
+
+      let male_share = (total > 0) ? male_value/total : 0.5;
+
+      //Use a prior only when explicitly fixing ratios, or allocating an empty cohort
+      if (enforce_fixed || (total === 0 &amp;&amp; baseline_ratios &amp;&amp; baseline_ratios[i] !== undefined)) {
+        let ratio = baseline_ratios[i];
+
+        if (!Number.isFinite(ratio) || ratio &lt; 0) {
+          console.error("Baseline sex ratios must be finite and non-negative.");
+          ratio = 1;
+        }
+
+        male_share = ratio/(1 + ratio);
+      }
+
+      widths[i] = width;
+      raw_totals[i] = total;
+      raw_male_shares[i] = male_share;
+      total_density[i] = total/width;
+      effective_weights[i] = weight;
+
+      if (i >= k_start) {
+        suffix_total += total;
+        suffix_width += width;
+      }
+    }
+
+    if (!Number.isFinite(suffix_total) || !Number.isFinite(suffix_width)) {
+      console.error("Aggregate cohort values overflow; rescale the inputs.");
+      return { female: female_out, male: male_out, total: total_out };
+    }
+
+    //Graduate cohort sex proportions with Whittaker-Henderson if enabled
+    let male_shares = raw_male_shares;
+
+    if (graduate_sex_ratios &amp;&amp; !enforce_fixed &amp;&amp; count > 2) {
+      male_shares = Statistics.whittakerHendersonRobust(
+        raw_male_shares,
+        effective_weights,
+        0,
+        {
+          huber_delta: (options.huber_delta !== undefined) ? options.huber_delta : 0.05,
+          lambda: sex_ratio_lambda,
+          max_iterations: (options.max_iterations !== undefined) ? options.max_iterations : 200,
+          min_value: 0,
+          mu: 0.0,
+          tolerance: (options.tolerance !== undefined) ? options.tolerance : 1e-5
+        }
+      );
+    }
+
+    if (enforce_bounds) {
+      for (let i = 0; i &lt; count; i++) {
+        let cohort_bounds = bounds[i] || [0, Infinity];
+        let ratio_min = cohort_bounds[0];
+        let ratio_max = cohort_bounds[1];
+
+        if (!Number.isFinite(ratio_min) || ratio_min &lt; 0) ratio_min = 0;
+        if (!Number.isFinite(ratio_max) || ratio_max &lt; ratio_min) ratio_max = Infinity;
+
+        let share_min = ratio_min/(1 + ratio_min);
+        let share_max = ratio_max/(1 + ratio_max);
+
+        male_shares[i] = Math.max(share_min, Math.min(share_max, male_shares[i]));
+      }
+    }
+
+    //An empty suffix already has an exact zero-density solution
+    let smoothed_density = total_density;
+    let density_scale = 1;
+    let total_scale = 1;
+    let did_smooth = !do_not_smooth &amp;&amp; k_start &lt; count &amp;&amp; suffix_total > 0;
+
+    if (did_smooth) {
+      density_scale = suffix_total/suffix_width;
+
+      if (!Number.isFinite(density_scale) || density_scale &lt;= 0) {
+        console.error("The density normalisation scale is not representable.");
+        density_scale = 1;
+      }
+
+      let normalised_density = new Float32Array(count);
+
+      for (let i = k_start; i &lt; count; i++)
+        normalised_density[i] = total_density[i]/density_scale;
+
+      smoothed_density = Statistics.whittakerHendersonRobust(
+        normalised_density,
+        effective_weights,
+        k_start,
+        {
+          huber_delta: (options.huber_delta !== undefined) ? options.huber_delta : 0.05,
+          lambda: (options.lambda !== undefined) ? options.lambda : 20.0,
+          max_iterations: (options.max_iterations !== undefined) ? options.max_iterations : 200,
+          min_value: 0,
+          mu: (options.mu !== undefined) ? options.mu : 0.0,
+          output: new Float32Array(count),
+          tolerance: (options.tolerance !== undefined) ? options.tolerance : 1e-5
+        }
+      );
+
+      //Restore suffix population without changing the unsmoothed prefix
+      if (preserve_total) {
+        let smoothed_total = 0;
+
+        for (let i = k_start; i &lt; count; i++)
+          smoothed_total += smoothed_density[i]*density_scale*widths[i];
+
+        if (!Number.isFinite(smoothed_total) || smoothed_total &lt;= 0) {
+          console.error("Cannot preserve population: graduated suffix has no finite positive mass.");
+          total_scale = 1;
+        } else {
+          total_scale = suffix_total/smoothed_total;
+        }
+      }
+    }
+
+    //Reconstitute cohort totals and allocate between sexes
+    for (let i = 0; i &lt; count; i++) {
+      let total = raw_totals[i];
+
+      if (did_smooth &amp;&amp; i >= k_start)
+        total = smoothed_density[i]*density_scale*widths[i]*total_scale;
+
+      let male_value = total*male_shares[i];
+
+      male_out[i] = male_value;
+      female_out[i] = total - male_value;
+      total_out[i] = total;
+    }
+
+    return { female: female_out, male: male_out, total: total_out };
+  };
+}
+</code></pre>
+        </article>
+    </section>
 
 
 

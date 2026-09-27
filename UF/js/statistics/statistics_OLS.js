@@ -552,17 +552,35 @@
 			console.log(` - Removed high VIF features.`);
 		}
 		
-		//2. Apply Ridge Regression to stabilise coefficients
+		//2. Apply RMS scaling to X before Ridge Regression
+		let N = X.length;
+		let K = keys.length;
+		let rms_vals = new Float64Array(K);
+		
+		for (let j = 0; j < K; j++) {
+			let sum_sq = 0;
+			for (let i = 0; i < N; i++) sum_sq += X[i][j]*X[i][j];
+			let rms = Math.sqrt(sum_sq / N);
+			rms_vals[j] = (rms > 1e-12) ? rms : 1;
+		}
+		
+		let X_scaled = Array.createMatrix(N, K);
+		for (let i = 0; i < N; i++) {
+			for (let j = 0; j < K; j++) {
+				X_scaled[i][j] = X[i][j] / rms_vals[j];
+			}
+		}
+		
 		let selected_lambda = Math.returnSafeNumber(options.lambda, 1e9);
 		console.log(`- Computed preliminary matrices.`);
 		
 		if (options.dynamic_lambda) {
-			let condition_number = Statistics.conditionNumber(X);
+			let condition_number = Statistics.conditionNumber(X_scaled);
 			condition_number *= 1e3;
 			console.log(`- Condition Number: ${condition_number}, using Lambda = ${selected_lambda}`);
 		}
 		
-		let beta = Statistics.ridgeRegression(X, Y, selected_lambda);
+		let beta = Statistics.ridgeRegression(X_scaled, Y, selected_lambda);
 		
 		if (!beta || beta.length === 0) {
 			console.warn(`- Regression failed to produce beta coefficients for ${basename}.`);
@@ -571,21 +589,28 @@
 		
 		console.log(`- Applied Ridge Regression to stabilise coefficients.`);
 		
-		//3. Convert coefficients to JSON
+		//3. Convert coefficients to JSON, unscale, and clamp to [-1, 1]
 		let beta_arr = Array.unwrapMatrix(beta);
 		let coefficients = beta_arr.flat();
 		console.log(`- Computed coefficients.`);
 		
+		let coefficients_obj = {};
+		for (let j = 0; j < K; j++) {
+			let raw_beta = coefficients[j] / rms_vals[j];
+			
+			//User directive: any coefficients over 1 or under -1 are erroneous in % space
+			if (options.clamp_percentage && (raw_beta > 1 || raw_beta < -1)) raw_beta = 0;
+			
+			if (options.weighting_function)
+				raw_beta = options.weighting_function(raw_beta);
+				
+			coefficients_obj[keys[j]] = raw_beta;
+		}
+		
 		//Save model to JSON
 		let model_data_obj = {
 			key: options.key,
-			coefficients: Object.fromEntries(
-				keys.map((key, i) => [
-					key,
-					(options.weighting_function) ?
-						options.weighting_function(coefficients[i]) : coefficients[i]]
-				)
-			)
+			coefficients: coefficients_obj
 		};
 		
 		fs.writeFileSync(output_file_path, JSON.stringify(model_data_obj, null, 2));
@@ -655,7 +680,8 @@
 					let loaded_obj = await Statistics.loadOLSCovariates(task_def.target_file_path, {
 						covariates_obj: task_def.covariates_map,
 						formatting_parameters: (task_def.options && task_def.options.formatting_parameters) ? task_def.options.formatting_parameters : [],
-						utility_format: task_def.target_format || "float32"
+						utility_format: task_def.target_format || "float32",
+						weight_file_path: (task_def.options && task_def.options.weight_file_path) ? task_def.options.weight_file_path : undefined
 					});
 					if (task_def.options && task_def.options.filter_zero_targets && loaded_obj && loaded_obj.Y) {
 						let filtered_X = [];

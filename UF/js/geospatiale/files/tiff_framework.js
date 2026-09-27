@@ -66,9 +66,15 @@
 				png.data[local_png_index + 3] = local_rgba[3];
 			}
 		
-		//Write the PNG file
-		png.pack().pipe(fs.createWriteStream(output_file_path))
-			.on("finish", () => console.log(`.PNG output file written to ${output_file_path}`));
+		//Write the PNG file and wait for completion
+		await new Promise((resolve, reject) => {
+			png.pack().pipe(fs.createWriteStream(output_file_path))
+				.on("finish", () => {
+					console.log(`.PNG output file written to ${output_file_path}`);
+					resolve();
+				})
+				.on("error", reject);
+		});
 		
 		//Return statement
 		return png;
@@ -109,6 +115,7 @@
 		let offset_x = Math.returnSafeNumber(options.offset_x || options.shift_x, 0);
 		let offset_y = Math.returnSafeNumber(options.offset_y || options.shift_y, 0);
 		let output_pngs = [];
+		let write_promises = [];
 		
 		//Iterate over every band in the GeoTIFF (each band represents a year)
 		for (let i = 0; i < raster.length; i++) {
@@ -160,14 +167,22 @@
 			}
 			
 			//Write the PNG file for this specific year
-			png.pack()
-				.pipe(fs.createWriteStream(current_output_path))
-				.on("finish", () =>
-					console.log(`.PNG output for band ${current_year} written to ${current_output_path}`));
+			let write_promise = new Promise((resolve, reject) => {
+				png.pack()
+					.pipe(fs.createWriteStream(current_output_path))
+					.on("finish", () => {
+						console.log(`.PNG output for band ${current_year} written to ${current_output_path}`);
+						resolve();
+					})
+					.on("error", reject);
+			});
+			write_promises.push(write_promise);
 			
 			//Push PNG to output array
 			output_pngs.push(png);
 		}
+		
+		await Promise.all(write_promises);
 		
 		//Return statement
 		return output_pngs;

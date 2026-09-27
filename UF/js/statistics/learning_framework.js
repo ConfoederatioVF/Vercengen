@@ -130,6 +130,15 @@
 			let X = [];
 			let Y = [];
 			
+			//Load weight raster if provided (for Weighted Least Squares)
+			let weight_data = null;
+			if (options.weight_file_path && fs.existsSync(options.weight_file_path)) {
+				let weight_image = GeoPNG.loadNumberRasterImage(options.weight_file_path, {
+					format: "float32"
+				});
+				weight_data = weight_image.data;
+			}
+			
 			//Iterate over all pixels
 			for (let i = 0; i < sample_count; i++) {
 				let has_data = false;
@@ -157,6 +166,21 @@
 						}
 						local_row[x] = local_val;
 						if (local_val !== 0) has_data = true;
+					}
+				}
+				
+				if (is_valid) {
+					if (weight_data) {
+						let weight = weight_data[i];
+						if (isNaN(weight) || weight <= 0) {
+							is_valid = false;
+						} else {
+							let sqrt_w = Math.sqrt(weight);
+							target_value *= sqrt_w;
+							for (let x = 0; x < feature_count; x++) {
+								local_row[x] *= sqrt_w;
+							}
+						}
 					}
 				}
 				
