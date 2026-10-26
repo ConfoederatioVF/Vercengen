@@ -69,7 +69,8 @@ ve.HierarchyDatatype = class extends ve.Component {
 				this.element.setAttribute("data-nestable-disabled", "nesting");
 			this.element.setAttribute("component", "ve-hierarchy-datatype");
 			Object.iterate(options.attributes, (local_key, local_value) => {
-				this.element.setAttribute(local_key, local_value.toString());
+				if (local_value !== undefined && local_value !== null)
+					this.element.setAttribute(local_key, local_value.toString());
 			});
 			this.element.id = this.id;
 			this.element.instance = this;
@@ -130,7 +131,7 @@ ve.HierarchyDatatype = class extends ve.Component {
 	 */
 	get name () {
 		//Return statement
-		return (this.components_obj.name) ? this.components_obj.name.v : "";
+		return (this.components_obj?.name) ? this.components_obj.name.v : "";
 	}
 	
 	/**

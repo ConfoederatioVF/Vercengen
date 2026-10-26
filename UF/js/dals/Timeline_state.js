@@ -10,9 +10,18 @@
 	 *   @param {string} [arg0_json.options.key]
 	 *  @param {Object[]} [arg0_json.value] - [n]: { type: {@link string}, <action_key>: {@link any} }
 	 */
-	DALS.Timeline.parseAction = function (arg0_json) {
+	DALS.Timeline.parseAction = function (arg0_json, arg1_json, arg2_do_not_push_action) {
 		//Convert from parameters
-		let json = (typeof arg0_json === "string") ? JSON.parse(arg0_json) : arg0_json;
+		let json = arg0_json;
+		if (typeof arg0_json === "string" && arg1_json !== undefined)
+			json = arg1_json;
+		if (typeof json === "string") {
+			try {
+				json = JSON.parse(json);
+			} catch (e) {
+				json = [];
+			}
+		}
 		
 		//Initialise JSON
 		if (json.options === undefined) json.options = {};

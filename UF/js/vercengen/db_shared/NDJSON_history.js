@@ -34,7 +34,7 @@ if (!global?.History) global.History = {};
 		//Return statement
 		if (all_object_keys.length !== all_ot_object_keys.length) return false;
 		for (let local_key of all_object_keys)
-			if (!all_ot_object_keys[local_key] || !Boolean.isDeepEqual(object[local_key], ot_object[local_key]))
+			if (!Object.prototype.hasOwnProperty.call(ot_object, local_key) || !Boolean.isDeepEqual(object[local_key], ot_object[local_key]))
 				return false;
 		return true;
 	};
@@ -82,7 +82,9 @@ History.addKeyframe = function (arg0_keyframes, arg1_timestamp, ...argn_argument
 	//Iterate over all argn_arguments and add it to .value, concatenating any objects if they exist
 	for (let i = 0; i < argn_arguments.length; i++)
 		if (argn_arguments[i] !== undefined)
-			if (typeof argn_arguments === "object" && argn_arguments[i] !== null) {
+			if (i === 0) {
+				keyframe_obj.value[0] = argn_arguments[0];
+			} else if (typeof argn_arguments[i] === "object" && argn_arguments[i] !== null) {
 				let old_variables = (keyframe_obj.value[i]?.variables) ? 
 					keyframe_obj.value[i].variables : {};
 				
@@ -134,7 +136,21 @@ History.cleanKeyframes = function (arg0_keyframes) {
 			let prev_val = running_state[x];
 			
 			//Skip only if undefined; null is treated as a meaningful value change
-			if (current_val === undefined) continue;
+			//Geometries at index 0 must be treated atomically
+			if (x === 0) {
+				let is_same_geom = (current_val === prev_val);
+				if (!is_same_geom && current_val && prev_val)
+					is_same_geom = Boolean.isDeepEqual(current_val, prev_val);
+				
+				if (is_same_geom) {
+					local_keyframe.value[x] = undefined;
+				} else {
+					local_keyframe.value[x] = current_val;
+					running_state[x] = current_val;
+					has_meaningful_change = true;
+				}
+				continue;
+			}
 			
 			if (typeof current_val === "object" && current_val !== null) {
 				// Handle object merging and variable delta checks
@@ -216,7 +232,10 @@ History.diffKeyframe = function (arg0_keyframe, arg1_keyframe) {
 	//Declare local instance variables
 	if (ot_keyframe.value)
 		for (let i = 0; i < ot_keyframe.value.length; i++) {
-			if (typeof ot_keyframe.value[i] === "object" && ot_keyframe.value[i] !== null) {
+			if (i === 0) {
+				if (ot_keyframe.value[0] !== undefined && ot_keyframe.value[0] !== "undefined" && ot_keyframe.value[0] !== "null")
+					keyframe.value[0] = ot_keyframe.value[0];
+			} else if (typeof ot_keyframe.value[i] === "object" && ot_keyframe.value[i] !== null) {
 				let old_variables = (keyframe.value[i] && keyframe.value[i].variables) ?
 					keyframe.value[i].variables : {};
 				
@@ -260,23 +279,45 @@ History.getFirstKeyframe = function (arg0_keyframes) {
 		keyframes_obj[all_timestamps[0]] : null;
 };
 
-History.getLastKey = function (arg0_keyframes) {
+History.getLastKey = function (arg0_keyframes, arg1_options) {
 	//Convert from parameters
 	let keyframes_obj = (arg0_keyframes) ? arg0_keyframes : {};
+	let options = (arg1_options) ? arg1_options : {};
 	
 	//Declare local instance variables
 	let all_timestamps = History.getTimestamps(keyframes_obj);
+	
+	if (options.has_geometry || options.only_valid)
+		for (let i = all_timestamps.length - 1; i >= 0; i--) {
+			let local_keyframe = keyframes_obj[all_timestamps[i]];
+			let local_value = (Array.isArray(local_keyframe)) ? local_keyframe : local_keyframe?.value;
+			
+			if (Array.isArray(local_value))
+				if (local_value[0] !== undefined && local_value[0] !== null && local_value[0] !== "null" && local_value[0] !== "undefined")
+					return all_timestamps[i];
+		}
 	
 	//Return statement
 	return (all_timestamps.length > 0) ? all_timestamps[all_timestamps.length - 1] : null;
 };
 
-History.getLastKeyframe = function (arg0_keyframes) {
+History.getLastKeyframe = function (arg0_keyframes, arg1_options) {
 	//Convert from parameters
 	let keyframes_obj = (arg0_keyframes) ? arg0_keyframes : {};
+	let options = (arg1_options) ? arg1_options : {};
 	
 	//Declare local instance variables
 	let all_timestamps = History.getTimestamps(keyframes_obj);
+	
+	if (options.has_geometry || options.only_valid)
+		for (let i = all_timestamps.length - 1; i >= 0; i--) {
+			let local_keyframe = keyframes_obj[all_timestamps[i]];
+			let local_value = (Array.isArray(local_keyframe)) ? local_keyframe : local_keyframe?.value;
+			
+			if (Array.isArray(local_value))
+				if (local_value[0] !== undefined && local_value[0] !== null && local_value[0] !== "null" && local_value[0] !== "undefined")
+					return local_keyframe;
+		}
 	
 	//Return statement
 	return (all_timestamps.length > 0) ? 
@@ -340,14 +381,19 @@ History.getKeyframe = function (arg0_keyframes, arg1_timestamp) {
 	
 	//Iterate over all_keyframes in order
 	for (let i = 0; i < all_keyframes.length; i++) {
-		let local_keyframe = keyframes[all_keyframes[i]];
+		let current_ts = parseInt(all_keyframes[i]);
 		
 		//Check that the keyframe is still valid
-		if (parseInt(all_keyframes[i]) <= return_keyframe.timestamp) {
-			if (!local_keyframe.value) continue;
+		if (current_ts <= return_keyframe.timestamp) {
+			let local_keyframe = keyframes[all_keyframes[i]];
+			if (!local_keyframe) continue;
+			
+			let norm_keyframe = Array.isArray(local_keyframe) ?
+				{ value: local_keyframe } :
+				(local_keyframe.value ? local_keyframe : { value: [local_keyframe] });
 			
 			//Merge keys using diffKeyframe
-			return_keyframe = History.diffKeyframe(return_keyframe, local_keyframe);
+			return_keyframe = History.diffKeyframe(return_keyframe, norm_keyframe);
 		} else { break; }
 	}
 	
@@ -366,9 +412,16 @@ History.getKeyframes = function (arg0_keyframes) {
 	//Iterate over all_keyframes in order
 	for (let i = 0; i < all_keyframes.length; i++) {
 		let local_keyframe = keyframes[all_keyframes[i]];
+		let norm_keyframe = Array.isArray(local_keyframe) ?
+			{ value: local_keyframe } :
+			(local_keyframe.value ? local_keyframe : { value: [local_keyframe] });
 		
-		local_keyframe.localisation = History.getLocalisation(return_keyframe, local_keyframe);
-		return_keyframe = History.diffKeyframe(return_keyframe, local_keyframe);
+		norm_keyframe.localisation = History.getLocalisation(return_keyframe, norm_keyframe);
+		return_keyframe = History.diffKeyframe(return_keyframe, norm_keyframe);
+		if (Array.isArray(local_keyframe)) {
+			// Attach localisation to array property if desired
+			local_keyframe.localisation = norm_keyframe.localisation;
+		}
 	}
 	
 	//Return statement
@@ -386,8 +439,9 @@ History.getName = function (arg0_keyframes) {
 	//Iterate over all_keyframes in order
 	for (let i = 0; i < all_keyframes.length; i++) {
 		let local_keyframe = keyframes[all_keyframes[i]];
+		let val = Array.isArray(local_keyframe) ? local_keyframe : local_keyframe?.value;
 		
-		if (local_keyframe.value?.[2]?.name) entity_name = local_keyframe.value[2].name;
+		if (val?.[2]?.name) entity_name = val[2].name;
 	}
 	
 	//Return statement

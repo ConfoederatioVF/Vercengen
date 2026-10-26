@@ -32,7 +32,7 @@
 		//Return statement
 		if (all_object_keys.length !== all_ot_object_keys.length) return false;
 		for (let local_key of all_object_keys)
-			if (!all_ot_object_keys[local_key] || !Boolean.isDeepEqual(object[local_key], ot_object[local_key]))
+			if (!Object.prototype.hasOwnProperty.call(ot_object, local_key) || !Boolean.isDeepEqual(object[local_key], ot_object[local_key]))
 				return false;
 		return true;
 	};

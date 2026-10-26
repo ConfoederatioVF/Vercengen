@@ -28,13 +28,35 @@
 		
 		//Initialise options
 		if (!options.format) options.format = "int32";
+		//Guard clauses
+		if (!file_path) return null;
 		if (typeof file_path === "object") return file_path;
+		if (typeof file_path !== "string") {
+			console.error(`- [GeoPNG.loadNumberRasterImageAsync] Invalid path argument: ${file_path}`);
+			return null;
+		}
 		
 		//Declare local instance variables
-		let buffer = await fs.promises.readFile(file_path);
-		let png = await new Promise((resolve, reject) => {
-			new pngjs.PNG().parse(buffer, (err, data) => (err) ? reject(err) : resolve(data));
-		});
+		let buffer;
+		let png;
+		
+		try {
+			let stat = await fs.promises.stat(file_path);
+			if (stat.size < 8) {
+				console.error(`- [GeoPNG.loadNumberRasterImageAsync] File is empty or truncated (< 8 bytes): ${file_path}`);
+				return null;
+			}
+			
+			buffer = await fs.promises.readFile(file_path);
+			png = await new Promise((resolve, reject) => {
+				new pngjs.PNG().parse(buffer, (err, data) => (err) ? reject(err) : resolve(data));
+			});
+		} catch (err) {
+			console.error(`- [GeoPNG.loadNumberRasterImageAsync] Failed to read or parse PNG raster at ${file_path}:`, err.message || err);
+			return null;
+		}
+		
+		if (!png || !png.data || png.width <= 0 || png.height <= 0) return null;
 		
 		let height = png.height;
 		let pixel_count = png.width*png.height;
@@ -89,9 +111,10 @@
 		if (!options.format) options.format = "int32";
 		
 		//Declare local instance variables
+		let filter_type = (options.filterType !== undefined) ? options.filterType : -1;
 		let height = options.height;
 		let png = new pngjs.PNG({
-			filterType: -1,
+			filterType: filter_type,
 			height: height,
 			width: options.width
 		});
@@ -119,12 +142,13 @@
 		}
 		
 		//Pack and write asynchronously
-		let output_buffer = pngjs.PNG.sync.write(png);
+		let output_buffer = pngjs.PNG.sync.write(png, { filterType: filter_type });
 		await fs.promises.writeFile(options.file_path, output_buffer);
+		output_buffer = null;
 		
 		//Return statement
 		return {
-			data: png.data,
+			data: (options.return_data !== false) ? png.data : undefined,
 			height: height,
 			width: width
 		};
@@ -266,10 +290,9 @@
 		let NodeWorker = (!is_renderer && typeof require !== "undefined") ? require("worker_threads").Worker : null;
 		let path_module = (typeof require !== "undefined") ? require("path") : ((typeof path !== "undefined") ? path : null);
 		let worker_candidates = (path_module) ? [
-			(typeof __dirname !== "undefined") ? path_module.join(__dirname, "png_worker.js") : null,
 			(typeof __dirname !== "undefined") ? path_module.join(__dirname, "UF/js/geospatiale/files/png/png_worker.js") : null,
+			(typeof __dirname !== "undefined") ? path_module.join(__dirname, "png_worker.js") : null,
 			(typeof process !== "undefined" && process.cwd) ? path_module.join(process.cwd(), "UF/js/geospatiale/files/png/png_worker.js") : null,
-			(typeof process !== "undefined" && process.cwd) ? path_module.join(process.cwd(), "png_worker.js") : null,
 			(typeof global !== "undefined" && global.main_dir) ? path_module.join(global.main_dir, "UF/js/geospatiale/files/png/png_worker.js") : null
 		] : [];
 		let worker_file_path = null;
@@ -447,6 +470,7 @@
 		//Declare local instance variables
 		let active_promises = [];
 		let completed_count = 0;
+		let consecutive_worker_failures = 0;
 		let current_index = 0;
 		let last_logged_milestone = -1;
 		let results = new Array(items.length);
@@ -499,11 +523,19 @@
 						if (task_payload) {
 							try {
 								results[index_to_run] = await GeoPNG.executeWorkerTask(task_payload, { concurrency: concurrency });
+								consecutive_worker_failures = 0;
 							} catch (worker_err) {
-								console.warn(`- [${task_name}] Worker task failed for item ${item}:`, worker_err.message || worker_err);
+								consecutive_worker_failures++;
+								if (consecutive_worker_failures <= 3) {
+									console.warn(`- [${task_name}] Worker task failed for item ${item}:`, worker_err.message || worker_err);
+								} else if (consecutive_worker_failures === 4) {
+									console.warn(`- [${task_name}] Multiple worker tasks failed. Disabling worker thread execution for remaining items in this batch; falling back to local execution.`);
+									can_use_worker_threads = false;
+								}
 								//Fallback to local handler on serialization or worker failure
 								if (typeof handler === "function") {
-									console.warn(`- [${task_name}] Falling back to local execution for item ${item} ..`);
+									if (consecutive_worker_failures <= 3)
+										console.warn(`- [${task_name}] Falling back to local execution for item ${item} ..`);
 									results[index_to_run] = await handler(item, index_to_run, context);
 								} else {
 									throw worker_err;

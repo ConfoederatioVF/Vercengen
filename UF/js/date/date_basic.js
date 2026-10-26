@@ -301,7 +301,17 @@
 		let date = (arg0_date_object !== undefined) ? arg0_date_object : Date.getBlankDate();
 		
 		if (typeof date === "number" && !isNaN(date)) return date; //Internal guard clause if already a number
-		if (typeof date === "string") if (!isNaN(parseFloat(date))) return parseFloat(date); //Internal guard clause for string
+		if (typeof date === "string") {
+			let trimmed = date.trim();
+			if (/^-?\d+(\.\d+)?$/.test(trimmed)) return parseFloat(trimmed);
+			
+			let parsed_date = Date.convertStringToDate(trimmed);
+			if (parsed_date) {
+				date = parsed_date;
+			} else if (!isNaN(parseFloat(trimmed))) {
+				return parseFloat(trimmed);
+			}
+		}
 		
 		let date_obj = {
 			...Date.getBlankDate(),

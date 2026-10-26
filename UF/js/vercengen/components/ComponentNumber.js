@@ -47,6 +47,8 @@ ve.Number = class extends ve.Component {
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-number");
 			this.element.instance = this;
+			if (options.element_attributes)
+				HTML.setAttributesObject(this.element, options.element_attributes);
 		this.options = options;
 		this.value = value;
 		
@@ -59,6 +61,14 @@ ve.Number = class extends ve.Component {
 		this.element.innerHTML = html_string.join("");
 		
 		let input_el = this.element.querySelector("input");
+		input_el.addEventListener("input", (e) => {
+			let num_val = global.Number(e.target.value);
+			if (!isNaN(num_val)) {
+				this.value = num_val;
+				if (typeof this.options.oninput === "function")
+					this.options.oninput(this.value, this);
+			}
+		});
 		input_el.addEventListener("change", (e) => {
 			if (this.options.max && e.target.value > this.options.max)
 				e.target.value = this.options.max;
@@ -69,9 +79,42 @@ ve.Number = class extends ve.Component {
 			this.v = global.Number(e.target.value);
 			delete this.from_binding_fire_silently;
 			this.fireToBinding();
+			if (typeof this.options.onchange === "function")
+				this.options.onchange(this.value, this);
+			if (typeof this.options.onuserchange === "function")
+				this.options.onuserchange(this.value, this);
 		});
 		this.name = options.name;
 		this.v = this.value;
+	}
+
+	/**
+	 * Returns whether the number input is disabled.
+	 *
+	 * @returns {boolean}
+	 */
+	get disabled () {
+		let input_el = this.element.querySelector("input");
+		return (input_el) ? (input_el.disabled || input_el.readOnly) : !!this.options.disabled;
+	}
+
+	/**
+	 * Sets the disabled state of the number input.
+	 *
+	 * @param {boolean} arg0_value
+	 */
+	set disabled (arg0_value) {
+		let is_disabled = Boolean(arg0_value);
+		let input_el = this.element.querySelector("input");
+		if (input_el) {
+			if (is_disabled) {
+				input_el.setAttribute("disabled", "true");
+				input_el.disabled = true;
+			} else {
+				input_el.removeAttribute("disabled");
+				input_el.disabled = false;
+			}
+		}
 	}
 	
 	/**

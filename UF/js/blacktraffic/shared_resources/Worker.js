@@ -61,13 +61,15 @@ Blacktraffic.Worker = class {
 	/**
 	 * @type {string}
 	 */
-	static input_chrome_profile = Blacktraffic.getChromeDefaultProfilePath();
+	static input_chrome_profile = (typeof Blacktraffic?.getChromeDefaultProfilePath === "function") ?
+		Blacktraffic.getChromeDefaultProfilePath() : undefined;
 	
 	/**
 	 * [WIP] - Should probably really be set to a default like ./settings/Blacktraffic/workers.
 	 * @type {string}
 	 */
-	static saves_folder = ve.registry.settings.Blacktraffic.worker_saves_folder;
+	static saves_folder = (global.ve?.registry?.settings?.Blacktraffic?.worker_saves_folder) ?
+		global.ve.registry.settings.Blacktraffic.worker_saves_folder : "settings/Blacktraffic_workers/";
 	
 	/**
 	 * @type {{ "<worker_type_key>": number }}

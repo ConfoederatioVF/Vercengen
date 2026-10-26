@@ -8,6 +8,11 @@
 		 */
 		global.GeoTIFF = {};
 	
+	if (typeof global.geotiff === "undefined" && typeof require !== "undefined")
+		try { global.geotiff = require("geotiff"); } catch (e) {}
+	if (typeof global.pngjs === "undefined" && typeof require !== "undefined")
+		try { global.pngjs = require("pngjs"); } catch (e) {}
+	
 	/**
 	 * Attempts to convert a given GeoTIFF file to PNG, assuming that it is single-band
 	 * @param {String} arg0_input_file_path
@@ -120,6 +125,8 @@
 		//Iterate over every band in the GeoTIFF (each band represents a year)
 		for (let i = 0; i < raster.length; i++) {
 			let current_year = (options.years?.[i]) ? options.years[i] : i;
+			if (options.target_years && !options.target_years.includes(current_year)) continue;
+			if (options.bands && !options.bands.includes(i)) continue;
 			let current_output_path = `${output_base_path}_${current_year}.png`;
 			let original_data = raster[i];
 			
@@ -176,13 +183,17 @@
 					})
 					.on("error", reject);
 			});
-			write_promises.push(write_promise);
+			if (options.parallel) {
+				write_promises.push(write_promise);
+			} else {
+				await write_promise;
+			}
 			
 			//Push PNG to output array
-			output_pngs.push(png);
+			if (options.return_pngs) output_pngs.push(png);
 		}
 		
-		await Promise.all(write_promises);
+		if (write_promises.length > 0) await Promise.all(write_promises);
 		
 		//Return statement
 		return output_pngs;

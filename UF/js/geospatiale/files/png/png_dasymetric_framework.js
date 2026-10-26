@@ -213,13 +213,13 @@
 			
 			let current_sum = 0;
 			for (let i = 0; i < indices.length; i++)
-				current_sum += data[indices[i]];
+				current_sum += output_data[indices[i]];
 			
 			if (current_sum > 0) {
 				let scalar = target_val/current_sum;
 				for (let i = 0; i < indices.length; i++) {
 					let idx = indices[i];
-					output_data[idx] = data[idx]*scalar;
+					output_data[idx] = output_data[idx]*scalar;
 				}
 			}
 		});

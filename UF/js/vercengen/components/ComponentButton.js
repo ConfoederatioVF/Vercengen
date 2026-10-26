@@ -41,8 +41,12 @@ ve.Button = class extends ve.Component {
 		
 		//Format HTML string
 		this.button_el = document.createElement("button");
-			if (this.options.disabled)
+			if (this.options.disabled) {
 				this.button_el.setAttribute("disabled", "true");
+				this.button_el.disabled = true;
+			}
+			if (this.options.button_attributes)
+				HTML.setAttributesObject(this.button_el, this.options.button_attributes);
 			if (this.options.icon) {
 				this.icon_el = document.createElement("img");
 				this.icon_el.setAttribute("src", options.icon);
@@ -55,11 +59,39 @@ ve.Button = class extends ve.Component {
 		
 		//Add click event listener
 		this.button_el.addEventListener("click", (e) => {
+			if (this.button_el.disabled) return;
 			if (this.value) this.value(e, this);
 			if (this.fireToBinding) this.fireToBinding();
 		});
 		this.name = options.name;
 		this.v = this.value;
+	}
+
+	/**
+	 * Returns whether the button is disabled.
+	 *
+	 * @returns {boolean}
+	 */
+	get disabled () {
+		return (this.button_el) ? this.button_el.disabled : !!this.options.disabled;
+	}
+
+	/**
+	 * Sets the disabled state of the button.
+	 *
+	 * @param {boolean} arg0_value
+	 */
+	set disabled (arg0_value) {
+		let is_disabled = Boolean(arg0_value);
+		if (this.button_el) {
+			if (is_disabled) {
+				this.button_el.setAttribute("disabled", "true");
+				this.button_el.disabled = true;
+			} else {
+				this.button_el.removeAttribute("disabled");
+				this.button_el.disabled = false;
+			}
+		}
 	}
 	
 	/**

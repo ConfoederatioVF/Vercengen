@@ -451,20 +451,75 @@
 	};
 	
 	/**
+	 * Validates that a file path exists, is non-empty, and has a valid 8-byte PNG header signature.
+	 * 
+	 * @param {string} arg0_file_path - File path to inspect.
+	 * 
+	 * @returns {boolean}
+	 */
+	GeoPNG.isValidRaster = function (arg0_file_path) {
+		//Convert from parameters
+		let file_path = arg0_file_path;
+		
+		//Guard clauses
+		if (!file_path || typeof file_path !== "string") return false;
+		if (!fs.existsSync(file_path)) return false;
+		
+		try {
+			let stat = fs.statSync(file_path);
+			if (stat.size < 8) return false;
+			
+			let fd = fs.openSync(file_path, "r");
+			let header_buffer = Buffer.alloc(8);
+			fs.readSync(fd, header_buffer, 0, 8, 0);
+			fs.closeSync(fd);
+			
+			//Validate 8-byte PNG magic header: 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A
+			if (header_buffer[0] !== 0x89 || header_buffer[1] !== 0x50 || header_buffer[2] !== 0x4E || header_buffer[3] !== 0x47 ||
+			    header_buffer[4] !== 0x0D || header_buffer[5] !== 0x0A || header_buffer[6] !== 0x1A || header_buffer[7] !== 0x0A) {
+				return false;
+			}
+			
+			return true;
+		} catch (e) {
+			return false;
+		}
+	};
+	
+	/**
 	 * Loads an image into the assigned variable.
 	 * 
 	 * @param {String} arg0_file_path - Input PNG file path.
 	 * @param {Object} [arg1_options] 
 	 *
-	 * @returns {Object}
+	 * @returns {Object|null}
 	 */
 	GeoPNG.loadImage = function (arg0_file_path, arg1_options) {
 		//Convert from parameters
 		let file_path = arg0_file_path;
 		let options = (arg1_options) ? arg1_options : {};
 		
-		//Return statement
-		return pngjs.PNG.sync.read(fs.readFileSync(file_path));
+		//Guard clauses
+		if (!file_path) return null;
+		if (typeof file_path === "object") return file_path;
+		if (typeof file_path !== "string" || !fs.existsSync(file_path)) {
+			console.error(`- [GeoPNG.loadImage] File does not exist or path is invalid: ${file_path}`);
+			return null;
+		}
+		
+		try {
+			let stat = fs.statSync(file_path);
+			if (stat.size < 8) {
+				console.error(`- [GeoPNG.loadImage] File is empty or truncated (< 8 bytes): ${file_path}`);
+				return null;
+			}
+			
+			let rawdata = fs.readFileSync(file_path);
+			return pngjs.PNG.sync.read(rawdata);
+		} catch (err) {
+			console.error(`- [GeoPNG.loadImage] Failed to read PNG at ${file_path}:`, err.message || err);
+			return null;
+		}
 	};
 	
 	/**
@@ -494,18 +549,45 @@
 	 * @param {Object} [arg1_options] 
 	 *  @param {string} [arg1_options.format="int32"] - Either 'int32'/'float32'/'greyscale'.
 	 *
-	 * @returns {{width: number, height: number, data: Float64Array}|Object}
+	 * @returns {{width: number, height: number, data: Float64Array}|Object|null}
 	 */
 	GeoPNG.loadNumberRasterImage = function (arg0_file_path, arg1_options) {
+		//Convert from parameters
 		let file_path = arg0_file_path;
 		let options = (arg1_options) ? arg1_options : {};
+		
+		//Initialise options
 		if (!options.format) options.format = "int32";
-		if (typeof file_path == "object") return file_path;
+		if (typeof file_path === "object") return file_path;
 		
-		let rawdata = fs.readFileSync(file_path);
-		let png = pngjs.PNG.sync.read(rawdata);
+		//Guard clauses
+		if (!file_path) return null;
+		if (typeof file_path !== "string" || !fs.existsSync(file_path)) {
+			console.error(`- [GeoPNG.loadNumberRasterImage] File does not exist or path is invalid: ${file_path}`);
+			return null;
+		}
 		
-		//Float64Array is  safe for scaling calculations
+		//Declare local instance variables
+		let png;
+		let rawdata;
+		
+		try {
+			let stat = fs.statSync(file_path);
+			if (stat.size < 8) {
+				console.error(`- [GeoPNG.loadNumberRasterImage] File is empty or truncated (< 8 bytes): ${file_path}`);
+				return null;
+			}
+			
+			rawdata = fs.readFileSync(file_path);
+			png = pngjs.PNG.sync.read(rawdata);
+		} catch (err) {
+			console.error(`- [GeoPNG.loadNumberRasterImage] Failed to read or parse PNG raster at ${file_path}:`, err.message || err);
+			return null;
+		}
+		
+		if (!png || !png.data || png.width <= 0 || png.height <= 0) return null;
+		
+		//Float64Array is safe for scaling calculations
 		let pixel_values = new Float64Array(png.width * png.height);
 		
 		for (let i = 0; i < png.width * png.height; i++) {
@@ -530,6 +612,7 @@
 		
 		png = null;
 		
+		//Return statement
 		return { width: width, height: height, data: pixel_values };
 	};
 	
@@ -574,10 +657,11 @@
 		if (!options.format) options.format = "int32";
 		
 		//Declare local instance variables
+		let filter_type = (options.filterType !== undefined) ? options.filterType : -1;
 		let png = new pngjs.PNG({
 			height: options.height,
 			width: options.width,
-			filterType: -1
+			filterType: filter_type
 		});
 		
 		//Iterate over options.height; options.width
@@ -593,13 +677,15 @@
 		if (!fs.existsSync(parent_dir)) fs.mkdirSync(parent_dir, { recursive: true });
 		
 		//Write PNG file
-		fs.writeFileSync(options.file_path, pngjs.PNG.sync.write(png));
+		let output_buffer = pngjs.PNG.sync.write(png, { filterType: filter_type });
+		fs.writeFileSync(options.file_path, output_buffer);
+		output_buffer = null;
 		
 		//Return statement
 		return {
 			width: options.width,
 			height: options.height,
-			data: png.data
+			data: (options.return_data !== false) ? png.data : undefined
 		};
 	};
 	

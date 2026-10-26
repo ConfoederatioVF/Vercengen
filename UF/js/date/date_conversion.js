@@ -14,9 +14,60 @@
 		let date_string = arg0_date_string;
 		let delimiter = (arg1_delimiter) ? arg1_delimiter : ".";
 		
+		//Guard clause
+		if (typeof date_string !== "string") return;
+		
 		//Declare local instance variables
-		let date_array = date_string.split(delimiter);
+		let clean_string = date_string.trim();
 		let date_obj = Date.getBlankDate();
+		
+		//1. Natural language dates: e.g. "1 January 1463", "1st Jan 1463", "15 March 44 BC"
+		let dmy_match = clean_string.match(/^(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]+)\s+(-?\d+)(?:\s*(AD|BC|BCE))?$/i);
+		if (dmy_match) {
+			let day = parseInt(dmy_match[1], 10);
+			let month = Date.getMonth(dmy_match[2]);
+			let year = parseInt(dmy_match[3], 10);
+			let era = (dmy_match[4]) ? dmy_match[4].toUpperCase() : undefined;
+			if ((era === "BC" || era === "BCE") && year > 0) year = -year;
+			
+			date_obj.day = day;
+			date_obj.month = month;
+			date_obj.year = year;
+			
+			//Return statement
+			return date_obj;
+		}
+		
+		//2. Natural language dates: e.g. "January 1, 1463", "Jan 1 1463"
+		let mdy_match = clean_string.match(/^([A-Za-z]+)\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(-?\d+)(?:\s*(AD|BC|BCE))?$/i);
+		if (mdy_match) {
+			let month = Date.getMonth(mdy_match[1]);
+			let day = parseInt(mdy_match[2], 10);
+			let year = parseInt(mdy_match[3], 10);
+			let era = (mdy_match[4]) ? mdy_match[4].toUpperCase() : undefined;
+			if ((era === "BC" || era === "BCE") && year > 0) year = -year;
+			
+			date_obj.day = day;
+			date_obj.month = month;
+			date_obj.year = year;
+			
+			//Return statement
+			return date_obj;
+		}
+		
+		//3. ISO/hyphen or slash date: e.g. "1463-01-01" or "1463/01/01"
+		let iso_match = clean_string.match(/^(-?\d+)[-/]([0-9]{1,2})[-/]([0-9]{1,2})$/);
+		if (iso_match) {
+			date_obj.year = parseInt(iso_match[1], 10);
+			date_obj.month = parseInt(iso_match[2], 10);
+			date_obj.day = parseInt(iso_match[3], 10);
+			
+			//Return statement
+			return date_obj;
+		}
+		
+		//4. Delimited numeric date (e.g. "1463.1.1")
+		let date_array = clean_string.split(delimiter);
 		let date_properties = ["year", "month", "day", "hour", "minute"];
 		
 		//Check to make sure that the inputted date_string is valid
@@ -46,11 +97,19 @@
 		
 		if (typeof timestamp === "object") return timestamp;
 		
-		timestamp = parseFloat(timestamp);
+		if (typeof timestamp === "string") {
+			let trimmed = timestamp.trim();
+			if (!/^-?\d+(\.\d+)?$/.test(trimmed)) {
+				let parsed_date = Date.convertStringToDate(trimmed);
+				if (parsed_date) return parsed_date;
+			}
+			timestamp = parseFloat(trimmed);
+		}
+		
 		if (isNaN(timestamp)) return Date.getBlankDate();
 		
 		//Declare local instance variables
-		let do_not_cache_timestamps = ve.registry.settings.Date.do_not_cache_timestamps;
+		let do_not_cache_timestamps = ve?.registry?.settings?.Date?.do_not_cache_timestamps;
 		
 		// Map cache for extremely fast O(1) repeat lookups
 		if (!do_not_cache_timestamps) {

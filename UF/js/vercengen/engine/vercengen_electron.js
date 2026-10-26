@@ -160,6 +160,27 @@ if (!global.v8) global.v8 = require("node:v8");
 		});
 		
 		//process
+		ipc_main.handle("process:invoke", async (_event, json) => {
+			if (typeof proc?.IPC_task !== "function") return null;
+			return await proc.IPC_task(json);
+		});
+		ipc_main.handle("process:get-diagnostics", async () => {
+			if (typeof proc?.IPC_getDiagnostics !== "function") return [];
+			return await proc.IPC_getDiagnostics();
+		});
+		ipc_main.handle("process:set-worker-pool-size", async (_event, count) => {
+			if (typeof proc?.IPC_setWorkerPoolSize !== "function") return 0;
+			return await proc.IPC_setWorkerPoolSize(count);
+		});
+		ipc_main.handle("ndjson:invoke", async (_event, function_key, ...argn_arguments) => {
+			if (typeof NDJSON?.[function_key] !== "function") return null;
+			return await NDJSON[function_key](...argn_arguments);
+		});
+		ipc_main.handle("ndjson:set-worker-pool-size", async (_event, count) => {
+			if (typeof NDJSON?.setWorkerPoolSize !== "function") return 0;
+			return await NDJSON.setWorkerPoolSize(count);
+		});
+
 		ipc_main.on("process", async (event, json) => {
 			if (proc.IPC_task === undefined) event.sender.send("process:ready", null);
 			

@@ -259,9 +259,9 @@ global.path = require("path");
 				"archives"
 			];
 		if (!options.ignored_directory_substrings)
-			options.ignored_directory_substrings = ["_rasters", "rasters_", "worker"];
+			options.ignored_directory_substrings = ["_rasters", "rasters_"];
 		if (!options.ignored_file_substrings)
-			options.ignored_file_substrings = ["worker"];
+			options.ignored_file_substrings = [];
 		
 		//Declare local instance variables
 		let file_list;
@@ -576,8 +576,9 @@ global.path = require("path");
 		let load_patterns = (!options.do_not_import_UF) ? [
 			"!UF/archives",
 			"!UF/js/vercengen/db",
-			"!UF/**/*worker*",
-			"!**/*worker*",
+			"!UF/js/geospatiale/files/png/png_worker.js",
+			"!UF/js/vercengen/db/NDJSON_worker.js",
+			"!core/process/workers/process_worker.js",
 			"UF",
 			
 			//Localisation

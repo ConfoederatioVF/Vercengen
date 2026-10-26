@@ -592,18 +592,41 @@ ve.FileExplorer = class extends ve.Component {
 							load_file: new ve.Button((e) => {
 								veConfirm(loc("ve.registry.localisation.FileExplorer_are_you_sure_load", local_full_path), {
 									special_function: () => {
+										//1. Handle manual_load_function directly without reading entire file into memory
+										if (this.options.manual_load_function) {
+											try {
+												this.options.manual_load_function(local_full_path);
+												veToast(loc("ve.registry.localisation.FileExplorer_load_request", local_full_path));
+											} catch (e) {
+												console.error(e);
+											}
+											return;
+										}
+										
+										//2. Handle load_function, checking file size to prevent V8 RangeError [ERR_STRING_TOO_LONG]
+										let file_size = 0;
+										try {
+											file_size = fs.statSync(local_full_path).size;
+										} catch (e) {}
+										
+										if (file_size > 100*1024*1024 || global.main?.settings?.load_savefile_as === "file") {
+											if (this.options.load_function)
+												try {
+													this.options.load_function(null, local_full_path);
+													veToast(loc("ve.registry.localisation.FileExplorer_loaded_save_file", local_full_path));
+												} catch (e) {
+													veWindow(`${loc("ve.registry.localisation.FileExplorer_error_load_save_file")}: ${e}`, { name: loc("ve.registry.localisation.FileExplorer_error_load_save_file") });
+													console.error(e);
+												}
+											return;
+										}
+										
+										//3. Standard text read for smaller files
 										fs.readFile(local_full_path, "utf8", (err, data) => {
 											if (err) {
 												veToast(loc("ve.registry.localisation.FileExplorer_error_load", local_full_path, e));
 												return;
 											}
-											if (this.options.manual_load_function)
-												try {
-													this.options.manual_load_function(local_full_path);
-													veToast(loc("ve.registry.localisation.FileExplorer_load_request", local_full_path));
-												} catch (e) {
-													console.error(e);
-												}
 											if (this.options.load_function)
 												try {
 													this.options.load_function(data, local_full_path);
@@ -618,7 +641,7 @@ ve.FileExplorer = class extends ve.Component {
 							}, {
 								name: `<icon>sync_arrow_down</icon>`,
 								tooltip: loc("ve.registry.localisation.FileExplorer_load_save_file"),
-								limit: () => this.options.load_function && (this.options.save_extension === undefined || this.options.save_extension.includes(path.extname(local_full_path)) || this.options.save_extension.includes(".*")),
+								limit: () => (this.options.load_function || this.options.manual_load_function) && (this.options.save_extension === undefined || this.options.save_extension.includes(path.extname(local_full_path)) || this.options.save_extension.includes(".*")),
 								style: {
 									"#name icon": { 
 										justifyContent: "normal",

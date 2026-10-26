@@ -165,7 +165,9 @@
 			});
 		} else {
 			//Worker logic only runs if ipc_renderer is not present
-			let task_id = Object.generateRandomID();
+			let task_id = (typeof Object.generateRandomID === "function") ?
+				Object.generateRandomID() :
+				(Math.random().toString(36).substring(2) + Date.now().toString(36));
 			
 			try {
 				//We use a generic require to avoid loader issues where possible

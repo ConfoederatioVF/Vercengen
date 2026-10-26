@@ -357,11 +357,16 @@
 				let is_ensemble = (model_obj.type === "multinomial_ensemble" && Array.isArray(model_obj.models) && model_obj.models.length > 0);
 				let sub_models_data = [];
 
+				if (!Statistics._model_cache)
+					Statistics._model_cache = {};
+
 				if (is_ensemble) {
 					let total_weight = 0;
 					for (let m = 0; m < model_obj.models.length; m++) {
 						let entry = model_obj.models[m];
-						let sub_obj = (typeof entry.model === "string") ? File.loadJSON(entry.model) : entry.model;
+						let sub_obj = (typeof entry.model === "string") ?
+							(Statistics._model_cache[entry.model] || (Statistics._model_cache[entry.model] = File.loadJSON(entry.model))) :
+							entry.model;
 						let w = Math.returnSafeNumber(entry.weight, 1);
 						if (sub_obj) {
 							sub_models_data.push({ model: sub_obj, weight: w });
@@ -402,35 +407,55 @@
 					sub_weight_vals[m] = sub_models_data[m].weight;
 				}
 
+				let custom_guard = options.guard_clause;
+				let has_custom_guard = (typeof custom_guard === "function");
+				let land_data = land_raster_data;
+				let popd_data = (options.guard_type === "uninhabited" || options.mask_uninhabited) ?
+					rasters_obj["popd_"]?.data : null;
+
 				if (output_mode === "class") {
 					let format = options.format || "int32";
 					let local_exps = new Float64Array(num_all_classes);
 					let local_logits = new Float64Array(num_all_classes);
 					let output_buffer = new Float32Array(total_pixels);
+					let pixel_features = new Float64Array(num_features);
 					let pixel_probs = new Float64Array(num_all_classes);
 
 					for (let start_idx = 0; start_idx < total_pixels; start_idx += chunk_pixels) {
 						let end_idx = Math.min(start_idx + chunk_pixels, total_pixels);
 						for (let local_index = start_idx; local_index < end_idx; local_index++) {
-							if (!passes_guard(local_index)) {
-								output_buffer[local_index] = 0;
-								continue;
+							if (has_custom_guard) {
+								if (!custom_guard(local_index, rasters_obj)) {
+									output_buffer[local_index] = 0;
+									continue;
+								}
+							} else if (popd_data) {
+								if (popd_data[local_index] === 0 || (land_data && land_data[local_index] === 0)) {
+									output_buffer[local_index] = 0;
+									continue;
+								}
 							}
 
-							for (let c = 0; c < num_all_classes; c++) pixel_probs[c] = 0;
+							for (let k = 0; k < num_features; k++) {
+								let fd = feature_data[k];
+								pixel_features[k] = (fd) ? fd[local_index] : 0;
+							}
+
+							pixel_probs.fill(0);
 
 							for (let m = 0; m < num_models; m++) {
+								let w_m = sub_weight_vals[m];
+								if (w_m === 0) continue;
+
 								let max_l = -Infinity;
 								let s_intercepts = sub_intercepts[m];
 								let s_weights = sub_weights[m];
-								let w_m = sub_weight_vals[m];
 
 								for (let c = 0; c < num_all_classes; c++) {
 									let sum = s_intercepts[c];
 									let w = s_weights[c];
 									for (let k = 0; k < num_features; k++) {
-										let fd = feature_data[k];
-										if (fd) sum += fd[local_index]*w[k];
+										sum += pixel_features[k]*w[k];
 									}
 									local_logits[c] = sum;
 									if (sum > max_l) max_l = sum;
@@ -442,10 +467,10 @@
 									local_exps[c] = e;
 									sum_exp += e;
 								}
-								let inv_sum = (sum_exp > 0) ? (1/sum_exp) : 0;
+								let inv_sum = (sum_exp > 0) ? (w_m/sum_exp) : 0;
 
 								for (let c = 0; c < num_all_classes; c++)
-									pixel_probs[c] += w_m*(local_exps[c]*inv_sum);
+									pixel_probs[c] += local_exps[c]*inv_sum;
 							}
 
 							let argmax_c = 0;
@@ -462,6 +487,9 @@
 						if (typeof Blacktraffic !== "undefined" && Blacktraffic.yield)
 							await Blacktraffic.yield(0);
 					}
+
+					for (let k = 0; k < num_features; k++) feature_data[k] = null;
+					rasters_obj = null;
 					
 					await GeoPNG.saveNumberRasterImageAsync({
 						data: output_buffer,
@@ -476,10 +504,12 @@
 					let is_single = (output_mode === "probability");
 					let local_exps = new Float64Array(num_all_classes);
 					let local_logits = new Float64Array(num_all_classes);
+					let pixel_features = new Float64Array(num_features);
 					let target_classes = is_single ?
 						[String(options.class)] : all_classes;
 					let target_indices = target_classes.map(tc => all_classes.indexOf(tc));
 					let num_targets = target_classes.length;
+					let pixel_probs = new Float64Array(num_targets);
 
 					let output_buffers = new Array(num_targets);
 					for (let tc = 0; tc < num_targets; tc++)
@@ -489,20 +519,32 @@
 					for (let start_idx = 0; start_idx < total_pixels; start_idx += chunk_pixels) {
 						let end_idx = Math.min(start_idx + chunk_pixels, total_pixels);
 						for (let local_index = start_idx; local_index < end_idx; local_index++) {
-							if (!passes_guard(local_index)) continue; //Buffers are zero-initialized
+							if (has_custom_guard) {
+								if (!custom_guard(local_index, rasters_obj)) continue;
+							} else if (popd_data) {
+								if (popd_data[local_index] === 0 || (land_data && land_data[local_index] === 0)) continue;
+							}
+
+							for (let k = 0; k < num_features; k++) {
+								let fd = feature_data[k];
+								pixel_features[k] = (fd) ? fd[local_index] : 0;
+							}
+
+							pixel_probs.fill(0);
 
 							for (let m = 0; m < num_models; m++) {
+								let w_m = sub_weight_vals[m];
+								if (w_m === 0) continue;
+
 								let max_l = -Infinity;
 								let s_intercepts = sub_intercepts[m];
 								let s_weights = sub_weights[m];
-								let w_m = sub_weight_vals[m];
 
 								for (let c = 0; c < num_all_classes; c++) {
 									let sum = s_intercepts[c];
 									let w = s_weights[c];
 									for (let k = 0; k < num_features; k++) {
-										let fd = feature_data[k];
-										if (fd) sum += fd[local_index]*w[k];
+										sum += pixel_features[k]*w[k];
 									}
 									local_logits[c] = sum;
 									if (sum > max_l) max_l = sum;
@@ -514,33 +556,41 @@
 									local_exps[c] = e;
 									sum_exp += e;
 								}
-								let inv_sum = (sum_exp > 0) ? (1/sum_exp) : 0;
+								let inv_sum = (sum_exp > 0) ? (w_m/sum_exp) : 0;
 
 								for (let tc = 0; tc < num_targets; tc++) {
 									let c_idx = target_indices[tc];
 									if (c_idx >= 0)
-										output_buffers[tc][local_index] += w_m*(local_exps[c_idx]*inv_sum);
+										pixel_probs[tc] += local_exps[c_idx]*inv_sum;
 								}
 							}
+
+							for (let tc = 0; tc < num_targets; tc++)
+								output_buffers[tc][local_index] = pixel_probs[tc];
 						}
 						
 						if (typeof Blacktraffic !== "undefined" && Blacktraffic.yield)
 							await Blacktraffic.yield(0);
 					}
 
+					for (let k = 0; k < num_features; k++) feature_data[k] = null;
+					rasters_obj = null;
+
+					let save_promises = [];
 					for (let tc = 0; tc < num_targets; tc++) {
 						let local_class = target_classes[tc];
 						let local_path = is_single ?
 							output_file_path : output_file_path.replace(/(\.[^.]+)$/, `_class_${local_class}$1`);
 
-						await GeoPNG.saveNumberRasterImageAsync({
+						save_promises.push(GeoPNG.saveNumberRasterImageAsync({
 							data: output_buffers[tc],
 							file_path: local_path,
 							format: "float32",
 							height: options.height,
 							width: options.width
-						});
+						}));
 					}
+					await Promise.all(save_promises);
 					console.log(`Saved ${num_targets} probability rasters for ${output_file_path}.`);
 				}
 			} else if (mode === "anchored_multinomial_gam") {

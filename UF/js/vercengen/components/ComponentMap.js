@@ -230,6 +230,26 @@ ve.Map = class extends ve.Component {
 	}
 	
 	/**
+	 * Removes a map event listener from the current component.
+	 * - Method of: {@link ve.Map}
+	 * 
+	 * @alias off
+	 * @memberof ve.Component.ve.Map
+	 * 
+	 * @param {maptalks.Event} arg0_event
+	 * @param {function} arg1_function
+	 */
+	off (arg0_event, arg1_function) {
+		//Convert from parameters
+		let e = arg0_event;
+		let fn = arg1_function;
+		
+		//Remove the event listener from event_map and the map
+		this.event_map = this.event_map.filter(item => !(item[0] === e && item[1] === fn));
+		if (this.map) this.map.off(e, fn);
+	}
+	
+	/**
 	 * Refreshes the current map display, but does not reattach event listeners.
 	 * - Method of: {@link ve.Map}
 	 * 

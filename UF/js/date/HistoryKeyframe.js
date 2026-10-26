@@ -22,8 +22,10 @@ global.HistoryKeyframe = class {
 		//Convert from parameters
 		let date = arg0_date;
 		
-		//Declare local instance variables
-		this.date = Date.convertTimestampToDate(JSON.parse(JSON.stringify(date))); //Needs to be deep-copied since date can be a Proxy
+		let raw_date = date;
+		if (typeof date === "object" && date !== null)
+			raw_date = (date instanceof Date) ? new Date(date.getTime()) : { ...date };
+		this.date = Date.convertTimestampToDate(raw_date);
 		this.timestamp = Date.getTimestamp(date);
 		this.value = [];
 		

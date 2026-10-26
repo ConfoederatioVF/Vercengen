@@ -131,6 +131,14 @@ ve.Date = class extends ve.Component {
 	 */
 	handleEvents () {
 		this.element.querySelector(`#year`).addEventListener("change", (e) => {
+			let raw_value = e.target.value;
+			let parsed_date = (raw_value && isNaN(Number(raw_value))) ? Date.convertStringToDate(raw_value) : null;
+			
+			if (parsed_date) {
+				this.v = parsed_date;
+				return;
+			}
+			
 			let actual_value = parseInt(e.target.value);
 			let year_type_el = this.element.querySelector(`#year-type`);
 			
@@ -151,31 +159,52 @@ ve.Date = class extends ve.Component {
 			}
 		});
 		this.element.querySelector(`#month`).addEventListener("change", (e) => {
+			let raw_value = e.target.value;
+			let parsed_date = (raw_value && raw_value.includes(" ") && isNaN(Number(raw_value))) ? Date.convertStringToDate(raw_value) : null;
+			
+			if (parsed_date) {
+				this.v = parsed_date;
+				return;
+			}
+			
 			let actual_month = -1;
 			
 			if (!isNaN(parseInt(e.target.value))) {
-				let local_month = Date.months[Date.all_months[parseInt(e.target.value)]];
+				let month_num = parseInt(e.target.value);
+				let month_key = Date.all_months[month_num - 1];
+				let local_month = (month_key) ? Date.months[month_key] : null;
 				
 				if (local_month)
-					actual_month = local_month.month;
+					actual_month = month_num;
 			} else {
 				actual_month = Date.getMonth(e.target.value);
 			}
+			
+			if (actual_month < 1 || actual_month > 12) actual_month = 1;
 			
 			e.target.value = Date.months[Date.all_months[actual_month - 1]].name;
 			this.value.month = actual_month;
 			this.fireToBinding();
 		});
 		this.element.querySelector(`#day`).addEventListener("change", (e) => { 
+			let raw_value = e.target.value;
+			let parsed_date = (raw_value && isNaN(Number(raw_value))) ? Date.convertStringToDate(raw_value) : null;
+			
+			if (parsed_date) {
+				this.v = parsed_date;
+				return;
+			}
+			
 			let actual_value = parseInt(e.target.value);
-			let current_month = Date.getMonth(this.element.querySelector(`#month`).value);
+			let current_month_idx = Date.getMonth(this.element.querySelector(`#month`).value);
+			let month_obj = (current_month_idx) ? Date.months[Date.all_months[current_month_idx - 1]] : null;
 			let current_year = parseInt(this.element.querySelector(`#year`).value);
 			
-			if (!isNaN(actual_value) && current_month) {
+			if (!isNaN(actual_value) && month_obj) {
 				//Get days_in_month
-				let days_in_month = current_month.days;
-				if (Date.isLeapYear(current_year) && current_month.leap_year_days) 
-					days_in_month = current_month.leap_year_days;
+				let days_in_month = month_obj.days;
+				if (Date.isLeapYear(current_year) && month_obj.leap_year_days) 
+					days_in_month = month_obj.leap_year_days;
 				
 				if (actual_value < 1) actual_value = 1;
 				if (actual_value > days_in_month) actual_value = days_in_month;

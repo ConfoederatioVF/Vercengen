@@ -247,7 +247,146 @@
 	};
 	
 	/**
+	 * Computes a robust composite ALR compositional model across a series of annual anchor models.
+	 * Averages category coefficients in log-odds parameter space across valid historical anchor models.
+	 *
+	 * @alias Statistics.geomeanALRModels
+	 *
+	 * @param {string} arg0_input_folder_path - Directory containing annual ALR JSON models.
+	 * @param {string} arg1_model_prefix - File prefix to filter, e.g. "multinomial_model_m_".
+	 * @param {Object} [arg2_options]
+	 *  @param {string} [arg2_options.output_file_path] - Output path for the composite model.
+	 *  @param {number} [arg2_options.min_year] - Optional minimum year filter (inclusive).
+	 *  @param {number} [arg2_options.max_year] - Optional maximum year filter (inclusive).
+	 *  @param {Array<string>} [arg2_options.categories] - Category labels override.
+	 *  @param {string} [arg2_options.reference_category] - Reference category override.
+	 *  @param {boolean} [arg2_options.weighted=true] - Whether to weight by anchor sample count.
+	 *
+	 * @returns {Promise<Object|null>} The generated composite ALR model object.
+	 */
+	Statistics.geomeanALRModels = async function (arg0_input_folder_path, arg1_model_prefix, arg2_options) {
+		//Convert from parameters
+		let input_folder_path = arg0_input_folder_path;
+		let model_prefix = arg1_model_prefix;
+		let options = (arg2_options) ? arg2_options : {};
+
+		//Initialise options
+		let max_year = (options.max_year !== undefined) ? options.max_year : Infinity;
+		let min_year = (options.min_year !== undefined) ? options.min_year : -Infinity;
+		let weighted = (options.weighted !== undefined) ? options.weighted : true;
+
+		//Declare local instance variables
+		let all_files = fs.readdirSync(input_folder_path);
+		let all_models = [];
+		let categories = options.categories;
+		let composite_coefficients = {};
+		let covariates = options.covariates;
+		let format_slug = model_prefix.replace(/[_\s]+$/, "");
+		let model_data_obj;
+		let out_path = options.output_file_path || path.join(input_folder_path, `geomean_${format_slug}.json`);
+		let reference_category = options.reference_category;
+		let total_samples = 0;
+		let total_weight = 0;
+
+		//Guard clauses
+		if (!fs.existsSync(input_folder_path)) return null;
+
+		//Function body
+		for (let i = 0; i < all_files.length; i++) {
+			let file_name = all_files[i];
+			if (file_name.startsWith(model_prefix) && file_name.endsWith(".json")) {
+				if (file_name.includes("unified") || file_name.includes("geomean") || file_name.includes("weights") || file_name.includes("preindustrial") || file_name.includes("industrial") || file_name.includes("modern"))
+					continue;
+
+				let year_match = file_name.match(/_(-?\d+)\.json$/);
+				let year = year_match ? parseInt(year_match[1]) : null;
+				if (year !== null && (year < min_year || year > max_year))
+					continue;
+
+				let full_path = path.join(input_folder_path, file_name);
+				try {
+					let m = JSON.parse(fs.readFileSync(full_path, "utf8"));
+					if (m && m.coefficients) {
+						let samples = Math.returnSafeNumber(m.training?.sample_count, 1000);
+						all_models.push({
+							coefficients: m.coefficients,
+							has_intercept: (m.has_intercept !== false),
+							model_path: full_path,
+							sample_count: samples,
+							year: year
+						});
+						total_samples += samples;
+						if (!categories && m.categories) categories = m.categories;
+						if (!reference_category && m.reference_category) reference_category = m.reference_category;
+						if (!covariates && m.covariates) covariates = m.covariates;
+					}
+				} catch (err) {
+					console.warn(`[geomeanALRModels] Could not parse ${file_name}:`, err.message);
+				}
+			}
+		}
+
+		if (all_models.length === 0) {
+			console.warn(`[geomeanALRModels] No models matched prefix '${model_prefix}' in [${min_year}, ${max_year}].`);
+			return null;
+		}
+
+		for (let i = 0; i < all_models.length; i++) {
+			let w = (weighted && total_samples > 0) ? all_models[i].sample_count : 1.0;
+			all_models[i].weight = w;
+			total_weight += w;
+		}
+		for (let i = 0; i < all_models.length; i++)
+			all_models[i].weight /= total_weight;
+
+		for (let c = 0; c < categories.length; c++) {
+			let cat = categories[c];
+			if (cat === reference_category) continue;
+			composite_coefficients[cat] = {};
+
+			let intercept_sum = 0;
+			for (let i = 0; i < all_models.length; i++) {
+				let b = all_models[i].coefficients[cat];
+				intercept_sum += all_models[i].weight * Math.returnSafeNumber(b?._intercept, 0);
+			}
+			composite_coefficients[cat]._intercept = intercept_sum;
+
+			for (let j = 0; j < covariates.length; j++) {
+				let cov_key = covariates[j];
+				let cov_sum = 0;
+				for (let i = 0; i < all_models.length; i++) {
+					let b = all_models[i].coefficients[cat];
+					cov_sum += all_models[i].weight * Math.returnSafeNumber(b?.[cov_key], 0);
+				}
+				composite_coefficients[cat][cov_key] = cov_sum;
+			}
+		}
+
+		model_data_obj = {
+			key: out_path,
+			type: "alr_compositional",
+			categories: categories,
+			reference_category: reference_category,
+			covariates: covariates,
+			has_intercept: true,
+			coefficients: composite_coefficients,
+			training: {
+				anchors_count: all_models.length,
+				sample_count_total: total_samples,
+				years: all_models.map(m => m.year).filter(y => y !== null)
+			}
+		};
+
+		fs.writeFileSync(out_path, JSON.stringify(model_data_obj, null, 2));
+		console.log(`ALR composite model generated and saved to ${out_path} using ${all_models.length} anchors.`);
+
+		//Return statement
+		return model_data_obj;
+	};
+
+	/**
 	 * Generates multi-class probability rasters from a trained ALR compositional model.
+	 * Supports discrete ALR models, probability-blended multinomial_ensemble mixtures, and uninhabited masking.
 	 *
 	 * @alias Statistics.generateALRRaster
 	 *
@@ -257,6 +396,8 @@
 	 *  @param {Object|string} arg1_options.model_obj
 	 *  @param {number} [arg1_options.height=2160]
 	 *  @param {number} [arg1_options.width=4320]
+	 *  @param {boolean} [arg1_options.mask_uninhabited=false]
+	 *  @param {Function} [arg1_options.guard_clause]
 	 *
 	 * @returns {Promise<void>}
 	 */
@@ -265,84 +406,177 @@
 		let output_file_path = arg0_output_file_path;
 		let options = (arg1_options) ? arg1_options : {};
 		let model_obj = (typeof options.model_obj === "string") ?
-			File.loadJSON(options.model_obj) : options.model_obj;
-		
+			File.loadJSON(path.resolve(options.model_obj)) : options.model_obj;
+
 		//Initialise options
 		let height = Math.returnSafeNumber(options.height, 2160);
 		let width = Math.returnSafeNumber(options.width, 4320);
-		
+
 		//Declare local instance variables
-		let categories = model_obj.categories;
-		let coefficients = model_obj.coefficients || {};
-		let num_categories = categories.length;
-		let reference_category = model_obj.reference_category || categories[0];
-		let total_pixels = width*height;
+		let categories;
 		let chunk_pixels = 100*width;
-		
-		let { rasters_obj, valid_keys } = Statistics.loadCovariateRasters(options.covariates_obj);
-		let num_features = valid_keys.length;
-		let feature_data = valid_keys.map(k => rasters_obj[k]?.data);
-		
-		//Pre-extract weights per category
-		let category_weights = new Array(num_categories);
-		let category_intercepts = new Float64Array(num_categories);
-		
-		for (let c = 0; c < num_categories; c++) {
-			let cat = categories[c];
-			if (cat === reference_category) {
-				category_intercepts[c] = 0;
-				category_weights[c] = new Float64Array(num_features);
-			} else {
-				let block = coefficients[cat] || {};
-				category_intercepts[c] = Math.returnSafeNumber(block._intercept, 0);
-				let w = new Float64Array(num_features);
-				for (let k = 0; k < num_features; k++)
-					w[k] = Math.returnSafeNumber(block[valid_keys[k]], 0);
-				category_weights[c] = w;
+		let feature_data;
+		let is_ensemble = (model_obj && model_obj.type === "multinomial_ensemble" && Array.isArray(model_obj.models) && model_obj.models.length > 0);
+		let land_raster_data = null;
+		let local_exps;
+		let local_logits;
+		let num_categories;
+		let num_features;
+		let num_models;
+		let output_buffers;
+		let passes_guard;
+		let reference_category;
+		let sub_intercepts;
+		let sub_model_weights;
+		let sub_models_data = [];
+		let sub_weights;
+		let total_pixels = width*height;
+		let total_weight = 0;
+
+		//Unpack ensemble or discrete model
+		if (is_ensemble) {
+			for (let m = 0; m < model_obj.models.length; m++) {
+				let entry = model_obj.models[m];
+				let sub_obj = (typeof entry.model === "string") ?
+					File.loadJSON(path.resolve(entry.model)) : entry.model;
+				let w = Math.returnSafeNumber(entry.weight, 1);
+				if (sub_obj && sub_obj.coefficients) {
+					sub_models_data.push({ model: sub_obj, weight: w });
+					total_weight += w;
+				}
 			}
+			if (total_weight > 0) {
+				for (let m = 0; m < sub_models_data.length; m++)
+					sub_models_data[m].weight /= total_weight;
+			}
+		} else if (model_obj && model_obj.coefficients) {
+			sub_models_data.push({ model: model_obj, weight: 1.0 });
 		}
-		
-		let output_buffers = new Array(num_categories);
+
+		if (sub_models_data.length === 0 && model_obj && model_obj.fallback_model) {
+			let fallback_obj = (typeof model_obj.fallback_model === "string") ?
+				File.loadJSON(path.resolve(model_obj.fallback_model)) : model_obj.fallback_model;
+			if (fallback_obj && fallback_obj.coefficients)
+				sub_models_data.push({ model: fallback_obj, weight: 1.0 });
+		}
+
+		if (sub_models_data.length === 0) {
+			console.warn(`[generateALRRaster] No valid sub-models or coefficients found for prediction at ${output_file_path}.`);
+			return;
+		}
+
+		categories = model_obj.categories || sub_models_data[0].model.categories;
+		num_categories = categories.length;
+		reference_category = model_obj.reference_category || sub_models_data[0].model.reference_category || categories[0];
+
+		let { rasters_obj, valid_keys } = Statistics.loadCovariateRasters(options.covariates_obj);
+		num_features = valid_keys.length;
+		feature_data = valid_keys.map(k => rasters_obj[k]?.data);
+
+		num_models = sub_models_data.length;
+		sub_intercepts = new Array(num_models);
+		sub_model_weights = new Float64Array(num_models);
+		sub_weights = new Array(num_models);
+
+		for (let m = 0; m < num_models; m++) {
+			let sub = sub_models_data[m].model;
+			let sub_coeff = sub.coefficients || {};
+			let s_intercepts = new Float64Array(num_categories);
+			let s_weights = new Array(num_categories);
+
+			for (let c = 0; c < num_categories; c++) {
+				let cat = categories[c];
+				if (cat === reference_category) {
+					s_intercepts[c] = 0;
+					s_weights[c] = new Float64Array(num_features);
+				} else {
+					let block = sub_coeff[cat] || {};
+					s_intercepts[c] = Math.returnSafeNumber(block._intercept, 0);
+					let w = new Float64Array(num_features);
+					for (let k = 0; k < num_features; k++)
+						w[k] = Math.returnSafeNumber(block[valid_keys[k]], 0);
+					s_weights[c] = w;
+				}
+			}
+			sub_intercepts[m] = s_intercepts;
+			sub_model_weights[m] = sub_models_data[m].weight;
+			sub_weights[m] = s_weights;
+		}
+
+		if (options.landarea_raster_path && fs.existsSync(options.landarea_raster_path))
+			land_raster_data = GeoPNG.loadNumberRasterImage(options.landarea_raster_path, { format: "int32" })?.data;
+
+		passes_guard = (local_index) => {
+			if (options.guard_clause)
+				return options.guard_clause(local_index, rasters_obj);
+			if (options.guard_type === "uninhabited" || options.mask_uninhabited) {
+				let local_pop = Math.returnSafeNumber(rasters_obj["popd_"]?.data[local_index] || rasters_obj["popc_"]?.data[local_index], 0);
+				if (local_pop === 0) return false;
+				if (land_raster_data && land_raster_data[local_index] === 0) return false;
+			}
+			return true;
+		};
+
+		output_buffers = new Array(num_categories);
 		for (let c = 0; c < num_categories; c++)
 			output_buffers[c] = new Float32Array(total_pixels);
-		
-		let local_logits = new Float64Array(num_categories);
-		let local_exps = new Float64Array(num_categories);
-		
+
+		local_exps = new Float64Array(num_categories);
+		local_logits = new Float64Array(num_categories);
+
 		for (let start_idx = 0; start_idx < total_pixels; start_idx += chunk_pixels) {
 			let end_idx = Math.min(start_idx + chunk_pixels, total_pixels);
 			for (let i = start_idx; i < end_idx; i++) {
-				let max_l = -Infinity;
-				for (let c = 0; c < num_categories; c++) {
-					let cat = categories[c];
-					let sum = category_intercepts[c];
-					if (cat !== reference_category) {
-						let w = category_weights[c];
-						for (let k = 0; k < num_features; k++) {
-							let fd = feature_data[k];
-							if (fd) sum += fd[i]*w[k];
+				if (!passes_guard(i)) {
+					for (let c = 0; c < num_categories; c++)
+						output_buffers[c][i] = 0;
+					continue;
+				}
+
+				let blended_probs = new Float64Array(num_categories);
+
+				for (let m = 0; m < num_models; m++) {
+					let mw = sub_model_weights[m];
+					if (mw <= 0) continue;
+
+					let s_intercepts = sub_intercepts[m];
+					let s_weights = sub_weights[m];
+					let max_l = -Infinity;
+
+					for (let c = 0; c < num_categories; c++) {
+						let cat = categories[c];
+						let sum = s_intercepts[c];
+						if (cat !== reference_category) {
+							let w = s_weights[c];
+							for (let k = 0; k < num_features; k++) {
+								let fd = feature_data[k];
+								if (fd) sum += fd[i]*w[k];
+							}
 						}
+						local_logits[c] = sum;
+						if (sum > max_l) max_l = sum;
 					}
-					local_logits[c] = sum;
-					if (sum > max_l) max_l = sum;
+
+					let sum_exp = 0;
+					for (let c = 0; c < num_categories; c++) {
+						let e = Math.exp(local_logits[c] - max_l);
+						local_exps[c] = e;
+						sum_exp += e;
+					}
+					let inv_sum = (sum_exp > 0) ? (1/sum_exp) : 0;
+
+					for (let c = 0; c < num_categories; c++)
+						blended_probs[c] += mw * (local_exps[c]*inv_sum);
 				}
-				
-				let sum_exp = 0;
-				for (let c = 0; c < num_categories; c++) {
-					let e = Math.exp(local_logits[c] - max_l);
-					local_exps[c] = e;
-					sum_exp += e;
-				}
-				let inv_sum = (sum_exp > 0) ? (1/sum_exp) : 0;
-				
+
 				for (let c = 0; c < num_categories; c++)
-					output_buffers[c][i] = local_exps[c]*inv_sum;
+					output_buffers[c][i] = blended_probs[c];
 			}
-			
+
 			if (typeof Blacktraffic !== "undefined" && Blacktraffic.yield)
 				await Blacktraffic.yield(0);
 		}
-		
+
 		//Write outputs
 		for (let c = 0; c < num_categories; c++) {
 			let cat = categories[c];

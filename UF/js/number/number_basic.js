@@ -135,10 +135,20 @@
 		if (values.length === 0) return 0;
 		
 		//Declare local instance variables
-		let product = values.reduce((acc, val) => acc*val, 1);
+		let log_sum = 0;
+		let valid_count = 0;
+		
+		for (let i = 0; i < values.length; i++) {
+			let local_val = parseFloat(values[i]);
+			
+			if (local_val > 0 && !isNaN(local_val) && isFinite(local_val)) {
+				log_sum += Math.log(local_val);
+				valid_count++;
+			}
+		}
 		
 		//Return statement
-		return Math.pow(product, 1/values.length);
+		return (valid_count > 0) ? Math.exp(log_sum/valid_count) : 0;
 	};
 	
 	Math.logarithm = function (arg0_x, arg1_y) {
@@ -436,16 +446,35 @@
 		if (values.length === 0) return 0;
 		
 		//Declare local instance variables
-		let negatives = values.filter(v => v < 0).map(Math.abs);
-		let positives = values.filter(v => v > 0);
+		let clean_values = [];
+		let negative_gm = 0;
+		let negatives = [];
+		let positive_gm = 0;
+		let positives = [];
+		let result = 0;
+		
+		for (let i = 0; i < values.length; i++) {
+			let local_val = parseFloat(values[i]);
+			
+			if (!isNaN(local_val) && isFinite(local_val))
+				clean_values.push(local_val);
+		}
+		
+		//Guard clause if no valid numbers are present
+		if (clean_values.length === 0) return 0;
+		
+		negatives = clean_values.filter(v => v < 0).map(Math.abs);
+		positives = clean_values.filter(v => v > 0);
 		
 		//Guard clause if there are only zeroes
 		if (negatives.length + positives.length === 0) return 0;
 		
-		let negative_gm = negatives.length > 0 ? Math.geometricMean(negatives) : 0;
-		let positive_gm = positives.length > 0 ? Math.geometricMean(positives) : 0;
+		negative_gm = (negatives.length > 0) ? Math.geometricMean(negatives) : 0;
+		positive_gm = (positives.length > 0) ? Math.geometricMean(positives) : 0;
+		
+		result = (positives.length/clean_values.length)*positive_gm - (negatives.length/clean_values.length)*negative_gm;
 		
 		//Return statement; weighted geometric mean
-		return (positives.length/values.length)*positive_gm - (negatives.length/values.length)*negative_gm;
+		return (isFinite(result) && !isNaN(result)) ? result : 0;
 	};
 }

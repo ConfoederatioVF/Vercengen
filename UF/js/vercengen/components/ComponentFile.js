@@ -131,7 +131,7 @@ ve.File = class extends ve.Component {
 		} else if (this.options.is_folder) {
 			window_name = loc("ve.registry.localisation.File_open_folder");
 		}
-		if (this.options.save_function)
+		if (this.options.save_function || this.options.manual_save_function)
 			window_name = loc("ve.registry.localisation.File_save_file");
 		
 		this.file_explorer_modal = new ve.Window({
@@ -144,10 +144,10 @@ ve.File = class extends ve.Component {
 			actions_bar: new ve.RawInterface({
 				save_name: new ve.Text("", {
 					attributes: { placeholder: loc("ve.registry.localisation.File_save_file_as") },
-					limit: () => this.options.save_function
+					limit: () => this.options.save_function || this.options.manual_save_function
 				}),
-				confirm_button: new ve.Button(() => {
-					if (!this.options.save_function) {
+				confirm_button: new ve.Button(async () => {
+					if (!this.options.save_function && !this.options.manual_save_function) {
 						let selected_paths = this.file_explorer_modal.file_explorer.selected;
 						
 						//Internal guard clauses - Error handling
@@ -201,33 +201,69 @@ ve.File = class extends ve.Component {
 							}
 						}
 						
+						if (this.options.save_extension && !save_name.endsWith(this.options.save_extension))
+							save_name += this.options.save_extension;
+						
 						//Execute save function to directory name
 						let full_save_path = path.join(this.file_explorer_modal.file_explorer.v, save_name);
 						
-						try {
-							let save_data = this.options.save_function();
-							
-							if (typeof save_data === "object") {
-								save_data = JSON.stringify(save_data);
-							} else {
-								save_data = save_data.toString();
-							}
-							
-							//Check if file already exists, if so send a confirmation prompt
-							let save_function = () => {
-								fs.writeFile(full_save_path, save_data, () => {
+						if (this.options.manual_save_function) {
+							let execute_manual_save = async () => {
+								try {
+									await this.options.manual_save_function(full_save_path);
 									veToast(loc("ve.registry.localisation.File_successfully_saved_file", full_save_path));
 									this.file_explorer_modal.close();
-								})
-								this.v = [full_save_path];
-								this.fireToBinding();
+									this.v = [full_save_path];
+									this.fireToBinding();
+								} catch (e) {
+									console.error(e);
+									veWindow(`<span style = "align-items: center; display: flex"><icon>warning</icon><span style = "margin-left: var(--padding)">${loc("ve.registry.localisation.File_error_saving_file_desc", e)}</span></span>`, {
+										can_rename: false,
+										name: loc("ve.registry.localisation.File_error_saving_file"),
+										width: "20rem"
+									});
+								}
 							};
 							
 							(!fs.existsSync(full_save_path)) ?
-								save_function() :
+								execute_manual_save() :
 								veConfirm(loc("ve.registry.localisation.File_already_exists"), {
-									special_function: () => save_function()
+									special_function: () => execute_manual_save()
 								});
+							return;
+						}
+						
+						try {
+							let save_data = await this.options.save_function(full_save_path);
+							
+							if (save_data !== undefined) {
+								if (typeof save_data === "object") {
+									save_data = JSON.stringify(save_data);
+								} else {
+									save_data = save_data.toString();
+								}
+								
+								//Check if file already exists, if so send a confirmation prompt
+								let save_function = () => {
+									fs.writeFile(full_save_path, save_data, () => {
+										veToast(loc("ve.registry.localisation.File_successfully_saved_file", full_save_path));
+										this.file_explorer_modal.close();
+									});
+									this.v = [full_save_path];
+									this.fireToBinding();
+								};
+								
+								(!fs.existsSync(full_save_path)) ?
+									save_function() :
+									veConfirm(loc("ve.registry.localisation.File_already_exists"), {
+										special_function: () => save_function()
+									});
+							} else {
+								veToast(loc("ve.registry.localisation.File_successfully_saved_file", full_save_path));
+								this.file_explorer_modal.close();
+								this.v = [full_save_path];
+								this.fireToBinding();
+							}
 						} catch (e) {
 							console.error(e);
 							veWindow(`<span style = "align-items: center; display: flex"><icon>warning</icon><span style = "margin-left: var(--padding)">${loc("ve.registry.localisation.File_error_saving_file_desc", e)}</span></span>`, {

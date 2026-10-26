@@ -113,7 +113,6 @@
 		let file_path = arg0_file_path;
 		
 		//Declare local instance variables
-		let checks_passed = 0;
 		let data_columns = 0;
 		let data_frame = [];
 		let data_rows = 0;
@@ -131,19 +130,18 @@
 			
 			//Header parsing
 			if (is_header) {
-				if (checks_passed < 3) {
-					let split_line = local_line.split(" ");
+				if (/^[a-zA-Z]/.test(local_line)) {
+					let split_line = local_line.split(/\s+/);
+					let key = split_line[0].toLowerCase();
 					
-					if (local_line.startsWith("ncols")) {
+					if (key === "ncols") {
 						data_columns = parseInt(split_line[1]);
-						checks_passed++;
-					} else if (local_line.startsWith("nrows")) {
+					} else if (key === "nrows") {
 						data_rows = parseInt(split_line[1]);
-						checks_passed++;
-					} else if (local_line.startsWith("NODATA_value")) {
+					} else if (key === "nodata_value") {
 						no_data_value = split_line[1];
-						checks_passed++;
 					}
+					continue;
 				} else {
 					//End of header; initialise data_frame
 					is_header = false;
@@ -152,7 +150,6 @@
 					for (let x = 0; x < data_rows; x++)
 						data_frame[x] = new Array(data_columns);
 				}
-				continue;
 			}
 			
 			//Data parsing

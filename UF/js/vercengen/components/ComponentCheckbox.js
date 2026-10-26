@@ -47,26 +47,31 @@ ve.Checkbox = class extends ve.Component {
 		this.element = document.createElement("div");
 			this.element.setAttribute("component", "ve-checkbox");
 			this.element.instance = this;
+			HTML.setAttributesObject(this.element, options.attributes);
 		
 		this.options = options;
 		this.value = value;
 		
-		//Format html_string
-		let html_string = [];
-		html_string.push(`<div id = "name"></div>`);
-		
 		if (typeof value === "boolean") {
-			html_string.push(`<input type = "checkbox">`);
+			let html_string = [];
+			html_string.push(`<label><input type = "checkbox"${(value) ? " checked" : ""}><span id = "name"></span></label>`);
 			this.element.innerHTML = html_string.join("");
 			
-			this.element.querySelector(`input[type="checkbox"]`).addEventListener("change", (e) => {
-				this.fireToBinding();
+			let input_el = this.element.querySelector(`input[type="checkbox"]`);
+			input_el.addEventListener("change", (e) => {
 				this.value = this.v;
 				this.from_binding_fire_silently = true;
 				this.v = this.value; //Needs to run setter
 				this.from_binding_fire_silently = false;
+				this.fireToBinding();
+				if (typeof this.options.onchange === "function")
+					this.options.onchange(this.value, this);
+				if (typeof this.options.onuserchange === "function")
+					this.options.onuserchange(this.value, this);
 			});
 		} else if (typeof value === "object") {
+			let html_string = [];
+			html_string.push(`<div id = "name"></div>`);
 			html_string.push(`<ul>`);
 			if (typeof this.value === "object") {
 				html_string.push(...ve.Checkbox.generateHTMLRecursively(this.value));
@@ -85,6 +90,10 @@ ve.Checkbox = class extends ve.Component {
 				this.v = this.value; //Needs to run setter
 				this.from_binding_fire_silently = false;
 				this.fireToBinding();
+				if (typeof this.options.onchange === "function")
+					this.options.onchange(this.value, this);
+				if (typeof this.options.onuserchange === "function")
+					this.options.onuserchange(this.value, this);
 			}));
 		}
 		
@@ -164,6 +173,35 @@ ve.Checkbox = class extends ve.Component {
 			this.value = value;
 		}
 		this.fireFromBinding();
+	}
+
+	/**
+	 * Returns whether the checkbox input is disabled.
+	 *
+	 * @returns {boolean}
+	 */
+	get disabled () {
+		let input_el = this.element.querySelector(`input[type="checkbox"]`);
+		return (input_el) ? input_el.disabled : !!this.options.disabled;
+	}
+
+	/**
+	 * Sets the disabled state of all checkbox inputs in this component.
+	 *
+	 * @param {boolean} arg0_value
+	 */
+	set disabled (arg0_value) {
+		let is_disabled = Boolean(arg0_value);
+		let all_inputs = this.element.querySelectorAll(`input[type="checkbox"]`);
+		all_inputs.forEach((input_el) => {
+			if (is_disabled) {
+				input_el.setAttribute("disabled", "true");
+				input_el.disabled = true;
+			} else {
+				input_el.removeAttribute("disabled");
+				input_el.disabled = false;
+			}
+		});
 	}
 	
 	/**
